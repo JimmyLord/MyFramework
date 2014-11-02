@@ -340,8 +340,8 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
     int texid = GetTextureID();
 
-    if( texid == 0 )
-        return;
+    //if( texid == 0 )
+    //    return;
 
     //Shader_Font* pShader = (Shader_Font*)m_pShaderGroup->GlobalPass();
     //if( pShader )
