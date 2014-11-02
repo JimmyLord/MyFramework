@@ -1,0 +1,1121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
+    <Filter Include="Source\Helpers">
+      <UniqueIdentifier>{2c3c3f52-8de1-4ebb-ac28-921c29eebaab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Shaders">
+      <UniqueIdentifier>{849be88a-997a-4d7b-b644-f31d75440888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Fonts">
+      <UniqueIdentifier>{d8168850-0ff9-48e6-b01d-39e8ac77edc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Textures">
+      <UniqueIdentifier>{0ee6fcb0-700a-4aa2-9159-4fe342772ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Meshes">
+      <UniqueIdentifier>{b442c7a5-bfd7-4a07-b779-1ced0efe15fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Networking">
+      <UniqueIdentifier>{9d5b1c2c-d2ee-4799-af9f-a44226cd9cd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform">
+      <UniqueIdentifier>{fefec6b4-a69b-4fd8-a48b-47fa0d3a7f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Android">
+      <UniqueIdentifier>{75d864fb-0053-4403-b18b-e961513e5a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Android\Box2D">
+      <UniqueIdentifier>{360ec9b2-2633-495a-8d69-d7f84dc581ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - NaCL">
+      <UniqueIdentifier>{2721bf97-177e-4c8c-b05a-dd51ea7e0125}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Windows">
+      <UniqueIdentifier>{002809fd-7be1-4802-a623-186361897913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Random">
+      <UniqueIdentifier>{51108ed7-eb3b-4c42-b1ca-d1fc8a3fcb33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - BlackBerry">
+      <UniqueIdentifier>{65fba82d-1d74-4c8b-8eb6-28db9b73f993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Bada">
+      <UniqueIdentifier>{207be109-ea3a-409b-9954-43614489ad5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{2268e88f-3388-4387-ab53-06ebbd97bb87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - IOS">
+      <UniqueIdentifier>{42ac7320-8927-4cea-9fbe-1700fa56803d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprites">
+      <UniqueIdentifier>{615eeca6-f00d-4ab6-85ee-a8a68156e97d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Particles">
+      <UniqueIdentifier>{716f2563-963b-485d-830d-0c71e8976ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - WP8">
+      <UniqueIdentifier>{eeaedc74-0a54-4f05-a378-aecb28033585}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Windows\winpthreads">
+      <UniqueIdentifier>{23eda786-ad26-4797-ae5c-28e66f3a5204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Windows\SDL">
+      <UniqueIdentifier>{3dd748c3-4748-4f3d-8631-69af1f387271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Windows\SDLMixer">
+      <UniqueIdentifier>{08f4a617-7159-471f-9488-8303328da968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GraphicsWrappers">
+      <UniqueIdentifier>{afb726f6-1e25-440d-b168-b8b387910532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Emscripten">
+      <UniqueIdentifier>{487cbf7a-f18a-492d-9487-93fe9873b421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GL">
+      <UniqueIdentifier>{9b36afe3-4c88-413f-8b2e-4eac226a31ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Widgets">
+      <UniqueIdentifier>{cc0454a4-e98f-4d9d-94f0-46cf01b59ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\LodePNG">
+      <UniqueIdentifier>{f92fa0be-7d0b-40eb-a5e6-fd592fc96666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source-Platform\Source - Android\Java">
+      <UniqueIdentifier>{376a5dee-0e32-4b6c-a198-072fa12798cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\JSON">
+      <UniqueIdentifier>{b5c25fdd-c175-4fb3-a7c7-1c73fed30902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DataTypes">
+      <UniqueIdentifier>{3e16045f-d83e-471f-af34-db1a6a84c2f6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SourceAndroid\TextureLoader.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\GameCore.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\MyMemory.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Rope\b2Rope.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Body.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2ContactManager.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Fixture.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Island.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2World.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2WorldCallbacks.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2GearJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2Joint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2RopeJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2WheelJoint.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2Contact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2BlockAllocator.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2Draw.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2Math.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2Settings.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2StackAllocator.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Common\b2Timer.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2BroadPhase.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2CollideCircle.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2CollideEdge.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2CollidePolygon.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2Collision.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2Distance.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2DynamicTree.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\b2TimeOfImpact.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2ChainShape.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2CircleShape.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2EdgeShape.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2PolygonShape.cpp">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\TextureLoader.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\MainInstance.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\OpenGLContext.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Fonts\FontManager.cpp">
+      <Filter>Source\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Textures\TextureManager.cpp">
+      <Filter>Source\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\SoundPlayer.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\SoundPlayer.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\SoundPlayer.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\CommonHeader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\SavedData.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\SavedData.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\WebRequest.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\SavedData.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\NaCLWebRequest.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Random\mtrand.cpp">
+      <Filter>Source\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\MyTime.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\SavedData.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBada\SavedData.cpp">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBada\SoundPlayer.cpp">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBada\TextureLoader.cpp">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sound\SoundPlayerOpenAL.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sound\WaveLoader.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceIOS\TextureLoader.cpp">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\MySprite.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\MySprite_XYZVertexColor.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\URLEncode.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\SpriteBatch.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\SpriteBatch_XYZVertexColor.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\AnimatedSprite.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\AnimationKeys.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\SpriteSheet.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\GameServiceManager.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Particles\ParticleRenderer.cpp">
+      <Filter>Source\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\MediaPlayer.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Textures\FBODefinition.cpp">
+      <Filter>Source\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\SpriteSheet_XYZVertexColor.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\GameService_ScoreLoop.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\Screenshot.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cJSON\cJSON.cpp">
+      <Filter>Source\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWP8\SoundPlayer.cpp">
+      <Filter>Source-Platform\Source - WP8</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWP8\TextureLoader.cpp">
+      <Filter>Source-Platform\Source - WP8</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\BBM.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\StunClient.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\UDPSocket.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.cpp">
+      <Filter>Source\GraphicsWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\GraphicsWrappers\DXWrapper.cpp">
+      <Filter>Source\GraphicsWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\VertexFormats.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEmscripten\SavedData.cpp">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\BBMain.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\bbutil.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MyLight.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Networking\LeaderboardStorageScoreLoop.cpp">
+      <Filter>Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\BufferManager.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Sprites\MySprite9.cpp">
+      <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\IAPManager.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\GLExtensions.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWidgets\PanelWatch.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWidgets\PanelMemory.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWidgets\PanelObjectList.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\FileManager.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\MYFWWinMain.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\MYFWWinMainWx.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\GLExtensions.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceBlackBerry\GLExtensions.cpp">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEmscripten\GLExtensions.cpp">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEmscripten\WebRequest.cpp">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LodePNG\lodepng.cpp">
+      <Filter>Source\LodePNG</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\JavaInterface.c">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\JavaInterfaceCPP.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceNaCL\GLExtensions.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\JSON\cJSONHelpers.cpp">
+      <Filter>Source\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Fonts\BMFont.cpp">
+      <Filter>Source\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\ColorStructs.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\MyMatrix.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\Vector.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceIOS\IAPManagerIOS.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SourceCommon\CommonHeader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\TextureLoader.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\MessageLog.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\GameCore.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\MyMemory.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Box2D.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Rope\b2Rope.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Body.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2ContactManager.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Fixture.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2Island.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2TimeStep.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2World.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\b2WorldCallbacks.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2DistanceJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2FrictionJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2GearJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2Joint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2MouseJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2PulleyJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2RopeJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Joints\b2WheelJoint.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2CircleContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2Contact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2ContactSolver.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Dynamics\Contacts\b2PolygonContact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2BlockAllocator.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2Draw.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2GrowableStack.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2Math.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2Settings.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2StackAllocator.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Common\b2Timer.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\b2BroadPhase.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\b2Collision.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\b2Distance.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\b2DynamicTree.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\b2TimeOfImpact.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2ChainShape.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2CircleShape.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2EdgeShape.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2PolygonShape.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Box2D_v2.2.1\Box2D\Collision\Shapes\b2Shape.h">
+      <Filter>Source-Platform\Source - Android\Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\ShaderManager.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\TextureLoader.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\MainInstance.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\OpenGLContext.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Fonts\FontManager.h">
+      <Filter>Source\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Textures\TextureManager.h">
+      <Filter>Source\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\ReallyShittyCode.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\UnthoughtOutAndroidHeader.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\VertexFormats.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\SoundPlayer.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SoundPlayer.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\SoundPlayer.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\MyMesh.h">
+      <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cJSON\cJSON.h">
+      <Filter>Source\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\SavedData.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SavedData.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\WebRequest.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\SavedData.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\NaCLWebRequest.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Random\mtrand.h">
+      <Filter>Source\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\MyTime.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\Utility.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\ExternalTools.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\SavedData.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBada\SavedData.h">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBada\SoundPlayer.h">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBada\TextureLoader.h">
+      <Filter>Source-Platform\Source - Bada</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sound\SoundPlayerOpenAL.h">
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sound\WaveLoader.h">
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\ExternalToolsIOS.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\SavedData.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\TextureLoader.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\MySprite.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\MySprite_XYZVertexColor.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\URLEncode.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\RefCount.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\SpriteBatch.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\SpriteBatch_XYZVertexColor.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\AnimatedSprite.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\AnimationKeys.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\MyTweener.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\SpriteSheet.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\AppController.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\AppDelegate.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\ViewController.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\GameServiceManager.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h">
+      <Filter>Source\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\GameCenter.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\MediaPlayer.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Textures\FBODefinition.h">
+      <Filter>Source\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\SpriteSheet_XYZVertexColor.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\GameService_ScoreLoop.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\Screenshot.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWP8\SoundPlayer.h">
+      <Filter>Source-Platform\Source - WP8</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWP8\TextureLoader.h">
+      <Filter>Source-Platform\Source - WP8</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\BBM.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\StunClient.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\UDPSocket.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\begin_code.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\close_code.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_active.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_audio.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_byteorder.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_cdrom.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_dreamcast.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_macos.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_macosx.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_minimal.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_nds.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_os2.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_symbian.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_config_win32.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_copying.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_cpuinfo.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_endian.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_error.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_events.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_getenv.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_joystick.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_keyboard.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_keysym.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_loadso.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_main.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_mouse.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_mutex.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_name.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_opengl.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_platform.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_quit.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_rwops.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_stdinc.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_syswm.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_thread.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_timer.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_types.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_version.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL-1.2.15\include\SDL_video.h">
+      <Filter>Source-Platform\Source - Windows\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SDL_mixer-1.2.12\include\SDL_mixer.h">
+      <Filter>Source-Platform\Source - Windows\SDLMixer</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.h">
+      <Filter>Source\GraphicsWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\GraphicsWrappers\DXWrapper.h">
+      <Filter>Source\GraphicsWrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\Shader_Base.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEmscripten\SavedData.h">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\BBMain.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\bbutil.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\MyLight.h">
+      <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Networking\LeaderboardStorageScoreLoop.h">
+      <Filter>Source\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\ShaderGroup.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\BufferManager.h">
+      <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Sprites\MySprite9.h">
+      <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\GL\glext.h">
+      <Filter>Source\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\IAPManager.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\GLExtensions.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\glext.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\wglext.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\PanelWatch.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\PanelMemory.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\PanelObjectList.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\FileManager.h">
+      <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\MYFWWinMain.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\MYFWWinMainWx.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\GLExtensions.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceBlackBerry\GLExtensions.h">
+      <Filter>Source-Platform\Source - BlackBerry</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEmscripten\GLExtensions.h">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEmscripten\WebRequest.h">
+      <Filter>Source-Platform\Source - Emscripten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LodePNG\lodepng.h">
+      <Filter>Source\LodePNG</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\JavaInterface.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\JavaInterfaceCPP.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\GLExtensions.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\JSON\cJSONHelpers.h">
+      <Filter>Source\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Fonts\BMFont.h">
+      <Filter>Source\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\ColorStructs.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyMatrix.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\Vector.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyActivePool.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyList.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\GLHelpers.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\CPPList.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\IAPManagerIOS.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SourceIOS\ExternalToolsIOS.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceIOS\SavedData.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceIOS\AppController.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceIOS\AppDelegate.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceIOS\ViewController.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceIOS\GameCenter.mm">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\BMPFactoryLoader.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\Global.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\HTTPLayer.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\MYFWActivity.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\SoundPlayer.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+  </ItemGroup>
+</Project>

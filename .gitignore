@@ -1,0 +1,15 @@
+
+*.cacsv
+*.caw
+*.dir
+*.nexe
+*.objdump
+*.prd
+*.suo
+*.ti
+/Box2D_v2.2.1/Build/vs2010/bin
+/Box2D_v2.2.1/Build/vs2010/obj
+/Box2D_v2.2.1/Build/vs2012/bin
+/Box2D_v2.2.1/Build/vs2012/obj
+/MyFramework/MyFramework.xcodeproj/xcuserdata
+/Output

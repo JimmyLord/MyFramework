@@ -1,0 +1,216 @@
+//
+// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+//
+// This software is provided 'as-is', without any express or implied
+// warranty.  In no event will the authors be held liable for any damages
+// arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not
+// claim that you wrote the original software. If you use this software
+// in a product, an acknowledgment in the product documentation would be
+// appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+// misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
+
+#include "CommonHeader.h"
+
+#if MYFW_IOS
+#include "../../SourceIOS/ExternalToolsIOS.h"
+#endif
+
+#if MYFW_BLACKBERRY
+#include <bps/virtualkeyboard.h>
+#include <bps/navigator.h>
+#endif
+
+#if MYFW_WP8
+char g_TextToShare_Subject[1000];
+char g_TextToShare_Body[1000];
+#endif
+
+void SetMusicVolume(float volume)
+{
+#if MYFW_ANDROID
+    if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
+    {
+        LOGError( LOGTag, "SetMusicVolume() sanity check failed: g_pJavaEnvironment=%p g_pMainActivity=%p\n", g_pJavaEnvironment, g_pMainActivity );
+        return;
+    }
+
+    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "SetMusicVolume", "(I)V" );
+    if( methodid == 0 )
+        return;
+    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, methodid, (int)volume );
+    //LOGInfo( LOGTag, "SetMusicVolume %d", (int)volume );
+#elif MYFW_IOS
+    IOSSetMusicVolume( volume );
+#elif MYFW_WINDOWS
+#elif MYFW_BLACKBERRY
+    if( g_pGameCore->m_pMediaPlayer == 0 )
+        return;
+
+    if( volume == 0 )
+    {
+        g_pGameCore->m_pMediaPlayer->Pause();
+    }
+    else
+    {
+        g_pGameCore->m_pMediaPlayer->Play();
+        g_pGameCore->m_pMediaPlayer->SetVolume( volume );
+    }
+#elif MYFW_WP8
+    if( g_pGameCore->m_pSoundPlayer == 0 )
+        return;
+
+    if( volume == 0 )
+    {
+        g_pGameCore->m_pSoundPlayer->PauseMusic();
+    }
+    else
+    {
+        //g_pGameCore->m_pSoundPlayer->PlayMusic(0);
+        g_pGameCore->m_pSoundPlayer->UnpauseMusic();
+    }
+#endif
+}
+
+void LaunchURL(const char* url)
+{
+#if MYFW_ANDROID
+    if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
+    {
+        LOGError( LOGTag, "LaunchURL() sanity check failed: g_pJavaEnvironment=%p g_pMainActivity=%p\n", g_pJavaEnvironment, g_pMainActivity );
+        return;
+    }
+
+    LOGInfo( LOGTag, "LaunchURL %s, javaenv %s", url, g_pJavaEnvironment );
+
+    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+    LOGInfo( LOGTag, "g_pMainActivity cls %p", cls );
+
+    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "LaunchURL", "(Ljava/lang/String;)V" );
+
+    LOGInfo( LOGTag, "LaunchURL %p", methodid );
+
+    if( methodid == 0 )
+        return;
+
+    jstring jurl = g_pJavaEnvironment->NewStringUTF( url );
+
+    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, methodid, jurl );
+
+    g_pJavaEnvironment->DeleteLocalRef( jurl );
+#elif MYFW_IOS
+    IOSLaunchURL( url );
+#elif MYFW_WINDOWS
+    wchar_t urlwide[512];
+    swprintf_s( urlwide, L"%s", url );
+    ShellExecute( NULL, L"open", urlwide, NULL, NULL, SW_SHOWNORMAL );
+#elif MYFW_BLACKBERRY
+    navigator_invoke( url, 0 );
+#elif MYFW_WP8
+    //const char* url = "http://www.flatheadgames.com";
+    //const char* url = "zune:reviewapp";
+    wchar_t wideurl[100];
+    MultiByteToWideChar( CP_ACP, 0, url, strlen(url), wideurl, 100 );
+    wideurl[strlen(url)] = 0;
+    auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( wideurl ) );
+    Windows::System::Launcher::LaunchUriAsync( uri );
+
+    //concurrency::task<bool> launchUriOperation(Windows::System::Launcher::LaunchUriAsync(uri));
+    //launchUriOperation.then([](bool success)
+    //{
+    //    if (success)
+    //    {
+    //        // URI launched
+    //    }
+    //    else
+    //    {
+    //        // URI launch failed
+    //    }
+    //});
+         //launchUriOperation( uri );
+    //MarketplaceDetailTask marketplaceDetailTask = new MarketplaceDetailTask();
+    //marketplaceDetailTask.ContentIdentifier = null;
+    //marketplaceDetailTask.Show();
+#endif
+}
+
+void ShareString(const char* subject, const char* body)
+{
+#if MYFW_ANDROID
+    if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
+    {
+        LOGError( LOGTag, "ShareString() sanity check failed: g_pJavaEnvironment=%p g_pMainActivity=%p\n", g_pJavaEnvironment, g_pMainActivity );
+        return;
+    }
+
+    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+    LOGInfo( LOGTag, "g_pMainActivity cls %p", cls );
+
+    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "ShareString", "(Ljava/lang/String;Ljava/lang/String;)V" );
+
+    LOGInfo( LOGTag, "ShareString %p", methodid );
+    if( methodid == 0 )
+        return;
+
+    jstring jsubject = g_pJavaEnvironment->NewStringUTF( subject );
+    jstring jbody = g_pJavaEnvironment->NewStringUTF( body );
+
+    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, methodid, jsubject, jbody );
+
+    g_pJavaEnvironment->DeleteLocalRef( jsubject );
+    g_pJavaEnvironment->DeleteLocalRef( jbody );
+#elif MYFW_BLACKBERRY
+    // todo
+#elif MYFW_WP8
+    strcpy_s( g_TextToShare_Subject, 1000, subject );
+    strcpy_s( g_TextToShare_Body, 1000, body );
+
+    Windows::ApplicationModel::DataTransfer::DataTransferManager::ShowShareUI();
+#endif
+}
+
+void ShowKeyboard(bool show)
+{
+#if MYFW_ANDROID
+    LOGInfo( LOGTag, "ShowKeyboard\n" );
+    if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
+    {
+        LOGError( LOGTag, "ShowKeyboard() sanity check failed: g_pJavaEnvironment=%p g_pMainActivity=%p\n", g_pJavaEnvironment, g_pMainActivity );
+        return;
+    }
+
+    LOGInfo( LOGTag, "g_pJavaEnvironment %p\n", g_pJavaEnvironment );
+
+    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+    LOGInfo( LOGTag, "g_pMainActivity cls %p\n", cls );
+
+    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "ShowKeyboard", "(Z)V" );
+
+    LOGInfo( LOGTag, "ShowKeyboard %p\n", methodid );
+    if( methodid == 0 )
+        return;
+
+    jboolean jshow = show;
+
+    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, methodid, jshow );
+    LOGInfo( LOGTag, "~ShowKeyboard\n" );
+#elif MYFW_BLACKBERRY
+    if( show )
+    {
+        virtualkeyboard_change_options(VIRTUALKEYBOARD_LAYOUT_DEFAULT, VIRTUALKEYBOARD_ENTER_DEFAULT);
+        virtualkeyboard_show();
+    }
+    else
+    {
+        virtualkeyboard_hide();
+    }
+#elif MYFW_IOS
+    IOSShowKeyboard( show );
+#endif
+}
