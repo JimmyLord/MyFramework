@@ -18,7 +18,7 @@
 #ifndef __CommonHeader_H__
 #define __CommonHeader_H__
 
-#include "../../../MyLocalInclude.h"
+//#include "../../../MyLocalInclude.h"
 
 #define USE_OPENGL 1
 #define USE_PTHREAD 1
