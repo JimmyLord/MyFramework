@@ -117,26 +117,46 @@ public:
         return newmat;
     }
 
+    inline Vector3 operator *(const Vector3 o) const
+    {
+        Vector4 result = Vector4( m11 * o.x + m21 * o.y + m31 * o.z + m41 * 1,
+                                  m12 * o.x + m22 * o.y + m32 * o.z + m42 * 1,
+                                  m13 * o.x + m23 * o.y + m33 * o.z + m43 * 1,
+                                  m14 * o.x + m24 * o.y + m34 * o.z + m44 * 1 );
+        if( result.w )
+            return Vector3( result.x/result.w, result.y/result.w, result.z/result.w );
+        else
+            return Vector3( result.x, result.y, result.z );
+    }
+
+    inline Vector4 operator *(const Vector4 o) const
+    {
+        return Vector4( m11 * o.x + m21 * o.y + m31 * o.z + m41 * o.w,
+                        m12 * o.x + m22 * o.y + m32 * o.z + m42 * o.w,
+                        m13 * o.x + m23 * o.y + m33 * o.z + m43 * o.w,
+                        m14 * o.x + m24 * o.y + m34 * o.z + m44 * o.w );
+    }
+
     inline MyMatrix operator *(const MyMatrix o) const
     {
         MyMatrix newmat;
 
-        newmat.m11 = this->m11 * o.m11 + this->m12 * o.m21 + this->m13 * o.m31 + this->m14 * o.m41;
-        newmat.m12 = this->m11 * o.m12 + this->m12 * o.m22 + this->m13 * o.m32 + this->m14 * o.m42;
-        newmat.m13 = this->m11 * o.m13 + this->m12 * o.m23 + this->m13 * o.m33 + this->m14 * o.m43;
-        newmat.m14 = this->m11 * o.m14 + this->m12 * o.m24 + this->m13 * o.m34 + this->m14 * o.m44;
-        newmat.m21 = this->m21 * o.m11 + this->m22 * o.m21 + this->m23 * o.m31 + this->m24 * o.m41;
-        newmat.m22 = this->m21 * o.m12 + this->m22 * o.m22 + this->m23 * o.m32 + this->m24 * o.m42;
-        newmat.m23 = this->m21 * o.m13 + this->m22 * o.m23 + this->m23 * o.m33 + this->m24 * o.m43;
-        newmat.m24 = this->m21 * o.m14 + this->m22 * o.m24 + this->m23 * o.m34 + this->m24 * o.m44;
-        newmat.m31 = this->m31 * o.m11 + this->m32 * o.m21 + this->m33 * o.m31 + this->m34 * o.m41;
-        newmat.m32 = this->m31 * o.m12 + this->m32 * o.m22 + this->m33 * o.m32 + this->m34 * o.m42;
-        newmat.m33 = this->m31 * o.m13 + this->m32 * o.m23 + this->m33 * o.m33 + this->m34 * o.m43;
-        newmat.m34 = this->m31 * o.m14 + this->m32 * o.m24 + this->m33 * o.m34 + this->m34 * o.m44;
-        newmat.m41 = this->m41 * o.m11 + this->m42 * o.m21 + this->m43 * o.m31 + this->m44 * o.m41;
-        newmat.m42 = this->m41 * o.m12 + this->m42 * o.m22 + this->m43 * o.m32 + this->m44 * o.m42;
-        newmat.m43 = this->m41 * o.m13 + this->m42 * o.m23 + this->m43 * o.m33 + this->m44 * o.m43;
-        newmat.m44 = this->m41 * o.m14 + this->m42 * o.m24 + this->m43 * o.m34 + this->m44 * o.m44;
+        newmat.m11 = this->m11 * o.m11 + this->m21 * o.m12 + this->m31 * o.m13 + this->m41 * o.m14;
+        newmat.m12 = this->m12 * o.m11 + this->m22 * o.m12 + this->m32 * o.m13 + this->m42 * o.m14;
+        newmat.m13 = this->m13 * o.m11 + this->m23 * o.m12 + this->m33 * o.m13 + this->m43 * o.m14;
+        newmat.m14 = this->m14 * o.m11 + this->m24 * o.m12 + this->m34 * o.m13 + this->m44 * o.m14;
+        newmat.m21 = this->m11 * o.m21 + this->m21 * o.m22 + this->m31 * o.m23 + this->m41 * o.m24;
+        newmat.m22 = this->m12 * o.m21 + this->m22 * o.m22 + this->m32 * o.m23 + this->m42 * o.m24;
+        newmat.m23 = this->m13 * o.m21 + this->m23 * o.m22 + this->m33 * o.m23 + this->m43 * o.m24;
+        newmat.m24 = this->m14 * o.m21 + this->m24 * o.m22 + this->m34 * o.m23 + this->m44 * o.m24;
+        newmat.m31 = this->m11 * o.m31 + this->m21 * o.m32 + this->m31 * o.m33 + this->m41 * o.m34;
+        newmat.m32 = this->m12 * o.m31 + this->m22 * o.m32 + this->m32 * o.m33 + this->m42 * o.m34;
+        newmat.m33 = this->m13 * o.m31 + this->m23 * o.m32 + this->m33 * o.m33 + this->m43 * o.m34;
+        newmat.m34 = this->m14 * o.m31 + this->m24 * o.m32 + this->m34 * o.m33 + this->m44 * o.m34;
+        newmat.m41 = this->m11 * o.m41 + this->m21 * o.m42 + this->m31 * o.m43 + this->m41 * o.m44;
+        newmat.m42 = this->m12 * o.m41 + this->m22 * o.m42 + this->m32 * o.m43 + this->m42 * o.m44;
+        newmat.m43 = this->m13 * o.m41 + this->m23 * o.m42 + this->m33 * o.m43 + this->m43 * o.m44;
+        newmat.m44 = this->m14 * o.m41 + this->m24 * o.m42 + this->m34 * o.m43 + this->m44 * o.m44;
     
         return newmat;
     }
