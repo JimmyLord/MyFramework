@@ -88,6 +88,15 @@ wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxT
     return wxTreeItemId();
 }
 
+wxTreeItemId PanelObjectList::FindObject(void* pObjectPtr)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObjectPtr, idroot );
+
+    return id;
+}
+
 void PanelObjectList::UpdateRootNodeObjectCount()
 {
     char tempstr[100];
@@ -213,6 +222,20 @@ void PanelObjectList::RemoveObject(void* pObjectPtr)
 
         if( m_pTree_Objects->GetChildrenCount( parentid ) == 0 )
             m_pTree_Objects->Delete( parentid );
+    }
+
+    UpdateRootNodeObjectCount();
+}
+
+void PanelObjectList::RenameObject(void* pObjectPtr, const char* desc)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObjectPtr, idroot );
+
+    if( id.IsOk() )
+    {
+        m_pTree_Objects->SetItemText( id, desc );
     }
 
     UpdateRootNodeObjectCount();

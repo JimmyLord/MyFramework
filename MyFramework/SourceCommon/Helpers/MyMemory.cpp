@@ -38,9 +38,9 @@ void ValidateAllocations(bool AssertOnAnyAllocation)
         assert( obj->Next != NULL );
         assert( obj->Prev != NULL );
 
+        LOGInfo( LOGTag, "%s(%d): Memory unreleased.\n", obj->m_file, obj->m_line );
         if( AssertOnAnyAllocation )
             assert( false );
-        LOGInfo( LOGTag, "%s(%d): Memory unreleased.\n", obj->m_file, obj->m_line );
     }
 #endif
 }

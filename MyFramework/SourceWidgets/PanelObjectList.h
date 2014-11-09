@@ -43,6 +43,9 @@ public:
     wxTreeItemId AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, const char* category, const char* desc);
     wxTreeItemId AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, wxTreeItemId parentid, const char* desc);
     void RemoveObject(void* pObjectPtr);
+
+    wxTreeItemId FindObject(void* pObjectPtr);
+    void RenameObject(void* pObjectPtr, const char* desc);
 };
 
 #endif // __PanelObjectList_H__

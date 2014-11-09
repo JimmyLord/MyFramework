@@ -288,9 +288,12 @@ void MainGLCanvas::MouseReleased(wxMouseEvent& event)
 
 void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 {
-    m_MouseDown = false;
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    if( m_MouseDown )
+    {
+        m_MouseDown = false;
+        if( g_pGameCore )
+            g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    }
 }
 
 void MainGLCanvas::MouseWheelMoved(wxMouseEvent& event) {}
