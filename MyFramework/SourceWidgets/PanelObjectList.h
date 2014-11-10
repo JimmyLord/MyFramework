@@ -30,8 +30,9 @@ public:
     wxTreeCtrl* m_pTree_Objects;
 
 protected:
-    wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeItemId idroot);
+    wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot);
     void OnTreeSelectionChanged(wxTreeEvent& event);
+    void OnTreeContextMenuRequested(wxTreeEvent& event);
     void UpdateRootNodeObjectCount();
 
 public:
@@ -40,12 +41,12 @@ public:
 
     //void Refresh();
     wxTreeItemId GetTreeRoot();
-    wxTreeItemId AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, const char* category, const char* desc);
-    wxTreeItemId AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, wxTreeItemId parentid, const char* desc);
-    void RemoveObject(void* pObjectPtr);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc);
+    void RemoveObject(void* pObject);
 
-    wxTreeItemId FindObject(void* pObjectPtr);
-    void RenameObject(void* pObjectPtr, const char* desc);
+    wxTreeItemId FindObject(void* pObject);
+    void RenameObject(void* pObject, const char* desc);
 };
 
 #endif // __PanelObjectList_H__

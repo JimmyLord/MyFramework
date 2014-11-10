@@ -23,6 +23,16 @@ void MyMatrix::SetIdentity()
     m11 = m22 = m33 = m44 = 1;
 }
 
+void MyMatrix::SetSRT(Vector3 scale, Vector3 rot, Vector3 pos)
+{
+    SetIdentity();
+    Scale( scale.x, scale.y, scale.z );
+    Rotate( rot.x, 1, 0, 0 );
+    Rotate( rot.y, 0, 1, 0 );
+    Rotate( rot.z, 0, 0, 1 );
+    TranslatePostRotation( pos.x, pos.y, pos.z );
+}
+
 void MyMatrix::SetPosition(Vector3 pos)
 {
     m41 = pos.x;

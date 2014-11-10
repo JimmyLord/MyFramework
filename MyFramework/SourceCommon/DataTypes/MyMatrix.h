@@ -40,6 +40,7 @@ public:
         , m41(v41), m42(v42), m43(v43), m44(v44) {}
 
     void SetIdentity();
+    void SetSRT(Vector3 scale, Vector3 rot, Vector3 pos);
     void SetPosition(Vector3 pos);
     void SetPosition(float x, float y, float z);
     void SetFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);

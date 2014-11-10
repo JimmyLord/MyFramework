@@ -23,8 +23,9 @@ PanelObjectList* g_pPanelObjectList = 0;
 class TreeItemDataGenericObjectInfo : public wxTreeItemData
 {
 public:
-    void* m_ObjectPtr;
-    PanelObjectListCallback m_FunctionPtr;
+    void* m_pObject;
+    PanelObjectListCallback m_pLeftClickFunction;
+    PanelObjectListCallback m_pRightClickFunction;
 }; 
 
 PanelObjectList::PanelObjectList(wxFrame* parentframe)
@@ -41,6 +42,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     Update();
 
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
+    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelObjectList::OnTreeContextMenuRequested) );
 }
 
 PanelObjectList::~PanelObjectList()
@@ -50,16 +52,28 @@ PanelObjectList::~PanelObjectList()
 
 void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
+    // pass left click event through to the item.
     wxTreeItemId id = event.GetItem();
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-    g_pPanelWatch->ClearAllVariables();
-    if( pData )
+    //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
+    if( pData && pData->m_pLeftClickFunction )
     {
-        (pData->m_FunctionPtr)(pData->m_ObjectPtr);
+        (pData->m_pLeftClickFunction)(pData->m_pObject);
     }
 }
 
-wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeItemId idroot)
+void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
+{
+    // pass right click events through to the item.
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData && pData->m_pRightClickFunction )
+    {
+        (pData->m_pRightClickFunction)(pData->m_pObject);
+    }
+}
+
+wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot)
 {
     wxTreeItemIdValue cookie;
     wxTreeItemId id = tree->GetFirstChild( idroot, cookie );
@@ -68,8 +82,8 @@ wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxT
         wxTreeItemData* pData = tree->GetItemData( id );
         if( pData )
         {
-            void* objptr = ((TreeItemDataGenericObjectInfo*)pData)->m_ObjectPtr;
-            if( objptr == pObjectPtr )
+            void* objptr = ((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
+            if( objptr == pObject )
             {
                 return id;
             }
@@ -77,7 +91,7 @@ wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxT
 
         if( tree->ItemHasChildren( id ) )
         {
-            id = FindObject( tree, pObjectPtr, id );
+            id = FindObject( tree, pObject, id );
             if( id.IsOk() )
                 return id;
         }
@@ -88,11 +102,11 @@ wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxT
     return wxTreeItemId();
 }
 
-wxTreeItemId PanelObjectList::FindObject(void* pObjectPtr)
+wxTreeItemId PanelObjectList::FindObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
 
-    wxTreeItemId id = FindObject( m_pTree_Objects, pObjectPtr, idroot );
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
 
     return id;
 }
@@ -118,13 +132,9 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
     return m_pTree_Objects->GetRootItem();
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, const char* category, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
 {
-    assert( pObjectPtr != 0 );
-
-    char tempstr[100];
-
-    wxTreeItemId newid;
+    assert( pObject != 0 );
 
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     int count = m_pTree_Objects->GetChildrenCount( idroot, false );
@@ -150,35 +160,12 @@ wxTreeItemId PanelObjectList::AddObject(void* pObjectPtr, PanelObjectListCallbac
         idcategory = m_pTree_Objects->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_Objects->GetChildrenCount( idcategory );
-
-    // insert the Texture into it's category
-    {
-        //sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
-        sprintf_s( tempstr, 100, "%s", desc );
-        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
-        pData->m_ObjectPtr = pObjectPtr;
-        pData->m_FunctionPtr = pFunctionPtr;
-
-        newid = m_pTree_Objects->AppendItem( idcategory, tempstr, -1, -1, pData );
-
-        // if inserting the first item, then expand the tree.
-        if( count == 0 )
-        {
-            m_pTree_Objects->Expand( idroot );
-        }
-    }
-
-    UpdateRootNodeObjectCount();
-
-    return newid;
+    return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObjectPtr, PanelObjectListCallback pFunctionPtr, wxTreeItemId parentid, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
 {
-    assert( pObjectPtr != 0 );
-
-    //char tempstr[100];
+    assert( pObject != 0 );
 
     wxTreeItemId newid;
 
@@ -189,8 +176,9 @@ wxTreeItemId PanelObjectList::AddObject(void* pObjectPtr, PanelObjectListCallbac
     // insert the Object under it's parent node
     {
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
-        pData->m_ObjectPtr = pObjectPtr;
-        pData->m_FunctionPtr = pFunctionPtr;
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
 
         newid = m_pTree_Objects->AppendItem( parentid, desc, -1, -1, pData );
         assert( newid.IsOk() );
@@ -207,11 +195,11 @@ wxTreeItemId PanelObjectList::AddObject(void* pObjectPtr, PanelObjectListCallbac
     return newid;
 }
 
-void PanelObjectList::RemoveObject(void* pObjectPtr)
+void PanelObjectList::RemoveObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
 
-    wxTreeItemId id = FindObject( m_pTree_Objects, pObjectPtr, idroot );
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
 
     if( id.IsOk() )
     {
@@ -227,11 +215,11 @@ void PanelObjectList::RemoveObject(void* pObjectPtr)
     UpdateRootNodeObjectCount();
 }
 
-void PanelObjectList::RenameObject(void* pObjectPtr, const char* desc)
+void PanelObjectList::RenameObject(void* pObject, const char* desc)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
 
-    wxTreeItemId id = FindObject( m_pTree_Objects, pObjectPtr, idroot );
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
 
     if( id.IsOk() )
     {
