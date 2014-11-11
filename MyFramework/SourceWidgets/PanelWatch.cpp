@@ -45,7 +45,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe)
         m_pVariableTypes[i] = PanelWatchType_Unknown;
     }
 
-    m_pTimer = new wxTimer(this, wxID_ANY);
+    m_pTimer = MyNew wxTimer(this, wxID_ANY);
     m_pTimer->Start( 100 );
 
     //Connect( wxEVT_CHILD_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus) );
