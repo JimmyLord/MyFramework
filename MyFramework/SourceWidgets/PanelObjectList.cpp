@@ -218,6 +218,24 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
     return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
 }
 
+void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
+{
+    assert( pObject != 0 );
+
+    // get the root count before adding the item for check below.
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    // insert the Object under it's parent node
+    {
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+
+        m_pTree_Objects->SetItemData( idroot, pData );
+    }
+}
+
 wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
 {
     assert( pObject != 0 );
