@@ -24,6 +24,18 @@ extern PanelObjectList* g_pPanelObjectList;
 
 typedef void (*PanelObjectListCallback)(void*);
 
+class PanelObjectListDropTarget : public wxDropTarget
+{
+public:
+    PanelObjectList* m_pPanelObjectList;
+
+public:
+    PanelObjectListDropTarget();
+
+    virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
+    virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
+};
+
 class PanelObjectList : public wxPanel
 {
 public:
@@ -33,7 +45,13 @@ protected:
     wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot);
     void OnTreeSelectionChanged(wxTreeEvent& event);
     void OnTreeContextMenuRequested(wxTreeEvent& event);
+    void OnDragBegin(wxTreeEvent& event);
     void UpdateRootNodeObjectCount();
+
+    // drop code for drag and drop.
+//    virtual wxDragResult OnEnter(wxCoord x, wxCoord y, wxDragResult defResult);
+//    virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
+//    virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
 
 public:
     PanelObjectList(wxFrame* parentframe);
@@ -43,7 +61,9 @@ public:
     wxTreeItemId GetTreeRoot();
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc);
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc);
+    void SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallback pDropFunction);
     void RemoveObject(void* pObject);
+    void* GetObject(wxTreeItemId id);
 
     wxTreeItemId FindObject(void* pObject);
     void RenameObject(void* pObject, const char* desc);

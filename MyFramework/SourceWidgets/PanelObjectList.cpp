@@ -23,9 +23,19 @@ PanelObjectList* g_pPanelObjectList = 0;
 class TreeItemDataGenericObjectInfo : public wxTreeItemData
 {
 public:
+    TreeItemDataGenericObjectInfo()
+    {
+        m_pLeftClickFunction = 0;
+        m_pRightClickFunction = 0;
+        m_pDragFunction = 0;
+        m_pDropFunction = 0;
+    }
+
     void* m_pObject;
     PanelObjectListCallback m_pLeftClickFunction;
     PanelObjectListCallback m_pRightClickFunction;
+    PanelObjectListCallback m_pDragFunction;
+    PanelObjectListCallback m_pDropFunction;
 }; 
 
 PanelObjectList::PanelObjectList(wxFrame* parentframe)
@@ -39,10 +49,15 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     sizer->Add( m_pTree_Objects, 0, wxGROW|wxALL, 2 );
     SetSizer( sizer );
 
+    PanelObjectListDropTarget* pDropTarget = MyNew PanelObjectListDropTarget;
+    pDropTarget->m_pPanelObjectList = this;
+    m_pTree_Objects->SetDropTarget( pDropTarget );
+
     Update();
 
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
     Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelObjectList::OnTreeContextMenuRequested) );
+    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelObjectList::OnDragBegin) );
 }
 
 PanelObjectList::~PanelObjectList()
@@ -71,6 +86,46 @@ void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
     {
         (pData->m_pRightClickFunction)(pData->m_pObject);
     }
+}
+
+void PanelObjectList::OnDragBegin(wxTreeEvent& event)
+{
+    // let the object know its being dragged, so it can store it's data.
+    // This only works within this app, not between apps.
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData && pData->m_pDragFunction )
+    {
+        (pData->m_pDragFunction)(pData->m_pObject);
+    }
+
+    // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+    wxCustomDataObject dataobject;
+    wxDropSource dragsource( dataobject );    
+    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+}
+
+PanelObjectListDropTarget::PanelObjectListDropTarget()
+{
+    SetDataObject(new wxCustomDataObject);
+}
+
+wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
+{
+    return wxDragCopy;
+}
+
+wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
+{
+    // figure out which object the stuff was dropped on and let it know.
+    wxTreeItemId id = m_pPanelObjectList->m_pTree_Objects->HitTest( wxPoint(x, y) );
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
+    if( pData && pData->m_pDropFunction )
+    {
+        (pData->m_pDropFunction)(pData->m_pObject);
+    }
+
+    return wxDragNone;
 }
 
 wxTreeItemId PanelObjectList::FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot)
@@ -195,6 +250,15 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
     return newid;
 }
 
+void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallback pDropFunction)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    pData->m_pDragFunction = pDragFunction;
+    pData->m_pDropFunction = pDropFunction;
+}
+
 void PanelObjectList::RemoveObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
@@ -213,6 +277,13 @@ void PanelObjectList::RemoveObject(void* pObject)
     }
 
     UpdateRootNodeObjectCount();
+}
+
+void* PanelObjectList::GetObject(wxTreeItemId id)
+{
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    return pData->m_pObject;
 }
 
 void PanelObjectList::RenameObject(void* pObject, const char* desc)
