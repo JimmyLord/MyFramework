@@ -33,7 +33,10 @@ PanelWatch::PanelWatch(wxFrame* parentframe)
     m_Handles_Slider = MyNew wxSlider*[MAX_PanelWatch_VARIABLES];
     m_pVariablePointers = MyNew void*[MAX_PanelWatch_VARIABLES];
     m_pVariableRanges = MyNew Vector2[MAX_PanelWatch_VARIABLES];
+    m_pVariableDescriptions = MyNew char*[MAX_PanelWatch_VARIABLES];
     m_pVariableTypes = MyNew PanelWatch_Types[MAX_PanelWatch_VARIABLES];
+    m_pVariableCallbackObjs = MyNew void*[MAX_PanelWatch_VARIABLES];
+    m_pVariableCallbackFuncs = MyNew PanelWatchCallback[MAX_PanelWatch_VARIABLES];
 
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
     {
@@ -42,7 +45,10 @@ PanelWatch::PanelWatch(wxFrame* parentframe)
         m_Handles_Slider[i] = 0;
         m_pVariablePointers[i] = 0;
         m_pVariableRanges[i].Set( 0, 0 );
+        m_pVariableDescriptions[i] = 0;
         m_pVariableTypes[i] = PanelWatchType_Unknown;
+        m_pVariableCallbackObjs[i] = 0;
+        m_pVariableCallbackFuncs[i] = 0;
     }
 
     m_pTimer = MyNew wxTimer(this, wxID_ANY);
@@ -65,7 +71,10 @@ PanelWatch::~PanelWatch()
 
     SAFE_DELETE_ARRAY( m_pVariablePointers );
     SAFE_DELETE_ARRAY( m_pVariableRanges );
+    SAFE_DELETE_ARRAY( m_pVariableDescriptions );
     SAFE_DELETE_ARRAY( m_pVariableTypes );
+    SAFE_DELETE_ARRAY( m_pVariableCallbackObjs );
+    SAFE_DELETE_ARRAY( m_pVariableCallbackFuncs );
 
     SAFE_DELETE( m_pTimer );
 }
@@ -90,7 +99,10 @@ void PanelWatch::ClearAllVariables()
         m_Handles_Slider[i] = 0;
         m_pVariablePointers[i] = 0;
         m_pVariableRanges[i].Set( 0, 0 );
+        m_pVariableDescriptions[i] = 0;
         m_pVariableTypes[i] = PanelWatchType_Unknown;
+        m_pVariableCallbackObjs[i] = 0;
+        m_pVariableCallbackFuncs[i] = 0;
     }
 
     m_NumVariables = 0;
@@ -104,7 +116,30 @@ void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void
 
     m_pVariablePointers[m_NumVariables] = pVar;
     m_pVariableRanges[m_NumVariables].Set( min, max );
+    m_pVariableDescriptions[m_NumVariables] = 0;
     m_pVariableTypes[m_NumVariables] = type;
+    m_pVariableCallbackObjs[m_NumVariables] = 0;
+    m_pVariableCallbackFuncs[m_NumVariables] = 0;
+
+    AddControlsForVariable( name );
+
+    m_NumVariables++;
+
+    UpdatePanel();
+}
+
+void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
+{
+    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
+        return;
+
+    m_pVariablePointers[m_NumVariables] = pVar;
+    m_pVariableRanges[m_NumVariables].Set( 0, 0 );
+    m_pVariableDescriptions[m_NumVariables] = pDescription;
+    m_pVariableTypes[m_NumVariables] = type;
+    m_pVariableCallbackObjs[m_NumVariables] = pCallbackObj;
+    m_pVariableCallbackFuncs[m_NumVariables] = pCallBackFunc;
 
     AddControlsForVariable( name );
 
@@ -141,6 +176,11 @@ void PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max)
 void PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max)
 {
     AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max );
+}
+
+void PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
+{
+    AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pCallBackFunc );
 }
 
 void PanelWatch::AddSpace()
@@ -185,6 +225,7 @@ void PanelWatch::AddControlsForVariable(const char* name)
     }
 
     // Slider
+    if( m_pVariableDescriptions[m_NumVariables] == 0 )
     {
         float sliderfloatmultiplier = 1;
         if( m_pVariableTypes[m_NumVariables] == PanelWatchType_Float ||
@@ -213,7 +254,36 @@ void PanelWatch::AddControlsForVariable(const char* name)
         // if control gets focus, stop updates.
         m_Handles_TextCtrl[m_NumVariables]->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         m_Handles_TextCtrl[m_NumVariables]->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+
+        if( m_pVariableCallbackFuncs[m_NumVariables] )
+        {
+            PanelWatchDropTarget* pDropTarget = MyNew PanelWatchDropTarget;
+            pDropTarget->m_pCallbackObj = m_pVariableCallbackObjs[m_NumVariables];
+            pDropTarget->m_pCallbackFunc = m_pVariableCallbackFuncs[m_NumVariables];
+
+            m_Handles_TextCtrl[m_NumVariables]->SetDropTarget( pDropTarget );            
+        }
     }
+}
+
+PanelWatchDropTarget::PanelWatchDropTarget()
+{
+    SetDataObject(new wxCustomDataObject);
+}
+
+wxDragResult PanelWatchDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
+{
+    return wxDragCopy;
+}
+
+wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
+{
+    // figure out which object the stuff was dropped on and let it know.
+    assert( m_pCallbackObj && m_pCallbackFunc );
+
+    m_pCallbackFunc( m_pCallbackObj );
+
+    return wxDragNone;
 }
 
 void PanelWatch::OnSetFocus(wxFocusEvent& event)
