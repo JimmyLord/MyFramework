@@ -214,7 +214,11 @@ void PanelWatch::AddControlsForVariable(const char* name)
     int SliderWidth = 120;
     int TextCtrlWidth = 70;
 
-    // create a font
+    if( m_pVariableDescriptions[m_NumVariables] != 0 )
+    {
+        TextCtrlWidth = 150;
+    }
+
     PosY += PaddingTop;
 
     // Text label
@@ -391,13 +395,13 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 {
     for( int i=0; i<m_NumVariables; i++ )
     {
-        if( m_pVariablePointers[i] == 0 )
-            continue;
+        //if( m_pVariablePointers[i] == 0 )
+        //    continue;
 
         if( controltoupdate != -1 && controltoupdate != i )
             continue;
 
-        char tempstring[50];
+        char tempstring[50] = "not set";
         int slidervalue;
         switch( m_pVariableTypes[i] )
         {
@@ -448,9 +452,15 @@ void PanelWatch::UpdatePanel(int controltoupdate)
                 sprintf_s( tempstring, 50, "%0.2f", valuedouble );
             }
             break;
+
+        case PanelWatchType_PointerWithDesc:
+            {
+                sprintf_s( tempstring, 50, "%s", m_pVariableDescriptions[i] );
+            }
         }
 
         m_Handles_TextCtrl[i]->ChangeValue( tempstring );
-        m_Handles_Slider[i]->SetValue( slidervalue );
+        if( m_Handles_Slider[i] != 0 )
+            m_Handles_Slider[i]->SetValue( slidervalue );
     }
 }
