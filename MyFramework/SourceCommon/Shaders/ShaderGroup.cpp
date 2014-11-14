@@ -26,26 +26,51 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup()
+ShaderGroup::ShaderGroup(char* name)
 {
     SetShaders( 0, 0, 0 );
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+#endif
 }
 
-ShaderGroup::ShaderGroup(BaseShader* pMainPass)
+ShaderGroup::ShaderGroup(BaseShader* pMainPass, char* name)
 {
     SetShaders( pMainPass, 0, 0 );
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+#endif
 }
 
-ShaderGroup::ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass)
+ShaderGroup::ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name)
 {
     SetShaders( pMainPass, pMainPassNoShadow, pShadowCastRGBAPass );
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+#endif
 }
 
 ShaderGroup::~ShaderGroup()
 {
     for( int i=0; i<ShaderPass_NumTypes; i++ )
         SAFE_DELETE( m_pShaderPasses[i] );    
+
+#if MYFW_USING_WX
+    if( g_pPanelMemory )
+        g_pPanelMemory->RemoveShaderGroup( this );
+#endif
 }
+
+#if MYFW_USING_WX
+void ShaderGroup::OnDrag()
+{
+    g_DragAndDropStruct.m_Type = DragAndDropType_ShaderGroupPointer;
+    g_DragAndDropStruct.m_Value = this;
+}
+#endif //MYFW_USING_WX
 
 BaseShader* ShaderGroup::GlobalPass()
 {

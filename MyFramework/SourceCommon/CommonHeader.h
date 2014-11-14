@@ -348,9 +348,10 @@ typedef int socklen_t;
 #include "JSON/cJSONHelpers.h"
 
 #if MYFW_USING_WX
+#include "../SourceWidgets/PanelObjectList.h"
 #include "../SourceWidgets/PanelMemory.h"
 #include "../SourceWidgets/PanelWatch.h"
-#include "../SourceWidgets/PanelObjectList.h"
+#include "../SourceWidgets/DragAndDropHackery.h"
 #endif
 
 #endif //__CommonHeader_H__

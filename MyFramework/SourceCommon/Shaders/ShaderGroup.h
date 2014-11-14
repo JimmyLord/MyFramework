@@ -39,9 +39,9 @@ protected:
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes];
 
 public:
-    ShaderGroup();
-    ShaderGroup(BaseShader* pMainPass);
-    ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass);
+    ShaderGroup(char* name = 0);
+    ShaderGroup(BaseShader* pMainPass, char* name = 0);
+    ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name = 0);
     ~ShaderGroup();
 
     BaseShader* GlobalPass();
@@ -52,6 +52,12 @@ public:
     void SetShaders(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass);
 
     void SetFileForAllPasses(const char* pFilename);
+
+public:
+#if MYFW_USING_WX
+    static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }
+    void OnDrag();
+#endif //MYFW_USING_WX
 };
 
 #endif //__ShaderGroup_H__

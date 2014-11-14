@@ -33,7 +33,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe)
     m_Handles_Slider = MyNew wxSlider*[MAX_PanelWatch_VARIABLES];
     m_pVariablePointers = MyNew void*[MAX_PanelWatch_VARIABLES];
     m_pVariableRanges = MyNew Vector2[MAX_PanelWatch_VARIABLES];
-    m_pVariableDescriptions = MyNew char*[MAX_PanelWatch_VARIABLES];
+    m_pVariableDescriptions = MyNew const char*[MAX_PanelWatch_VARIABLES];
     m_pVariableTypes = MyNew PanelWatch_Types[MAX_PanelWatch_VARIABLES];
     m_pVariableCallbackObjs = MyNew void*[MAX_PanelWatch_VARIABLES];
     m_pVariableCallbackFuncs = MyNew PanelWatchCallback[MAX_PanelWatch_VARIABLES];
@@ -128,7 +128,7 @@ void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void
     UpdatePanel();
 }
 
-void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
+void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -178,7 +178,7 @@ void PanelWatch::AddDouble(const char* name, double* pDouble, float min, float m
     AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max );
 }
 
-void PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
+void PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc)
 {
     AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pCallBackFunc );
 }

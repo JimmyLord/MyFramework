@@ -20,24 +20,6 @@
 
 PanelObjectList* g_pPanelObjectList = 0;
 
-class TreeItemDataGenericObjectInfo : public wxTreeItemData
-{
-public:
-    TreeItemDataGenericObjectInfo()
-    {
-        m_pLeftClickFunction = 0;
-        m_pRightClickFunction = 0;
-        m_pDragFunction = 0;
-        m_pDropFunction = 0;
-    }
-
-    void* m_pObject;
-    PanelObjectListCallback m_pLeftClickFunction;
-    PanelObjectListCallback m_pRightClickFunction;
-    PanelObjectListCallback m_pDragFunction;
-    PanelObjectListCallback m_pDropFunction;
-}; 
-
 PanelObjectList::PanelObjectList(wxFrame* parentframe)
 : wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
 {
@@ -97,6 +79,10 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     if( pData && pData->m_pDragFunction )
     {
         (pData->m_pDragFunction)(pData->m_pObject);
+    }
+    else
+    {
+        return; // cancel drag and drop.
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.

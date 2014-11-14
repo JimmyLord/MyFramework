@@ -30,6 +30,7 @@ public:
     wxTreeCtrl* m_pTree_Textures;
     wxTreeCtrl* m_pTree_Files;
     wxTreeCtrl* m_pTree_DrawCalls;
+    wxTreeCtrl* m_pTree_ShaderGroups;
 
     bool m_DrawCallListDirty;
     int m_DrawCallIndexToDraw;
@@ -40,9 +41,11 @@ protected:
     void UpdateRootNodeTextureCount();
     void UpdateRootNodeFileCount();
     void UpdateRootNodeDrawCallCount();
+    void UpdateRootNodeShaderGroupCount();
 
     void OnDrawCallTabSelected(wxNotebookEvent& event);
     void OnDrawCallTreeSelectionChanged(wxTreeEvent& event);
+    void OnDragBegin(wxTreeEvent& event);
 
 public:
     PanelMemory(wxFrame* parentframe);
@@ -61,6 +64,9 @@ public:
     void AddDrawCall(int index, const char* category, const char* desc);
     void RemoveAllDrawCalls();
     void RemoveDrawCall(int index);
+
+    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void RemoveShaderGroup(ShaderGroup* pShaderGroup);
 };
 
 #endif // __PanelMemory_H__

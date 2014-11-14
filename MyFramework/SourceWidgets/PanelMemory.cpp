@@ -20,12 +20,6 @@
 
 PanelMemory* g_pPanelMemory = 0;
 
-class TreeItemDataVoidPtr : public wxTreeItemData
-{
-public:
-    void* m_ObjectPtr;
-};
-
 PanelMemory::PanelMemory(wxFrame* parentframe)
 : wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
 {
@@ -50,6 +44,10 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
     idroot = m_pTree_DrawCalls->AddRoot( "Draws" );
     m_pNotebook->AddPage( m_pTree_DrawCalls, "Draws" );
 
+    m_pTree_ShaderGroups = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
+    m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
+
     // setup a sizer to resize the notebook
     wxBoxSizer* sizer = MyNew wxBoxSizer( wxHORIZONTAL );
     sizer->Add( m_pNotebook, 0, wxGROW|wxALL, 2 );
@@ -59,6 +57,7 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
     Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnDrawCallTabSelected) );
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnDrawCallTreeSelectionChanged) );
+    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelMemory::OnDragBegin) );
 
     m_DrawCallListDirty = false;
     m_DrawCallIndexToDraw = -1;
@@ -70,6 +69,7 @@ PanelMemory::~PanelMemory()
     SAFE_DELETE( m_pTree_Textures );
     SAFE_DELETE( m_pTree_Files );
     SAFE_DELETE( m_pTree_DrawCalls );
+    SAFE_DELETE( m_pTree_ShaderGroups );
 }
 
 wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeItemId idroot)
@@ -81,7 +81,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
         wxTreeItemData* pData = tree->GetItemData( id );
         if( pData )
         {
-            void* objptr = ((TreeItemDataVoidPtr*)pData)->m_ObjectPtr;
+            void* objptr = ((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
             if( objptr == pObjectPtr )
             {
                 return id;
@@ -124,7 +124,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 //        //while( id.IsOk() )
 //        //{
 //        //    wxTreeItemData* pData = m_pTree_Buffers->GetItemData( id );
-//        //    void* objptr = ((TreeItemDataVoidPtr*)pData)->m_ptr;
+//        //    void* objptr = ((TreeItemDataGenericObjectInfo*)pData)->m_ptr;
 //        //    if( objptr == pBufferDef )
 //        //        break;
 //
@@ -134,7 +134,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 //        //if( id.IsOk() == false )
 //        {
 //            sprintf_s( tempstr, 100, "Buffer %d - size(%d) - num(%d)", count, pBufferDef->m_DataSize, pBufferDef->m_NumBuffersToUse );
-//            TreeItemDataVoidPtr* pData = MyNew TreeItemDataVoidPtr();
+//            TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
 //            pData->m_ptr = pBufferDef;
 //
 //            m_pTree_Buffers->InsertItem( idroot, count, tempstr, -1, -1, pData );
@@ -183,8 +183,8 @@ void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, 
     // insert the buffer into it's category
     {
         sprintf_s( tempstr, 100, "%s %d - size(%d) - num(%d)", desc, categorycount, pBufferDef->m_DataSize, pBufferDef->m_NumBuffersToUse );
-        TreeItemDataVoidPtr* pData = MyNew TreeItemDataVoidPtr();
-        pData->m_ObjectPtr = pBufferDef;
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pBufferDef;
 
         m_pTree_Buffers->AppendItem( idcategory, tempstr, -1, -1, pData );
 
@@ -266,8 +266,8 @@ void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* categor
     // insert the Texture into it's category
     {
         sprintf_s( tempstr, 100, "%s %d - size(%d) - fileinmemory(%d)", desc, categorycount, pTextureDef->m_MemoryUsed, pTextureDef->m_pFile?1:0 );
-        TreeItemDataVoidPtr* pData = MyNew TreeItemDataVoidPtr();
-        pData->m_ObjectPtr = pTextureDef;
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pTextureDef;
 
         m_pTree_Textures->AppendItem( idcategory, tempstr, -1, -1, pData );
 
@@ -350,8 +350,8 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
     // insert the File into it's category
     {
         sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, pFile->m_FileLength );
-        TreeItemDataVoidPtr* pData = MyNew TreeItemDataVoidPtr();
-        pData->m_ObjectPtr = pFile;
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pFile;
 
         m_pTree_Files->AppendItem( idcategory, tempstr, -1, -1, pData );
 
@@ -431,8 +431,8 @@ void PanelMemory::AddDrawCall(int index, const char* category, const char* desc)
     // insert the DrawCall into it's category
     {
         sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, 1 );
-        TreeItemDataVoidPtr* pData = MyNew TreeItemDataVoidPtr();
-        pData->m_ObjectPtr = (void*)index;
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = (void*)index;
 
         m_pTree_DrawCalls->AppendItem( idcategory, tempstr, -1, -1, pData );
 
@@ -488,12 +488,37 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
     {
         m_DrawCallIndexToDraw = -1;
         wxTreeItemId id = event.GetItem();
-        TreeItemDataVoidPtr* pData = (TreeItemDataVoidPtr*)m_pTree_DrawCalls->GetItemData( id );
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData )
         {
-            m_DrawCallIndexToDraw = (int)pData->m_ObjectPtr;
+            m_DrawCallIndexToDraw = (int)pData->m_pObject;
         }
     }
+}
+
+void PanelMemory::OnDragBegin(wxTreeEvent& event)
+{
+    // let the object know its being dragged, so it can store it's data.
+    // This only works within this app, not between apps.
+
+    // get the pointer to the tree affected.
+    wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+    if( pData && pData->m_pDragFunction )
+    {
+        (pData->m_pDragFunction)(pData->m_pObject);
+    }
+    else
+    {
+        return; // cancel drag and drop.
+    }
+
+    // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+    wxCustomDataObject dataobject;
+    wxDropSource dragsource( dataobject );    
+    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 }
 
 void PanelMemory::UpdateRootNodeDrawCallCount()
@@ -509,4 +534,88 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
     sprintf_s( tempstr, 100, "Draws(%d)",
         m_pTree_DrawCalls->GetChildrenCount( idroot, true ) - m_pTree_DrawCalls->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 3, tempstr );
+}
+
+void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
+{
+    assert( pShaderGroup != 0 );
+
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_ShaderGroups->GetRootItem();
+    int count = m_pTree_ShaderGroups->GetChildrenCount( idroot, false );
+
+    // see if the category exists
+    wxTreeItemId idcategory;
+    {
+        wxTreeItemIdValue cookie;
+        idcategory = m_pTree_ShaderGroups->GetFirstChild( idroot, cookie );
+        while( idcategory.IsOk() )
+        {
+            wxString catstr = m_pTree_ShaderGroups->GetItemText( idcategory );
+            if( catstr == category )
+                break;
+
+            idcategory = m_pTree_ShaderGroups->GetNextChild( idroot, cookie );
+        }
+    }
+    
+    // insert the category if necessary
+    if( idcategory.IsOk() == false )
+    {
+        idcategory = m_pTree_ShaderGroups->AppendItem( idroot, category, -1, -1, 0 );
+    }
+
+    int categorycount = m_pTree_ShaderGroups->GetChildrenCount( idcategory );
+
+    // insert the ShaderGroup into it's category
+    {
+        sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pShaderGroup;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_ShaderGroups->AppendItem( idcategory, tempstr, -1, -1, pData );
+
+        // if inserting the first item, then expand the tree.
+        if( count == 0 )
+            m_pTree_ShaderGroups->Expand( idroot );
+    }
+
+    UpdateRootNodeShaderGroupCount();
+}
+
+void PanelMemory::RemoveShaderGroup(ShaderGroup* pShaderGroup)
+{
+    wxTreeItemId idroot = m_pTree_ShaderGroups->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_ShaderGroups, pShaderGroup, idroot );
+
+    if( id.IsOk() )
+    {
+        // delete item and up to one parent... should be fully recursive up the chain(ignoring root) but it's not for now.
+        wxTreeItemId parentid = m_pTree_ShaderGroups->GetItemParent( id );
+
+        m_pTree_ShaderGroups->Delete( id );
+
+        if( m_pTree_ShaderGroups->GetChildrenCount( parentid ) == 0 )
+            m_pTree_ShaderGroups->Delete( parentid );
+
+        UpdateRootNodeShaderGroupCount();
+    }
+}
+
+void PanelMemory::UpdateRootNodeShaderGroupCount()
+{
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_ShaderGroups->GetRootItem();
+
+    // update root node memory usage count.
+    sprintf_s( tempstr, 100, "Shaders" );
+    m_pTree_ShaderGroups->SetItemText( idroot, tempstr );
+
+    sprintf_s( tempstr, 100, "Shaders(%d)",
+        m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
+    m_pNotebook->SetPageText( 2, tempstr );
 }

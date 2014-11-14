@@ -501,6 +501,9 @@
     <ClCompile Include="SourceIOS\IAPManagerIOS.mm">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClCompile>
+    <ClCompile Include="SourceWidgets\DragAndDropHackery.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1081,6 +1084,9 @@
     </ClInclude>
     <ClInclude Include="SourceIOS\IAPManagerIOS.h">
       <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\DragAndDropHackery.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

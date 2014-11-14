@@ -67,7 +67,7 @@ public:
 
     void** m_pVariablePointers;
     Vector2* m_pVariableRanges;
-    char** m_pVariableDescriptions;
+    const char** m_pVariableDescriptions;
     PanelWatch_Types* m_pVariableTypes;
     void** m_pVariableCallbackObjs;
     PanelWatchCallback* m_pVariableCallbackFuncs;
@@ -91,7 +91,7 @@ public:
     void ClearAllVariables();
 
     void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max);
-    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc);
+    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc);
 
     void AddInt(const char* name, int* pInt, float min, float max);
     void AddChar(const char* name, char* pChar, float min, float max);
@@ -99,7 +99,7 @@ public:
     void AddBool(const char* name, bool* pBool, float min, float max);
     void AddFloat(const char* name, float* pFloat, float min, float max);
     void AddDouble(const char* name, double* pDouble, float min, float max);
-    void AddPointerWithDescription(const char* name, void* pPointer, char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pCallBackFunc = 0);
+    void AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pCallBackFunc = 0);
     void AddSpace();
 };
 
