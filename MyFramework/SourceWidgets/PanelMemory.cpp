@@ -480,13 +480,19 @@ void PanelMemory::OnDrawCallTabSelected(wxNotebookEvent& event)
 
 void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
 {
-    // TODO: fix this, it'll get called if any item in any "PanelMemory" tab is selected, not just the drawcall tab.
-    m_DrawCallIndexToDraw = -1;
-    wxTreeItemId id = event.GetItem();
-    TreeItemDataVoidPtr* pData = (TreeItemDataVoidPtr*)m_pTree_DrawCalls->GetItemData( id );
-    if( pData )
+    // get the pointer to the tree affected.
+    wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+
+    // if any item in the draw call tab is selected, set m_DrawCallIndexToDraw.
+    if( pTree == m_pTree_DrawCalls )
     {
-        m_DrawCallIndexToDraw = (int)pData->m_ObjectPtr;
+        m_DrawCallIndexToDraw = -1;
+        wxTreeItemId id = event.GetItem();
+        TreeItemDataVoidPtr* pData = (TreeItemDataVoidPtr*)m_pTree_DrawCalls->GetItemData( id );
+        if( pData )
+        {
+            m_DrawCallIndexToDraw = (int)pData->m_ObjectPtr;
+        }
     }
 }
 
