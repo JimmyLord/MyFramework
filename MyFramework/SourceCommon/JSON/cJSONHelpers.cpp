@@ -143,6 +143,12 @@ void cJSONExt_GetChar(cJSON* object, const char* name, char* variable)
     if( obj ) *variable = (char)obj->valueint;
 }
 
+void cJSONExt_GetUnsignedInt(cJSON* object, const char* name, unsigned int* variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) *variable = (unsigned int)obj->valuedouble;
+}
+
 void cJSONExt_GetInt(cJSON* object, const char* name, int* variable)
 {
     cJSON* obj = cJSON_GetObjectItem( object, name );
@@ -166,4 +172,13 @@ void cJSONExt_GetString(cJSON* object, const char* name, char* variable, int buf
     cJSON* obj = cJSON_GetObjectItem( object, name );
     if( obj )
         strcpy_s( variable, buffersize, obj->valuestring );
+}
+
+size_t cJSONExt_GetStringLength(cJSON* object, const char* name)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj )
+        return strlen( obj->valuestring );
+    
+    return 0;
 }
