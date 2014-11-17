@@ -23,6 +23,38 @@ void cJSONExt_AddIntArrayToObject(cJSON* object, const char* name, int* vars, in
     cJSON_AddItemToObject( object, name, jsonarray );
 }
 
+void cJSONExt_AddFloatArrayToObject(cJSON* object, const char* name, float* vars, int numinarray)
+{
+    cJSON* jsonarray = cJSON_CreateFloatArray( vars, numinarray );
+    cJSON_AddItemToObject( object, name, jsonarray );
+}
+
+void cJSONExt_AddDoubleArrayToObject(cJSON* object, const char* name, double* vars, int numinarray)
+{
+    cJSON* jsonarray = cJSON_CreateDoubleArray( vars, numinarray );
+    cJSON_AddItemToObject( object, name, jsonarray );
+}
+
+void cJSONExt_AddUnsignedCharArrayToObject(cJSON* object, const char* name, unsigned char* vars, int numinarray)
+{
+    int i;
+    cJSON *n=0,*p=0,*a=cJSON_CreateArray();
+    for(i=0;a && i<numinarray;i++)
+    {
+        n=cJSON_CreateNumber(vars[i]);
+        if(!i)
+            a->child=n;
+        else
+        {
+            p->next=n;
+            n->prev=p;
+        }
+        p=n;
+    }
+
+    cJSON_AddItemToObject( object, name, a );
+}
+
 void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numinarray)
 {
     cJSON* arrayobj = cJSON_GetObjectItem( object, name );
@@ -42,7 +74,45 @@ void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numina
     }
 }
 
+void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray)
+{
+    cJSON* arrayobj = cJSON_GetObjectItem( object, name );
+    if( arrayobj )
+    {
+        int arraysize = cJSON_GetArraySize( arrayobj );
+        assert( arraysize <= numinarray );
+        for( int i=0; i<arraysize; i++ )
+        {
+            if( i >= numinarray )
+                return;
+
+            cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
+            if( obj )
+                vars[i] = obj->valuedouble;
+        }
+    }
+}
+
 void cJSONExt_GetDoubleArray(cJSON* object, const char* name, double* vars, int numinarray)
+{
+    cJSON* arrayobj = cJSON_GetObjectItem( object, name );
+    if( arrayobj )
+    {
+        int arraysize = cJSON_GetArraySize( arrayobj );
+        assert( arraysize <= numinarray );
+        for( int i=0; i<arraysize; i++ )
+        {
+            if( i >= numinarray )
+                return;
+
+            cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
+            if( obj )
+                vars[i] = obj->valuedouble;
+        }
+    }
+}
+
+void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned char* vars, int numinarray)
 {
     cJSON* arrayobj = cJSON_GetObjectItem( object, name );
     if( arrayobj )

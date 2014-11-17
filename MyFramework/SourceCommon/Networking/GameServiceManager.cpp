@@ -103,9 +103,10 @@ void GameServiceManager::Tick(const char* customuseragentchunk)
                                                   m_CopyOfEntryBeingSentToMyServer.m_ID,
                                                   m_CopyOfEntryBeingSentToMyServer.m_Score );
                 }
+
+                cJSON_Delete( root );
             }
 
-            cJSON_Delete( root );
             m_pWebRequestObject->ClearResult();
             m_LastMessageTypeSent = GameServiceMessageType_None;
         }
@@ -141,9 +142,10 @@ void GameServiceManager::Tick(const char* customuseragentchunk)
                         }
                     }
                 }
+
+                cJSON_Delete( root );
             }
 
-            cJSON_Delete( root );
             m_pWebRequestObject->ClearResult();
             m_LastMessageTypeSent = GameServiceMessageType_None;
             m_SearchingForMatch = false;

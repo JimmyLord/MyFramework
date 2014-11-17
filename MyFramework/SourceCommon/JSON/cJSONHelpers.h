@@ -19,6 +19,9 @@
 #define __cJSON_Helpers_H__
 
 void cJSONExt_AddIntArrayToObject(cJSON* object, const char* name, int* vars, int numinarray);
+void cJSONExt_AddFloatArrayToObject(cJSON* object, const char* name, float* vars, int numinarray);
+void cJSONExt_AddDoubleArrayToObject(cJSON* object, const char* name, double* vars, int numinarray);
+void cJSONExt_AddUnsignedCharArrayToObject(cJSON* object, const char* name, unsigned char* vars, int numinarray);
 
 template <typename Type> void cJSONExt_AddNumberToObjectIfDiffers(cJSON* object, const char* name, Type number, Type refnumber)
 {
@@ -27,7 +30,9 @@ template <typename Type> void cJSONExt_AddNumberToObjectIfDiffers(cJSON* object,
 }
 
 void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numinarray);
+void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray);
 void cJSONExt_GetDoubleArray(cJSON* object, const char* name, double* vars, int numinarray);
+void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned char* vars, int numinarray);
 
 void cJSONExt_GetUnsignedChar(cJSON* object, const char* name, unsigned char* variable);
 void cJSONExt_GetChar(cJSON* object, const char* name, char* variable);

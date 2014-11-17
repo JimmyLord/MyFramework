@@ -32,8 +32,21 @@ enum GLViewTypes
     GLView_Wide,
 };
 
+enum MenuIDs
+{
+    myID_SavePerspective = wxID_HIGHEST + 1,
+    myID_LoadPerspective,
+    myID_ResetPerspective,
+    myID_GLViewType_Fill,
+    myID_GLViewType_Tall,
+    myID_GLViewType_Square,
+    myID_GLViewType_Wide,
+    myID_NumIDs,
+};
+
 bool MYFW_GetKey(int value);
 void WinMain_CreateGameCore();
+MainFrame* WinMain_CreateMainFrame();
 void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
 
 // Main application class
@@ -50,6 +63,11 @@ public:
 class MainFrame : public wxFrame
 {
 public:
+    wxMenuBar* m_MenuBar;
+    wxMenu* m_File;
+    wxMenu* m_View;
+    wxMenu* m_Aspect;
+
     wxAuiManager m_AUIManager;
     MainGLCanvas* m_pGLCanvas;
 

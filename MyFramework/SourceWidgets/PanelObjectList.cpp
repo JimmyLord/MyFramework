@@ -158,10 +158,13 @@ void PanelObjectList::UpdateRootNodeObjectCount()
 
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
 
-    // update root node object count.
-    sprintf_s( tempstr, 100, "Objects(%d)",
-        m_pTree_Objects->GetChildrenCount( idroot, true ) - m_pTree_Objects->GetChildrenCount( idroot, false ) );
-    m_pTree_Objects->SetItemText( idroot, tempstr );
+    if( idroot.IsOk() )
+    {
+        // update root node object count.
+        sprintf_s( tempstr, 100, "Objects(%d)",
+            m_pTree_Objects->GetChildrenCount( idroot, true ) - m_pTree_Objects->GetChildrenCount( idroot, false ) );
+        m_pTree_Objects->SetItemText( idroot, tempstr );
+    }
 }
 
 //void PanelObjectList::Refresh()

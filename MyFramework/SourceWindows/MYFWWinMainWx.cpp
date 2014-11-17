@@ -34,17 +34,6 @@ GLViewTypes g_CurrentGLViewType;
 int g_CurrentGLViewWidth;
 int g_CurrentGLViewHeight;
 
-enum MenuIDs
-{
-    myID_SavePerspective = wxID_HIGHEST + 1,
-    myID_LoadPerspective,
-    myID_ResetPerspective,
-    myID_GLViewType_Fill,
-    myID_GLViewType_Tall,
-    myID_GLViewType_Square,
-    myID_GLViewType_Wide,
-};
-
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, _("Infinite Dung"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
@@ -60,30 +49,25 @@ MainFrame::MainFrame(wxWindow* parent)
 
     // Create the menu bar
     {
-        wxMenuBar* menubar;
-        wxMenu* file;
-        wxMenu* view;
-        wxMenu* glview;
+        m_File = MyNew wxMenu;
+        m_File->Append( wxID_EXIT, wxT("&Quit") );
 
-        file = MyNew wxMenu;
-        file->Append( wxID_EXIT, wxT("&Quit") );
+        m_View = MyNew wxMenu;
+        m_View->Append( myID_SavePerspective, wxT("&Save window layout") );
+        m_View->Append( myID_LoadPerspective, wxT("&Load window layout") );
+        m_View->Append( myID_ResetPerspective, wxT("&Reset window layout") );
 
-        view = MyNew wxMenu;
-        view->Append( myID_SavePerspective, wxT("&Save window layout") );
-        view->Append( myID_LoadPerspective, wxT("&Load window layout") );
-        view->Append( myID_ResetPerspective, wxT("&Reset window layout") );
+        m_Aspect = MyNew wxMenu;
+        m_Aspect->Append( myID_GLViewType_Fill, wxT("&Fill") );
+        m_Aspect->Append( myID_GLViewType_Tall, wxT("&Tall") );
+        m_Aspect->Append( myID_GLViewType_Square, wxT("&Square") );
+        m_Aspect->Append( myID_GLViewType_Wide, wxT("&Wide") );
 
-        glview = MyNew wxMenu;
-        glview->Append( myID_GLViewType_Fill, wxT("&Fill") );
-        glview->Append( myID_GLViewType_Tall, wxT("&Tall") );
-        glview->Append( myID_GLViewType_Square, wxT("&Square") );
-        glview->Append( myID_GLViewType_Wide, wxT("&Wide") );
-
-        menubar = MyNew wxMenuBar;
-        menubar->Append( file, wxT("&File") );
-        menubar->Append( view, wxT("&View") );
-        menubar->Append( glview, wxT("&Aspect") );
-        SetMenuBar(menubar);
+        m_MenuBar = MyNew wxMenuBar;
+        m_MenuBar->Append( m_File, wxT("&File") );
+        m_MenuBar->Append( m_View, wxT("&View") );
+        m_MenuBar->Append( m_Aspect, wxT("&Aspect") );
+        SetMenuBar( m_MenuBar );
 
         Connect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnQuit) );
         Connect( myID_SavePerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
@@ -198,7 +182,7 @@ IMPLEMENT_APP( MainApp );
 
 bool MainApp::OnInit()
 {
-    m_pMainFrame = MyNew MainFrame( 0 );
+    m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );
     m_pMainFrame->Show();
 
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
