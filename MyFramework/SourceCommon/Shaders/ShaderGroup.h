@@ -21,6 +21,7 @@
 class ShaderGroup;
 class Shader_Base;
 class BaseShader;
+class ShaderGroupManager;
 
 enum ShaderPassTypes
 {
@@ -30,12 +31,14 @@ enum ShaderPassTypes
     ShaderPass_NumTypes,
 };
 
+extern ShaderGroupManager* g_pShaderGroupManager;
 extern const char* g_ShaderPassDefines[ShaderPass_NumTypes];
 extern ShaderPassTypes g_ActiveShaderPass;
 
-class ShaderGroup
+class ShaderGroup : public CPPListNode
 {
 protected:
+    const char* m_Name; // managed externally.
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes];
 
 public:
@@ -43,6 +46,8 @@ public:
     ShaderGroup(BaseShader* pMainPass, char* name = 0);
     ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name = 0);
     ~ShaderGroup();
+
+    const char* GetName() { return m_Name; }
 
     BaseShader* GlobalPass();
 
@@ -58,6 +63,16 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 #endif //MYFW_USING_WX
+};
+
+class ShaderGroupManager
+{
+public:
+    CPPListHead m_ShaderGroupList;
+
+public:
+    void AddShaderGroup(ShaderGroup* pShaderGroup);
+    ShaderGroup* FindShaderGroupByName(const char* name);
 };
 
 #endif //__ShaderGroup_H__

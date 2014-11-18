@@ -259,3 +259,27 @@ void BaseShader::DisableAttributeArray(GLint index)
 void BaseShader::DeactivateShader(BufferDefinition* vbo)
 {
 }
+
+void ShaderManager::AddShader(BaseShader* pShader)
+{
+    m_ShaderList.AddTail( pShader );
+}
+
+void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
+{
+    glUseProgram(0);
+
+    for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        BaseShader* pShader = (BaseShader*)pNode;
+        pShader->Invalidate( cleanglallocs );
+#if MYFW_WINDOWS && _DEBUG
+        // force a reload from disk
+        if( pShader->m_pFile )
+        {
+            g_pFileManager->FreeFile( pShader->m_pFile );
+            pShader->m_pFile = 0;
+        }
+#endif
+    }
+}

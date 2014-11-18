@@ -88,7 +88,7 @@ void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int nu
 
             cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
             if( obj )
-                vars[i] = obj->valuedouble;
+                vars[i] = (float)obj->valuedouble;
         }
     }
 }
@@ -126,7 +126,7 @@ void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned cha
 
             cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
             if( obj )
-                vars[i] = obj->valuedouble;
+                vars[i] = (unsigned char)obj->valuedouble;
         }
     }
 }

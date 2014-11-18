@@ -76,28 +76,8 @@ class ShaderManager
 public:
     CPPListHead m_ShaderList;
 
-    void AddShader( BaseShader* pShader )
-    {
-        m_ShaderList.AddTail( pShader );
-    }
-
-    void InvalidateAllShaders(bool cleanglallocs)
-    {
-        glUseProgram(0);
-
-        for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
-        {
-            BaseShader* pShader = (BaseShader*)pNode;
-            pShader->Invalidate( cleanglallocs );
-#if MYFW_WINDOWS && _DEBUG
-            if( pShader->m_pFile )
-            {
-                g_pFileManager->FreeFile( pShader->m_pFile );
-                pShader->m_pFile = 0;
-            }
-#endif
-        }
-    }
+    void AddShader(BaseShader* pShader);
+    void InvalidateAllShaders(bool cleanglallocs);
 };
 
 #endif //__ShaderManager_H__

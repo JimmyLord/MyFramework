@@ -59,6 +59,7 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pTextureManager );
     SAFE_DELETE( g_pBufferManager );
     SAFE_DELETE( g_pShaderManager );
+    SAFE_DELETE( g_pShaderGroupManager );
     SAFE_DELETE( m_pSoundPlayer );
     SAFE_DELETE( g_pGameServiceManager );
     SAFE_DELETE( g_pFileManager );
@@ -82,6 +83,8 @@ void GameCore::InitializeManagers()
         g_pBufferManager = MyNew BufferManager;
     if( g_pShaderManager == 0 )
         g_pShaderManager = MyNew ShaderManager;
+    if( g_pShaderGroupManager == 0 )
+        g_pShaderGroupManager = MyNew ShaderGroupManager;
     if( g_pGameServiceManager == 0 )
         g_pGameServiceManager = MyNew GameServiceManager;
 }

@@ -17,6 +17,7 @@
 
 #include "CommonHeader.h"
 
+ShaderGroupManager* g_pShaderGroupManager = 0;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
 
 const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
@@ -27,8 +28,10 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 };
 
 ShaderGroup::ShaderGroup(char* name)
+: m_Name(name)
 {
     SetShaders( 0, 0, 0 );
+    g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
@@ -36,8 +39,10 @@ ShaderGroup::ShaderGroup(char* name)
 }
 
 ShaderGroup::ShaderGroup(BaseShader* pMainPass, char* name)
+: m_Name(name)
 {
     SetShaders( pMainPass, 0, 0 );
+    g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
@@ -45,8 +50,10 @@ ShaderGroup::ShaderGroup(BaseShader* pMainPass, char* name)
 }
 
 ShaderGroup::ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name)
+: m_Name(name)
 {
     SetShaders( pMainPass, pMainPassNoShadow, pShadowCastRGBAPass );
+    g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
@@ -55,6 +62,8 @@ ShaderGroup::ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, B
 
 ShaderGroup::~ShaderGroup()
 {
+    this->Remove(); // remove this node from the shadergroupmanager's list
+
     for( int i=0; i<ShaderPass_NumTypes; i++ )
         SAFE_DELETE( m_pShaderPasses[i] );    
 
@@ -95,4 +104,26 @@ void ShaderGroup::SetFileForAllPasses(const char* pFilename)
     for( int i=0; i<ShaderPass_NumTypes; i++ )
         if( m_pShaderPasses[i] )
             m_pShaderPasses[i]->m_pFilename = pFilename;
+}
+
+void ShaderGroupManager::AddShaderGroup(ShaderGroup* pShaderGroup)
+{
+    m_ShaderGroupList.AddTail( pShaderGroup );
+}
+
+ShaderGroup* ShaderGroupManager::FindShaderGroupByName(const char* name)
+{
+    assert( name );
+
+    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
+
+        if( strcmp( pShaderGroup->GetName(), name ) == 0 )
+        {
+            return pShaderGroup;
+        }
+    }
+
+    return 0;
 }
