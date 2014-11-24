@@ -87,10 +87,10 @@ void SpriteBatch::AddSprite(MySprite* pSprite)
     for( int i=0; i<4; i++ )
     {
         //Vector2 pos( pSpriteVerts[0+i].x, pSpriteVerts[0+i].y );
-        //pBatchVerts[m_NumSprites*4 + i] = spriteTransform.TransformVector2( pos );
+        //pBatchVerts[m_NumSprites*4 + i] = spriteTransform * pos;
 
         pBatchVerts[m_NumSprites*4 + i] = pSpriteVerts[0+i];
-        *((Vector2*)(&pBatchVerts[m_NumSprites*4 + i].x)) = spriteTransform.TransformVector2( *((Vector2*)(&pSpriteVerts[0+i].x)) );
+        *((Vector2*)(&pBatchVerts[m_NumSprites*4 + i].x)) = spriteTransform * (*((Vector2*)(&pSpriteVerts[0+i].x)));
         
         //pBatchVerts[m_NumSprites*4 + i] = pSpriteVerts[0+i];
         //pBatchVerts[m_NumSprites*4 + i].x += spriteTransform.m41;

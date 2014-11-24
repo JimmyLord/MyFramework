@@ -188,7 +188,7 @@ MyMatrix MySprite::GetPosition()
 {
     MyMatrix pos = m_Position;
     if( m_pParentMatrix )
-        pos.Multiply( m_pParentMatrix );
+        pos = *m_pParentMatrix * pos;
 
     return pos;
 }
@@ -197,14 +197,14 @@ void MySprite::SetPosition(Vector3 pos, bool setindentity)
 {
     if( setindentity )
         m_Position.SetIdentity();
-    m_Position.SetPosition( pos );
+    m_Position.SetTranslation( pos );
 }
 
 void MySprite::SetPosition(float x, float y, float z, bool setindentity)
 {
     if( setindentity )
         m_Position.SetIdentity();
-    m_Position.SetPosition( x, y, z );
+    m_Position.SetTranslation( x, y, z );
 }
 
 void MySprite::SetPosition(MyMatrix* mat)
@@ -220,13 +220,13 @@ void MySprite::SetZRotation(float rotation, bool preserveposition, Vector3* loca
 
     m_Position.SetIdentity();
     if( localpivot )
-        m_Position.SetPosition( *localpivot * -1 );
+        m_Position.SetTranslation( *localpivot * -1 );
     m_Position.Rotate( rotation, 0, 0, 1 );
     if( localpivot )
-        m_Position.TranslatePostRotation( localpivot->x, localpivot->y, localpivot->z );
+        m_Position.Translate( *localpivot );
 
     if( preserveposition )
-        m_Position.TranslatePostRotation( oldpos.x, oldpos.y, oldpos.z );
+        m_Position.Translate( oldpos );
 }
 
 void MySprite::SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity)
@@ -237,7 +237,7 @@ void MySprite::SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity
     m_Position.Rotate( rot.y, 0, 1, 0 );
     m_Position.Rotate( rot.z, 0, 0, 1 );
     m_Position.Scale( scale.x, scale.y, scale.z );
-    m_Position.TranslatePostRotation( pos.x, pos.y, pos.z );
+    m_Position.Translate( pos.x, pos.y, pos.z );
 }
 
 void MySprite::SetTransform(MyMatrix& mat)

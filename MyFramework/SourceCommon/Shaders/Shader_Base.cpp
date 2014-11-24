@@ -154,6 +154,13 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo
         DisableAttributeArray( m_aHandle_Normal );
         DisableAttributeArray( m_aHandle_VertexColor );
     }
+    else if( vertformat == VertexFormat_XYZ )
+    {
+        InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZ), (void*)offsetof(Vertex_XYZ,x) );
+        DisableAttributeArray( m_aHandle_UVCoord );
+        DisableAttributeArray( m_aHandle_Normal );
+        DisableAttributeArray( m_aHandle_VertexColor );
+    }
     else if( vertformat == VertexFormat_XYZUV )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,x) );
@@ -173,6 +180,13 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,pos) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,uv) );
         InitializeAttributeArray( m_aHandle_Normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,normal) );
+        DisableAttributeArray( m_aHandle_VertexColor );
+    }
+    else if( vertformat == VertexFormat_XYZNorm )
+    {
+        InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,pos) );
+        DisableAttributeArray( m_aHandle_UVCoord );
+        InitializeAttributeArray( m_aHandle_Normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,normal) );
         DisableAttributeArray( m_aHandle_VertexColor );
     }
     else if( vertformat == VertexFormat_PointSprite )
@@ -295,7 +309,7 @@ void Shader_Base::ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatri
         {
             temp = *worldmatrix;
             if( viewprojmatrix )
-                temp.Multiply( viewprojmatrix );
+                temp = *viewprojmatrix * temp;
         }
         else
         {
@@ -372,8 +386,7 @@ void Shader_Base::ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowview
 {
     if( m_uHandle_ShadowLightWVP != -1 )
     {
-        MyMatrix temp = *worldmatrix;
-        temp.Multiply( shadowviewprojmatrix );
+        MyMatrix temp = *shadowviewprojmatrix * *worldmatrix;
 
         glUniformMatrix4fv( m_uHandle_ShadowLightWVP, 1, false, (GLfloat*)&temp.m11 );
     }

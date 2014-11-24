@@ -20,10 +20,13 @@
 
 enum VertexFormats
 {
+    VertexFormat_Invalid = -1,
     VertexFormat_Sprite,
+    VertexFormat_XYZ,
     VertexFormat_XYZUV,
     VertexFormat_XYZUV_RGBA,
     VertexFormat_XYZUVNorm,
+    VertexFormat_XYZNorm,
     VertexFormat_PointSprite,
     VertexFormat_NumFormats,
     VertexFormat_None = VertexFormat_NumFormats,
@@ -41,6 +44,13 @@ struct Vertex_Sprite
     float y;
     float u;
     float v;
+};
+
+struct Vertex_XYZ
+{
+    float x;
+    float y;
+    float z;
 };
 
 struct Vertex_XYZUV
@@ -76,6 +86,12 @@ struct Vertex_XYZUVNorm
 {
     Vector3 pos;
     Vector2 uv;
+    Vector3 normal;
+};
+
+struct Vertex_XYZNorm
+{
+    Vector3 pos;
     Vector3 normal;
 };
 

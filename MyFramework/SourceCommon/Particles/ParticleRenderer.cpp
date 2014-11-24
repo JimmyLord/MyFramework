@@ -104,7 +104,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 #endif
         }
 
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(GLushort)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "Particles-Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, 2, category, "Particles-Indices" );
     }
 
     //m_pVAO = g_pBufferManager->CreateVAO();

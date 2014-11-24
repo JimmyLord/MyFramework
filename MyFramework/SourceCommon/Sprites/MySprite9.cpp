@@ -62,7 +62,7 @@ MyMatrix MySprite9::GetPosition()
 {
     MyMatrix pos = m_Position;
     if( m_pParentMatrix )
-        pos.Multiply( m_pParentMatrix );
+        pos = *m_pParentMatrix * pos;
 
     return pos;
 }
@@ -71,14 +71,14 @@ void MySprite9::SetPosition(Vector3 pos, bool setindentity)
 {
     if( setindentity )
         m_Position.SetIdentity();
-    m_Position.SetPosition( pos );
+    m_Position.SetTranslation( pos );
 }
 
 void MySprite9::SetPosition(float x, float y, float z, bool setindentity)
 {
     if( setindentity )
         m_Position.SetIdentity();
-    m_Position.SetPosition( x, y, z );
+    m_Position.SetTranslation( x, y, z );
 }
 
 void MySprite9::SetPosition(MyMatrix* mat)

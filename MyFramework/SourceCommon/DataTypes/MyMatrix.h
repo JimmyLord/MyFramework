@@ -39,48 +39,25 @@ public:
         , m31(v31), m32(v32), m33(v33), m34(v34)
         , m41(v41), m42(v42), m43(v43), m44(v44) {}
 
-    void SetIdentity();
-    void SetSRT(Vector3 scale, Vector3 rot, Vector3 pos);
-    void SetPosition(Vector3 pos);
-    void SetPosition(float x, float y, float z);
-    void SetFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
-    void SetPerspective(float fovy, float aspect, float nearZ, float farZ);
-    void SetOrtho(float left, float right, float bottom, float top, float nearZ, float farZ);
-    void SetLookAtLH(const Vector3& eye, const Vector3& up, const Vector3& at);
-    void SetLookAtRH(const Vector3& eye, const Vector3& up, const Vector3& at);
-
-    void Multiply(MyMatrix* src);
-
+    // the following function will affect existing values in the matrix
+    void Scale(float scale);
     void Scale(float sx, float sy, float sz);
-    void TranslatePreRotation(float tx, float ty, float tz);
-    void TranslatePostRotation(float tx, float ty, float tz);
     void Rotate(float angle, float x, float y, float z);
+    void TranslatePreRotation(float tx, float ty, float tz);
+    void Translate(Vector3 pos);
+    void Translate(float x, float y, float z);
 
-    Vector2 TransformVector2(const Vector2& vec)
-    {
-        Vector4 result = TransformVector4( Vector4(vec.x, vec.y, 0, 1) );
-        if( result.w )
-            return Vector2( result.x/result.w, result.y/result.w );
-        else
-            return Vector2( result.x, result.y );
-    }
-
-    Vector3 TransformVector3(const Vector3& vec)
-    {
-        Vector4 result = TransformVector4( Vector4(vec.x, vec.y, vec.z, 1) );
-        if( result.w )
-            return Vector3( result.x/result.w, result.y/result.w, result.z/result.w );
-        else
-            return Vector3( result.x, result.y, result.z );
-    }
-
-    Vector4 TransformVector4(const Vector4& vec)
-    {
-        return Vector4( m11 * vec.x + m21 * vec.y + m31 * vec.z + m41 * vec.w,
-                        m12 * vec.x + m22 * vec.y + m32 * vec.z + m42 * vec.w,
-                        m13 * vec.x + m23 * vec.y + m33 * vec.z + m43 * vec.w,
-                        m14 * vec.x + m24 * vec.y + m34 * vec.z + m44 * vec.w );
-    }
+    // all create/set functions will overright values in the matrix
+    void SetIdentity();
+    void SetTranslation(Vector3 pos);
+    void SetTranslation(float x, float y, float z);
+    void CreateSRT(float scale, Vector3 rot, Vector3 pos);
+    void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
+    void CreateFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
+    void CreatePerspective(float fovydegrees, float aspect, float nearZ, float farZ);
+    void CreateOrtho(float left, float right, float bottom, float top, float nearZ, float farZ);
+    void CreateLookAtLeftHanded(const Vector3& eye, const Vector3& up, const Vector3& at);
+    void CreateLookAt(const Vector3& eye, const Vector3& up, const Vector3& at);
 
     void Transpose()
     {
@@ -98,24 +75,24 @@ public:
     {
         MyMatrix newmat;
 
-        newmat.m11 = this->m11 * o;
-        newmat.m12 = this->m12 * o;
-        newmat.m13 = this->m13 * o;
-        newmat.m14 = this->m14 * o;
-        newmat.m21 = this->m21 * o;
-        newmat.m22 = this->m22 * o;
-        newmat.m23 = this->m23 * o;
-        newmat.m24 = this->m24 * o;
-        newmat.m31 = this->m31 * o;
-        newmat.m32 = this->m32 * o;
-        newmat.m33 = this->m33 * o;
-        newmat.m34 = this->m34 * o;
-        newmat.m41 = this->m41 * o;
-        newmat.m42 = this->m42 * o;
-        newmat.m43 = this->m43 * o;
-        newmat.m44 = this->m44 * o;
-    
+        newmat.m11 = this->m11 * o; newmat.m21 = this->m21 * o; newmat.m31 = this->m31 * o; newmat.m41 = this->m41 * o;
+        newmat.m12 = this->m12 * o; newmat.m22 = this->m22 * o; newmat.m32 = this->m32 * o; newmat.m42 = this->m42 * o;
+        newmat.m13 = this->m13 * o; newmat.m23 = this->m23 * o; newmat.m33 = this->m33 * o; newmat.m43 = this->m43 * o;
+        newmat.m14 = this->m14 * o; newmat.m24 = this->m24 * o; newmat.m34 = this->m34 * o; newmat.m44 = this->m44 * o;
+
         return newmat;
+    }
+
+    inline Vector2 operator *(const Vector2 o) const
+    {
+        Vector4 result = Vector4( m11 * o.x + m21 * o.y + 0 + m41 * 1,
+                                  m12 * o.x + m22 * o.y + 0 + m42 * 1,
+                                  m13 * o.x + m23 * o.y + 0 + m43 * 1,
+                                  m14 * o.x + m24 * o.y + 0 + m44 * 1 );
+        if( result.w )
+            return Vector2( result.x/result.w, result.y/result.w );
+        else
+            return Vector2( result.x, result.y );
     }
 
     inline Vector3 operator *(const Vector3 o) const

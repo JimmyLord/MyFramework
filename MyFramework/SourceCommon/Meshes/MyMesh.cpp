@@ -88,10 +88,18 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
         m_NumIndicesToDraw = numindices;
 
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, VertexFormat_None, "MyMesh", "Verts" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, 2, "MyMesh", "Verts" );
     }
 
     //m_pVAO = g_pBufferManager->CreateVAO();
+}
+
+void MyMesh::CreateFromOBJBuffer(char* objbuffer)
+{
+    LoadBasicOBJ( objbuffer, &m_pVertexBuffer, &m_pIndexBuffer );
+
+    m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+    m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
 }
 
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
@@ -111,7 +119,7 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
     if( m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_None, "MyMesh_Box", "Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Box", "Indices" );
     }
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_pVertexBuffer->m_pData;
@@ -238,7 +246,7 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
     if( m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_None, "MyMesh_BoxXYZUVRGBA", "Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
     }
 
     m_pVertexBuffer->m_Dirty = true;
@@ -433,7 +441,7 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     if( m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[numtris*3];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_None, "MyMesh_Cylinder", "Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Cylinder", "Indices" );
     }
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_pVertexBuffer->m_pData;
@@ -688,31 +696,28 @@ void MyMesh::SetTextureProperties(ColorByte tint, ColorByte speccolor, float shi
 
 void MyMesh::SetPosition(float x, float y, float z)
 {
-    m_Position.SetPosition( x, y, z );
+    m_Position.SetTranslation( x, y, z );
 }
 
 void MyMesh::RebuildIndices()
 {
-    m_pIndexBuffer->Rebuild( 0, GetNumIndices()*sizeof(unsigned short) );
+    m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
 }
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid)
 {
-    if( m_pTexture == 0 || m_pTexture->m_TextureID == 0 || m_pShaderGroup == 0 )
+    if( m_pShaderGroup == 0 )
         return;
 
     if( m_NumIndicesToDraw == 0 )
         return;
-
-    //if( m_NumIndicesToDraw == 336 )
-    //    int bp = 1;
 
     assert( m_pVertexBuffer && m_pIndexBuffer );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_NumVertsToDraw*g_VertexFormatSizes[m_VertexFormat] );
     if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_NumIndicesToDraw*sizeof(unsigned short) );
+        m_pIndexBuffer->Rebuild( 0, m_NumIndicesToDraw*m_pIndexBuffer->m_BytesPerIndex );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     checkGlError( "Drawing Mesh Rebuild()" );
@@ -722,8 +727,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     {
         if( pShader->ActivateAndProgramShader( (VertexFormats)m_VertexFormat,
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            //0, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &m_Position, m_pTexture->m_TextureID, m_Tint, m_SpecColor, m_Shininess ) )
+            matviewproj, &m_Position, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
         {
             checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 
@@ -742,14 +746,17 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 checkGlError( "Drawing Mesh ProgramLightmap()" );
             }
 
-            //if( m_NumIndicesToDraw == 336 )
-            //    int bp = 1;
+            int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
+            int indexbuffertype = GL_UNSIGNED_BYTE;
+            if( m_pIndexBuffer->m_BytesPerIndex == 2 )
+                indexbuffertype = GL_UNSIGNED_SHORT;
+            else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
+                indexbuffertype = GL_UNSIGNED_INT;
 
-            MyDrawElements( GL_TRIANGLES, m_NumIndicesToDraw, GL_UNSIGNED_SHORT, 0 ); //The starting point of the IBO
+            MyDrawElements( GL_TRIANGLES, m_NumIndicesToDraw, indexbuffertype, 0 ); //The starting point of the IBO
             checkGlError( "Drawing Mesh MyDrawElements()" );
 
             pShader->DeactivateShader( m_pVertexBuffer );
-            //pShader->DeactivateShader( 0 );
             checkGlError( "Drawing Mesh DeactivateShader()" );
         }
     }
@@ -768,7 +775,7 @@ unsigned int MyMesh::GetNumIndices()
     if( m_pIndexBuffer == 0 )
         return 0;
 
-    return m_pIndexBuffer->m_DataSize / sizeof(unsigned short);
+    return m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
 }
 
 Vertex_Base* MyMesh::GetVerts(bool markdirty)

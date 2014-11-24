@@ -60,7 +60,7 @@ BufferDefinition::BufferDefinition(unsigned int numbufferstoallocate)
 
     m_pData = 0;
     m_DataSize = 0;
-    m_VertexFormat = VertexFormat_None;
+    m_VertexFormat = VertexFormat_Invalid;
     m_Target = GL_ARRAY_BUFFER; //GL_ELEMENT_ARRAY_BUFFER
     m_Usage = GL_STATIC_DRAW; //GL_DYNAMIC_DRAW //GL_STREAM_DRAW
     m_Dirty = true;
@@ -264,6 +264,11 @@ BufferManager::BufferManager()
 BufferManager::~BufferManager()
 {
     FreeAllBuffers();
+}
+
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
+{
+    return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc);
 }
 
 BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)

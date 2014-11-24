@@ -504,6 +504,9 @@
     <ClCompile Include="SourceWidgets\DragAndDropHackery.cpp">
       <Filter>Source-Platform\Source - Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1087,6 +1090,9 @@
     </ClInclude>
     <ClInclude Include="SourceWidgets\DragAndDropHackery.h">
       <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\OBJLoader.h">
+      <Filter>Source\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

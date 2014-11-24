@@ -4036,6 +4036,7 @@
     <ClCompile Include="SourceCommon\Meshes\BufferManager.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyLight.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp" />
+    <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameServiceManager.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameService_ScoreLoop.cpp" />
@@ -7255,6 +7256,7 @@
     <ClInclude Include="SourceCommon\Meshes\BufferManager.h" />
     <ClInclude Include="SourceCommon\Meshes\MyLight.h" />
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h" />
+    <ClInclude Include="SourceCommon\Meshes\OBJLoader.h" />
     <ClInclude Include="SourceCommon\Networking\GameServiceManager.h" />
     <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h" />
     <ClInclude Include="SourceCommon\Networking\GameService_ScoreLoop.h" />

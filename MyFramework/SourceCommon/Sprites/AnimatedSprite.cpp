@@ -456,7 +456,7 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     MyMatrix temp = m_BaseTransform;
     if( m_pParentMatrix )
     {
-        temp.Multiply( m_pParentMatrix );
+        temp = *m_pParentMatrix * temp;
     }
 
     MySprite* pSprite;

@@ -51,7 +51,11 @@ public:
 
     char* m_pData; // only using char* because android compiler doesn't like deleting void*(warning : deleting 'void*' is undefined)
     unsigned int m_DataSize;
-    VertexFormats m_VertexFormat; // sanity check for GL_ARRAY_BUFFER'S
+    union
+    {
+        VertexFormats m_VertexFormat; // sanity check for GL_ARRAY_BUFFER'S, if this is a vertex buffer.
+        int m_BytesPerIndex; // if this is an index buffer.
+    };
     GLenum m_Target;
     GLenum m_Usage;
     bool m_Dirty;
@@ -100,6 +104,8 @@ public:
     BufferManager();
     virtual ~BufferManager();
 
+    // pData pointer passed in will be deleted by the BufferDefinition.
+    BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
     //VAODefinition* CreateVAO();
     void Tick();

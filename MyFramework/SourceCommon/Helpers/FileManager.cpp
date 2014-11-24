@@ -324,7 +324,7 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     FILE* filehandle;
 
 #if MYFW_WINDOWS
-    const char* fullpath = file;
+    const char* fullpath = filename;
 
     errno_t error = fopen_s( &filehandle, fullpath, "rb" );
 #elif MYFW_BLACKBERRY
@@ -337,7 +337,7 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     
     filehandle = IOS_fopen( fullpath );
 #else
-    char* fullpath = file;
+    char* fullpath = filename;
 
     filehandle = fopen( fullpath, "rb" );
 #endif

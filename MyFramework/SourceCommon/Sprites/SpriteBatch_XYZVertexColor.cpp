@@ -81,7 +81,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MySprite_XYZVertexColor* pSprite)
         Vertex_XYZUV_RGBA* vertorig = &pBatchVerts[m_NumSprites*4 + i];
         Vector3 vertcopy = Vector3( vertorig->x, vertorig->y, vertorig->z );
 
-        Vector3 rotatedvert = pSprite->GetPosition().TransformVector3( vertcopy );
+        Vector3 rotatedvert = pSprite->GetPosition() * vertcopy;
 
         pBatchVerts[m_NumSprites*4 + i].x = rotatedvert.x;
         pBatchVerts[m_NumSprites*4 + i].y = rotatedvert.y;

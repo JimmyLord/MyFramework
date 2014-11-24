@@ -69,6 +69,8 @@ public:
     Vector3(Vector2 v2, float nz) { x = v2.x; y = v2.y; z = nz; }
     //virtual ~Vector3() {}
 
+    inline Vector2 XY() { return Vector2( x, y ); }
+
     inline void Set(float nx, float ny, float nz) { x = nx; y = ny; z = nz; }
     inline float LengthSquared() const { return x*x + y*y + z*z; }
     inline float Length() const { return sqrtf(x*x + y*y + z*z); }
@@ -94,6 +96,8 @@ public:
     inline Vector3 operator -=(const float o) { this->x -= o; this->y -= o; this->z -= o; return *this; }
     inline Vector3 operator +=(const Vector3& o) { this->x += o.x; this->y += o.y; this->z += o.z; return *this; }
     inline Vector3 operator -=(const Vector3& o) { this->x -= o.x; this->y -= o.y; this->z -= o.z; return *this; }
+
+    float& operator[] (int i) { if( i == 0 ) return x; if( i == 1 ) return y; if( i == 2 ) return z; assert(false); return x; }
 
     //inline void operator =(const Vector2& o) { x = o.x; y = o.y; z = 0; } // couldn't make this work, used a constructor instead.
 };

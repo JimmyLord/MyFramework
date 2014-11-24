@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2014 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -15,16 +15,14 @@
 // misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
-#include "VertexFormats.h"
+#ifndef __OBJLoader_H__
+#define __OBJLoader_H__
 
-unsigned int g_VertexFormatSizes[VertexFormat_NumFormats] =
-{
-    sizeof( Vertex_Sprite ),
-    sizeof( Vertex_XYZ ),
-    sizeof( Vertex_XYZUV ),
-    sizeof( Vertex_XYZUV_RGBA ),
-    sizeof( Vertex_XYZUVNorm ),
-    sizeof( Vertex_XYZNorm ),
-    sizeof( Vertex_PointSprite ),
-};
+#if _DEBUG
+void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+#endif
+
+// return 2 BufferDefinition pointers.
+void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+
+#endif //__OBJLoader_H__
