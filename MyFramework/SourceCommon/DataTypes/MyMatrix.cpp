@@ -160,12 +160,22 @@ void MyMatrix::CreateFrustum(float left, float right, float bottom, float top, f
     m41 = m42 = m44 = 0.0f;
 }
 
-void MyMatrix::CreatePerspective(float fovydegrees, float aspect, float nearZ, float farZ)
+void MyMatrix::CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ)
 {
     GLfloat frustumRight, frustumTop;
    
-    frustumTop = tanf( fovydegrees / 360.0f * PI ) * nearZ;
+    frustumTop = tanf( halfvertfovdegrees / 360.0f * PI ) * nearZ;
     frustumRight = frustumTop * aspect;
+
+    CreateFrustum( -frustumRight, frustumRight, -frustumTop, frustumTop, nearZ, farZ );
+}
+
+void MyMatrix::CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ)
+{
+    GLfloat frustumRight, frustumTop;
+   
+    frustumRight = tanf( halfhorfovdegrees / 360.0f * PI ) * nearZ;
+    frustumTop = frustumRight / aspect;
 
     CreateFrustum( -frustumRight, frustumRight, -frustumTop, frustumTop, nearZ, farZ );
 }

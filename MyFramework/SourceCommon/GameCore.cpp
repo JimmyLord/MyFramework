@@ -229,10 +229,10 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
     LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
 #endif
     
-    m_WindowStartX = startx;
-    m_WindowStartY = starty;
-    m_WindowWidth = width;
-    m_WindowHeight = height;
+    m_WindowStartX = (float)startx;
+    m_WindowStartY = (float)starty;
+    m_WindowWidth = (float)width;
+    m_WindowHeight = (float)height;
 
     glViewport( startx, starty, width, height );
     checkGlError( "glViewport" );

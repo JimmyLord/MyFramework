@@ -54,7 +54,8 @@ public:
     void CreateSRT(float scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
     void CreateFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
-    void CreatePerspective(float fovydegrees, float aspect, float nearZ, float farZ);
+    void CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ);
+    void CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ);
     void CreateOrtho(float left, float right, float bottom, float top, float nearZ, float farZ);
     void CreateLookAtLeftHanded(const Vector3& eye, const Vector3& up, const Vector3& at);
     void CreateLookAt(const Vector3& eye, const Vector3& up, const Vector3& at);

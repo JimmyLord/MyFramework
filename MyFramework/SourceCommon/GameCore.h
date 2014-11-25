@@ -70,10 +70,10 @@ public:
 
     bool m_GLSurfaceIsValid;
 
-    unsigned int m_WindowStartX;
-    unsigned int m_WindowStartY;
-    unsigned int m_WindowWidth;
-    unsigned int m_WindowHeight;
+    float m_WindowStartX;
+    float m_WindowStartY;
+    float m_WindowWidth;
+    float m_WindowHeight;
     bool m_HasFocus;
     bool m_Settled;
 
