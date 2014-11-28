@@ -367,6 +367,16 @@ void MainGLCanvas::ResizeViewport()
     if( g_pGameCore == 0 )
         return;
 
+    // bit of a hack, but since we might be only using part of the screen, clear both buffers to black
+    for( int i=0; i<2; i++ )
+    {
+        glDisable( GL_SCISSOR_TEST );
+        glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+        SwapBuffers();
+    }
+
     if( g_CurrentGLViewType == GLView_Full )
     {
         g_pGameCore->OnSurfaceChanged( 0, 0, g_CurrentGLViewWidth, g_CurrentGLViewHeight );

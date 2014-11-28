@@ -234,6 +234,14 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
     m_WindowWidth = (float)width;
     m_WindowHeight = (float)height;
 
+    // only draw to part of the window, but rest with scissor test and glViewPort.
+    if( startx != 0 || starty != 0 )
+    {
+        // scissor test is really only needed for the glClear call.
+        glEnable( GL_SCISSOR_TEST );
+        glScissor( m_WindowStartX, m_WindowStartY, m_WindowWidth, m_WindowHeight );
+    }
+
     glViewport( startx, starty, width, height );
     checkGlError( "glViewport" );
 }
