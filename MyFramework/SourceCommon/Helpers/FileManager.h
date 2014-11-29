@@ -47,10 +47,11 @@ public:
     unsigned int CalculateTotalMemoryUsedByFiles();
 
     MyFileObject* RequestFile(const char* filename);
+    MyFileObject* FindFileByName(const char* filename);
     void Tick();
 };
 
-class MyFileObject : public CPPListNode
+class MyFileObject : public CPPListNode, public RefCount
 {
 public:
     char* m_Filename;
@@ -70,6 +71,12 @@ public:
     void Tick();
 
     void FakeFileLoad(char* buffer, int length);
+
+public:
+#if MYFW_USING_WX
+    static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
+    void OnDrag();
+#endif //MYFW_USING_WX
 };
 
 enum SaveFileOperation

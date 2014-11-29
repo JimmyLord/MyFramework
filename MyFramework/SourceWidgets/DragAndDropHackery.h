@@ -25,6 +25,7 @@ enum DragAndDropTypes
     DragAndDropType_GameObjectPointer,
     DragAndDropType_ComponentPointer,
     DragAndDropType_ShaderGroupPointer,
+    DragAndDropType_FileObjectPointer,
 };
 
 struct DragAndDropStruct

@@ -40,18 +40,14 @@ FileManager::~FileManager()
 void FileManager::FreeFile(MyFileObject* pFile)
 {
     assert( pFile );
-#if MYFW_WINDOWS
-    assert( pFile->Prev );
-#endif
-    if( pFile->Prev ) // if it's in a list... it isn't on most platforms ATM, need to update file loaders on each.
-        pFile->Remove();
-    pFile->Next = 0;
-    pFile->Prev = 0;
-    delete pFile;
+    pFile->Release(); // file's are refcounted, so release a reference to it.
 }
 
 void FileManager::FreeAllFiles()
 {
+    // TODO: remove this function... why did I put this here..
+    assert( m_FilesLoaded.GetHead() == 0 );
+    assert( m_FilesStillLoading.GetHead() == 0 );
 }
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
@@ -82,12 +78,41 @@ unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 
 MyFileObject* FileManager::RequestFile(const char* filename)
 {
-    MyFileObject* pFile = MyNew MyFileObject;
+    MyFileObject* pFile;
+    
+    // check if the file has already been requested... might still be loading.
+    pFile = FindFileByName( filename );
+    if( pFile )
+        return pFile;
+
+    // if the file wasn't already loaded create a new one and load it up.
+    pFile = MyNew MyFileObject;
     pFile->RequestFile( filename );
 
     m_FilesStillLoading.AddTail( pFile );
 
     return pFile;
+}
+
+MyFileObject* FileManager::FindFileByName(const char* filename)
+{
+    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        MyFileObject* pFile = (MyFileObject*)pNode;
+
+        if( strcmp( filename, pFile->m_Filename ) == 0 )
+            return pFile;
+    }
+
+    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        MyFileObject* pFile = (MyFileObject*)pNode;
+
+        if( strcmp( filename, pFile->m_Filename ) == 0 )
+            return pFile;
+    }
+
+    return 0;
 }
 
 void FileManager::Tick()
@@ -112,7 +137,7 @@ void FileManager::Tick()
             m_FilesLoaded.MoveTail( pFile );
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddFile( pFile, "Global", pFile->m_Filename );
+            g_pPanelMemory->AddFile( pFile, "Global", pFile->m_Filename, MyFileObject::StaticOnDrag );
 #endif
         }
     }
@@ -132,8 +157,12 @@ MyFileObject::MyFileObject()
 
 MyFileObject::~MyFileObject()
 {
-    // don't delete his object, call g_pFileManager->FreeFile( pFile );
-    assert( this->Next == 0 && this->Prev == 0 );
+    // make sure you call ->Release.  don't delete a file object, it's refcounted.
+#if MYFW_WINDOWS
+    assert( Prev );
+#endif
+    if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
+        Remove();
 
     SAFE_DELETE_ARRAY( m_Filename );
     SAFE_DELETE_ARRAY( m_pBuffer );
@@ -143,6 +172,14 @@ MyFileObject::~MyFileObject()
         g_pPanelMemory->RemoveFile( this );
 #endif
 }
+
+#if MYFW_USING_WX
+void MyFileObject::OnDrag()
+{
+    g_DragAndDropStruct.m_Type = DragAndDropType_FileObjectPointer;
+    g_DragAndDropStruct.m_Value = this;
+}
+#endif //MYFW_USING_WX
 
 void MyFileObject::RequestFile(const char* filename)
 {

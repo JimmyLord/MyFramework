@@ -681,6 +681,11 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     }
 }
 
+void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
+{
+    m_pShaderGroup = pShaderGroup;
+}
+
 void MyMesh::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
     m_pShaderGroup = pShaderGroup;

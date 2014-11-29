@@ -315,7 +315,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     m_pNotebook->SetPageText( 1, tempstr );
 }
 
-void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc)
+void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
 {
     assert( pFile != 0 );
 
@@ -352,6 +352,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
         sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, pFile->m_FileLength );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pFile;
+        pData->m_pDragFunction = pDragFunction;
 
         m_pTree_Files->AppendItem( idcategory, tempstr, -1, -1, pData );
 

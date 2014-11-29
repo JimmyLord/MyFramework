@@ -58,7 +58,7 @@ public:
     void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc);
     void RemoveTexture(TextureDefinition* pTextureDef);
 
-    void AddFile(MyFileObject* pFile, const char* category, const char* desc);
+    void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
 
     void AddDrawCall(int index, const char* category, const char* desc);

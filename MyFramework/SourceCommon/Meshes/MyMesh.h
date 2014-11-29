@@ -70,6 +70,8 @@ public:
 
     void CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv);
 
+    ShaderGroup* GetShaderGroup() { return m_pShaderGroup; }
+    void SetShaderGroup(ShaderGroup* pShaderGroup);
     void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
