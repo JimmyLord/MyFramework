@@ -96,6 +96,9 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
 
 void MyMesh::CreateFromOBJBuffer(char* objbuffer)
 {
+//    assert( m_pVertexBuffer == 0 );
+//    assert( m_pIndexBuffer == 0 );
+
     LoadBasicOBJ( objbuffer, &m_pVertexBuffer, &m_pIndexBuffer );
 
     m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
@@ -104,6 +107,9 @@ void MyMesh::CreateFromOBJBuffer(char* objbuffer)
 
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
 {
+    assert( m_pVertexBuffer == 0 );
+    assert( m_pIndexBuffer == 0 );
+
     unsigned short numverts = 24;
     unsigned int numindices = 36;
     m_NumVertsToDraw = numverts;
@@ -231,6 +237,9 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
 
 void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags)
 {
+    assert( m_pVertexBuffer == 0 );
+    assert( m_pIndexBuffer == 0 );
+
     unsigned short numverts = 24;
     unsigned int numindices = 36;
     m_NumVertsToDraw = numverts;
@@ -417,6 +426,9 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
 
 void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv)
 {
+    assert( m_pVertexBuffer == 0 );
+    assert( m_pIndexBuffer == 0 );
+
     float uperc, vperc;
 
     unsigned short topverts = numsegments + 1;

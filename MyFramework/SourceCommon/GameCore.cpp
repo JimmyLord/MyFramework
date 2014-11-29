@@ -239,7 +239,7 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
     {
         // scissor test is really only needed for the glClear call.
         glEnable( GL_SCISSOR_TEST );
-        glScissor( m_WindowStartX, m_WindowStartY, m_WindowWidth, m_WindowHeight );
+        glScissor( startx, starty, width, height );
     }
 
     glViewport( startx, starty, width, height );

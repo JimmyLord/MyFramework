@@ -272,7 +272,7 @@ void PanelWatch::AddControlsForVariable(const char* name)
 
 PanelWatchDropTarget::PanelWatchDropTarget()
 {
-    SetDataObject(new wxCustomDataObject);
+    SetDataObject(MyNew wxCustomDataObject);
 }
 
 wxDragResult PanelWatchDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)

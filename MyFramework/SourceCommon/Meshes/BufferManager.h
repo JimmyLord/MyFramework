@@ -47,6 +47,7 @@ public:
 #endif
 
     GLuint m_CurrentBufferID;
+    bool m_CurrentVAOInitialized[ShaderPass_NumTypes];
     GLuint m_CurrentVAOHandle[ShaderPass_NumTypes];
 
     char* m_pData; // only using char* because android compiler doesn't like deleting void*(warning : deleting 'void*' is undefined)
@@ -61,12 +62,16 @@ public:
     bool m_Dirty;
 
 public:
-    BufferDefinition(unsigned int numbufferstoallocate);
+    BufferDefinition();
     virtual ~BufferDefinition();
     void Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild = false);
     void Invalidate(bool cleanglallocs);
 
     void CreateAndBindVAO();
+
+    void FreeBufferedData();
+    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex);
+    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format);
 };
 
 //class VAODefinition : public CPPListNode, public RefCount
@@ -105,6 +110,7 @@ public:
     virtual ~BufferManager();
 
     // pData pointer passed in will be deleted by the BufferDefinition.
+    BufferDefinition* CreateBuffer(const char* category, const char* desc);
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
     //VAODefinition* CreateVAO();

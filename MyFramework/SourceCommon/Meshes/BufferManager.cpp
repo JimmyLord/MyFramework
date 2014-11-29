@@ -22,10 +22,8 @@
 
 BufferManager* g_pBufferManager = 0;
 
-BufferDefinition::BufferDefinition(unsigned int numbufferstoallocate)
+BufferDefinition::BufferDefinition()
 {
-    assert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
-
     for( int i=0; i<3; i++ )
     {
         m_BufferIDs[i] = 0; // up to 3 buffers created for double/triple buffering data.
@@ -34,7 +32,7 @@ BufferDefinition::BufferDefinition(unsigned int numbufferstoallocate)
             m_VAOHandles[p][i] = 0;
         }
     }
-    m_NumBuffersToUse = numbufferstoallocate;
+    m_NumBuffersToUse = 0;
     m_CurrentBufferIndex = 0;
     m_NextBufferIndex = 0;
 
@@ -55,6 +53,7 @@ BufferDefinition::BufferDefinition(unsigned int numbufferstoallocate)
     m_CurrentBufferID = 0;
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
+        m_CurrentVAOInitialized[p] = false;
         m_CurrentVAOHandle[p] = 0;
     }
 
@@ -206,6 +205,57 @@ void BufferDefinition::CreateAndBindVAO()
     // ~HACK
 }
 
+void BufferDefinition::FreeBufferedData()
+{
+}
+
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex)
+{
+    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex );
+}
+
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format)
+{
+    assert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
+
+    if( datasize != m_DataSize )
+    {
+        // delete old data block if necessary
+        SAFE_DELETE_ARRAY( m_pData );
+
+        // if no data block was passed in allocate one.
+        if( pData == 0 )
+            pData = MyNew char[datasize];
+    }
+
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    {
+        m_CurrentVAOInitialized[p] = false;
+    }
+
+    m_NumBuffersToUse = numbufferstoallocate;
+    m_pData = (char*)pData;
+    m_DataSize = datasize;
+    m_Target = target;
+    m_Usage = usage;
+    m_VertexFormat = format;
+
+    if( bufferdata )
+    {
+        m_pData = (char*)pData;
+        for( unsigned int i=0; i<m_NumBuffersToUse; i++ )
+            Rebuild( 0, m_DataSize, true );
+    }
+    else
+    {
+        m_pData = 0;
+        for( unsigned int i=0; i<m_NumBuffersToUse; i++ )
+            Rebuild( 0, m_DataSize, true );
+        m_pData = (char*)pData;
+        m_Dirty = true;
+    }
+}
+
 //====================================================
 //====================================================
 
@@ -271,46 +321,27 @@ BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize
     return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc);
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(const char* category, const char* desc)
 {
-    // Hack: only 1 buffer, since I'm doing a lazy job with VAO's
-    // ... still doing a lazy job with them, but should support multiple VBO/IBO pairs now.
-    //numbufferstoallocate = 1; // TODO: fix VAOs.
-
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
-    BufferDefinition* pBufferDef = MyNew BufferDefinition(numbufferstoallocate);
-
+    BufferDefinition* pBufferDef = MyNew BufferDefinition();
     m_Buffers.AddTail( pBufferDef );
-
-    // if no data block was passed in allocate one.
-    if( pData == 0 )
-        pData = MyNew char[datasize];
-
-    pBufferDef->m_pData = (char*)pData;
-    pBufferDef->m_DataSize = datasize;
-    pBufferDef->m_Target = target;
-    pBufferDef->m_Usage = usage;
-    pBufferDef->m_VertexFormat = format;
-
-    if( bufferdata )
-    {
-        pBufferDef->m_pData = (char*)pData;
-        for( unsigned int i=0; i<numbufferstoallocate; i++ )
-            pBufferDef->Rebuild( 0, pBufferDef->m_DataSize, true );
-    }
-    else
-    {
-        pBufferDef->m_pData = 0;
-        for( unsigned int i=0; i<numbufferstoallocate; i++ )
-            pBufferDef->Rebuild( 0, pBufferDef->m_DataSize, true );
-        pBufferDef->m_pData = (char*)pData;
-        pBufferDef->m_Dirty = true;
-    }
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddBuffer( pBufferDef, category, desc );
 #endif
+
+    return pBufferDef;
+}
+
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)
+{
+    //LOGInfo( LOGTag, "CreateBuffer\n" );
+
+    BufferDefinition* pBufferDef = CreateBuffer(category, desc);
+
+    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format );
 
     return pBufferDef;
 }

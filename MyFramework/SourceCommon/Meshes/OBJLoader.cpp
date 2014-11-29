@@ -475,11 +475,19 @@ foundduplicate_skiptonextvert:
         format = VertexFormat_XYZ;
 
     // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
-    *ppVBO = g_pBufferManager->CreateBuffer( verts, vertbuffersize*4, GL_ARRAY_BUFFER,
-        GL_STATIC_DRAW, true, 1, format, "Buffer", "VBO from OBJ" );
+    if( *ppVBO == 0 )
+    {
+        *ppVBO = g_pBufferManager->CreateBuffer( "Buffer", "VBO from OBJ" );
+    }
 
-    *ppIBO = g_pBufferManager->CreateBuffer( indices, indexcount*bytesperindex, GL_ELEMENT_ARRAY_BUFFER, 
-        GL_STATIC_DRAW, true, 1, bytesperindex, "Buffer", "IBO from OBJ" );
+    if( *ppIBO == 0 )
+    {
+        *ppIBO = g_pBufferManager->CreateBuffer( "Buffer", "IBO from OBJ" );
+    }
+
+    // The buffer will delete the allocated arrays of verts/indices
+    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, format );
+    (*ppIBO)->InitializeBuffer( indices, indexcount*bytesperindex, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex );
 
     //delete[] verts;
     //delete[] indices;

@@ -229,10 +229,12 @@ bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefin
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 
-    if( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] == 0 )
+    if( vbo->m_CurrentVAOInitialized[g_ActiveShaderPass] == false )
     {
         if( glBindVertexArray != 0 )
         {
+            vbo->m_CurrentVAOInitialized[g_ActiveShaderPass] = true;
+
             // First time using this VAO, so we create a VAO and set up all the attributes.
             vbo->CreateAndBindVAO();
 #if _DEBUG && MYFW_WINDOWS
