@@ -696,6 +696,10 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
 void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
 {
     m_pShaderGroup = pShaderGroup;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 void MyMesh::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)

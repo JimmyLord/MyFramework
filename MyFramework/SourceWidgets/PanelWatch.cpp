@@ -190,6 +190,7 @@ void PanelWatch::AddSpace()
         return;
 
     m_pVariablePointers[m_NumVariables] = 0;
+    m_pVariableTypes[m_NumVariables] = PanelWatchType_Unknown;
 
     m_NumVariables++;
 }
@@ -457,6 +458,10 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 sprintf_s( tempstring, 50, "%s", m_pVariableDescriptions[i] );
             }
+            break;
+
+        case PanelWatchType_Unknown: // space?
+            continue;
         }
 
         m_Handles_TextCtrl[i]->ChangeValue( tempstring );

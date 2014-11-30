@@ -68,6 +68,7 @@ public:
     void Invalidate(bool cleanglallocs);
 
     void CreateAndBindVAO();
+    void ResetVAOs();
 
     void FreeBufferedData();
     void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex);

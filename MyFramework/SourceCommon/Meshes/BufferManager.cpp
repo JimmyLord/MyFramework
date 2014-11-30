@@ -158,6 +158,7 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
             if( m_BufferIDs[i] != 0 )
             {
                 MyDeleteBuffers( 1, &m_BufferIDs[i] );
+                m_BufferIDs[i] = 0;
             }
 
 #if !MYFW_IOS
@@ -167,7 +168,10 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
                 for( int p=0; p<ShaderPass_NumTypes; p++ )
                 {
                     if( m_VAOHandles[p][i] != 0 )
+                    {
                         glDeleteVertexArrays( 1, &m_VAOHandles[p][i] );
+                        m_VAOHandles[p][i] = 0;
+                    }
                 }
             }
         }
@@ -190,7 +194,10 @@ void BufferDefinition::CreateAndBindVAO()
 {
     assert( glBindVertexArray != 0 );
 
-    glGenVertexArrays( 1, &m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] );
+    if( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] == 0 )
+	{
+        glGenVertexArrays( 1, &m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] );
+	}
     assert( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] != 0 );
 
     m_CurrentVAOHandle[g_ActiveShaderPass] = m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex];
@@ -203,6 +210,14 @@ void BufferDefinition::CreateAndBindVAO()
     MyBindBuffer( GL_ARRAY_BUFFER, 0 );
     MyBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     // ~HACK
+}
+
+void BufferDefinition::ResetVAOs()
+{
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    {
+        m_CurrentVAOInitialized[p] = false;
+    }
 }
 
 void BufferDefinition::FreeBufferedData()
@@ -226,12 +241,18 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
         // if no data block was passed in allocate one.
         if( pData == 0 )
             pData = MyNew char[datasize];
+
+        for( int i=0; i<3; i++ )
+        {
+            if( m_BufferIDs[i] != 0 )
+            {
+                MyDeleteBuffers( 1, &m_BufferIDs[i] );
+                m_BufferIDs[i] = 0;
+            }
+        }
     }
 
-    for( int p=0; p<ShaderPass_NumTypes; p++ )
-    {
-        m_CurrentVAOInitialized[p] = false;
-    }
+    ResetVAOs();
 
     m_NumBuffersToUse = numbufferstoallocate;
     m_pData = (char*)pData;
