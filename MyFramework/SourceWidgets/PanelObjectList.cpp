@@ -26,7 +26,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     m_pTree_Objects = MyNew wxTreeCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
     wxTreeItemId idroot = m_pTree_Objects->AddRoot( "Objects" );
 
-    // setup a sizer to resize the notebook
+    // setup a sizer to resize the tree
     wxBoxSizer* sizer = MyNew wxBoxSizer( wxHORIZONTAL );
     sizer->Add( m_pTree_Objects, 0, wxGROW|wxALL, 2 );
     SetSizer( sizer );

@@ -25,7 +25,7 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 {
     wxTreeItemId idroot;
 
-    // create a notebook with 3 pages(buffers/textures/files)
+    // create a notebook with 5 pages(buffers/textures/files)
     m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxSize(2000,2000) );
 
     m_pTree_Buffers = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );

@@ -21,7 +21,7 @@
 PanelWatch* g_pPanelWatch = 0;
 
 PanelWatch::PanelWatch(wxFrame* parentframe)
-: wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600) )
+: wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
     m_AllowWindowToBeUpdated = true;
 
@@ -51,7 +51,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe)
         m_pVariableCallbackFuncs[i] = 0;
     }
 
-    m_pTimer = MyNew wxTimer(this, wxID_ANY);
+    m_pTimer = MyNew wxTimer( this, wxID_ANY );
     m_pTimer->Start( 100 );
 
     //Connect( wxEVT_CHILD_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus) );
@@ -198,13 +198,17 @@ void PanelWatch::AddSpace()
 void PanelWatch::AddControlsForVariable(const char* name)
 {
     int PaddingTop = 3;
-    int PaddingBottom = 0;
+    int PaddingBottom = 3;
     int PaddingLeft = 2;
 
-    int ControlHeight = PaddingTop + 20 + PaddingBottom;
+    int ControlPaddingTop = 3;
+    int ControlPaddingBottom = 0;
+    int ControlPaddingLeft = 0;
 
-    int PosX = PaddingLeft;
-    int PosY = m_NumVariables*ControlHeight;
+    int ControlHeight = ControlPaddingTop + 20 + ControlPaddingBottom;
+
+    int PosX = PaddingLeft + ControlPaddingLeft;
+    int PosY = PaddingTop + m_NumVariables*ControlHeight;
     int WindowWidth = 300;
 
     int TextHeight = 20;
@@ -219,8 +223,6 @@ void PanelWatch::AddControlsForVariable(const char* name)
     {
         TextCtrlWidth = 150;
     }
-
-    PosY += PaddingTop;
 
     // Text label
     {
@@ -256,6 +258,8 @@ void PanelWatch::AddControlsForVariable(const char* name)
         m_Handles_TextCtrl[m_NumVariables] = MyNew wxTextCtrl( this, m_NumVariables, "",
             wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight) );
         
+        PosX += TextCtrlWidth;
+
         // if control gets focus, stop updates.
         m_Handles_TextCtrl[m_NumVariables]->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         m_Handles_TextCtrl[m_NumVariables]->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
@@ -269,6 +273,10 @@ void PanelWatch::AddControlsForVariable(const char* name)
             m_Handles_TextCtrl[m_NumVariables]->SetDropTarget( pDropTarget );            
         }
     }
+
+    int height = PaddingTop + (m_NumVariables+1)*ControlHeight + PaddingBottom;
+
+    SetScrollbars( 1, 1, PosX+10, height, 0, 0 );
 }
 
 PanelWatchDropTarget::PanelWatchDropTarget()
@@ -320,6 +328,11 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
 
     wxString wxstr = m_Handles_TextCtrl[controlid]->GetValue();
 
+    if( wxstr == "" )
+        return;
+
+    // TODO: evaluate wxstr as math op, not just a simple atoi or atof.
+
     double valuedouble;
     double valueint;
     switch( m_pVariableTypes[controlid] )
@@ -354,8 +367,6 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
         *((double*)m_pVariablePointers[controlid]) = valuedouble;
         break;
     }
-
-    UpdatePanel( controlid );
 }
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)

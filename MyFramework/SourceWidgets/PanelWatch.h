@@ -52,7 +52,7 @@ public:
     virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
 };
 
-class PanelWatch : public wxPanel
+class PanelWatch : public wxScrolledWindow
 {
 public:
     wxTimer* m_pTimer;
@@ -93,12 +93,12 @@ public:
     void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max);
     void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc);
 
-    void AddInt(const char* name, int* pInt, float min, float max);
-    void AddChar(const char* name, char* pChar, float min, float max);
-    void AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max);
-    void AddBool(const char* name, bool* pBool, float min, float max);
-    void AddFloat(const char* name, float* pFloat, float min, float max);
-    void AddDouble(const char* name, double* pDouble, float min, float max);
+    void AddInt(const char* name, int* pInt, float min, float max = false);
+    void AddChar(const char* name, char* pChar, float min, float max = false);
+    void AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max = false);
+    void AddBool(const char* name, bool* pBool, float min, float max = false);
+    void AddFloat(const char* name, float* pFloat, float min, float max = false);
+    void AddDouble(const char* name, double* pDouble, float min, float max = false);
     void AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pCallBackFunc = 0);
     void AddSpace();
 };
