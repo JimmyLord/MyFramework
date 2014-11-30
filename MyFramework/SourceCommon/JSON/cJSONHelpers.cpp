@@ -131,6 +131,12 @@ void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned cha
     }
 }
 
+void cJSONExt_GetBool(cJSON* object, const char* name, bool* variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) *variable = obj->valueint > 0 ? true : false;
+}
+
 void cJSONExt_GetUnsignedChar(cJSON* object, const char* name, unsigned char* variable)
 {
     cJSON* obj = cJSON_GetObjectItem( object, name );

@@ -34,6 +34,7 @@ void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int nu
 void cJSONExt_GetDoubleArray(cJSON* object, const char* name, double* vars, int numinarray);
 void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned char* vars, int numinarray);
 
+void cJSONExt_GetBool(cJSON* object, const char* name, bool* variable);
 void cJSONExt_GetUnsignedChar(cJSON* object, const char* name, unsigned char* variable);
 void cJSONExt_GetChar(cJSON* object, const char* name, char* variable);
 void cJSONExt_GetUnsignedInt(cJSON* object, const char* name, unsigned int* variable);
