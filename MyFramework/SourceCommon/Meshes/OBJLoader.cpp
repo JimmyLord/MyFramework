@@ -477,12 +477,12 @@ foundduplicate_skiptonextvert:
     // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
     if( *ppVBO == 0 )
     {
-        *ppVBO = g_pBufferManager->CreateBuffer( "Buffer", "VBO from OBJ" );
+        *ppVBO = g_pBufferManager->CreateBuffer( "OBJLoader", "VBO" );
     }
 
     if( *ppIBO == 0 )
     {
-        *ppIBO = g_pBufferManager->CreateBuffer( "Buffer", "IBO from OBJ" );
+        *ppIBO = g_pBufferManager->CreateBuffer( "OBJLoader", "IBO" );
     }
 
     // The buffer will delete the allocated arrays of verts/indices

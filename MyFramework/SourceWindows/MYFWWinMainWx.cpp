@@ -35,7 +35,7 @@ int g_CurrentGLViewWidth;
 int g_CurrentGLViewHeight;
 
 MainFrame::MainFrame(wxWindow* parent)
-: wxFrame( parent, -1, _("Infinite Dung"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
+: wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
     int width, height;
     WinMain_GetClientSize( &width, &height, &g_CurrentGLViewType );
