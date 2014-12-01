@@ -19,10 +19,10 @@
 #define __OBJLoader_H__
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices);
 #endif
 
 // return 2 BufferDefinition pointers.
-void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices);
 
 #endif //__OBJLoader_H__

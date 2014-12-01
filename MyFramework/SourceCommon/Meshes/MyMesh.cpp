@@ -99,7 +99,7 @@ void MyMesh::CreateFromOBJBuffer(char* objbuffer)
 //    assert( m_pVertexBuffer == 0 );
 //    assert( m_pIndexBuffer == 0 );
 
-    LoadBasicOBJ( objbuffer, &m_pVertexBuffer, &m_pIndexBuffer );
+    LoadBasicOBJ( objbuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
 
     m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
     m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;

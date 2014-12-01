@@ -101,7 +101,7 @@ float ReadFloatAndMoveOn(char* buffer, int* index)
     char numberbuffer[100];
     int numberbufferindex = 0;
 
-    while( (buffer[*index] >= '0' && buffer[*index] <= '9') || buffer[*index] == '.' || buffer[*index] == '-' || buffer[*index] == 'e' )
+    while( (buffer[*index] >= '0' && buffer[*index] <= '9') || buffer[*index] == '.' || buffer[*index] == '-' || buffer[*index] == 'e' || buffer[*index] == '+' )
     {
         numberbuffer[numberbufferindex] = buffer[*index];
         numberbuffer[numberbufferindex+1] = 0;
@@ -211,7 +211,7 @@ FaceInfo ParseFaceInfo(char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO)
+void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -221,7 +221,7 @@ void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefini
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, ppVBO, ppIBO );
+    LoadBasicOBJ( buffer, ppVBO, ppIBO, removeduplicatevertices );
 
     delete[] buffer;
 }
@@ -243,7 +243,7 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO)
+void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -354,17 +354,20 @@ void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppI
             for( int v=0; v<numvertsinaface; v++ )
             {
                 // search all previous vertices looking for a duplicate.
-                for( int origf=0; origf < f; origf++ )
+                if( removeduplicatevertices )
                 {
-                    for( int origv=0; origv < numvertsinaface; origv++ )
+                    for( int origf=0; origf < f; origf++ )
                     {
-                        if( Faces[f].attributes[v][0] == Faces[origf].attributes[origv][0] &&
-                            Faces[f].attributes[v][1] == Faces[origf].attributes[origv][1] &&
-                            Faces[f].attributes[v][2] == Faces[origf].attributes[origv][2] )
+                        for( int origv=0; origv < numvertsinaface; origv++ )
                         {
-                            Faces[f].vertindex[v] = Faces[origf].vertindex[origv];
-                            dupesfound++;
-                            goto foundduplicate_skiptonextvert;
+                            if( Faces[f].attributes[v][0] == Faces[origf].attributes[origv][0] &&
+                                Faces[f].attributes[v][1] == Faces[origf].attributes[origv][1] &&
+                                Faces[f].attributes[v][2] == Faces[origf].attributes[origv][2] )
+                            {
+                                Faces[f].vertindex[v] = Faces[origf].vertindex[origv];
+                                dupesfound++;
+                                goto foundduplicate_skiptonextvert;
+                            }
                         }
                     }
                 }
@@ -379,8 +382,6 @@ foundduplicate_skiptonextvert:
         double endtime = MyTime_GetSystemTime();
 
         LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, facecount, dupesfound );
-
-        int bp = 1;
     }
     
     int vertbuffersize = numverts * numcomponents;
@@ -397,7 +398,7 @@ foundduplicate_skiptonextvert:
 
     // cycle through the faces and copy the vertex info into the final vertex/index buffers.
     {
-        int indexcount = 0;
+        int indexbytecount = 0;
         int vertcount = 0;
         for( int f=0; f<facecount; f++ )
         {
@@ -435,19 +436,19 @@ foundduplicate_skiptonextvert:
 
             if( numvertsinaface == 3 )
             {
-                SetValueOfIndex( indices, indexcount, vertindices[0], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[1], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[2], bytesperindex ); indexcount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
             }
             else if( numvertsinaface == 4 )
             {
-                SetValueOfIndex( indices, indexcount, vertindices[0], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[1], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[2], bytesperindex ); indexcount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
 
-                SetValueOfIndex( indices, indexcount, vertindices[1], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[3], bytesperindex ); indexcount += bytesperindex;
-                SetValueOfIndex( indices, indexcount, vertindices[2], bytesperindex ); indexcount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexbytecount, vertindices[3], bytesperindex ); indexbytecount += bytesperindex;
             }
             else
             {
