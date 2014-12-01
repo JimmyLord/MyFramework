@@ -56,6 +56,14 @@ TextureDefinition::~TextureDefinition()
 #endif
 }
 
+#if MYFW_USING_WX
+void TextureDefinition::OnDrag()
+{
+    g_DragAndDropStruct.m_Type = DragAndDropType_TextureDefinitionPointer;
+    g_DragAndDropStruct.m_Value = this;
+}
+#endif //MYFW_USING_WX
+
 void TextureDefinition::Invalidate(bool cleanglallocs)
 {
     if( cleanglallocs )
@@ -252,7 +260,7 @@ void TextureManager::Tick()
             pTextureDef->m_FullyLoaded = true;
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename );
+            g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnDrag );
 #endif
         }
     }

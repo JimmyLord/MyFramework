@@ -55,7 +55,7 @@ public:
     void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
     void RemoveBuffer(BufferDefinition* pBufferDef);
 
-    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc);
+    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveTexture(TextureDefinition* pTextureDef);
 
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
