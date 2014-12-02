@@ -52,25 +52,32 @@ public:
     virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
 };
 
+struct VariableProperties
+{
+    wxStaticText* m_Handle_StaticText;
+    wxTextCtrl* m_Handle_TextCtrl;
+    wxSlider* m_Handle_Slider;
+
+    void* m_Pointer;
+    Vector2 m_Range;
+    const char* m_Description;
+    PanelWatch_Types m_Type;
+    void* m_pCallbackObj;
+    PanelWatchCallback m_pOnDropCallbackFunc;
+    PanelWatchCallback m_pOnValueChangedCallBackFunc;
+};
+
 class PanelWatch : public wxScrolledWindow
 {
 public:
     wxTimer* m_pTimer;
-    wxStaticText** m_Handles_StaticText;
-    wxTextCtrl** m_Handles_TextCtrl;
-    wxSlider** m_Handles_Slider;
 
     bool m_AllowWindowToBeUpdated;
 
     int m_NumVariables;
     int m_SliderBeingDragged;
 
-    void** m_pVariablePointers;
-    Vector2* m_pVariableRanges;
-    const char** m_pVariableDescriptions;
-    PanelWatch_Types* m_pVariableTypes;
-    void** m_pVariableCallbackObjs;
-    PanelWatchCallback* m_pVariableCallbackFuncs;
+    VariableProperties* m_pVariables;
 
 protected:
     void AddControlsForVariable(const char* name);
@@ -90,16 +97,16 @@ public:
 
     void ClearAllVariables();
 
-    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max);
-    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pCallBackFunc);
+    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc);
+    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallback pOnValueChangedCallBackFunc);
 
-    void AddInt(const char* name, int* pInt, float min, float max = false);
-    void AddChar(const char* name, char* pChar, float min, float max = false);
-    void AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max = false);
-    void AddBool(const char* name, bool* pBool, float min, float max = false);
-    void AddFloat(const char* name, float* pFloat, float min, float max = false);
-    void AddDouble(const char* name, double* pDouble, float min, float max = false);
-    void AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pCallBackFunc = 0);
+    void AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
+    void AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
     void AddSpace();
 };
 
