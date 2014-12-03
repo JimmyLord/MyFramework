@@ -37,6 +37,31 @@ void MyMatrix::SetTranslation(float x, float y, float z)
     m43 = z;
 }
 
+void MyMatrix::CreateScale(float scale)
+{
+    m12 = m13 = m14 = m21 = m23 = m24 = m31 = m32 = m34 = m41 = m42 = m43 = 0;
+    m11 = m22 = m33 = scale;
+    m44 = 1;
+}
+
+void MyMatrix::CreateScale(float x, float y, float z)
+{
+    m12 = m13 = m14 = m21 = m23 = m24 = m31 = m32 = m34 = m41 = m42 = m43 = 0;
+    m11 = x;
+    m22 = y;
+    m33 = z;
+    m44 = 1;
+}
+
+void MyMatrix::CreateScale(Vector3 scale)
+{
+    m12 = m13 = m14 = m21 = m23 = m24 = m31 = m32 = m34 = m41 = m42 = m43 = 0;
+    m11 = scale.x;
+    m22 = scale.y;
+    m33 = scale.z;
+    m44 = 1;
+}
+
 void MyMatrix::CreateSRT(float scale, Vector3 rot, Vector3 pos)
 {
     SetIdentity();

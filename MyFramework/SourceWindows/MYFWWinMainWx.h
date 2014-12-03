@@ -57,6 +57,7 @@ public:
 
 public:
     virtual bool OnInit();
+    virtual int FilterEvent(wxEvent& event);
 };
 
 // Main frame class
@@ -80,6 +81,8 @@ public:
     
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
+    void OnKeyPressed(wxKeyEvent& event);
+    void OnKeyReleased(wxKeyEvent& event);
 };
 
 // Main gl canvas class

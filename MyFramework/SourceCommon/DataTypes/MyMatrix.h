@@ -51,6 +51,9 @@ public:
     void SetIdentity();
     void SetTranslation(Vector3 pos);
     void SetTranslation(float x, float y, float z);
+    void CreateScale(float scale);
+    void CreateScale(float x, float y, float z);
+    void CreateScale(Vector3 scale);
     void CreateSRT(float scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
     void CreateFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
