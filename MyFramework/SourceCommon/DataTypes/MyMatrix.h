@@ -43,7 +43,8 @@ public:
     void Scale(float scale);
     void Scale(float sx, float sy, float sz);
     void Rotate(float angle, float x, float y, float z);
-    void TranslatePreRotation(float tx, float ty, float tz);
+    void TranslatePreRotScale(Vector3 translate);
+    void TranslatePreRotScale(float tx, float ty, float tz);
     void Translate(Vector3 pos);
     void Translate(float x, float y, float z);
 

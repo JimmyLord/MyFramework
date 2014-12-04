@@ -216,16 +216,17 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    if( g_pGameCore )
-        g_pGameCore->OnKeyDown( keycode, keycode );
+    //if( g_pGameCore )
+    //    g_pGameCore->OnKeyDown( keycode, keycode );
 
-    if( keycode < 512 )
-        m_KeysDown[keycode] = true;
+    //if( keycode < 512 )
+    //    m_KeysDown[keycode] = true;
 }
 
 void MainFrame::OnKeyReleased(wxKeyEvent& event)
 {
     int keycode = event.m_keyCode;
+
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
     if( keycode == 314 )
@@ -237,11 +238,11 @@ void MainFrame::OnKeyReleased(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    if( g_pGameCore )
-        g_pGameCore->OnKeyUp( keycode, keycode );
+    //if( g_pGameCore )
+    //    g_pGameCore->OnKeyUp( keycode, keycode );
 
-    if( keycode < 512 )
-        m_KeysDown[keycode] = false;
+    //if( keycode < 512 )
+    //    m_KeysDown[keycode] = false;
 }
 
 IMPLEMENT_APP( MainApp );
@@ -380,7 +381,7 @@ void MainGLCanvas::RightClick(wxMouseEvent& event) {}
 
 void MainGLCanvas::KeyPressed(wxKeyEvent& event)
 {
-    //int keycode = event.m_keyCode;
+    int keycode = event.m_keyCode;
 
     //if( keycode == '1' )
     //{
@@ -403,43 +404,44 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
     //    ResizeViewport();
     //}
 
-    //if( keycode == 8 )
-    //    keycode = MYKEYCODE_BACKSPACE;
-    //if( keycode == 314 )
-    //    keycode = MYKEYCODE_LEFT;
-    //if( keycode == 316 )
-    //    keycode = MYKEYCODE_RIGHT;
-    //if( keycode == 315 )
-    //    keycode = MYKEYCODE_UP;
-    //if( keycode == 317 )
-    //    keycode = MYKEYCODE_DOWN;
+    if( keycode == 8 )
+        keycode = MYKEYCODE_BACKSPACE;
+    if( keycode == 314 )
+        keycode = MYKEYCODE_LEFT;
+    if( keycode == 316 )
+        keycode = MYKEYCODE_RIGHT;
+    if( keycode == 315 )
+        keycode = MYKEYCODE_UP;
+    if( keycode == 317 )
+        keycode = MYKEYCODE_DOWN;
 
-    //if( g_pGameCore )
-    //    g_pGameCore->OnKeyDown( keycode, keycode );
+    if( g_pGameCore )
+        g_pGameCore->OnKeyDown( keycode, keycode );
 
-    //if( keycode < 512 )
-    //    m_KeysDown[keycode] = true;
+    if( keycode < 512 )
+        m_KeysDown[keycode] = true;
 }
 
 void MainGLCanvas::KeyReleased(wxKeyEvent& event)
 {
-    //int keycode = event.m_keyCode;
-    //if( keycode == 8 )
-    //    keycode = MYKEYCODE_BACKSPACE;
-    //if( keycode == 314 )
-    //    keycode = MYKEYCODE_LEFT;
-    //if( keycode == 316 )
-    //    keycode = MYKEYCODE_RIGHT;
-    //if( keycode == 315 )
-    //    keycode = MYKEYCODE_UP;
-    //if( keycode == 317 )
-    //    keycode = MYKEYCODE_DOWN;
+    int keycode = event.m_keyCode;
+    
+    if( keycode == 8 )
+        keycode = MYKEYCODE_BACKSPACE;
+    if( keycode == 314 )
+        keycode = MYKEYCODE_LEFT;
+    if( keycode == 316 )
+        keycode = MYKEYCODE_RIGHT;
+    if( keycode == 315 )
+        keycode = MYKEYCODE_UP;
+    if( keycode == 317 )
+        keycode = MYKEYCODE_DOWN;
 
-    //if( g_pGameCore )
-    //    g_pGameCore->OnKeyUp( keycode, keycode );
+    if( g_pGameCore )
+        g_pGameCore->OnKeyUp( keycode, keycode );
 
-    //if( keycode < 512 )
-    //    m_KeysDown[keycode] = false;
+    if( keycode < 512 )
+        m_KeysDown[keycode] = false;
 }
 
 void MainGLCanvas::Resized(wxSizeEvent& evt)

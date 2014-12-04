@@ -148,6 +148,22 @@ void MyMatrix::Rotate(float angle, float x, float y, float z)
     }
 }
 
+void MyMatrix::TranslatePreRotScale(Vector3 translate)
+{
+    m41 += m11 * translate.x  +  m21 * translate.y  +  m31 * translate.z;
+    m42 += m12 * translate.x  +  m22 * translate.y  +  m32 * translate.z;
+    m43 += m13 * translate.x  +  m23 * translate.y  +  m33 * translate.z;
+    m44 += m14 * translate.x  +  m24 * translate.y  +  m34 * translate.z;
+}
+
+void MyMatrix::TranslatePreRotScale(float tx, float ty, float tz)
+{
+    m41 += m11 * tx  +  m21 * ty  +  m31 * tz;
+    m42 += m12 * tx  +  m22 * ty  +  m32 * tz;
+    m43 += m13 * tx  +  m23 * ty  +  m33 * tz;
+    m44 += m14 * tx  +  m24 * ty  +  m34 * tz;
+}
+
 void MyMatrix::Translate(Vector3 pos)
 {
     m41 += pos.x;
