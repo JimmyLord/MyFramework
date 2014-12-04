@@ -144,7 +144,7 @@ void MyMatrix::Rotate(float angle, float x, float y, float z)
         rotMat.m43 = 0.0f;
         rotMat.m44 = 1.0f;
 
-        *this = rotMat * *this;
+        *this = *this * rotMat;
     }
 }
 
