@@ -37,6 +37,7 @@ enum GameCoreButtonActions // following android finger keys
     GCBA_Down,
     GCBA_Up,
     GCBA_Held,
+    GCBA_Wheel,
 };
 
 enum GameCoreButtonIDs

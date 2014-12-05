@@ -107,10 +107,13 @@ public:
 
     // events
     void MouseMoved(wxMouseEvent& event);
-    void MouseDown(wxMouseEvent& event);
     void MouseWheelMoved(wxMouseEvent& event);
-    void MouseReleased(wxMouseEvent& event);
-    void RightClick(wxMouseEvent& event);
+    void MouseLeftDown(wxMouseEvent& event);
+    void MouseLeftUp(wxMouseEvent& event);
+    void MouseRightDown(wxMouseEvent& event);
+    void MouseRightUp(wxMouseEvent& event);
+    void MouseMiddleDown(wxMouseEvent& event);
+    void MouseMiddleUp(wxMouseEvent& event);
     void MouseLeftWindow(wxMouseEvent& event);
     void KeyPressed(wxKeyEvent& event);
     void KeyReleased(wxKeyEvent& event);
