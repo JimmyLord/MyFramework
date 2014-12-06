@@ -51,11 +51,13 @@ public:
     }
 };
 
+extern CPPListHead StaticallyAllocatedRam;
 extern CPPListHead AllocatedRam;
 extern int TotalAllocatedRam;
 
 void ValidateAllocations(bool AssertOnAnyAllocation);
 int GetMemoryUsageCount();
+void MarkAllExistingAllocationsAsStatic();
 
 void* operator new(size_t size, char* file, unsigned long line);
 void* operator new[](size_t size, char* file, unsigned long line);

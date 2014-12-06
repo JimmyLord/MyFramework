@@ -22,16 +22,17 @@
 
 #define MEMORY_ShowDebugInfo   0
 
+CPPListHead StaticallyAllocatedRam;
 CPPListHead AllocatedRam;
 int TotalAllocatedRam = 0;
 
 void ValidateAllocations(bool AssertOnAnyAllocation)
 {
 #if MYFW_WINDOWS && _DEBUG
-    CPPListNode* node;
-    for( node = AllocatedRam.HeadNode.Next; node->Next; node = node->Next )
+    CPPListNode* pNode;
+    for( pNode = AllocatedRam.HeadNode.Next; pNode->Next; pNode = pNode->Next )
     {
-        MemObject* obj = (MemObject*)node;
+        MemObject* obj = (MemObject*)pNode;
         assert( obj->m_size < 200000 );
         assert( obj->m_type < 3 );
         assert( obj->m_line < 2500 );
@@ -50,10 +51,10 @@ int GetMemoryUsageCount()
     unsigned int count = 0;
 
 #if MYFW_WINDOWS && _DEBUG
-    CPPListNode* node;
-    for( node = AllocatedRam.HeadNode.Next; node->Next; node = node->Next )
+    CPPListNode* pNode;
+    for( pNode = AllocatedRam.HeadNode.Next; pNode->Next; pNode = pNode->Next )
     {
-        MemObject* obj = (MemObject*)node;
+        MemObject* obj = (MemObject*)pNode;
         count += obj->m_size;
     }
 
@@ -63,14 +64,31 @@ int GetMemoryUsageCount()
     return count;
 }
 
+void MarkAllExistingAllocationsAsStatic()
+{
+    // not ideal, but called from game code's WinMain.cpp ATM
+    // If any code(in this case the bullet profiler clock btQuickProf.cpp) allocated memory in a static class instance,
+    //    this will remove it from the allocation list that ValidateAllocations() checks on shutdown.
+
+    CPPListNode* pNode;
+
+    for( pNode = AllocatedRam.HeadNode.Next; pNode; )
+    {
+        CPPListNode* pNodeToMove = pNode;
+        pNode = pNode->GetNext();
+
+        StaticallyAllocatedRam.MoveTail( pNodeToMove );
+    }
+}
+
 void operator delete(void* m, char* file, unsigned long line)
 {
-    delete((char*)m);
+    delete (char*)m;
 }
 
 void operator delete[](void* m, char* file, unsigned long line)
 {
-    delete((char*)m);
+    delete (char*)m;
 }
 
 void* operator new(size_t size, char* file, unsigned long line)
