@@ -69,13 +69,16 @@ void MarkAllExistingAllocationsAsStatic()
     // not ideal, but called from game code's WinMain.cpp ATM
     // If any code(in this case the bullet profiler clock btQuickProf.cpp) allocated memory in a static class instance,
     //    this will remove it from the allocation list that ValidateAllocations() checks on shutdown.
+    // Turned off bullet profiling instead(#define BT_NO_PROFILE 1 in btQuickProf.cpp), but situation still possible
 
     CPPListNode* pNode;
 
-    for( pNode = AllocatedRam.HeadNode.Next; pNode; )
+    for( pNode = AllocatedRam.HeadNode.Next; pNode->Next; )
     {
         CPPListNode* pNodeToMove = pNode;
         pNode = pNode->GetNext();
+
+        LOGInfo( LOGTag, "Moving memory allocation to StaticallyAllocatedRam cpplist...\n" );
 
         StaticallyAllocatedRam.MoveTail( pNodeToMove );
     }

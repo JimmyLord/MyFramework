@@ -350,33 +350,33 @@ void MainGLCanvas::MakeContextCurrent()
 void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 {
     if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Held, -1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+        g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 {
     this->SetFocus();
 
-    //m_MouseDown = true;
+    m_MouseDown = true;
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Down, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
 {
-    //m_MouseDown = false;
+    m_MouseDown = false;
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 {
-    //if( m_MouseDown )
-    //{
-    //    m_MouseDown = false;
-    //    if( g_pGameCore )
-    //        g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
-    //}
+    if( m_MouseDown )
+    {
+        m_MouseDown = false;
+        if( g_pGameCore )
+            g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    }
 }
 
 void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
