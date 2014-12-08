@@ -83,7 +83,10 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     // check if the file has already been requested... might still be loading.
     pFile = FindFileByName( filename );
     if( pFile )
+    {
+        pFile->AddRef();
         return pFile;
+    }
 
     // if the file wasn't already loaded create a new one and load it up.
     pFile = MyNew MyFileObject;

@@ -44,7 +44,7 @@ FBODefinition::~FBODefinition()
     Invalidate( true );
 }
 
-void FBODefinition::Setup(int width, int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable)
+void FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable)
 {
     m_Width = width;
     m_Height = height;
@@ -90,7 +90,7 @@ bool FBODefinition::Create()
     LOGInfo( LOGTag, "CreateFBO - Low float range max: %d\n", range[1] );
 #endif
 
-    if( m_Width > maxsize || m_Height > maxsize )
+    if( m_Width > (unsigned int)maxsize || m_Height > (unsigned int)maxsize )
     {
         // requested size is too big.
         return false;
@@ -214,6 +214,11 @@ void FBODefinition::Bind()
     glBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID );
     checkGlError( "glBindFramebuffer" );
 #endif
+}
+
+void FBODefinition::Unbind()
+{
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 
 void FBODefinition::Invalidate(bool cleanglallocs)

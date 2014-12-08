@@ -125,7 +125,7 @@ void Shader_Base::DeactivateShader(BufferDefinition* vbo)
     }
 }
 
-void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo, GLuint ibo, int ibotype)
+void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo, GLuint ibo)
 {
 #if USE_D3D
     assert( false );
@@ -229,9 +229,36 @@ bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefin
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 
-    if( vbo->m_CurrentVAOInitialized[g_ActiveShaderPass] == false )
+    SetupAttributes( vertformat, vbo, ibo, true );
+
+    ProgramBaseUniforms( viewprojmatrix, worldmatrix, texid, tint, speccolor, shininess );
+
+    return true;
+}
+
+bool Shader_Base::ActivateAndProgramShader()
+{
+    if( m_Initialized == false )
     {
-        if( glBindVertexArray != 0 )
+        if( LoadAndCompile() == false )
+        {
+            //LOGInfo( LOGTag, "Shader_Base::ActivateAndProgramShader - shader not ready.\n" );
+            return false;
+        }
+    }
+
+    glUseProgram( m_ProgramHandle );
+    //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
+    checkGlError( "glUseProgram" );
+
+    return true;
+}
+
+void Shader_Base::SetupAttributes(VertexFormats vertformat, BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable)
+{
+    if( usevaosifavailable == false || vbo->m_CurrentVAOInitialized[g_ActiveShaderPass] == false )
+    {
+        if( usevaosifavailable && glBindVertexArray != 0 )
         {
             vbo->m_CurrentVAOInitialized[g_ActiveShaderPass] = true;
 
@@ -246,7 +273,7 @@ bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefin
         }
 
         assert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
-        InitializeAttributeArrays( vertformat, vbo?vbo->m_CurrentBufferID:0, ibo?ibo->m_CurrentBufferID:0, ibotype );
+        InitializeAttributeArrays( vertformat, vbo?vbo->m_CurrentBufferID:0, ibo?ibo->m_CurrentBufferID:0 );
     }
     else
     {
@@ -259,10 +286,6 @@ bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefin
 #endif
         glBindVertexArray( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] );
     }
-
-    ProgramBaseUniforms( viewprojmatrix, worldmatrix, texid, tint, speccolor, shininess );
-
-    return true;
 }
 
 void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess)

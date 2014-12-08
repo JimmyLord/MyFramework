@@ -85,6 +85,7 @@ public:
     void* GetObject(wxTreeItemId id);
 
     wxTreeItemId FindObject(void* pObject);
+    void SelectObject(void* pObject);
     void RenameObject(void* pObject, const char* desc);
 };
 

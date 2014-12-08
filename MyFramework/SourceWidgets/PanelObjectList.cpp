@@ -152,6 +152,16 @@ wxTreeItemId PanelObjectList::FindObject(void* pObject)
     return id;
 }
 
+void PanelObjectList::SelectObject(void* pObject)
+{
+    wxTreeItemId id = FindObject(pObject);
+
+    if( id.IsOk() )
+    {
+        m_pTree_Objects->SelectItem( id );
+    }
+}
+
 void PanelObjectList::UpdateRootNodeObjectCount()
 {
     char tempstr[100];

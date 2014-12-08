@@ -78,7 +78,7 @@ public:
     void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
-    void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid);
+    void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
 
     void RebuildIndices();
 

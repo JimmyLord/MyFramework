@@ -790,7 +790,7 @@ void MyMesh::RebuildIndices()
     m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid)
+void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
 {
     if( m_pShaderGroup == 0 )
         return;
@@ -808,42 +808,60 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
     checkGlError( "Drawing Mesh Rebuild()" );
 
-    Shader_Base* pShader = ((Shader_Base*)m_pShaderGroup->GlobalPass());
-    if( pShader )
+    if( pShaderOverride )
     {
-        if( pShader->ActivateAndProgramShader( (VertexFormats)m_VertexFormat,
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &m_Position, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
+        int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
+        int indexbuffertype = GL_UNSIGNED_BYTE;
+        if( m_pIndexBuffer->m_BytesPerIndex == 2 )
+            indexbuffertype = GL_UNSIGNED_SHORT;
+        else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
+            indexbuffertype = GL_UNSIGNED_INT;
+        
+        Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass();
+        pShader->SetupAttributes( (VertexFormats)m_VertexFormat, m_pVertexBuffer, m_pIndexBuffer, false );
+        pShader->ProgramPosition( matviewproj, &m_Position );
+        MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+        //pShader->DeactivateShader( m_pVertexBuffer ); // disable attributes
+    }
+    else
+    {
+        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+        if( pShader )
         {
-            checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
-
-            pShader->ProgramCamera( campos );
-            checkGlError( "Drawing Mesh ProgramCamera()" );
-
-            pShader->ProgramLights( lights, numlights );
-            checkGlError( "Drawing Mesh ProgramCamera()" );
-
-            if( shadowlightwvp && shadowtexid != 0 )
-                pShader->ProgramShadowLight( &m_Position, shadowlightwvp, shadowtexid );
-
-            if( lightmaptexid != 0 )
+            if( pShader->ActivateAndProgramShader( (VertexFormats)m_VertexFormat,
+                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                matviewproj, &m_Position, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
             {
-                pShader->ProgramLightmap( lightmaptexid );
-                checkGlError( "Drawing Mesh ProgramLightmap()" );
+                checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
+
+                pShader->ProgramCamera( campos );
+                checkGlError( "Drawing Mesh ProgramCamera()" );
+
+                pShader->ProgramLights( lights, numlights );
+                checkGlError( "Drawing Mesh ProgramCamera()" );
+
+                if( shadowlightwvp && shadowtexid != 0 )
+                    pShader->ProgramShadowLight( &m_Position, shadowlightwvp, shadowtexid );
+
+                if( lightmaptexid != 0 )
+                {
+                    pShader->ProgramLightmap( lightmaptexid );
+                    checkGlError( "Drawing Mesh ProgramLightmap()" );
+                }
+
+                int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
+                int indexbuffertype = GL_UNSIGNED_BYTE;
+                if( m_pIndexBuffer->m_BytesPerIndex == 2 )
+                    indexbuffertype = GL_UNSIGNED_SHORT;
+                else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
+                    indexbuffertype = GL_UNSIGNED_INT;
+
+                MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+                checkGlError( "Drawing Mesh MyDrawElements()" );
+
+                pShader->DeactivateShader( m_pVertexBuffer );
+                checkGlError( "Drawing Mesh DeactivateShader()" );
             }
-
-            int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
-            int indexbuffertype = GL_UNSIGNED_BYTE;
-            if( m_pIndexBuffer->m_BytesPerIndex == 2 )
-                indexbuffertype = GL_UNSIGNED_SHORT;
-            else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
-                indexbuffertype = GL_UNSIGNED_INT;
-
-            MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 ); //The starting point of the IBO
-            checkGlError( "Drawing Mesh MyDrawElements()" );
-
-            pShader->DeactivateShader( m_pVertexBuffer );
-            checkGlError( "Drawing Mesh DeactivateShader()" );
         }
     }
 }

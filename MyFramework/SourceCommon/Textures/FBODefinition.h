@@ -30,8 +30,8 @@ public:
     GLuint m_DepthBufferID; // could be renderbuffer or texture depending on setup.
     GLuint m_FrameBufferID;
 
-    int m_Width;
-    int m_Height;
+    unsigned int m_Width;
+    unsigned int m_Height;
 
     int m_MinFilter;
     int m_MagFilter;
@@ -44,10 +44,11 @@ public:
     FBODefinition();
     virtual ~FBODefinition();
 
-    void Setup(int width, int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable);
+    void Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable);
     bool Create();
 
     void Bind();
+    void Unbind();
 
     void Invalidate(bool cleanglallocs);
 };
