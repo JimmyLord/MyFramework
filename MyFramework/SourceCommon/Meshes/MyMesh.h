@@ -48,6 +48,7 @@ protected:
 public:
     unsigned short m_NumVertsToDraw;
     unsigned int m_NumIndicesToDraw;
+    int m_PrimitiveType;
 
     TextureDefinition* m_pTexture;
     ColorByte m_Tint;
@@ -69,6 +70,8 @@ public:
     void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);
 
     void CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv);
+
+    void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
 
     ShaderGroup* GetShaderGroup() { return m_pShaderGroup; }
     void SetShaderGroup(ShaderGroup* pShaderGroup);

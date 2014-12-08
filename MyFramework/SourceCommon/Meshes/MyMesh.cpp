@@ -34,6 +34,7 @@ MyMesh::MyMesh()
 
     m_NumVertsToDraw = 0;
     m_NumIndicesToDraw = 0;
+    m_PrimitiveType = GL_TRIANGLES;
 
     m_pTexture = 0;
     m_Tint = ColorByte(255,255,255,255);
@@ -693,6 +694,70 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     }
 }
 
+void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
+{
+    assert( m_pVertexBuffer == 0 );
+    assert( m_pIndexBuffer == 0 );
+
+    unsigned short numverts = (halfnumbars*2+1) * 2 * 2;
+    unsigned int numindices = (halfnumbars*2+1) * 2 * 2; // halfnumbars*2+1centerline * 2axis * 2indicesperline.
+    m_NumVertsToDraw = numverts; // not optimizing reuse of corner verts.
+    m_NumIndicesToDraw = numindices;
+
+    if( m_pVertexBuffer == 0 )
+    {
+        m_VertexFormat = VertexFormat_XYZ;
+        Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
+        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
+    }
+
+    if( m_pIndexBuffer == 0 )
+    {
+        unsigned char* pIndices = MyNew unsigned char[numindices];
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
+    }
+
+    m_PrimitiveType = GL_LINES;
+
+    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_pVertexBuffer->m_pData;
+    unsigned char* pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
+
+    GLushort vertnum = 0;
+    int indexnum = 0;
+
+    // create verts
+    for( int i = -halfnumbars; i<=halfnumbars; i++ )
+    {
+        pVerts[vertnum].x = center.x + i*spacing;
+        pVerts[vertnum].y = center.y;
+        pVerts[vertnum].z = center.z + halfnumbars*spacing;
+        pIndices[indexnum] = vertnum;
+        vertnum++;
+        indexnum++;
+
+        pVerts[vertnum].x = center.x + i*spacing;
+        pVerts[vertnum].y = center.y;
+        pVerts[vertnum].z = center.z + -halfnumbars*spacing;
+        pIndices[indexnum] = vertnum;
+        vertnum++;
+        indexnum++;
+
+        pVerts[vertnum].x = center.x + halfnumbars*spacing;
+        pVerts[vertnum].y = center.y;
+        pVerts[vertnum].z = center.z + i*spacing;
+        pIndices[indexnum] = vertnum;
+        vertnum++;
+        indexnum++;
+
+        pVerts[vertnum].x = center.x + -halfnumbars*spacing;
+        pVerts[vertnum].y = center.y;
+        pVerts[vertnum].z = center.z + i*spacing;
+        pIndices[indexnum] = vertnum;
+        vertnum++;
+        indexnum++;
+    }
+}
+
 void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
 {
     m_pShaderGroup = pShaderGroup;
@@ -774,7 +839,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
                 indexbuffertype = GL_UNSIGNED_INT;
 
-            MyDrawElements( GL_TRIANGLES, m_NumIndicesToDraw, indexbuffertype, 0 ); //The starting point of the IBO
+            MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 ); //The starting point of the IBO
             checkGlError( "Drawing Mesh MyDrawElements()" );
 
             pShader->DeactivateShader( m_pVertexBuffer );
