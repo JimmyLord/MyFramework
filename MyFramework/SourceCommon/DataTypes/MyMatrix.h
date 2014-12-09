@@ -64,6 +64,9 @@ public:
     void CreateLookAtLeftHanded(const Vector3& eye, const Vector3& up, const Vector3& at);
     void CreateLookAt(const Vector3& eye, const Vector3& up, const Vector3& at);
 
+    // get values from matrix
+    Vector3 GetTranslation() { return Vector3( m41, m42, m43 ); }
+
     void Transpose()
     {
         float temp;

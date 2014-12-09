@@ -154,13 +154,31 @@ wxTreeItemId PanelObjectList::FindObject(void* pObject)
 
 void PanelObjectList::SelectObject(void* pObject)
 {
-    wxTreeItemId id = FindObject(pObject);
+    wxTreeItemId id = FindObject( pObject );
 
     if( id.IsOk() )
     {
         m_pTree_Objects->SelectItem( id );
     }
 }
+
+// not useful, since there's no indication of object type.
+//void* PanelObjectList::GetSelectedObject()
+//{
+//    wxTreeItemId id = m_pTree_Objects->GetSelection();
+//
+//    if( id.IsOk() )
+//    {
+//        wxTreeItemData* pData = m_pTree_Objects->GetItemData( id );
+//        if( pData )
+//        {
+//            void* objptr = ((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
+//            return objptr;
+//        }
+//    }
+//
+//    return 0;
+//}
 
 void PanelObjectList::UpdateRootNodeObjectCount()
 {

@@ -86,6 +86,7 @@ public:
 
     wxTreeItemId FindObject(void* pObject);
     void SelectObject(void* pObject);
+    //void* GetSelectedObject(); // not useful, since there's no indication of object type.
     void RenameObject(void* pObject, const char* desc);
 };
 
