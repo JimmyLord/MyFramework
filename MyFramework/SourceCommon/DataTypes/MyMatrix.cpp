@@ -67,8 +67,8 @@ void MyMatrix::CreateSRT(float scale, Vector3 rot, Vector3 pos)
     SetIdentity();
     Scale( scale );
     Rotate( rot.z, 0, 0, 1 ); // roll
-    Rotate( rot.x, 1, 0, 0 ); // yaw
-    Rotate( rot.y, 0, 1, 0 ); // pitch
+    Rotate( rot.x, 1, 0, 0 ); // pitch
+    Rotate( rot.y, 0, 1, 0 ); // yaw
     Translate( pos.x, pos.y, pos.z );
 }
 
@@ -77,8 +77,8 @@ void MyMatrix::CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos)
     SetIdentity();
     Scale( scale.x, scale.y, scale.z );
     Rotate( rot.z, 0, 0, 1 ); // roll
-    Rotate( rot.x, 1, 0, 0 ); // yaw
-    Rotate( rot.y, 0, 1, 0 ); // pitch
+    Rotate( rot.x, 1, 0, 0 ); // pitch
+    Rotate( rot.y, 0, 1, 0 ); // yaw
     Translate( pos.x, pos.y, pos.z );
 }
 
@@ -144,7 +144,7 @@ void MyMatrix::Rotate(float angle, float x, float y, float z)
         rotMat.m43 = 0.0f;
         rotMat.m44 = 1.0f;
 
-        *this = *this * rotMat;
+        *this = rotMat * *this;
     }
 }
 
@@ -267,4 +267,59 @@ void MyMatrix::CreateLookAt(const Vector3 &eye, const Vector3 &up, const Vector3
     m41 = -xaxis.Dot(eye);
     m42 = -yaxis.Dot(eye);
     m43 = -zaxis.Dot(eye);
+}
+
+Vector3 MyMatrix::GetEulerAngles()
+{
+    // from http://www.geometrictools.com/Documentation/EulerAngles.pdf and adapted to fit
+
+    //if( m32 < +1 )
+    //{
+    //    if( m32 > -1 )
+    //    {
+    //        float x = asin( m32 );
+    //        float y = atan2( -m31, m33 );
+    //        float z = atan2( -m12, m22 );
+    //        return vector3( x, y, z );
+    //    }
+    //    else // m32 = -1
+    //    {
+    //        // not a unique solution: thetaz - thetay = atan2(-m21,m11)
+    //        float x = pi/2;
+    //        float y = atan2( m21, m11 );
+    //        float z = 0;
+    //        return vector3( x, y, z );
+    //    }
+    //}
+    //else // m32 = +1
+    //{
+    //    // not a unique solution: thetaz + thetay = atan2(-m21,m11)
+    //    float x = -pi/2;
+    //    float y = -atan2( m21, m11 );
+    //    float z = 0;
+    //    return vector3( x, y, z );
+    //}
+
+    // rearranged from above and using FEQUALEPSILON to give special cases more chance of hitting
+    if( m32 > 1.0f - FEQUALEPSILON ) // Not a unique solution: thetaZ - thetaY = atan2( -m21, m11 )
+    {
+        float x = PI/2;
+        float y = atan2f( m21, m11 );
+        float z = 0.0f;
+        return Vector3( x, y, z );
+    }
+    else if( m32 < -1.0f + FEQUALEPSILON ) // Not a unique solution: thetaZ + thetaY = atan2( -m21, m11 )
+    {
+        float x = -PI/2;
+        float y = -atan2f( m21, m11 );
+        float z = 0.0f;
+        return Vector3( x, y, z );
+    }
+    else
+    {
+        float x = asinf( m32 );
+        float y = atan2f( -m31, m33 );
+        float z = atan2f( -m12, m22 );
+        return Vector3( x, y, z );
+    }
 }

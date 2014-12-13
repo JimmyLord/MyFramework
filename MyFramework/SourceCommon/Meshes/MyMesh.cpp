@@ -699,7 +699,7 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
     assert( m_pVertexBuffer == 0 );
     assert( m_pIndexBuffer == 0 );
 
-    unsigned short numverts = (halfnumbars*2+1) * 2 * 2;
+    unsigned char numverts = (unsigned char)((halfnumbars*2+1) * 2 * 2);
     unsigned int numindices = (halfnumbars*2+1) * 2 * 2; // halfnumbars*2+1centerline * 2axis * 2indicesperline.
     m_NumVertsToDraw = numverts; // not optimizing reuse of corner verts.
     m_NumIndicesToDraw = numindices;
@@ -722,7 +722,7 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
     Vertex_XYZ* pVerts = (Vertex_XYZ*)m_pVertexBuffer->m_pData;
     unsigned char* pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
 
-    GLushort vertnum = 0;
+    unsigned char vertnum = 0;
     int indexnum = 0;
 
     // create verts
@@ -764,7 +764,7 @@ void MyMesh::CreateEditorTransformWidgetAxis(float length, float thickness, Colo
     assert( m_pIndexBuffer == 0 );
 
     int numsides = 4;
-    unsigned short numverts = 2 * (numsides+1);
+    unsigned char numverts = (unsigned char)(2 * (numsides+1));
     unsigned int numindices = 6 * numsides;
     m_NumVertsToDraw = numverts;
     m_NumIndicesToDraw = numindices;
@@ -789,7 +789,7 @@ void MyMesh::CreateEditorTransformWidgetAxis(float length, float thickness, Colo
     Vertex_XYZ* pVerts = (Vertex_XYZ*)m_pVertexBuffer->m_pData;
     unsigned char* pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
 
-    GLushort vertnum = 0;
+    unsigned char vertnum = 0;
     int indexnum = 0;
 
     // create verts
