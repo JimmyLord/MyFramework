@@ -100,7 +100,7 @@ void MainFrame::AddPanes()
     // create the opengl canvas
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
     m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args, 0, true );
-    //m_pGLCanvas->SetSize( 600, 600 );
+    m_pGLCanvas->SetSize( 600, 600 );
 
     // create all the panels we need
     g_pPanelWatch = MyNew PanelWatch( this );
@@ -108,7 +108,7 @@ void MainFrame::AddPanes()
     g_pPanelObjectList = MyNew PanelObjectList( this );
 
     // add the panes to the manager
-    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Centre().Caption("GLCanvas") );
+    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Top().Caption("GLCanvas") );
     m_AUIManager.AddPane( g_pPanelWatch, wxAuiPaneInfo().Name("PanelWatch").Right().Caption("Watch").Layer(1) );
     m_AUIManager.AddPane( g_pPanelMemory, wxAuiPaneInfo().Name("PanelMemory").Right().Caption("Memory").Layer(1) );
     m_AUIManager.AddPane( g_pPanelObjectList, wxAuiPaneInfo().Name("PanelObjectList").Left().Caption("Objects").Layer(1) );
@@ -563,7 +563,7 @@ void MainGLCanvas::ResizeViewport(bool clearhack)
         }
     }
 
-    if( g_CurrentGLViewType == GLView_Full )
+    if( g_CurrentGLViewType == GLView_Full || m_GLCanvasID == 1 )
     {
         g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
     }
