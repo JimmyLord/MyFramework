@@ -20,6 +20,8 @@
 
 class FBODefinition : public CPPListNode, public RefCount
 {
+    friend class TextureManager;
+
 protected:
 
 public:
@@ -30,8 +32,11 @@ public:
     GLuint m_DepthBufferID; // could be renderbuffer or texture depending on setup.
     GLuint m_FrameBufferID;
 
-    unsigned int m_Width;
+    unsigned int m_Width; // size requested, mainly used by glViewport call.
     unsigned int m_Height;
+
+    unsigned int m_TextureWidth; // generally will be power of 2 bigger than requested width/height
+    unsigned int m_TextureHeight;
 
     int m_MinFilter;
     int m_MagFilter;
@@ -40,12 +45,14 @@ public:
     bool m_NeedDepthTexture;
     bool m_DepthIsTexture;
 
+protected:
+    bool Create(); // TextureManager will call this.
+
 public:
     FBODefinition();
     virtual ~FBODefinition();
 
     void Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable);
-    bool Create();
 
     void Bind();
     void Unbind();

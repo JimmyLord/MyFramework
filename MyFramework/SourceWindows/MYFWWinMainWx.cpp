@@ -24,6 +24,8 @@ bool g_CloseProgramRequested;
 
 bool m_KeysDown[512];
 
+unsigned int g_GLCanvasIDActive = 0;
+
 bool MYFW_GetKey(int value)
 {
     assert( value >= 0 && value < 512 );
@@ -31,8 +33,6 @@ bool MYFW_GetKey(int value)
 }
 
 GLViewTypes g_CurrentGLViewType;
-int g_CurrentGLViewWidth;
-int g_CurrentGLViewHeight;
 
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
@@ -81,24 +81,41 @@ MainFrame::MainFrame(wxWindow* parent)
         Connect( myID_GLViewType_Wide, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
     }
 
+    // notify wxAUI which frame to use
+    m_AUIManager.SetManagedWindow( this );
+}
+
+MainFrame::~MainFrame()
+{
+    SAFE_DELETE( g_pPanelWatch );
+    SAFE_DELETE( g_pPanelMemory );
+    SAFE_DELETE( g_pPanelObjectList );
+
+    // deinitialize the frame manager
+    m_AUIManager.UnInit();
+}
+
+void MainFrame::AddPanes()
+{
     // create the opengl canvas
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
-    m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args );
+    m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args, 0, true );
+    //m_pGLCanvas->SetSize( 600, 600 );
 
     // create all the panels we need
     g_pPanelWatch = MyNew PanelWatch( this );
     g_pPanelMemory = MyNew PanelMemory( this );
     g_pPanelObjectList = MyNew PanelObjectList( this );
 
-    // notify wxAUI which frame to use
-    m_AUIManager.SetManagedWindow( this );
-
     // add the panes to the manager
-    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Centre().Caption("GLCanvas").CaptionVisible(false) );
-    m_AUIManager.AddPane( g_pPanelWatch, wxAuiPaneInfo().Name("PanelWatch").Right().Caption("Watch") );
-    m_AUIManager.AddPane( g_pPanelMemory, wxAuiPaneInfo().Name("PanelMemory").Right().Caption("Memory") );
-    m_AUIManager.AddPane( g_pPanelObjectList, wxAuiPaneInfo().Name("PanelObjectList").Left().Caption("Objects") );
+    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Centre().Caption("GLCanvas") );
+    m_AUIManager.AddPane( g_pPanelWatch, wxAuiPaneInfo().Name("PanelWatch").Right().Caption("Watch").Layer(1) );
+    m_AUIManager.AddPane( g_pPanelMemory, wxAuiPaneInfo().Name("PanelMemory").Right().Caption("Memory").Layer(1) );
+    m_AUIManager.AddPane( g_pPanelObjectList, wxAuiPaneInfo().Name("PanelObjectList").Left().Caption("Objects").Layer(1) );
+}
 
+void MainFrame::UpdateAUIManagerAndLoadPerspective()
+{
     // tell the manager to "commit" all the changes just made
     m_AUIManager.Update();
 
@@ -116,16 +133,6 @@ MainFrame::MainFrame(wxWindow* parent)
         m_AUIManager.LoadPerspective( m_SavedPerspectiveString );
         delete[] string;
     }
-}
-
-MainFrame::~MainFrame()
-{
-    SAFE_DELETE( g_pPanelWatch );
-    SAFE_DELETE( g_pPanelMemory );
-    SAFE_DELETE( g_pPanelObjectList );
-
-    // deinitialize the frame manager
-    m_AUIManager.UnInit();
 }
 
 void MainFrame::OnQuit(wxCommandEvent& event)
@@ -245,11 +252,19 @@ void MainFrame::OnKeyReleased(wxKeyEvent& event)
     //    m_KeysDown[keycode] = false;
 }
 
+void MainFrame::ResizeViewport()
+{
+    m_pGLCanvas->ResizeViewport();
+}
+
 IMPLEMENT_APP( MainApp );
 
 bool MainApp::OnInit()
 {
     m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );
+    m_pMainFrame->AddPanes();
+    m_pMainFrame->UpdateAUIManagerAndLoadPerspective();
+    m_pMainFrame->ResizeViewport();
     m_pMainFrame->Show();
 
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
@@ -275,7 +290,7 @@ bool MainApp::OnInit()
     g_pGameCore->OnSurfaceChanged( 0, 0, size.x, size.y );
     g_pGameCore->OneTimeInit();
 
-    m_pMainFrame->m_pGLCanvas->ResizeViewport();
+    m_pMainFrame->ResizeViewport();
 
     return true;
 } 
@@ -326,20 +341,35 @@ BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
     EVT_IDLE(MainGLCanvas::Idle)
 END_EVENT_TABLE()
 
-MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args) :
-wxGLCanvas( parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE )
+int m_GLContextRefCount = 0;
+wxGLContext* m_GLContext = 0;
+
+MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool tickgamecore)
+: wxGLCanvas( parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE )
 {
-    m_GLContext = MyNew wxGLContext( this );
+    if( m_GLContext == 0 )
+        m_GLContext = MyNew wxGLContext( this );
+
+    m_GLCanvasID = ID;
+    m_TickGameCore = tickgamecore;
+
+    m_GLContextRefCount++;
+
     m_MouseDown = false;
 
     // To avoid flashing on MSW
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
+
+    m_LastTimeTicked = MyTime_GetSystemTime();
 }
 
 MainGLCanvas::~MainGLCanvas()
 {
     SAFE_DELETE( g_pGameCore );
-    delete m_GLContext;
+
+    m_GLContextRefCount--;
+    if( m_GLContextRefCount )
+        delete m_GLContext;
 }
 
 void MainGLCanvas::MakeContextCurrent()
@@ -349,12 +379,16 @@ void MainGLCanvas::MakeContextCurrent()
 
 void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     this->SetFocus();
 
     m_MouseDown = true;
@@ -364,6 +398,8 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
 void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     m_MouseDown = false;
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
@@ -371,6 +407,8 @@ void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
 
 void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( m_MouseDown )
     {
         m_MouseDown = false;
@@ -381,36 +419,48 @@ void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 
 void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Down, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Up, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Down, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseMiddleUp(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Up, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseWheelMoved(wxMouseEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Wheel, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation, 0 ); // new press
 }
 
 void MainGLCanvas::KeyPressed(wxKeyEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     int keycode = event.m_keyCode;
 
     //if( keycode == '1' )
@@ -454,6 +504,8 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
 
 void MainGLCanvas::KeyReleased(wxKeyEvent& event)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     int keycode = event.m_keyCode;
     
     if( keycode == 8 )
@@ -476,99 +528,114 @@ void MainGLCanvas::KeyReleased(wxKeyEvent& event)
 
 void MainGLCanvas::Resized(wxSizeEvent& evt)
 {
-//    wxGLCanvas::OnSize(evt);
+    g_GLCanvasIDActive = m_GLCanvasID;
+
+    //wxGLCanvas::OnSize(evt);
  
     if( g_pGameCore )
         g_pGameCore->OnSurfaceChanged( 0, 0, evt.GetSize().x, evt.GetSize().y );
 
-    g_CurrentGLViewWidth = evt.GetSize().x;
-    g_CurrentGLViewHeight = evt.GetSize().y;
+    m_CurrentGLViewWidth = evt.GetSize().x;
+    m_CurrentGLViewHeight = evt.GetSize().y;
 
     ResizeViewport();
 
     Refresh();
 }
 
-void MainGLCanvas::ResizeViewport()
+void MainGLCanvas::ResizeViewport(bool clearhack)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     if( g_pGameCore == 0 )
         return;
 
     // bit of a hack, but since we might be only using part of the screen, clear both buffers to black
-    for( int i=0; i<2; i++ )
+    if( clearhack )
     {
-        glDisable( GL_SCISSOR_TEST );
-        glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        for( int i=0; i<2; i++ )
+        {
+            glDisable( GL_SCISSOR_TEST );
+            glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-        SwapBuffers();
+            SwapBuffers();
+        }
     }
 
     if( g_CurrentGLViewType == GLView_Full )
     {
-        g_pGameCore->OnSurfaceChanged( 0, 0, g_CurrentGLViewWidth, g_CurrentGLViewHeight );
+        g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
     }
     else if( g_CurrentGLViewType == GLView_Tall )
     {
-        if( g_CurrentGLViewWidth-g_CurrentGLViewHeight/1.5f >= 0 )
+        if( m_CurrentGLViewWidth-m_CurrentGLViewHeight/1.5f >= 0 )
         {
-            g_pGameCore->OnSurfaceChanged( (g_CurrentGLViewWidth-g_CurrentGLViewHeight/1.5f)/2, 0,
-                g_CurrentGLViewHeight/1.5f, g_CurrentGLViewHeight );
+            g_pGameCore->OnSurfaceChanged( (m_CurrentGLViewWidth-m_CurrentGLViewHeight/1.5f)/2, 0,
+                m_CurrentGLViewHeight/1.5f, m_CurrentGLViewHeight );
         }
         else
         {
-            g_pGameCore->OnSurfaceChanged( 0, 0, g_CurrentGLViewWidth, g_CurrentGLViewHeight );
+            g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
         }
     }
     else if( g_CurrentGLViewType == GLView_Square )
     {
-        if( g_CurrentGLViewWidth < g_CurrentGLViewHeight )
+        if( m_CurrentGLViewWidth < m_CurrentGLViewHeight )
         {
-            g_pGameCore->OnSurfaceChanged( 0, (g_CurrentGLViewHeight-g_CurrentGLViewWidth)/2, g_CurrentGLViewWidth, g_CurrentGLViewWidth );
+            g_pGameCore->OnSurfaceChanged( 0, (m_CurrentGLViewHeight-m_CurrentGLViewWidth)/2, m_CurrentGLViewWidth, m_CurrentGLViewWidth );
         }
         else
         {
-            g_pGameCore->OnSurfaceChanged( (g_CurrentGLViewWidth-g_CurrentGLViewHeight)/2, 0, g_CurrentGLViewHeight, g_CurrentGLViewHeight );
+            g_pGameCore->OnSurfaceChanged( (m_CurrentGLViewWidth-m_CurrentGLViewHeight)/2, 0, m_CurrentGLViewHeight, m_CurrentGLViewHeight );
         }
     }
     else if( g_CurrentGLViewType == GLView_Wide )
     {
-        if( (g_CurrentGLViewHeight-g_CurrentGLViewWidth/1.5f)/2 >= 0 )
+        if( (m_CurrentGLViewHeight-m_CurrentGLViewWidth/1.5f)/2 >= 0 )
         {
-            g_pGameCore->OnSurfaceChanged( 0, (g_CurrentGLViewHeight-g_CurrentGLViewWidth/1.5f)/2,
-                g_CurrentGLViewWidth, g_CurrentGLViewWidth/1.5f );
+            g_pGameCore->OnSurfaceChanged( 0, (m_CurrentGLViewHeight-m_CurrentGLViewWidth/1.5f)/2,
+                m_CurrentGLViewWidth, m_CurrentGLViewWidth/1.5f );
         }
         else
         {
-            g_pGameCore->OnSurfaceChanged( 0, 0, g_CurrentGLViewWidth, g_CurrentGLViewHeight );
+            g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
         }
     }
 }
 
 void MainGLCanvas::Idle(wxIdleEvent& evt)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     Refresh();
 }
 
 void MainGLCanvas::Render(wxPaintEvent& evt)
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     Draw();
 }
 
 void MainGLCanvas::Draw()
 {
+    g_GLCanvasIDActive = m_GLCanvasID;
+
     wxGLCanvas::SetCurrent( *m_GLContext );
     wxPaintDC( this );
 
-    static double lasttime = MyTime_GetSystemTime();
-
     if( g_pGameCore )
     {
-        double currtime = MyTime_GetSystemTime();
-        double timepassed = currtime - lasttime;
-        lasttime = currtime;
+        if( m_TickGameCore )
+        {
+            double currtime = MyTime_GetSystemTime();
+            double timepassed = currtime - m_LastTimeTicked;
+            m_LastTimeTicked = currtime;
 
-        g_pGameCore->Tick( timepassed );
+            g_pGameCore->Tick( timepassed );
+        }
+
         g_pGameCore->OnDrawFrame();
         g_pGameCore->OnDrawFrameDone();
 

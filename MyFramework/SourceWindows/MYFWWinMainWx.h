@@ -49,6 +49,8 @@ void WinMain_CreateGameCore();
 MainFrame* WinMain_CreateMainFrame();
 void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
 
+extern unsigned int g_GLCanvasIDActive;
+
 // Main application class
 class MainApp : public wxApp
 {
@@ -78,28 +80,43 @@ public:
 public:
     MainFrame(wxWindow* parent);
     ~MainFrame();
+
+    virtual void AddPanes();
+    void UpdateAUIManagerAndLoadPerspective();
     
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
     void OnKeyPressed(wxKeyEvent& event);
     void OnKeyReleased(wxKeyEvent& event);
+
+    virtual void ResizeViewport();
 };
+
+extern int m_GLContextRefCount;
+extern wxGLContext* m_GLContext;
 
 // Main gl canvas class
 class MainGLCanvas : public wxGLCanvas
 {
 public:
-    wxGLContext* m_GLContext;
+    unsigned int m_GLCanvasID;
+
     bool m_MouseDown;
+    double m_LastTimeTicked;
+
+    bool m_TickGameCore;
  
+    int m_CurrentGLViewWidth;
+    int m_CurrentGLViewHeight;
+
 public:
-    MainGLCanvas(wxWindow* parent, int* args);
+    MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool tickgamecore);
     virtual ~MainGLCanvas();
 
     void MakeContextCurrent();
  
     void Resized(wxSizeEvent& evt);
-    void ResizeViewport();
+    void ResizeViewport(bool clearhack = true);
  
     void Idle(wxIdleEvent& evt);
     void Render(wxPaintEvent& evt);

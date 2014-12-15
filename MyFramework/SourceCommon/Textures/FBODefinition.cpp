@@ -29,6 +29,9 @@ FBODefinition::FBODefinition()
     m_Width = 0;
     m_Height = 0;
 
+    m_TextureWidth = 0;
+    m_TextureHeight = 0;
+
     m_MinFilter = GL_LINEAR;
     m_MagFilter = GL_LINEAR;
 
@@ -46,10 +49,27 @@ FBODefinition::~FBODefinition()
 
 void FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable)
 {
+    assert( width <= 4096 );
+    assert( height <= 4096 );
+
     m_Width = width;
     m_Height = height;
     m_MinFilter = minfilter;
     m_MagFilter = magfilter;
+
+    m_TextureWidth = 0;
+    m_TextureHeight = 0;
+
+    // loop from 64 to 4096 and find appropriate size.
+    for( unsigned int pow=6; pow<12; pow++ )
+    {
+        unsigned int powsize = (unsigned int)(1 << pow);
+
+        if( powsize >= width && m_TextureWidth == 0 )
+            m_TextureWidth = powsize;
+        if( powsize >= height && m_TextureHeight == 0 )
+            m_TextureHeight = powsize;
+    }
 
     m_NeedColorTexture = needcolor;
     m_NeedDepthTexture = needdepth;
@@ -90,11 +110,13 @@ bool FBODefinition::Create()
     LOGInfo( LOGTag, "CreateFBO - Low float range max: %d\n", range[1] );
 #endif
 
-    if( m_Width > (unsigned int)maxsize || m_Height > (unsigned int)maxsize )
+    if( m_TextureWidth > (unsigned int)maxsize || m_TextureHeight > (unsigned int)maxsize )
     {
         // requested size is too big.
         return false;
     }
+
+    assert( m_FrameBufferID == 0 );
 
     // get a framebuffer, render buffer and a texture from opengl.
     glGenFramebuffers( 1, &m_FrameBufferID );
@@ -126,8 +148,8 @@ bool FBODefinition::Create()
         if( m_ColorTextureID != 0 )
         {
             glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
-            //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+            //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
@@ -149,7 +171,7 @@ bool FBODefinition::Create()
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
             checkGlError( "glTexParameteri" );
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_Width, m_Height, 0,
+            glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_TextureWidth, m_TextureHeight, 0,
                           GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0 );
                           //GL_DEPTH_COMPONENT, GL_FLOAT, 0 );
             checkGlError( "glTexImage2D" );
@@ -159,7 +181,7 @@ bool FBODefinition::Create()
         else
         {
             glBindRenderbuffer( GL_RENDERBUFFER, m_DepthBufferID );
-            glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_Width, m_Height );
+            glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_TextureWidth, m_TextureHeight );
             checkGlError( "glRenderbufferStorageEXT" );
         }
     }
@@ -200,7 +222,7 @@ bool FBODefinition::Create()
         return false;
     }
 
-    LOGInfo( LOGTag, "CreateFBO - complete\n" );
+    LOGInfo( LOGTag, "CreateFBO - complete (%d, %d)\n", m_TextureWidth, m_TextureHeight );
 #else
     return false;
 #endif
