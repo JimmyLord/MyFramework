@@ -39,8 +39,9 @@ char* LoadFile(const char* filename, long* length)
         long size = ftell( filehandle );
         rewind( filehandle );
 
-        filecontents = MyNew char[size];
+        filecontents = MyNew char[size+1];
         fread( filecontents, size, 1, filehandle );
+        filecontents[size] = 0;
 
         if( length )
             *length = size;

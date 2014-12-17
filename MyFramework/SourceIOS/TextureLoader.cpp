@@ -106,6 +106,7 @@ FILE* IOS_fopen(const char* filepathnameext)
 //
 //char* LoadFile(const char* filename, int* length)
 //{
+//    assert( false ); // migrate to g_pFileManager->RequestFile( filename );
 //    char* filecontents = 0;
 //
 //    FILE* filehandle;

@@ -223,8 +223,9 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    //if( g_pGameCore )
-    //    g_pGameCore->OnKeyDown( keycode, keycode );
+    // hack for entity/component editor, control-space is the same as pressing 'p'
+    if( g_pGameCore && keycode == ' ' )
+        g_pGameCore->OnKeyDown( 'P', 'P' );
 
     //if( keycode < 512 )
     //    m_KeysDown[keycode] = true;

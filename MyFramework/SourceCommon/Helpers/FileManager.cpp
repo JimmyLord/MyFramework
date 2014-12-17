@@ -203,7 +203,7 @@ void MyFileObject::RequestFile(const char* filename)
 
 void MyFileObject::Tick()
 {
-    if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
+    if( m_FileReady == false && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
     {
         int length = 0;
 
@@ -390,12 +390,13 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
         long size = ftell( filehandle );
         rewind( filehandle );
 
-        filecontents = MyNew char[size];
+        filecontents = MyNew char[size+1];
         //filecontents = new(__FILE__, __LINE__) char[size];
         fread( filecontents, size, 1, filehandle );
+        filecontents[size] = 0;
 
         if( length )
-            *length = (int)size;
+            *length = (int)size+1;
         
         fclose( filehandle );
     }

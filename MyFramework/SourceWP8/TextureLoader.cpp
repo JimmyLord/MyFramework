@@ -45,6 +45,8 @@ MyFileObject* RequestFile(const char* filename)
 
 char* LoadFile(const char* filename, int* length)
 {
+    assert( false ); // migrate to g_pFileManager->RequestFile( filename );
+
     char* filecontents = 0;
 
     FILE* filehandle;
@@ -56,8 +58,9 @@ char* LoadFile(const char* filename, int* length)
         long size = ftell( filehandle );
         rewind( filehandle );
 
-        filecontents = MyNew char[size];
+        filecontents = MyNew char[size]; //+1];
         fread( filecontents, size, 1, filehandle );
+        //filecontents[size] = 0;
 
         if( length )
             *length = size;
