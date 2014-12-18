@@ -54,7 +54,9 @@ public:
 class MyFileObject : public CPPListNode, public RefCount
 {
 public:
-    char* m_Filename;
+    char* m_FullPath;
+    char* m_FilenameWithoutExtension;
+    char* m_ExtensionWithDot; // will be "." if no extension
     bool m_LoadFailed;
     bool m_FileReady;
     unsigned int m_FileLength;

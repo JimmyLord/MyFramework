@@ -103,7 +103,7 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
 
-        if( strcmp( filename, pFile->m_Filename ) == 0 )
+        if( strcmp( filename, pFile->m_FullPath ) == 0 )
             return pFile;
     }
 
@@ -111,7 +111,7 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
 
-        if( strcmp( filename, pFile->m_Filename ) == 0 )
+        if( strcmp( filename, pFile->m_FullPath ) == 0 )
             return pFile;
     }
 
@@ -127,7 +127,7 @@ void FileManager::Tick()
         pNextNode = pNode->GetNext();
 
         MyFileObject* pFile = (MyFileObject*)pNode;
-        LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_Filename );
+        LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
         // sanity check, make sure file isn't already loaded.
         assert( pFile->m_FileReady == false );
@@ -140,7 +140,7 @@ void FileManager::Tick()
             m_FilesLoaded.MoveTail( pFile );
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddFile( pFile, "Global", pFile->m_Filename, MyFileObject::StaticOnDrag );
+            g_pPanelMemory->AddFile( pFile, "Global", pFile->m_FullPath, MyFileObject::StaticOnDrag );
 #endif
         }
     }
@@ -148,7 +148,9 @@ void FileManager::Tick()
 
 MyFileObject::MyFileObject()
 {
-    m_Filename = 0;
+    m_FullPath = 0;
+    m_FilenameWithoutExtension = 0;
+    m_ExtensionWithDot = 0;
     m_LoadFailed = false;
     m_FileReady = false;
     m_FileLength = 0;
@@ -167,7 +169,9 @@ MyFileObject::~MyFileObject()
     if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
         Remove();
 
-    SAFE_DELETE_ARRAY( m_Filename );
+    SAFE_DELETE_ARRAY( m_FullPath );
+    SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
+    SAFE_DELETE_ARRAY( m_ExtensionWithDot );
     SAFE_DELETE_ARRAY( m_pBuffer );
 
 #if MYFW_USING_WX
@@ -197,8 +201,48 @@ void MyFileObject::RequestFile(const char* filename)
     if( len <= 0 )
         return;
 
-    m_Filename = MyNew char[len+1];
-    strcpy_s( m_Filename, len+1, filename );
+    m_FullPath = MyNew char[len+1];
+    strcpy_s( m_FullPath, len+1, filename );
+
+    int extensionstartlocation = len;
+    {
+        while( extensionstartlocation > 0 )
+        {
+            if( filename[extensionstartlocation] == '.' )
+            {
+                int extensionlen = len-extensionstartlocation;
+                m_ExtensionWithDot = MyNew char[extensionlen+1];
+                strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
+                m_ExtensionWithDot[extensionlen] = 0;
+                break;
+            }
+            extensionstartlocation--;
+        }
+
+        if( m_ExtensionWithDot == 0 )
+        {
+            m_ExtensionWithDot = MyNew char[2];
+            m_ExtensionWithDot[0] = '.';
+            m_ExtensionWithDot[1] = 0;
+        }
+    }
+
+    {
+        int i = extensionstartlocation;
+        while( i >= 0 )
+        {
+            if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
+            {
+                i++;
+                int namelen = extensionstartlocation-i;
+                m_FilenameWithoutExtension = MyNew char[namelen+1];
+                strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
+                m_FilenameWithoutExtension[namelen] = 0;
+                break;
+            }
+            i--;
+        }
+    }
 }
 
 void MyFileObject::Tick()
@@ -207,7 +251,7 @@ void MyFileObject::Tick()
     {
         int length = 0;
 
-        char* buffer = PlatformSpecific_LoadFile( m_Filename, &length, m_Filename, __LINE__ );
+        char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
         FakeFileLoad( buffer, length );
     }
 
