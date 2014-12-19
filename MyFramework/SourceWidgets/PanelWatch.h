@@ -44,6 +44,7 @@ class PanelWatchDropTarget : public wxDropTarget
 public:
     void* m_pCallbackObj;
     PanelWatchCallback m_pCallbackFunc;
+    int m_ControlIndex;
 
 public:
     PanelWatchDropTarget();

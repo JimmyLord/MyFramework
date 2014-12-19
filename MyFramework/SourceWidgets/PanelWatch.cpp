@@ -255,6 +255,7 @@ void PanelWatch::AddControlsForVariable(const char* name)
             PanelWatchDropTarget* pDropTarget = MyNew PanelWatchDropTarget;
             pDropTarget->m_pCallbackObj = m_pVariables[m_NumVariables].m_pCallbackObj;
             pDropTarget->m_pCallbackFunc = m_pVariables[m_NumVariables].m_pOnDropCallbackFunc;
+            pDropTarget->m_ControlIndex = m_NumVariables;
 
             m_pVariables[m_NumVariables].m_Handle_TextCtrl->SetDropTarget( pDropTarget );            
         }
@@ -267,7 +268,8 @@ void PanelWatch::AddControlsForVariable(const char* name)
 
 PanelWatchDropTarget::PanelWatchDropTarget()
 {
-    SetDataObject(MyNew wxCustomDataObject);
+    SetDataObject( MyNew wxCustomDataObject );
+    m_ControlIndex = -1;
 }
 
 wxDragResult PanelWatchDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
@@ -280,6 +282,7 @@ wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def
     // figure out which object the stuff was dropped on and let it know.
     assert( m_pCallbackObj && m_pCallbackFunc );
 
+    g_DragAndDropStruct.m_ID = m_ControlIndex;
     m_pCallbackFunc( m_pCallbackObj );
 
     return wxDragNone;

@@ -33,10 +33,13 @@ struct DragAndDropStruct
 {
     DragAndDropTypes m_Type;
     void* m_Value;
+    int m_ID;
 
     void Reset()
     {
         m_Type = DragAndDropType_NotSet;
+        m_Value = 0;
+        m_ID = -1;
     }
 };
 

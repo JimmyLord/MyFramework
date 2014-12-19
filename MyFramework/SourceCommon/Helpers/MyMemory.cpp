@@ -113,7 +113,7 @@ void* operator new(size_t size, char* file, unsigned long line)
     if( mo->m_file == 0 )
     {
         //assert( false );
-        LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
+        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
 #if MEMORY_ShowDebugInfo
@@ -143,7 +143,7 @@ void* operator new[](size_t size, char* file, unsigned long line)
     if( mo->m_file == 0 )
     {
         //assert( false );
-        LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
+        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
 #if MEMORY_ShowDebugInfo
@@ -173,7 +173,7 @@ void* operator new(size_t size)
     if( mo->m_file == 0 )
     {
         //assert( false );
-        LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
+        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
 #if MEMORY_ShowDebugInfo
@@ -228,7 +228,7 @@ void* operator new[](size_t size)
     if( mo->m_file == 0 )
     {
         //assert( false );
-        LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
+        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
 #if MEMORY_ShowDebugInfo
