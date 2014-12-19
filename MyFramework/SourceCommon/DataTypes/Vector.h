@@ -79,6 +79,9 @@ public:
     inline Vector3 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; z /= len; } return *this; }
     inline Vector3 Cross(const Vector3& o) const { return Vector3( (y*o.z - z*o.y), (z*o.x - x*o.z), (x*o.y - y*o.x) ); }
     inline float Dot(const Vector3 &o) const { return x*o.x + y*o.y + z*o.z; }
+    inline Vector3 Add(const Vector3& o) const { return Vector3(this->x + o.x, this->y + o.y, this->z + o.z); }
+    inline Vector3 Sub(const Vector3& o) const { return Vector3(this->x - o.x, this->y - o.y, this->z - o.z); }
+    inline Vector3 Scale(const float o) const { return Vector3(this->x * o, this->y * o, this->z * o); }
 
     inline bool operator ==(const Vector3& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z); }
     inline bool operator !=(const Vector3& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z); }
