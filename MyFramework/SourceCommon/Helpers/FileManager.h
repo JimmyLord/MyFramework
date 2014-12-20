@@ -48,11 +48,14 @@ public:
 
     MyFileObject* RequestFile(const char* filename);
     MyFileObject* FindFileByName(const char* filename);
+    void ReloadFile(MyFileObject* pFile);
     void Tick();
 };
 
 class MyFileObject : public CPPListNode, public RefCount
 {
+    friend FileManager;
+
 public:
     char* m_FullPath;
     char* m_FilenameWithoutExtension;
@@ -69,10 +72,12 @@ public:
     MyFileObject();
     ~MyFileObject();
 
+protected:
     void RequestFile(const char* filename);
-    void Tick();
 
+    void Tick();
     void FakeFileLoad(char* buffer, int length);
+    void UnloadContents();
 
 public:
 #if MYFW_USING_WX

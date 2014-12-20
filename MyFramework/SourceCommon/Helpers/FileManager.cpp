@@ -97,6 +97,14 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     return pFile;
 }
 
+void FileManager::ReloadFile(MyFileObject* pFile)
+{
+    assert( pFile );
+
+    pFile->UnloadContents();
+    m_FilesStillLoading.MoveTail( pFile );
+}
+
 MyFileObject* FileManager::FindFileByName(const char* filename)
 {
     for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
@@ -269,6 +277,22 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
     m_FileLength = length;
     m_BytesRead = length;
     m_FileReady = true;
+}
+
+void MyFileObject::UnloadContents()
+{
+    SAFE_DELETE_ARRAY( m_pBuffer );
+    m_FileLength = 0;
+    m_BytesRead = 0;
+    m_LoadFailed = false;
+    m_FileReady = false;
+
+    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
+
+#if MYFW_USING_WX
+    if( g_pPanelMemory )
+        g_pPanelMemory->RemoveFile( this );
+#endif
 }
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()
