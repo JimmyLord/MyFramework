@@ -224,12 +224,12 @@ void BufferDefinition::FreeBufferedData()
 {
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
 {
-    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex );
+    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc );
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)
 {
     assert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
 
@@ -275,6 +275,11 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
         m_pData = (char*)pData;
         m_Dirty = true;
     }
+
+#if MYFW_USING_WX
+    g_pPanelMemory->RemoveBuffer( this );
+    g_pPanelMemory->AddBuffer( this, category, desc );
+#endif
 }
 
 //====================================================
@@ -342,16 +347,12 @@ BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize
     return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc);
 }
 
-BufferDefinition* BufferManager::CreateBuffer(const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer()
 {
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
     BufferDefinition* pBufferDef = MyNew BufferDefinition();
     m_Buffers.AddTail( pBufferDef );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddBuffer( pBufferDef, category, desc );
-#endif
 
     return pBufferDef;
 }
@@ -360,9 +361,9 @@ BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize
 {
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
-    BufferDefinition* pBufferDef = CreateBuffer(category, desc);
+    BufferDefinition* pBufferDef = CreateBuffer();
 
-    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format );
+    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format, category, desc );
 
     return pBufferDef;
 }

@@ -196,6 +196,15 @@ void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, 
     UpdateRootNodeBufferCount();
 }
 
+void PanelMemory::UpdateBuffer(BufferDefinition* pBufferDef)
+{
+    wxTreeItemId idroot = m_pTree_Buffers->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_Buffers, pBufferDef, idroot );
+
+    //m_pTree_Buffers->
+}
+
 void PanelMemory::RemoveBuffer(BufferDefinition* pBufferDef)
 {
     wxTreeItemId idroot = m_pTree_Buffers->GetRootItem();

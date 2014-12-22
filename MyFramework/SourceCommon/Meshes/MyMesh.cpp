@@ -775,13 +775,13 @@ void MyMesh::CreateEditorTransformWidgetAxis(float length, float thickness, Colo
     {
         m_VertexFormat = VertexFormat_XYZ;
         Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
+        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_TransformAxis", "Verts" );
     }
 
     if( m_pIndexBuffer == 0 )
     {
         unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_TransformAxis", "Indices" );
     }
 
     m_PrimitiveType = GL_TRIANGLES;

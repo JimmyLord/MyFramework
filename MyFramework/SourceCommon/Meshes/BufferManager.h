@@ -71,8 +71,8 @@ public:
     void ResetVAOs();
 
     void FreeBufferedData();
-    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex);
-    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format);
+    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
 };
 
 //class VAODefinition : public CPPListNode, public RefCount
@@ -111,7 +111,7 @@ public:
     virtual ~BufferManager();
 
     // pData pointer passed in will be deleted by the BufferDefinition.
-    BufferDefinition* CreateBuffer(const char* category, const char* desc);
+    BufferDefinition* CreateBuffer();
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
     //VAODefinition* CreateVAO();

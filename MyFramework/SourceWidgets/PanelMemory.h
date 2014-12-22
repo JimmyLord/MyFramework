@@ -53,6 +53,7 @@ public:
 
     //void Refresh();
     void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
+    void UpdateBuffer(BufferDefinition* pBufferDef);
     void RemoveBuffer(BufferDefinition* pBufferDef);
 
     void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
