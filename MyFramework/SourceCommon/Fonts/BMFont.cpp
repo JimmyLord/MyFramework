@@ -77,6 +77,13 @@ void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
 
         switch( fileptr[0] )
         {
+        case 0: // end of file?
+            {
+                assert( fileptr == filebuffer + buffersize - 1 );
+                fileptr = filebuffer + buffersize;
+            }
+            break;
+
         case 1: // Block type 1: info
             {
                 fileptr += 1; // skip past the block type.
@@ -225,6 +232,12 @@ void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
                     fileptr += sizeof( m_KerningPairs[i].amount );
                 }
             }
+            break;
+
+        default:
+            assert( false );
+            LOGError( LOGTag, "Failed to load bmfont file %s\n", m_ImageName );
+            return;
             break;
         }
 
