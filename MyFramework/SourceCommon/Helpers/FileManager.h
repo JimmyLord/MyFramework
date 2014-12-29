@@ -42,7 +42,7 @@ public:
     virtual ~FileManager();
 
     void FreeFile(MyFileObject* pFile);
-    void FreeAllFiles();
+    //void FreeAllFiles();
 
     unsigned int CalculateTotalMemoryUsedByFiles();
 

@@ -34,7 +34,7 @@ FileManager::~FileManager()
 {
     assert( m_FilesLoaded.GetHead() == 0 );
     assert( m_FilesStillLoading.GetHead() == 0 );
-    FreeAllFiles();
+    //FreeAllFiles();
 }
 
 void FileManager::FreeFile(MyFileObject* pFile)
@@ -43,12 +43,12 @@ void FileManager::FreeFile(MyFileObject* pFile)
     pFile->Release(); // file's are refcounted, so release a reference to it.
 }
 
-void FileManager::FreeAllFiles()
-{
-    // TODO: remove this function... why did I put this here..
-    assert( m_FilesLoaded.GetHead() == 0 );
-    assert( m_FilesStillLoading.GetHead() == 0 );
-}
+//void FileManager::FreeAllFiles()
+//{
+//    // TODO: remove this function... why did I put this here..
+//    assert( m_FilesLoaded.GetHead() == 0 );
+//    assert( m_FilesStillLoading.GetHead() == 0 );
+//}
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 {

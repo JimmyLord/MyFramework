@@ -72,6 +72,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "DataTypes/CPPList.h"
 #include "Helpers/RefCount.h"
