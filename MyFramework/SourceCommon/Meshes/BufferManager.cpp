@@ -37,24 +37,28 @@ BufferDefinition::BufferDefinition()
     m_NextBufferIndex = 0;
 
 #if _DEBUG && MYFW_WINDOWS
-    for( int p=0; p<ShaderPass_NumTypes; p++ )
-    {
-        m_DEBUG_ShaderUsedOnCreation[p] = 0;
-        m_DEBUG_CurrentVAOIndex[p] = 0;
-    }
     for( int i=0; i<3; i++ )
     {
-        m_DEBUG_VBOUsedOnCreation[i] = 0;
-        m_DEBUG_IBOUsedOnCreation[i] = 0;
+        for( int p=0; p<ShaderPass_NumTypes; p++ )
+        {
+            m_DEBUG_ShaderUsedOnCreation[p][i] = 0;
+            m_DEBUG_CurrentVAOIndex[p] = 0; // not using [i].
+
+            m_DEBUG_VBOUsedOnCreation[p][i] = 0;
+            m_DEBUG_IBOUsedOnCreation[p][i] = 0;
+        }
     }
     m_DEBUG_LastFrameUpdated = -1;
 #endif
 
     m_CurrentBufferID = 0;
-    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    for( int i=0; i<3; i++ )
     {
-        m_CurrentVAOInitialized[p] = false;
-        m_CurrentVAOHandle[p] = 0;
+        for( int p=0; p<ShaderPass_NumTypes; p++ )
+        {
+            m_CurrentVAOInitialized[p][i] = false;
+            m_CurrentVAOHandle[p] = 0; // not using [i].
+        }
     }
 
     m_pData = 0;
@@ -214,9 +218,12 @@ void BufferDefinition::CreateAndBindVAO()
 
 void BufferDefinition::ResetVAOs()
 {
-    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    for( int i=0; i<3; i++ )
     {
-        m_CurrentVAOInitialized[p] = false;
+        for( int p=0; p<ShaderPass_NumTypes; p++ )
+        {
+            m_CurrentVAOInitialized[p][i] = false;
+        }
     }
 }
 

@@ -29,6 +29,7 @@ class BufferDefinition : public CPPListNode, public RefCount
 {
     friend class BufferManager;
     friend class PanelMemory;
+    friend class Shader_Base;
 
 protected:
     GLuint m_BufferIDs[3]; // up to 3 buffers created for double/triple buffering data.
@@ -39,15 +40,15 @@ protected:
 
 public:
 #if _DEBUG && MYFW_WINDOWS
-    Shader_Base* m_DEBUG_ShaderUsedOnCreation[ShaderPass_NumTypes];
+    Shader_Base* m_DEBUG_ShaderUsedOnCreation[ShaderPass_NumTypes][3];
     int m_DEBUG_CurrentVAOIndex[ShaderPass_NumTypes];
-    GLuint m_DEBUG_VBOUsedOnCreation[3];
-    GLuint m_DEBUG_IBOUsedOnCreation[3];
+    GLuint m_DEBUG_VBOUsedOnCreation[ShaderPass_NumTypes][3];
+    GLuint m_DEBUG_IBOUsedOnCreation[ShaderPass_NumTypes][3];
     int m_DEBUG_LastFrameUpdated;
 #endif
 
     GLuint m_CurrentBufferID;
-    bool m_CurrentVAOInitialized[ShaderPass_NumTypes];
+    bool m_CurrentVAOInitialized[ShaderPass_NumTypes][3];
     GLuint m_CurrentVAOHandle[ShaderPass_NumTypes];
 
     char* m_pData; // only using char* because android compiler doesn't like deleting void*(warning : deleting 'void*' is undefined)
