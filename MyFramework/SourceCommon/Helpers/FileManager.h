@@ -46,10 +46,13 @@ public:
 
     unsigned int CalculateTotalMemoryUsedByFiles();
 
-    MyFileObject* RequestFile(const char* filename);
-    MyFileObject* FindFileByName(const char* filename);
+    MyFileObject* RequestFile(const char* filename); // will add a ref.
+    MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
     void Tick();
+
+    MyFileObject* GetFirstFileLoaded() { return (MyFileObject*)m_FilesLoaded.GetHead(); }
+    MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }
 };
 
 class MyFileObject : public CPPListNode, public RefCount
