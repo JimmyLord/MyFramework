@@ -116,7 +116,10 @@ public:
 public:
     Vector4() {}
     Vector4(float nx, float ny, float nz, float nw) { x = nx; y = ny; z = nz; w = nw; }
+    Vector4(Vector3 vec, float nw) { x = vec.x; y = vec.y; z = vec.z; w = nw; }
     //virtual ~Vector4() {}
+
+    inline Vector3 XYZ() { return Vector3( x, y, z ); }
 
     inline void Set(float nx, float ny, float nz, float nw) { x = nx; y = ny; z = nz; w = nw; }
     inline float LengthSquared() const {return x*x + y*y + z*z + w*w;}
