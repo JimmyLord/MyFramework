@@ -120,9 +120,9 @@ void MainFrame::UpdateAUIManagerAndLoadPerspective()
     m_AUIManager.Update();
 
     m_DefaultPerspectiveString = m_AUIManager.SavePerspective();
-#pragma warning (disable : 4996)
-    FILE* file = fopen( "Layout.ini", "rb" );
-#pragma warning (default : 4996)
+    
+    FILE* file = 0;
+    fopen_s( &file, "Layout.ini", "rb" );
     if( file )
     {
         char* string = MyNew char[10000];
@@ -137,6 +137,8 @@ void MainFrame::UpdateAUIManagerAndLoadPerspective()
 
 void MainFrame::OnQuit(wxCommandEvent& event)
 {
+    OnClose();
+
     Close( true );
 }
 
@@ -149,11 +151,14 @@ void MainFrame::OnMenu(wxCommandEvent& event)
     case myID_SavePerspective:
         {
             m_SavedPerspectiveString = m_AUIManager.SavePerspective();
-#pragma warning (disable : 4996)
-            FILE* file = fopen( "Layout.ini", "wb" );
-#pragma warning (default : 4996)
-            fprintf( file, m_SavedPerspectiveString );
-            fclose( file );
+
+            FILE* file = 0;
+            fopen_s( &file, "Layout.ini", "wb" );
+            if( file )
+            {
+                fprintf( file, m_SavedPerspectiveString );
+                fclose( file );
+            }
         }
         break;
 
@@ -292,6 +297,7 @@ bool MainApp::OnInit()
     g_pGameCore->OneTimeInit();
 
     m_pMainFrame->ResizeViewport();
+    m_pMainFrame->OnPostInit();
 
     return true;
 } 

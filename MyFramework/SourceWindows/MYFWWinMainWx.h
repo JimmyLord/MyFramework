@@ -83,6 +83,8 @@ public:
 
     virtual void AddPanes();
     void UpdateAUIManagerAndLoadPerspective();
+    virtual void OnPostInit() {}
+    virtual void OnClose() {}
     
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
