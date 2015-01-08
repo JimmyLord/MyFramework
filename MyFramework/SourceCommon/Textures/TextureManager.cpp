@@ -137,6 +137,12 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
     return pFBODef;
 }
 
+void TextureManager::InvalidateFBO(FBODefinition* pFBO)
+{
+    pFBO->Invalidate( true );
+    m_UninitializedFBOs.MoveTail( pFBO );
+}
+
 void TextureManager::Tick()
 {
     // Initialize all FBOs

@@ -75,10 +75,12 @@ public:
     TextureManager();
     virtual ~TextureManager();
 
-    TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
-    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable);
     void Tick();
     
+    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable);
+    void InvalidateFBO(FBODefinition* pFBO);
+
+    TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
     GLuint CreateTextureFromBuffer(TextureDefinition* texturedef);
     TextureDefinition* FindTexture(const char* texturefilename);
 
