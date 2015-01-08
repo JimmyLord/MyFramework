@@ -31,6 +31,7 @@ public:
     {
         m_pLeftClickFunction = 0;
         m_pRightClickFunction = 0;
+        m_pLabelEditFunction = 0;
         m_pDragFunction = 0;
         m_pDropFunction = 0;
     }
@@ -38,6 +39,7 @@ public:
     void* m_pObject;
     PanelObjectListCallback m_pLeftClickFunction;
     PanelObjectListCallback m_pRightClickFunction;
+    PanelObjectListCallback m_pLabelEditFunction;
     PanelObjectListCallback m_pDragFunction;
     PanelObjectListCallback m_pDropFunction;
 }; 
@@ -62,6 +64,8 @@ public:
 protected:
     wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot);
     void OnTreeSelectionChanged(wxTreeEvent& event);
+    void OnTreeBeginLabelEdit(wxTreeEvent& event);
+    void OnTreeEndLabelEdit(wxTreeEvent& event);
     void OnTreeContextMenuRequested(wxTreeEvent& event);
     void OnDragBegin(wxTreeEvent& event);
     void UpdateRootNodeObjectCount();
@@ -81,12 +85,14 @@ public:
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc);
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc);
     void SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallback pDropFunction);
+    void SetLabelEditFunction(void* pObject, PanelObjectListCallback pLabelEditFunction);
     void RemoveObject(void* pObject);
     void* GetObject(wxTreeItemId id);
 
     wxTreeItemId FindObject(void* pObject);
     void SelectObject(void* pObject);
     //void* GetSelectedObject(); // not useful, since there's no indication of object type.
+    wxString GetObjectName(void* pObject);
     void RenameObject(void* pObject, const char* desc);
 };
 

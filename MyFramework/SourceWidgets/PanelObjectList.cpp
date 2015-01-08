@@ -23,7 +23,8 @@ PanelObjectList* g_pPanelObjectList = 0;
 PanelObjectList::PanelObjectList(wxFrame* parentframe)
 : wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
 {
-    m_pTree_Objects = MyNew wxTreeCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_Objects = MyNew wxTreeCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
+        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS );
     wxTreeItemId idroot = m_pTree_Objects->AddRoot( "Objects" );
 
     // setup a sizer to resize the tree
@@ -38,6 +39,8 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     Update();
 
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
+    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler(PanelObjectList::OnTreeBeginLabelEdit) );
+    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler(PanelObjectList::OnTreeEndLabelEdit) );
     Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelObjectList::OnTreeContextMenuRequested) );
     Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelObjectList::OnDragBegin) );
 }
@@ -56,6 +59,43 @@ void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
     if( pData && pData->m_pLeftClickFunction )
     {
         (pData->m_pLeftClickFunction)(pData->m_pObject);
+    }
+}
+
+void PanelObjectList::OnTreeBeginLabelEdit(wxTreeEvent& event)
+{
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    // don't allow edits if there's no callback.
+    if( pData == 0 || pData->m_pLabelEditFunction == 0 )
+    {
+        // cancel the edit
+        event.Veto();
+    }
+}
+
+void PanelObjectList::OnTreeEndLabelEdit(wxTreeEvent& event)
+{
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    if( pData && pData->m_pLabelEditFunction )
+    {
+        //// end the edit to commit the new name
+        //m_pTree_Objects->EndEditLabel( id );
+
+        wxString newlabel = event.GetLabel();
+
+        if( event.IsEditCancelled() == false )
+        {
+            // manually set the item to the new name, so the callback func can query for the name.
+            //    the edit process seems to happen later
+            RenameObject( pData->m_pObject, newlabel );
+
+            // Call the callback and let game code handle the new name
+            (pData->m_pLabelEditFunction)(pData->m_pObject);
+        }
     }
 }
 
@@ -294,6 +334,14 @@ void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCall
     pData->m_pDropFunction = pDropFunction;
 }
 
+void PanelObjectList::SetLabelEditFunction(void* pObject, PanelObjectListCallback pLabelEditFunction)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    pData->m_pLabelEditFunction = pLabelEditFunction;
+}
+
 void PanelObjectList::RemoveObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
@@ -319,6 +367,20 @@ void* PanelObjectList::GetObject(wxTreeItemId id)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
 
     return pData->m_pObject;
+}
+
+wxString PanelObjectList::GetObjectName(void* pObject)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
+
+    if( id.IsOk() )
+    {
+        return m_pTree_Objects->GetItemText( id );
+    }
+
+    return "";
 }
 
 void PanelObjectList::RenameObject(void* pObject, const char* desc)
