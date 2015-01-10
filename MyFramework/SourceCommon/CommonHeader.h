@@ -80,6 +80,7 @@
 #include "Helpers/Utility.h"
 #include "DataTypes/Vector.h"
 #include "DataTypes/MyMatrix.h"
+#include "DataTypes/Plane.h"
 #include "DataTypes/ColorStructs.h"
 #include "DataTypes/MyList.h"
 #include "DataTypes/MyActivePool.h"

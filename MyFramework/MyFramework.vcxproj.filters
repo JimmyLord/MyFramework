@@ -507,6 +507,9 @@
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\Plane.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1093,6 +1096,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h">
       <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\Plane.h">
+      <Filter>Source\DataTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

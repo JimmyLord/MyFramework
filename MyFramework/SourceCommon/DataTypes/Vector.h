@@ -116,6 +116,7 @@ public:
 public:
     Vector4() {}
     Vector4(float nx, float ny, float nz, float nw) { x = nx; y = ny; z = nz; w = nw; }
+    Vector4(Vector2 vec, float nz, float nw) { x = vec.x; y = vec.y; z = nz; w = nw; }
     Vector4(Vector3 vec, float nw) { x = vec.x; y = vec.y; z = vec.z; w = nw; }
     //virtual ~Vector4() {}
 
@@ -125,7 +126,8 @@ public:
     inline float LengthSquared() const {return x*x + y*y + z*z + w*w;}
     inline float Length() const { return sqrtf(x*x + y*y + z*z + w*w); }
 
-    inline Vector4 Normalize() const { float len = Length(); if( fequal(len,0) ) return Vector4(x,y,z,w); len = 1.0f/len; return Vector4(x*len, y*len, z*len, w*len); }
+    inline Vector4 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector4(x,y,z,w); len = 1.0f/len; return Vector4(x*len, y*len, z*len, w*len); }
+    inline Vector4 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; z /= len; w /= len; } return *this; }
     //Vector4 CrossProduct(const Vector4& b, const Vector4& c)
     // from http://www.gamedev.net/topic/269241-4d-vector-class/
     //  not sure if right and have no use for it.
