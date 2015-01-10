@@ -92,11 +92,11 @@ void PanelWatch::ClearAllVariables()
     m_NumVariables = 0;
 }
 
-void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
-        return;
+        return -1;
 
     m_pVariables[m_NumVariables].m_Pointer = pVar;
     m_pVariables[m_NumVariables].m_Range.Set( min, max );
@@ -111,13 +111,15 @@ void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void
     m_NumVariables++;
 
     UpdatePanel();
+
+    return m_NumVariables-1;
 }
 
-void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
-        return;
+        return -1;
 
     m_pVariables[m_NumVariables].m_Pointer = pVar;
     m_pVariables[m_NumVariables].m_Range.Set( 0, 0 );
@@ -132,53 +134,57 @@ void PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void
     m_NumVariables++;
 
     UpdatePanel();
+
+    return m_NumVariables-1;
 }
 
-void PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallback pOnValueChangedCallBackFunc)
+int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc );
 }
 
-void PanelWatch::AddSpace()
+int PanelWatch::AddSpace()
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
-        return;
+        return -1;
 
     m_pVariables[m_NumVariables].m_Pointer = 0;
     m_pVariables[m_NumVariables].m_Type = PanelWatchType_Unknown;
 
     m_NumVariables++;
+
+    return m_NumVariables-1;
 }
 
 void PanelWatch::AddControlsForVariable(const char* name)
@@ -317,8 +323,9 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
 
     wxString wxstr = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
 
+    bool isblank = false;
     if( wxstr == "" )
-        return;
+        isblank = true;
 
     // TODO: evaluate wxstr as math op, not just a simple atoi or atof.
 
@@ -327,40 +334,63 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
     switch( m_pVariables[controlid].m_Type )
     {
     case PanelWatchType_Int:
-        valueint = wxAtoi( wxstr );
-        *((int*)m_pVariables[controlid].m_Pointer) = valueint;
+        if( isblank == false )
+        {
+            valueint = wxAtoi( wxstr );
+            *((int*)m_pVariables[controlid].m_Pointer) = valueint;
+        }
         break;
 
     case PanelWatchType_Char:
-        valueint = wxAtoi( wxstr );
-        *((char*)m_pVariables[controlid].m_Pointer) = (char)valueint;
+        if( isblank == false )
+        {
+            valueint = wxAtoi( wxstr );
+            *((char*)m_pVariables[controlid].m_Pointer) = (char)valueint;
+        }
         break;
 
     case PanelWatchType_UnsignedChar:
-        valueint = wxAtoi( wxstr );
-        *((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valueint;
+        if( isblank == false )
+        {
+            valueint = wxAtoi( wxstr );
+            *((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valueint;
+        }
         break;
 
     case PanelWatchType_Bool:
-        valueint = wxAtoi( wxstr );
-        *((bool*)m_pVariables[controlid].m_Pointer) = valueint > 0 ? true : false;
+        if( isblank == false )
+        {
+            valueint = wxAtoi( wxstr );
+            *((bool*)m_pVariables[controlid].m_Pointer) = valueint > 0 ? true : false;
+        }
         break;
 
     case PanelWatchType_Float:
-        wxstr.ToDouble( &valuedouble );
-        *((float*)m_pVariables[controlid].m_Pointer) = (float)valuedouble;
+        if( isblank == false )
+        {
+            wxstr.ToDouble( &valuedouble );
+            *((float*)m_pVariables[controlid].m_Pointer) = (float)valuedouble;
+        }
         break;
 
     case PanelWatchType_Double:
-        wxstr.ToDouble( &valuedouble );
-        *((double*)m_pVariables[controlid].m_Pointer) = valuedouble;
+        if( isblank == false )
+        {
+            wxstr.ToDouble( &valuedouble );
+            *((double*)m_pVariables[controlid].m_Pointer) = valuedouble;
+        }
+        break;
+
+    case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_Unknown:
+    default:
         break;
     }
 
     // call the parent object to say it's value changed.
     if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
     {
-        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj );
+        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
     }
 }
 
@@ -398,7 +428,7 @@ void PanelWatch::OnSliderChanged(wxScrollEvent& event)
     // call the parent object to say it's value changed.
     if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
     {
-        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj );
+        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
     }
 
     UpdatePanel( controlid );

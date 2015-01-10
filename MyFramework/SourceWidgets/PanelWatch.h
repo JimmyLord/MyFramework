@@ -38,6 +38,7 @@ class PanelWatch;
 extern PanelWatch* g_pPanelWatch;
 
 typedef void (*PanelWatchCallback)(void*);
+typedef void (*PanelWatchCallbackWithID)(void*,int);
 
 class PanelWatchDropTarget : public wxDropTarget
 {
@@ -65,7 +66,7 @@ struct VariableProperties
     PanelWatch_Types m_Type;
     void* m_pCallbackObj;
     PanelWatchCallback m_pOnDropCallbackFunc;
-    PanelWatchCallback m_pOnValueChangedCallBackFunc;
+    PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
 };
 
 class PanelWatch : public wxScrolledWindow
@@ -98,17 +99,17 @@ public:
 
     void ClearAllVariables();
 
-    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallback pOnValueChangedCallBackFunc);
-    void AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallback pOnValueChangedCallBackFunc);
+    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc);
+    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc);
 
-    void AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallback pOnValueChangedCallBackFunc = 0);
-    void AddSpace();
+    int AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddSpace();
 };
 
 #endif // __PanelWatch_H__
