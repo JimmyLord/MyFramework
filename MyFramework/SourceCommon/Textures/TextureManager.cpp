@@ -122,6 +122,24 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
 
     m_TexturesStillLoading.AddTail( pTextureDef );
 
+    // if the file load hasn't started... start the file load.
+    assert( pTextureDef->m_pFile == 0 );
+#if MYFW_ANDROID
+    LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
+    if( pTextureDef->m_pFile == 0 )
+    {
+        pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
+        textureloaded = true;
+    }
+#else
+    if( pTextureDef->m_pFile == 0 )
+    {
+        LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
+        pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
+        LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
+    }
+#endif
+
     return pTextureDef;
 }
 
