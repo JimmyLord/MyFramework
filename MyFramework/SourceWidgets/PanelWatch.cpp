@@ -143,6 +143,11 @@ int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* 
     return AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
 }
 
+int PanelWatch::AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    return AddVariableOfType( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+}
+
 int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     return AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
@@ -341,6 +346,14 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
         }
         break;
 
+    case PanelWatchType_UnsignedInt:
+        if( isblank == false )
+        {
+            valueint = wxAtoi( wxstr );
+            *((unsigned int*)m_pVariables[controlid].m_Pointer) = valueint;
+        }
+        break;
+
     case PanelWatchType_Char:
         if( isblank == false )
         {
@@ -404,6 +417,10 @@ void PanelWatch::OnSliderChanged(wxScrollEvent& event)
         *((int*)m_pVariables[controlid].m_Pointer) = m_pVariables[controlid].m_Handle_Slider->GetValue();
         break;
 
+    case PanelWatchType_UnsignedInt:
+        *((unsigned int*)m_pVariables[controlid].m_Pointer) = m_pVariables[controlid].m_Handle_Slider->GetValue();
+        break;
+
     case PanelWatchType_Char:
         *((char*)m_pVariables[controlid].m_Pointer) = (char)m_pVariables[controlid].m_Handle_Slider->GetValue();
         break;
@@ -453,6 +470,14 @@ void PanelWatch::UpdatePanel(int controltoupdate)
                 int valueint = *(int*)m_pVariables[i].m_Pointer;
                 slidervalue = valueint;
                 sprintf_s( tempstring, 50, "%d", valueint );
+            }
+            break;
+
+        case PanelWatchType_UnsignedInt:
+            {
+                unsigned int valueuint = *(unsigned int*)m_pVariables[i].m_Pointer;
+                slidervalue = valueuint;
+                sprintf_s( tempstring, 50, "%d", valueuint );
             }
             break;
 
