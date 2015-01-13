@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -58,10 +50,10 @@ MainFrame::MainFrame(wxWindow* parent)
         m_View->Append( myID_ResetPerspective, wxT("&Reset window layout") );
 
         m_Aspect = MyNew wxMenu;
-        m_Aspect->Append( myID_GLViewType_Fill, wxT("&Fill") );
-        m_Aspect->Append( myID_GLViewType_Tall, wxT("&Tall") );
-        m_Aspect->Append( myID_GLViewType_Square, wxT("&Square") );
-        m_Aspect->Append( myID_GLViewType_Wide, wxT("&Wide") );
+        m_Aspect->Append( myID_GLViewType_Fill, wxT("&Fill\tAlt-1") );
+        m_Aspect->Append( myID_GLViewType_Tall, wxT("&Tall\tAlt-2") );
+        m_Aspect->Append( myID_GLViewType_Square, wxT("&Square\tAlt-3") );
+        m_Aspect->Append( myID_GLViewType_Wide, wxT("&Wide\tAlt-4") );
 
         m_MenuBar = MyNew wxMenuBar;
         m_MenuBar->Append( m_File, wxT("&File") );
@@ -196,26 +188,26 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
 {
     int keycode = event.m_keyCode;
 
-    if( keycode == '1' )
-    {
-        g_CurrentGLViewType = GLView_Full;
-        m_pGLCanvas->ResizeViewport();
-    }
-    if( keycode == '2' )
-    {
-        g_CurrentGLViewType = GLView_Tall;
-        m_pGLCanvas->ResizeViewport();
-    }
-    if( keycode == '3' )
-    {
-        g_CurrentGLViewType = GLView_Square;
-        m_pGLCanvas->ResizeViewport();
-    }
-    if( keycode == '4' )
-    {
-        g_CurrentGLViewType = GLView_Wide;
-        m_pGLCanvas->ResizeViewport();
-    }
+    //if( keycode == '1' )
+    //{
+    //    g_CurrentGLViewType = GLView_Full;
+    //    m_pGLCanvas->ResizeViewport();
+    //}
+    //if( keycode == '2' )
+    //{
+    //    g_CurrentGLViewType = GLView_Tall;
+    //    m_pGLCanvas->ResizeViewport();
+    //}
+    //if( keycode == '3' )
+    //{
+    //    g_CurrentGLViewType = GLView_Square;
+    //    m_pGLCanvas->ResizeViewport();
+    //}
+    //if( keycode == '4' )
+    //{
+    //    g_CurrentGLViewType = GLView_Wide;
+    //    m_pGLCanvas->ResizeViewport();
+    //}
 
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
