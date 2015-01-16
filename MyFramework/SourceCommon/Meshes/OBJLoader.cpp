@@ -161,6 +161,9 @@ Vector3 ParseVertex(char* buffer, int index)
         }
     }
 
+    if( outvector.LengthSquared() == 0 )
+        int bp = 1;
+
     return outvector;
 }
 
@@ -306,18 +309,14 @@ void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppI
         }
     }
 
-    // parse the first face, to see how many attributes we need to allocate.
+    // check the first face, to see how many attributes we need to allocate.
     int numcomponents = 0;
-    //int numattributes = 0;
-    int numvertsinaface = 0;
 
     {
         for( int i=0; i<3; i++ )
         {
             if( Faces[0].attributes[0][i] != 0 )
             {
-                //numattributes++;
-
                 if( i == 1 )
                     numcomponents += 2; // uv
                 else
@@ -325,41 +324,55 @@ void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppI
             }
         }
 
-        for( int i=0; i<4; i++ )
-        {
-            if( Faces[0].attributes[i][0] != 0 ) // if has position
-                numvertsinaface++;
-        }
+        //for( int i=0; i<4; i++ )
+        //{
+        //    if( Faces[0].attributes[i][0] != 0 ) // if it has a position, index 0 is an invalid vertex position
+        //        numvertsinaface++;
+        //}
     }
 
-    // for worst case scenerio, where each vertex is unique.
-    int numverts = facecount * numvertsinaface;
+    // we need a vert count, the number will be different if we remove dupes or not.
+    int numverts = 0;
+    int numtriangles = 0;
 
-    // try to reduce the number of vertices by searching for duplicate vertices in face list.
-    //   needs some serious optimizing. TODO: optimize this step.
+    // count the number of verts and triangles and copy the vertex indices into the face list.
     {
         double starttime = MyTime_GetSystemTime();
 
         numverts = 0;
+        numtriangles = 0;
         int dupesfound = 0;
 
         // loop through all faces and vertices
         for( int f=0; f<facecount; f++ )
         {
-            if( f % 10000 == 0 )
+            if( removeduplicatevertices )
             {
-                double endtime = MyTime_GetSystemTime();
-                LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, f, dupesfound );
+                if( f % 10000 == 0 )
+                {
+                    double endtime = MyTime_GetSystemTime();
+                    LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, f, dupesfound );
+                }
             }
 
-            for( int v=0; v<numvertsinaface; v++ )
+            int numvertsinface = 3;
+            numtriangles++;
+            if( Faces[f].attributes[3][0] != 0 ) // if the 4th vertex has a valid position index, then it's a valid vert
             {
+                numvertsinface = 4;
+                numtriangles++;
+            }
+
+            for( int v=0; v<numvertsinface; v++ )
+            {
+                // try to reduce the number of vertices by searching for duplicate vertices in face list.
+                //   needs some serious optimizing. TODO: optimize this step.
                 // search all previous vertices looking for a duplicate.
                 if( removeduplicatevertices )
                 {
                     for( int origf=0; origf < f; origf++ )
                     {
-                        for( int origv=0; origv < numvertsinaface; origv++ )
+                        for( int origv=0; origv < numvertsinface; origv++ )
                         {
                             if( Faces[f].attributes[v][0] == Faces[origf].attributes[origv][0] &&
                                 Faces[f].attributes[v][1] == Faces[origf].attributes[origv][1] &&
@@ -382,11 +395,14 @@ foundduplicate_skiptonextvert:
 
         double endtime = MyTime_GetSystemTime();
 
-        LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, facecount, dupesfound );
+        if( removeduplicatevertices )
+        {
+            LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, facecount, dupesfound );
+        }
     }
     
     int vertbuffersize = numverts * numcomponents;
-    int indexcount = facecount * ( numvertsinaface == 3 ? 3 : 6 );
+    int indexcount = numtriangles * 3;
 
     int bytesperindex = 1;
     if( numverts > 255 && numverts < 65536 )
@@ -410,7 +426,11 @@ foundduplicate_skiptonextvert:
             vertindices[2] = Faces[f].vertindex[2] - 1;
             vertindices[3] = Faces[f].vertindex[3] - 1;
 
-            for( int v=0; v<numvertsinaface; v++ )
+            int numvertsinface = 3;
+            if( Faces[f].attributes[3][0] != 0 ) // if the 4th vertex has a valid position index, then it's a valid vert
+                numvertsinface = 4;
+
+            for( int v=0; v<numvertsinface; v++ )
             {
                 int attroffset = vertindices[v] * numcomponents;
 
@@ -435,13 +455,13 @@ foundduplicate_skiptonextvert:
                 }
             }
 
-            if( numvertsinaface == 3 )
+            if( numvertsinface == 3 )
             {
                 SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
             }
-            else if( numvertsinaface == 4 )
+            else if( numvertsinface == 4 )
             {
                 SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
@@ -456,7 +476,7 @@ foundduplicate_skiptonextvert:
                 assert( false );
             }
 
-            vertcount += numvertsinaface;
+            vertcount += numvertsinface;
         }
     }
 
