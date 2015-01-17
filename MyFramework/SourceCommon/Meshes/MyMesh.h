@@ -17,11 +17,7 @@ class VAODefinition;
 class MyLight;
 class ShaderGroup;
 
-//struct Vertex_XYZUV;
-struct Vertex_XYZUVNorm;
-//#include "../Shaders/VertexFormats.h"
-
-class MyMesh
+class MyMesh : public CPPListNode, public RefCount
 {
 protected:
     ShaderGroup* m_pShaderGroup;
@@ -30,14 +26,11 @@ protected:
     
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
-    //VAODefinition* m_pVAO;
-
-    //Vertex_Base* m_pVerts;
-    //unsigned short* m_pIndices;
-    //unsigned int m_NumVerts;
-    //unsigned int m_NumIndices;
 
 public:
+    MyFileObject* m_pSourceFile;
+    bool m_MeshReady;
+
     unsigned short m_NumVertsToDraw;
     unsigned int m_NumIndicesToDraw;
     int m_PrimitiveType;
@@ -55,7 +48,7 @@ public:
 
     void CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic = false);
 
-    void CreateFromOBJBuffer(char* objbuffer);
+    void CreateFromOBJFile(MyFileObject* pFile);
 
     void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags);
     void CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags);
@@ -75,8 +68,8 @@ public:
 
     void RebuildIndices();
 
-    unsigned short GetNumVerts();// { return m_NumVerts; }
-    unsigned int GetNumIndices();// { return m_NumIndices; }
+    unsigned short GetNumVerts();
+    unsigned int GetNumIndices();
     Vertex_Base* GetVerts(bool markdirty);
     unsigned short* GetIndices(bool markdirty);
 };

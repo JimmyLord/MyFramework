@@ -12,17 +12,15 @@
 
 MyMesh::MyMesh()
 {
+    m_pSourceFile = 0;
+    m_MeshReady = false;
+
     m_VertexFormat = -1;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    //m_pVAO = 0;
 
     m_pShaderGroup = 0;
-    //m_pVerts = 0;
-    //m_pIndices = 0;
-    //m_NumVerts = 0;
-    //m_NumIndices = 0;
 
     m_NumVertsToDraw = 0;
     m_NumIndicesToDraw = 0;
@@ -34,13 +32,19 @@ MyMesh::MyMesh()
     m_Shininess = 200;
 
     m_Position.SetIdentity();
+
+    g_pMeshManager->AddMesh( this );
 }
 
 MyMesh::~MyMesh()
 {
+    if( this->Prev )
+        this->Remove();
+
+    SAFE_RELEASE( m_pSourceFile );
+
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
-    //SAFE_RELEASE( m_pVAO );
 }
 
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
@@ -87,15 +91,23 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
     //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
-void MyMesh::CreateFromOBJBuffer(char* objbuffer)
+void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 {
-//    assert( m_pVertexBuffer == 0 );
-//    assert( m_pIndexBuffer == 0 );
+    pFile->AddRef();
+    SAFE_RELEASE( m_pSourceFile );
+    m_pSourceFile = pFile;
 
-    LoadBasicOBJ( objbuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
+    m_MeshReady = false;
 
-    m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-    m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+    if( pFile->m_FileReady )
+    {
+        LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
+
+        m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+        m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+
+        m_MeshReady = true;
+    }
 }
 
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
@@ -226,6 +238,8 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
             pIndices[6*side + 5] = 4*side + 3;
         }
     }
+
+    m_MeshReady = true;
 }
 
 void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags)
@@ -364,6 +378,8 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
             pIndices[6*side + 5] = 4*side + 3;
         }
     }
+
+    m_MeshReady = true;
 }
 
 void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR)
@@ -415,6 +431,8 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
     pVerts[4*side + 1].col = TR;
     pVerts[4*side + 2].col = BL;
     pVerts[4*side + 3].col = BR;
+
+    m_MeshReady = true;
 }
 
 void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv)
@@ -684,6 +702,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
             indexnum += 3;
         }
     }
+
+    m_MeshReady = true;
 }
 
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
@@ -748,6 +768,8 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
         vertnum++;
         indexnum++;
     }
+
+    m_MeshReady = true;
 }
 
 void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color)
@@ -810,6 +832,8 @@ void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, Color
         vertnum += 2;
         indexnum += 6;
     }
+
+    m_MeshReady = true;
 }
 
 void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
@@ -846,6 +870,15 @@ void MyMesh::RebuildIndices()
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
 {
+    if( m_MeshReady == false )
+    {
+        if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
+        {
+            CreateFromOBJFile( m_pSourceFile );
+        }
+        return;
+    }
+
     if( m_pShaderGroup == 0 )
         return;
 

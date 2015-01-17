@@ -4035,6 +4035,7 @@
     <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp" />
     <ClCompile Include="SourceCommon\JSON\cJSONHelpers.cpp" />
     <ClCompile Include="SourceCommon\Meshes\BufferManager.cpp" />
+    <ClCompile Include="SourceCommon\Meshes\MeshManager.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyLight.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp" />
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp" />
@@ -7256,6 +7257,7 @@
     <ClInclude Include="SourceCommon\Helpers\Utility.h" />
     <ClInclude Include="SourceCommon\JSON\cJSONHelpers.h" />
     <ClInclude Include="SourceCommon\Meshes\BufferManager.h" />
+    <ClInclude Include="SourceCommon\Meshes\MeshManager.h" />
     <ClInclude Include="SourceCommon\Meshes\MyLight.h" />
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h" />
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h" />

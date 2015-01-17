@@ -510,6 +510,9 @@
     <ClCompile Include="SourceCommon\DataTypes\Plane.cpp">
       <Filter>Source\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MeshManager.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1099,6 +1102,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\Plane.h">
       <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\MeshManager.h">
+      <Filter>Source\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

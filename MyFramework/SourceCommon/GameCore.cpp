@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -58,6 +50,7 @@ GameCore::~GameCore()
 
     SAFE_DELETE( g_pTextureManager );
     SAFE_DELETE( g_pBufferManager );
+    SAFE_DELETE( g_pMeshManager );
     SAFE_DELETE( g_pShaderManager );
     SAFE_DELETE( g_pShaderGroupManager );
     SAFE_DELETE( m_pSoundPlayer );
@@ -81,6 +74,8 @@ void GameCore::InitializeManagers()
         g_pTextureManager = MyNew TextureManager;
     if( g_pBufferManager == 0 )
         g_pBufferManager = MyNew BufferManager;
+    if( g_pMeshManager == 0 )
+        g_pMeshManager = MyNew MeshManager;
     if( g_pShaderManager == 0 )
         g_pShaderManager = MyNew ShaderManager;
     if( g_pShaderGroupManager == 0 )
