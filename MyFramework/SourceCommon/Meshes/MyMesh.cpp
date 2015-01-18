@@ -984,3 +984,8 @@ unsigned short* MyMesh::GetIndices(bool markdirty)
 
     return (unsigned short*)m_pIndexBuffer->m_pData;
 }
+
+unsigned int MyMesh::GetStride()
+{
+    return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
+}

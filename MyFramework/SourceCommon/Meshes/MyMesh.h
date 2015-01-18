@@ -72,6 +72,7 @@ public:
     unsigned int GetNumIndices();
     Vertex_Base* GetVerts(bool markdirty);
     unsigned short* GetIndices(bool markdirty);
+    unsigned int GetStride();
 };
 
 #endif //__MyMesh_H__
