@@ -354,6 +354,7 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
 
     m_GLContextRefCount++;
 
+    m_MouseCaptured_ButtonsHeld = 0;
     m_MouseDown = false;
 
     // To avoid flashing on MSW
@@ -380,12 +381,20 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseMoved Event, %d, %d\n", event.m_x, event.m_y );
+
     if( g_pGameCore )
         g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 {
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        CaptureMouse();
+    m_MouseCaptured_ButtonsHeld++;
+
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseLeftDown Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     this->SetFocus();
@@ -397,6 +406,12 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
 void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
 {
+    m_MouseCaptured_ButtonsHeld--;
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        ReleaseMouse();
+
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseLeftUp Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     m_MouseDown = false;
@@ -408,16 +423,22 @@ void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( m_MouseDown )
-    {
-        m_MouseDown = false;
-        if( g_pGameCore )
-            g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
-    }
+    //if( m_MouseDown )
+    //{
+    //    m_MouseDown = false;
+    //    if( g_pGameCore )
+    //        g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    //}
 }
 
 void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
 {
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        CaptureMouse();
+    m_MouseCaptured_ButtonsHeld++;
+
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseRightDown Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     if( g_pGameCore )
@@ -426,6 +447,12 @@ void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
 
 void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
 {
+    m_MouseCaptured_ButtonsHeld--;
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        ReleaseMouse();
+
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseRightUp Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     if( g_pGameCore )
@@ -434,6 +461,12 @@ void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
 
 void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
 {
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        CaptureMouse();
+    m_MouseCaptured_ButtonsHeld++;
+    
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseMiddleDown Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     if( g_pGameCore )
@@ -442,6 +475,12 @@ void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
 
 void MainGLCanvas::MouseMiddleUp(wxMouseEvent& event)
 {
+    m_MouseCaptured_ButtonsHeld--;
+    if( m_MouseCaptured_ButtonsHeld == 0 )
+        ReleaseMouse();
+
+    //LOGInfo( LOGTag, "MainGLCanvas::MouseMiddleUp Event, %d\n", m_MouseCaptured_ButtonsHeld );
+
     g_GLCanvasIDActive = m_GLCanvasID;
 
     if( g_pGameCore )
