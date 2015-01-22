@@ -188,27 +188,6 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
 {
     int keycode = event.m_keyCode;
 
-    //if( keycode == '1' )
-    //{
-    //    g_CurrentGLViewType = GLView_Full;
-    //    m_pGLCanvas->ResizeViewport();
-    //}
-    //if( keycode == '2' )
-    //{
-    //    g_CurrentGLViewType = GLView_Tall;
-    //    m_pGLCanvas->ResizeViewport();
-    //}
-    //if( keycode == '3' )
-    //{
-    //    g_CurrentGLViewType = GLView_Square;
-    //    m_pGLCanvas->ResizeViewport();
-    //}
-    //if( keycode == '4' )
-    //{
-    //    g_CurrentGLViewType = GLView_Wide;
-    //    m_pGLCanvas->ResizeViewport();
-    //}
-
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
     if( keycode == 314 )
@@ -222,7 +201,13 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
 
     // hack for entity/component editor, control-space is the same as pressing 'p'
     if( g_pGameCore && keycode == ' ' )
+    {
         g_pGameCore->OnKeyDown( 'P', 'P' );
+    }
+    else
+    {
+        g_pGameCore->OnKeyDown( keycode, keycode );
+    }
 
     //if( keycode < 512 )
     //    m_KeysDown[keycode] = true;
@@ -243,8 +228,8 @@ void MainFrame::OnKeyReleased(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    //if( g_pGameCore )
-    //    g_pGameCore->OnKeyUp( keycode, keycode );
+    if( g_pGameCore )
+        g_pGameCore->OnKeyUp( keycode, keycode );
 
     //if( keycode < 512 )
     //    m_KeysDown[keycode] = false;

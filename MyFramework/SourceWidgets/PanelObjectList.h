@@ -61,6 +61,9 @@ class PanelObjectList : public wxPanel
 public:
     wxTreeCtrl* m_pTree_Objects;
 
+    void* m_pCallbackFunctionObject;
+    PanelObjectListCallback m_pOnTreeSelectionChangedFunction;
+
 protected:
     wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot);
     void OnTreeSelectionChanged(wxTreeEvent& event);
@@ -90,7 +93,7 @@ public:
     void* GetObject(wxTreeItemId id);
 
     wxTreeItemId FindObject(void* pObject);
-    void SelectObject(void* pObject);
+    void SelectObject(void* pObject); // pass in 0 to unselect all.
     //void* GetSelectedObject(); // not useful, since there's no indication of object type.
     wxString GetObjectName(void* pObject);
     void RenameObject(void* pObject, const char* desc);

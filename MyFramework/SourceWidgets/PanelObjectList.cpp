@@ -24,7 +24,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
 : wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
 {
     m_pTree_Objects = MyNew wxTreeCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
-        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS );
+        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
     wxTreeItemId idroot = m_pTree_Objects->AddRoot( "Objects" );
 
     // setup a sizer to resize the tree
@@ -35,6 +35,9 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     PanelObjectListDropTarget* pDropTarget = MyNew PanelObjectListDropTarget;
     pDropTarget->m_pPanelObjectList = this;
     m_pTree_Objects->SetDropTarget( pDropTarget );
+
+    m_pCallbackFunctionObject = 0;
+    m_pOnTreeSelectionChangedFunction = 0;
 
     Update();
 
@@ -52,13 +55,24 @@ PanelObjectList::~PanelObjectList()
 
 void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
-    // pass left click event through to the item.
-    wxTreeItemId id = event.GetItem();
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-    //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
-    if( pData && pData->m_pLeftClickFunction )
+    //LOGInfo( LOGTag, "PanelObjectList::OnTreeSelectionChanged\n" );
+
+    m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
+
+    wxArrayTreeItemIds selecteditems;
+
+    unsigned int numselected = m_pTree_Objects->GetSelections( selecteditems );
+
+    for( unsigned int i=0; i<numselected; i++ )
     {
-        (pData->m_pLeftClickFunction)(pData->m_pObject);
+        // pass left click event through to the item.
+        wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+        //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
+        if( pData && pData->m_pLeftClickFunction )
+        {
+            pData->m_pLeftClickFunction( pData->m_pObject );
+        }
     }
 }
 
@@ -94,7 +108,7 @@ void PanelObjectList::OnTreeEndLabelEdit(wxTreeEvent& event)
             RenameObject( pData->m_pObject, newlabel );
 
             // Call the callback and let game code handle the new name
-            (pData->m_pLabelEditFunction)(pData->m_pObject);
+            pData->m_pLabelEditFunction( pData->m_pObject );
         }
     }
 }
@@ -106,7 +120,7 @@ void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
     if( pData && pData->m_pRightClickFunction )
     {
-        (pData->m_pRightClickFunction)(pData->m_pObject);
+        pData->m_pRightClickFunction( pData->m_pObject );
     }
 }
 
@@ -118,7 +132,7 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
     if( pData && pData->m_pDragFunction )
     {
-        (pData->m_pDragFunction)(pData->m_pObject);
+        pData->m_pDragFunction( pData->m_pObject );
     }
     else
     {
@@ -148,7 +162,7 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
     if( pData && pData->m_pDropFunction )
     {
-        (pData->m_pDropFunction)(pData->m_pObject);
+        pData->m_pDropFunction( pData->m_pObject );
     }
 
     return wxDragNone;
@@ -194,6 +208,12 @@ wxTreeItemId PanelObjectList::FindObject(void* pObject)
 
 void PanelObjectList::SelectObject(void* pObject)
 {
+    if( pObject == 0 )
+    {
+        m_pTree_Objects->UnselectAll();
+        return;
+    }
+
     wxTreeItemId id = FindObject( pObject );
 
     if( id.IsOk() )
