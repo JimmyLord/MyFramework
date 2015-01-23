@@ -49,6 +49,7 @@ public:
     void SetShaders(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass);
 
     void SetFileForAllPasses(const char* pFilename);
+    void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
 #if MYFW_USING_WX
