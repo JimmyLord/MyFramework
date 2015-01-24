@@ -159,10 +159,13 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
 {
     // figure out which object the stuff was dropped on and let it know.
     wxTreeItemId id = m_pPanelObjectList->m_pTree_Objects->HitTest( wxPoint(x, y) );
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
-    if( pData && pData->m_pDropFunction )
+    if( id.IsOk() )
     {
-        pData->m_pDropFunction( pData->m_pObject );
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
+        if( pData && pData->m_pDropFunction )
+        {
+            pData->m_pDropFunction( pData->m_pObject );
+        }
     }
 
     return wxDragNone;
