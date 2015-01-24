@@ -961,6 +961,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
     checkGlError( "Drawing Mesh Rebuild()" );
 
+    glPointSize( m_PointSize );
+
     if( pShaderOverride )
     {
         int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
@@ -1008,8 +1010,6 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     indexbuffertype = GL_UNSIGNED_SHORT;
                 else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
                     indexbuffertype = GL_UNSIGNED_INT;
-
-                glPointSize( 10 );
 
                 MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
                 checkGlError( "Drawing Mesh MyDrawElements()" );

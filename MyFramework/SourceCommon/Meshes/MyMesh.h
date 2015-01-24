@@ -34,6 +34,7 @@ public:
     unsigned short m_NumVertsToDraw;
     unsigned int m_NumIndicesToDraw;
     int m_PrimitiveType;
+    int m_PointSize;
 
     TextureDefinition* m_pTexture;
     ColorByte m_Tint;
