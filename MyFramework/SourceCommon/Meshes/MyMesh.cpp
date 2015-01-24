@@ -706,6 +706,72 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     m_MeshReady = true;
 }
 
+void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange)
+{
+    unsigned short numverts = vertcount.x * vertcount.y;
+    unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
+    m_NumVertsToDraw = numverts;
+    m_NumIndicesToDraw = numtris*3;
+
+    if( m_pVertexBuffer == 0 )
+    {
+        m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    if( m_pIndexBuffer == 0 )
+    {
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    // delete the old buffers, if we want a plane with more.
+    if( GetNumVerts() < numverts )
+    {
+        m_pVertexBuffer->FreeBufferedData();
+        m_VertexFormat = VertexFormat_XYZUV;
+        Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
+        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
+
+        m_pIndexBuffer->FreeBufferedData();
+        unsigned short* pIndices = MyNew unsigned short[numtris*3];
+        m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+    }
+
+    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_pVertexBuffer->m_pData;
+    unsigned short* pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
+
+    m_pVertexBuffer->m_Dirty = true;
+    m_pIndexBuffer->m_Dirty = true;
+
+    for( int y = 0; y < vertcount.y; y++ )
+    {
+        for( int x = 0; x < vertcount.x; x++ )
+        {
+            pVerts[y * vertcount.x + x].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
+            pVerts[y * vertcount.x + x].y = topleftpos.y;
+            pVerts[y * vertcount.x + x].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+
+            pVerts[y * vertcount.x + x].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
+            pVerts[y * vertcount.x + x].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
+        }
+    }
+
+    for( int y = 0; y < vertcount.y - 1; y++ )
+    {
+        for( int x = 0; x < vertcount.x - 1; x++ )
+        {
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 0 ] = (y * vertcount.x + x) + 0;
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 1 ] = (y * vertcount.x + x) + vertcount.x;
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 2 ] = (y * vertcount.x + x) + 1;
+
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 3 ] = (y * vertcount.x + x) + 1;
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 4 ] = (y * vertcount.x + x) + vertcount.x;
+            pIndices[ (y * (vertcount.x-1) + x) * 6 + 5 ] = (y * vertcount.x + x) + vertcount.x + 1;
+        }
+    }
+
+    m_MeshReady = true;
+};
+
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {
     assert( m_pVertexBuffer == 0 );
@@ -942,6 +1008,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     indexbuffertype = GL_UNSIGNED_SHORT;
                 else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
                     indexbuffertype = GL_UNSIGNED_INT;
+
+                glPointSize( 10 );
 
                 MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
                 checkGlError( "Drawing Mesh MyDrawElements()" );
