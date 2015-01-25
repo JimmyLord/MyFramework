@@ -23,6 +23,7 @@ public:
     GLint m_aHandle_VertexColor;
 
     GLint m_uHandle_World;
+    GLint m_uHandle_ViewProj;
     GLint m_uHandle_WorldViewProj;
 
     GLint m_uHandle_ShadowLightWVP;

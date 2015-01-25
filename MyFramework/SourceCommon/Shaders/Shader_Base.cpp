@@ -30,6 +30,7 @@ void Shader_Base::Init_Shader_Base()
     m_aHandle_VertexColor = -1;
 
     m_uHandle_World = -1;
+    m_uHandle_ViewProj = -1;
     m_uHandle_WorldViewProj = -1;
 
     m_uHandle_ShadowLightWVP = -1;
@@ -69,6 +70,7 @@ bool Shader_Base::LoadAndCompile()
     m_aHandle_VertexColor = GetAttributeLocation( m_ProgramHandle, "a_VertexColor" );
 
     m_uHandle_World =         GetUniformLocation( m_ProgramHandle, "u_World" );
+    m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );
     m_uHandle_WorldViewProj = GetUniformLocation( m_ProgramHandle, "u_WorldViewProj" );
 
     m_uHandle_ShadowLightWVP = GetUniformLocation( m_ProgramHandle, "u_ShadowLightMVP" );
@@ -329,6 +331,9 @@ void Shader_Base::ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatri
 {
     if( m_uHandle_World != -1 )
         glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&worldmatrix->m11 );
+
+    if( m_uHandle_ViewProj != -1 )
+        glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&viewprojmatrix->m11 );
 
     if( m_uHandle_WorldViewProj != -1 )
     {

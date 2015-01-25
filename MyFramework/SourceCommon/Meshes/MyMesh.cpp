@@ -709,9 +709,12 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
 void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange)
 {
     unsigned short numverts = vertcount.x * vertcount.y;
-    unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
+    if( numverts > 65535 )
+        return;
+
+    unsigned int numtris = numverts; //(vertcount.x - 1) * (vertcount.y - 1) * 2;
     m_NumVertsToDraw = numverts;
-    m_NumIndicesToDraw = numtris*3;
+    m_NumIndicesToDraw = numverts;//numtris*3;
 
     if( m_pVertexBuffer == 0 )
     {
@@ -746,28 +749,32 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     {
         for( int x = 0; x < vertcount.x; x++ )
         {
-            pVerts[y * vertcount.x + x].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
-            pVerts[y * vertcount.x + x].y = topleftpos.y;
-            pVerts[y * vertcount.x + x].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            int index = y * vertcount.x + x;
 
-            pVerts[y * vertcount.x + x].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
-            pVerts[y * vertcount.x + x].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
+            pVerts[index].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
+            pVerts[index].y = topleftpos.y;
+            pVerts[index].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+
+            pVerts[index].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
+            pVerts[index].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
+
+            pIndices[index] = (unsigned short)index;
         }
     }
 
-    for( int y = 0; y < vertcount.y - 1; y++ )
-    {
-        for( int x = 0; x < vertcount.x - 1; x++ )
-        {
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 0 ] = (y * vertcount.x + x) + 0;
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 1 ] = (y * vertcount.x + x) + vertcount.x;
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 2 ] = (y * vertcount.x + x) + 1;
+    //for( int y = 0; y < vertcount.y - 1; y++ )
+    //{
+    //    for( int x = 0; x < vertcount.x - 1; x++ )
+    //    {
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 0 ] = (y * vertcount.x + x) + 0;
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 1 ] = (y * vertcount.x + x) + vertcount.x;
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 2 ] = (y * vertcount.x + x) + 1;
 
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 3 ] = (y * vertcount.x + x) + 1;
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 4 ] = (y * vertcount.x + x) + vertcount.x;
-            pIndices[ (y * (vertcount.x-1) + x) * 6 + 5 ] = (y * vertcount.x + x) + vertcount.x + 1;
-        }
-    }
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 3 ] = (y * vertcount.x + x) + 1;
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 4 ] = (y * vertcount.x + x) + vertcount.x;
+    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 5 ] = (y * vertcount.x + x) + vertcount.x + 1;
+    //    }
+    //}
 
     m_MeshReady = true;
 };
