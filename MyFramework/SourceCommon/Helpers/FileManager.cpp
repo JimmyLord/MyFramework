@@ -260,7 +260,8 @@ void MyFileObject::Tick()
         int length = 0;
 
         char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
-        FakeFileLoad( buffer, length );
+        if( length > 0 && buffer != 0 )
+            FakeFileLoad( buffer, length );
     }
 
     if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )

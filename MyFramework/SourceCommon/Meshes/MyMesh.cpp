@@ -708,12 +708,12 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
 
 void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange)
 {
-    unsigned short numverts = vertcount.x * vertcount.y;
+    int numverts = vertcount.x * vertcount.y;
     if( numverts > 65535 )
         return;
 
     unsigned int numtris = numverts; //(vertcount.x - 1) * (vertcount.y - 1) * 2;
-    m_NumVertsToDraw = numverts;
+    m_NumVertsToDraw = (unsigned short)numverts;
     m_NumIndicesToDraw = numverts;//numtris*3;
 
     if( m_pVertexBuffer == 0 )
@@ -968,7 +968,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
     checkGlError( "Drawing Mesh Rebuild()" );
 
-    glPointSize( m_PointSize );
+    glPointSize( (float)m_PointSize );
 
     if( pShaderOverride )
     {
