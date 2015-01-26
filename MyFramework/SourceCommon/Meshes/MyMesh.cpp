@@ -713,15 +713,19 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         return;
 
     unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
+    unsigned int numindices = numtris * 3;
+    if( createtriangles == false )
+        numindices = numverts;
+
     m_NumVertsToDraw = (unsigned short)numverts;
-    m_NumIndicesToDraw = numtris*3;
+    m_NumIndicesToDraw = numindices;
 
     if( m_pVertexBuffer == 0 )
     {
         m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    if( m_pIndexBuffer == 0 && createtriangles )
+    if( m_pIndexBuffer == 0 )//&& createtriangles )
     {
         m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
@@ -734,11 +738,11 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
         m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
 
-        if( createtriangles )
+        //if( createtriangles )
         {
             m_pIndexBuffer->FreeBufferedData();
-            unsigned short* pIndices = MyNew unsigned short[numtris*3];
-            m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+            unsigned short* pIndices = MyNew unsigned short[numindices];
+            m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
         }
     }
 
@@ -746,7 +750,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     m_pVertexBuffer->m_Dirty = true;
 
     unsigned short* pIndices = 0;
-    if( createtriangles )
+    //if( createtriangles )
     {
         pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
         m_pIndexBuffer->m_Dirty = true;
@@ -756,7 +760,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     {
         for( int x = 0; x < vertcount.x; x++ )
         {
-            int index = y * vertcount.x + x;
+            unsigned short index = y * vertcount.x + x;
 
             pVerts[index].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
             pVerts[index].y = topleftpos.y;
@@ -764,6 +768,9 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
             pVerts[index].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
             pVerts[index].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
+
+            if( createtriangles == false )
+                pIndices[index] = index;
         }
     }
 
