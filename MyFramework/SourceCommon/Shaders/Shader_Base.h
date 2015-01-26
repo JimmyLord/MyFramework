@@ -26,6 +26,8 @@ public:
     GLint m_uHandle_ViewProj;
     GLint m_uHandle_WorldViewProj;
 
+    GLint m_uHandle_PointSize;
+
     GLint m_uHandle_ShadowLightWVP;
     GLint m_uHandle_ShadowTexture;
 
@@ -68,6 +70,7 @@ public:
     void ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess);
     void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
     void ProgramTint(ColorByte tint);
+    void ProgramPointSize(float pointsize);
     void ProgramCamera(Vector3* campos);
     void ProgramLights(MyLight* lights, int numlights);
     void ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowviewprojmatrix, GLuint shadowtexid);

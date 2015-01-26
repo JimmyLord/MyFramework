@@ -334,10 +334,10 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
 
         // right
         side = 2;
-        pVerts[4*side + 0] = pVerts[1];  pVerts[4*side + 0].uv = pVerts[0].uv;   
-        pVerts[4*side + 1] = pVerts[4];  pVerts[4*side + 1].uv = pVerts[1].uv;   
-        pVerts[4*side + 2] = pVerts[3];  pVerts[4*side + 2].uv = pVerts[2].uv;   
-        pVerts[4*side + 3] = pVerts[6];  pVerts[4*side + 3].uv = pVerts[3].uv;   
+        pVerts[4*side + 0] = pVerts[1];  pVerts[4*side + 0].uv = pVerts[0].uv;
+        pVerts[4*side + 1] = pVerts[4];  pVerts[4*side + 1].uv = pVerts[1].uv;
+        pVerts[4*side + 2] = pVerts[3];  pVerts[4*side + 2].uv = pVerts[2].uv;
+        pVerts[4*side + 3] = pVerts[6];  pVerts[4*side + 3].uv = pVerts[3].uv;
         for( int i=0; i<4; i++ )
             pVerts[4*side + i].col.Set( 1,1,1,1 ); //1,0,0,1 ); //normal.Set( 1, 0, 0 );
 
@@ -352,8 +352,8 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
 
         // bottom
         side = 4;
-        pVerts[4*side + 0] = pVerts[2];  pVerts[4*side + 0].uv.x = ulefttop;  pVerts[4*side + 0].uv.y = vtoptop;   
-        pVerts[4*side + 1] = pVerts[3];  pVerts[4*side + 1].uv.x = urighttop; pVerts[4*side + 1].uv.y = vtoptop;   
+        pVerts[4*side + 0] = pVerts[2];  pVerts[4*side + 0].uv.x = ulefttop;  pVerts[4*side + 0].uv.y = vtoptop;
+        pVerts[4*side + 1] = pVerts[3];  pVerts[4*side + 1].uv.x = urighttop; pVerts[4*side + 1].uv.y = vtoptop;
         pVerts[4*side + 2] = pVerts[7];  pVerts[4*side + 2].uv.x = ulefttop;  pVerts[4*side + 2].uv.y = vbottomtop;
         pVerts[4*side + 3] = pVerts[6];  pVerts[4*side + 3].uv.x = urighttop; pVerts[4*side + 3].uv.y = vbottomtop;
         for( int i=0; i<4; i++ )
@@ -489,7 +489,7 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     {
         float angle = 360.0f/numsegments * i;
         //float nextangle = 360.0f/numsegments * (i+1);
-        
+
         // inner vert
         pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
         pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
@@ -530,7 +530,7 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     {
         float angle = 360.0f/numsegments * i;
         //float nextangle = 360.0f/numsegments * (i+i);
-        
+
         // inner vert
         pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
         pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
@@ -706,22 +706,22 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     m_MeshReady = true;
 }
 
-void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange)
+void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles)
 {
     int numverts = vertcount.x * vertcount.y;
     if( numverts > 65535 )
         return;
 
-    unsigned int numtris = numverts; //(vertcount.x - 1) * (vertcount.y - 1) * 2;
+    unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
     m_NumVertsToDraw = (unsigned short)numverts;
-    m_NumIndicesToDraw = numverts;//numtris*3;
+    m_NumIndicesToDraw = numtris*3;
 
     if( m_pVertexBuffer == 0 )
     {
         m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_pIndexBuffer == 0 && createtriangles )
     {
         m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
@@ -734,16 +734,23 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
         m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
 
-        m_pIndexBuffer->FreeBufferedData();
-        unsigned short* pIndices = MyNew unsigned short[numtris*3];
-        m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+        if( createtriangles )
+        {
+            m_pIndexBuffer->FreeBufferedData();
+            unsigned short* pIndices = MyNew unsigned short[numtris*3];
+            m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+        }
     }
 
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
-
     m_pVertexBuffer->m_Dirty = true;
-    m_pIndexBuffer->m_Dirty = true;
+
+    unsigned short* pIndices = 0;
+    if( createtriangles )
+    {
+        pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
+        m_pIndexBuffer->m_Dirty = true;
+    }
 
     for( int y = 0; y < vertcount.y; y++ )
     {
@@ -757,24 +764,28 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
             pVerts[index].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
             pVerts[index].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
-
-            pIndices[index] = (unsigned short)index;
         }
     }
 
-    //for( int y = 0; y < vertcount.y - 1; y++ )
-    //{
-    //    for( int x = 0; x < vertcount.x - 1; x++ )
-    //    {
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 0 ] = (y * vertcount.x + x) + 0;
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 1 ] = (y * vertcount.x + x) + vertcount.x;
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 2 ] = (y * vertcount.x + x) + 1;
+    if( createtriangles )
+    {
+        for( int y = 0; y < vertcount.y - 1; y++ )
+        {
+            for( int x = 0; x < vertcount.x - 1; x++ )
+            {
+                int elementindex = (y * (vertcount.x-1) + x) * 6;
+                unsigned short vertexindex = (unsigned short)(y * vertcount.x + x);
 
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 3 ] = (y * vertcount.x + x) + 1;
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 4 ] = (y * vertcount.x + x) + vertcount.x;
-    //        pIndices[ (y * (vertcount.x-1) + x) * 6 + 5 ] = (y * vertcount.x + x) + vertcount.x + 1;
-    //    }
-    //}
+                pIndices[ elementindex + 0 ] = vertexindex + 0;
+                pIndices[ elementindex + 1 ] = vertexindex + (unsigned short)vertcount.x;
+                pIndices[ elementindex + 2 ] = vertexindex + 1;
+
+                pIndices[ elementindex + 3 ] = vertexindex + 1;
+                pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertcount.x;
+                pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertcount.x + 1;
+            }
+        }
+    }
 
     m_MeshReady = true;
 };
@@ -958,31 +969,36 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     if( m_NumIndicesToDraw == 0 )
         return;
 
-    assert( m_pVertexBuffer && m_pIndexBuffer );
+    assert( m_pVertexBuffer );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_NumVertsToDraw*g_VertexFormatSizes[m_VertexFormat] );
-    if( m_pIndexBuffer->m_Dirty )
+    if( m_pIndexBuffer && m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_NumIndicesToDraw*m_pIndexBuffer->m_BytesPerIndex );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    assert( ( m_pIndexBuffer == 0 || m_pIndexBuffer->m_Dirty == false ) && m_pVertexBuffer->m_Dirty == false );
 
     checkGlError( "Drawing Mesh Rebuild()" );
 
-    glPointSize( (float)m_PointSize );
-
     if( pShaderOverride )
     {
-        int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
         int indexbuffertype = GL_UNSIGNED_BYTE;
-        if( m_pIndexBuffer->m_BytesPerIndex == 2 )
-            indexbuffertype = GL_UNSIGNED_SHORT;
-        else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
-            indexbuffertype = GL_UNSIGNED_INT;
-        
+        if( m_pIndexBuffer != 0 )
+        {
+            int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
+            if( bytesperindex == 2 )
+                indexbuffertype = GL_UNSIGNED_SHORT;
+            else if( bytesperindex == 4 )
+                indexbuffertype = GL_UNSIGNED_INT;
+        }
+
         Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass();
         pShader->SetupAttributes( (VertexFormats)m_VertexFormat, m_pVertexBuffer, m_pIndexBuffer, false );
         pShader->ProgramPosition( matviewproj, &m_Position );
-        MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+
+        if( m_pIndexBuffer )
+            MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+        else
+            MyDrawArrays( m_PrimitiveType, 0, m_NumIndicesToDraw );
         //pShader->DeactivateShader( m_pVertexBuffer ); // disable attributes
     }
     else
@@ -1002,6 +1018,9 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 pShader->ProgramLights( lights, numlights );
                 checkGlError( "Drawing Mesh ProgramCamera()" );
 
+                if( m_PrimitiveType == GL_POINTS )
+                    pShader->ProgramPointSize( (float)m_PointSize );
+
                 if( shadowlightwvp && shadowtexid != 0 )
                     pShader->ProgramShadowLight( &m_Position, shadowlightwvp, shadowtexid );
 
@@ -1011,14 +1030,21 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     checkGlError( "Drawing Mesh ProgramLightmap()" );
                 }
 
-                int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
                 int indexbuffertype = GL_UNSIGNED_BYTE;
-                if( m_pIndexBuffer->m_BytesPerIndex == 2 )
-                    indexbuffertype = GL_UNSIGNED_SHORT;
-                else if( m_pIndexBuffer->m_BytesPerIndex == 4 )
-                    indexbuffertype = GL_UNSIGNED_INT;
+                if( m_pIndexBuffer != 0 )
+                {
+                    int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
+                    if( bytesperindex == 2 )
+                        indexbuffertype = GL_UNSIGNED_SHORT;
+                    else if( bytesperindex == 4 )
+                        indexbuffertype = GL_UNSIGNED_INT;
+                }
 
-                MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+                if( m_pIndexBuffer )
+                    MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
+                else
+                    MyDrawArrays( m_PrimitiveType, 0, m_NumIndicesToDraw );
+
                 checkGlError( "Drawing Mesh MyDrawElements()" );
 
                 pShader->DeactivateShader( m_pVertexBuffer );

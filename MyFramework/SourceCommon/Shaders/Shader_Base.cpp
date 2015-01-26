@@ -33,6 +33,8 @@ void Shader_Base::Init_Shader_Base()
     m_uHandle_ViewProj = -1;
     m_uHandle_WorldViewProj = -1;
 
+    m_uHandle_PointSize = -1;
+
     m_uHandle_ShadowLightWVP = -1;
     m_uHandle_ShadowTexture = -1;
 
@@ -72,6 +74,8 @@ bool Shader_Base::LoadAndCompile()
     m_uHandle_World =         GetUniformLocation( m_ProgramHandle, "u_World" );
     m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );
     m_uHandle_WorldViewProj = GetUniformLocation( m_ProgramHandle, "u_WorldViewProj" );
+
+    m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
 
     m_uHandle_ShadowLightWVP = GetUniformLocation( m_ProgramHandle, "u_ShadowLightMVP" );
     m_uHandle_ShadowTexture =  GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
@@ -360,6 +364,12 @@ void Shader_Base::ProgramTint(ColorByte tint)
 {
     if( m_uHandle_TextureTintColor != -1 )
         glUniform4f( m_uHandle_TextureTintColor, tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f, tint.a / 255.0f );
+}
+
+void Shader_Base::ProgramPointSize(float pointsize)
+{
+    if( m_uHandle_PointSize != -1 )
+        glUniform1f( m_uHandle_PointSize, pointsize );
 }
 
 void Shader_Base::ProgramCamera(Vector3* campos)
