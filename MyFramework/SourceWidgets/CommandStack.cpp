@@ -61,5 +61,9 @@ void CommandStack::Do(EditorCommand* pCommand)
 void CommandStack::Add(EditorCommand* pCommand)
 {
     m_UndoStack.push_back( pCommand );
+
+    for( unsigned int i=0; i<m_RedoStack.size(); i++ )
+        delete( m_RedoStack[i] );
+    
     m_RedoStack.clear();
 }
