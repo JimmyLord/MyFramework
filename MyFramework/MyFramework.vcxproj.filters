@@ -513,6 +513,12 @@
     <ClCompile Include="SourceCommon\Meshes\MeshManager.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceWidgets\CommandStack.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWidgets\EditorCommands.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1105,6 +1111,12 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MeshManager.h">
       <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\CommandStack.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\EditorCommands.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

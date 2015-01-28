@@ -99,6 +99,7 @@
 #include "wx/treectrl.h"
 #include "wx/dnd.h"
 #pragma warning (default : 4996)
+#include <vector>
 #endif
 
 #if MYFW_NACL

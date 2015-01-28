@@ -11,6 +11,9 @@
 #include "MYFWWinMainWx.h"
 #include "Screenshot.h"
 
+#include "../../Framework/MyFramework/SourceWidgets/EditorCommands.h"
+#include "../../Framework/MyFramework/SourceWidgets/CommandStack.h"
+
 bool g_EscapeButtonWillQuit;
 bool g_CloseProgramRequested;
 
@@ -44,6 +47,10 @@ MainFrame::MainFrame(wxWindow* parent)
         m_File = MyNew wxMenu;
         m_File->Append( wxID_EXIT, wxT("&Quit") );
 
+        m_Edit = MyNew wxMenu;
+        m_Edit->Append( myID_Undo, wxT("&Undo\tCtrl-Z") );
+        m_Edit->Append( myID_Redo, wxT("&Redo\tCtrl-Y") );
+
         m_View = MyNew wxMenu;
         m_View->Append( myID_SavePerspective, wxT("&Save window layout") );
         m_View->Append( myID_LoadPerspective, wxT("&Load window layout") );
@@ -57,12 +64,16 @@ MainFrame::MainFrame(wxWindow* parent)
 
         m_MenuBar = MyNew wxMenuBar;
         m_MenuBar->Append( m_File, wxT("&File") );
+        m_MenuBar->Append( m_Edit, wxT("&Edit") );
         m_MenuBar->Append( m_View, wxT("&View") );
         m_MenuBar->Append( m_Aspect, wxT("&Aspect") );
         SetMenuBar( m_MenuBar );
 
         Connect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnQuit) );
         
+        Connect( myID_Undo, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+        Connect( myID_Redo, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+
         Connect( myID_SavePerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         Connect( myID_LoadPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         Connect( myID_ResetPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
@@ -79,6 +90,10 @@ MainFrame::MainFrame(wxWindow* parent)
 
 MainFrame::~MainFrame()
 {
+    SAFE_DELETE( m_pGLCanvas );
+
+    SAFE_DELETE( m_pCommandStack );
+
     SAFE_DELETE( g_pPanelWatch );
     SAFE_DELETE( g_pPanelMemory );
     SAFE_DELETE( g_pPanelObjectList );
@@ -93,6 +108,9 @@ void MainFrame::AddPanes()
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
     m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args, 0, true );
     m_pGLCanvas->SetSize( 600, 600 );
+
+    // Create the undo/redo command stack
+    m_pCommandStack = MyNew CommandStack;
 
     // create all the panels we need
     g_pPanelWatch = MyNew PanelWatch( this );
@@ -140,6 +158,16 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 
     switch( id )
     {
+    case myID_Undo:
+        if( m_pCommandStack->m_UndoStack.size() > 0 )
+            m_pCommandStack->Undo( 1 );
+        break;
+
+    case myID_Redo:
+        if( m_pCommandStack->m_RedoStack.size() > 0 )
+            m_pCommandStack->Redo( 1 );
+        break;
+
     case myID_SavePerspective:
         {
             m_SavedPerspectiveString = m_AUIManager.SavePerspective();

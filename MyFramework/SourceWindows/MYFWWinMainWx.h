@@ -15,6 +15,7 @@
 
 class MainFrame;
 class MainGLCanvas;
+class CommandStack;
 
 enum GLViewTypes
 {
@@ -33,6 +34,8 @@ enum MenuIDs
     myID_GLViewType_Tall,
     myID_GLViewType_Square,
     myID_GLViewType_Wide,
+    myID_Undo,
+    myID_Redo,
     myID_NumIDs,
 };
 
@@ -60,11 +63,14 @@ class MainFrame : public wxFrame
 public:
     wxMenuBar* m_MenuBar;
     wxMenu* m_File;
+    wxMenu* m_Edit;
     wxMenu* m_View;
     wxMenu* m_Aspect;
 
     wxAuiManager m_AUIManager;
     MainGLCanvas* m_pGLCanvas;
+
+    CommandStack* m_pCommandStack;
 
     wxString m_DefaultPerspectiveString;
     wxString m_SavedPerspectiveString;
