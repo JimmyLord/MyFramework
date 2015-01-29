@@ -322,8 +322,7 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 
     if( m_uTime != -1 )
     {
-        // TODO: fix MyTime_GetSystemTime() so it returns something in float range.
-        float time = (float)fmod( MyTime_GetSystemTime(), 10000.0);
+        float time = MyTime_GetUnpausedTime();
         glUniform1f( m_uTime, time );
     }
 

@@ -122,7 +122,7 @@ bool GameCore::IsReadyToRender()
     return false;
 }
 
-void GameCore::Tick(double TimePassed)
+double GameCore::Tick(double TimePassed)
 {
     m_TimeSinceGameStarted += (float)TimePassed;
 
@@ -152,6 +152,8 @@ void GameCore::Tick(double TimePassed)
         m_KeyboardCloseRequested = false;
         ShowKeyboard( false );
     }
+
+    return TimePassed;
 }
 
 void GameCore::OnFocusGained()

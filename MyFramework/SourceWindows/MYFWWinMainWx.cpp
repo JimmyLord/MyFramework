@@ -684,7 +684,7 @@ void MainGLCanvas::Draw()
             double timepassed = currtime - m_LastTimeTicked;
             m_LastTimeTicked = currtime;
 
-            g_pGameCore->Tick( timepassed );
+            g_UnpausedTime += g_pGameCore->Tick( timepassed );
         }
 
         g_pGameCore->OnDrawFrame();
