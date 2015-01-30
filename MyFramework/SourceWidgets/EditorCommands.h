@@ -13,11 +13,33 @@
 class EditorCommand
 {
 public:
-    EditorCommand();
-    virtual ~EditorCommand();
+    EditorCommand() {}
+    virtual ~EditorCommand() {}
 
     virtual void Do() = 0;
     virtual void Undo() = 0;
 };
+
+//====================================================================================================
+
+class EditorCommand_PanelWatchNumberValueChanged : public EditorCommand
+{
+protected:
+    double m_Difference;
+    PanelWatch_Types m_Type;
+    void* m_Pointer;
+
+    PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
+    void* m_pCallbackObj;
+
+public:
+    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
+    virtual ~EditorCommand_PanelWatchNumberValueChanged();
+
+    virtual void Do();
+    virtual void Undo();
+};
+
+//====================================================================================================
 
 #endif // __EditorCommands_H__

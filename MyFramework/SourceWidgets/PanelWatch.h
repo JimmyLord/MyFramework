@@ -1,22 +1,16 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #ifndef __PanelWatch_H__
 #define __PanelWatch_H__
+
+class CommandStack;
 
 #define MAX_PanelWatch_VARIABLES        40
 #define WXSlider_Float_Multiplier       10000.0f
@@ -68,6 +62,9 @@ struct VariableProperties
     void* m_pCallbackObj;
     PanelWatchCallback m_pOnDropCallbackFunc;
     PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
+
+    int m_SliderValueOnLeftMouseDown;
+    bool m_SliderLeftMouseIsDown;
 };
 
 class PanelWatch : public wxScrolledWindow
@@ -81,6 +78,7 @@ public:
     int m_SliderBeingDragged;
 
     VariableProperties* m_pVariables;
+    CommandStack* m_pCommandStack;
 
 protected:
     void AddControlsForVariable(const char* name);
@@ -90,12 +88,17 @@ public:
 
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
+
+    void OnMouseDown(wxMouseEvent& event);
+    void OnMouseUp(wxMouseEvent& event);
+
     void OnTimer(wxTimerEvent& event);
     void OnTextCtrlChanged(wxCommandEvent& event);
     void OnSliderChanged(wxScrollEvent& event);
+    void OnSliderChanged(int controlid, int value, bool addundocommand);//wxScrollEvent& event);
 
 public:
-    PanelWatch(wxFrame* parentframe);
+    PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack);
     ~PanelWatch();
 
     void ClearAllVariables();

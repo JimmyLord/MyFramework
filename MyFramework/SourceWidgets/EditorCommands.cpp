@@ -11,10 +11,111 @@
 #include "../SourceWidgets/CommandStack.h"
 #include "../SourceWidgets/EditorCommands.h"
 
-EditorCommand::EditorCommand()
+//====================================================================================================
+// EditorCommand_PanelWatchNumberValueChanged
+//====================================================================================================
+
+EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
+{
+    m_Difference = difference;
+    m_Pointer = pointer;
+    m_Type = type;
+
+    m_pOnValueChangedCallBackFunc = callbackfunc;
+    m_pCallbackObj = callbackobj;
+}
+
+EditorCommand_PanelWatchNumberValueChanged::~EditorCommand_PanelWatchNumberValueChanged()
 {
 }
 
-EditorCommand::~EditorCommand()
+void EditorCommand_PanelWatchNumberValueChanged::Do()
 {
+    switch( m_Type )
+    {
+    case PanelWatchType_Int:
+        *(int*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_UnsignedInt:
+        *(unsigned int*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_Char:
+        *(char*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_UnsignedChar:
+        *(unsigned char*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_Bool:
+        *(char*)m_Pointer += m_Difference; // treating bools as char to avoid warning/error. safe?
+        break;
+
+    case PanelWatchType_Float:
+        *(float*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_Double:
+        *(double*)m_Pointer += m_Difference;
+        break;
+
+    case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_Unknown:
+    default:
+        assert( false );
+    }
+
+    g_pPanelWatch->UpdatePanel();
+
+    // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
+    m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
 }
+
+void EditorCommand_PanelWatchNumberValueChanged::Undo()
+{
+    switch( m_Type )
+    {
+    case PanelWatchType_Int:
+        *(int*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_UnsignedInt:
+        *(unsigned int*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_Char:
+        *(char*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_UnsignedChar:
+        *(unsigned char*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_Bool:
+        *(char*)m_Pointer -= m_Difference; // treating bools as char to avoid warning/error. safe?
+        break;
+
+    case PanelWatchType_Float:
+        *(float*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_Double:
+        *(double*)m_Pointer -= m_Difference;
+        break;
+
+    case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_Unknown:
+    default:
+        assert( false );
+    }
+
+    g_pPanelWatch->UpdatePanel();
+
+    // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
+    m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
+}
+
+//====================================================================================================
+//====================================================================================================

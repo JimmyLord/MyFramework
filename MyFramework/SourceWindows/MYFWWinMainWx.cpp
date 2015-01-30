@@ -113,7 +113,7 @@ void MainFrame::AddPanes()
     m_pCommandStack = MyNew CommandStack;
 
     // create all the panels we need
-    g_pPanelWatch = MyNew PanelWatch( this );
+    g_pPanelWatch = MyNew PanelWatch( this, m_pCommandStack );
     g_pPanelMemory = MyNew PanelMemory( this );
     g_pPanelObjectList = MyNew PanelObjectList( this );
 
