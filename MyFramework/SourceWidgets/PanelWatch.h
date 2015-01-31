@@ -91,6 +91,7 @@ public:
 
     void OnMouseDown(wxMouseEvent& event);
     void OnMouseUp(wxMouseEvent& event);
+    void OnMouseMove(wxMouseEvent& event);
 
     void OnTimer(wxTimerEvent& event);
     void OnTextCtrlChanged(wxCommandEvent& event);

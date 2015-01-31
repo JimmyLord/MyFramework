@@ -252,6 +252,7 @@ void PanelWatch::AddControlsForVariable(const char* name)
 
         m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
         m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
     }
 
     // Edit box
@@ -325,7 +326,7 @@ void PanelWatch::OnKillFocus(wxFocusEvent& event)
 
 void PanelWatch::OnMouseDown(wxMouseEvent& event)
 {
-    LOGInfo( LOGTag, "OnMouseDown:\n" );
+    //LOGInfo( LOGTag, "OnMouseDown:\n" );
     event.Skip();
 
     int controlid = event.GetId();
@@ -340,15 +341,39 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
     //LOGInfo( LOGTag, "OnMouseUp:\n" );
     event.Skip();
 
-    wxEventType eventtype = event.GetEventType();
     int controlid = event.GetId();
-
     int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
-    LOGInfo( LOGTag, "OnMouseUp: type:%d value:%d\n", eventtype, value );
+
+    //wxEventType eventtype = event.GetEventType();
+    //LOGInfo( LOGTag, "OnMouseUp: type:%d value:%d\n", eventtype, value );
 
     m_pVariables[controlid].m_SliderLeftMouseIsDown = false;
 
     OnSliderChanged( controlid, value, true );
+}
+
+void PanelWatch::OnMouseMove(wxMouseEvent& event)
+{
+    int controlid = event.GetId();
+
+    event.Skip();
+
+    if( m_pVariables[controlid].m_SliderLeftMouseIsDown )
+    {
+        wxPoint pos = event.GetPosition();
+
+        wxRect rect = m_pVariables[controlid].m_Handle_Slider->GetClientRect();
+        int min = m_pVariables[controlid].m_Handle_Slider->GetMin();
+        int max = m_pVariables[controlid].m_Handle_Slider->GetMax();
+        if( pos.x > rect.x + rect.width )
+        {
+            m_pVariables[controlid].m_Handle_Slider->SetMax( max + 1000 );
+        }
+        if( pos.x < rect.x )
+        {
+            m_pVariables[controlid].m_Handle_Slider->SetMin( min - 1000 );
+        }
+    }
 }
 
 void PanelWatch::OnTimer(wxTimerEvent& event)
@@ -442,6 +467,27 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
         break;
     }
 
+    if( m_pVariables[controlid].m_Handle_Slider )
+    {
+        float sliderfloatmultiplier = 1;
+        if( m_pVariables[controlid].m_Type == PanelWatchType_Float || m_pVariables[controlid].m_Type == PanelWatchType_Double )
+        {
+            sliderfloatmultiplier = WXSlider_Float_Multiplier;
+        }
+
+        if( valuenew < m_pVariables[controlid].m_Range.x )
+        {
+            m_pVariables[controlid].m_Range.x = valuenew;
+        }
+        if( valuenew > m_pVariables[controlid].m_Range.y )
+        {
+            m_pVariables[controlid].m_Range.y = valuenew;
+        }
+
+        m_pVariables[controlid].m_Handle_Slider->SetRange( m_pVariables[controlid].m_Range.x * WXSlider_Float_Multiplier,
+                                                           m_pVariables[controlid].m_Range.y * WXSlider_Float_Multiplier );
+    }    
+
     // call the parent object to say it's value changed.
     if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc &&
         valuenew != valueold )
@@ -460,15 +506,15 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)
 {
-    wxEventType eventtype = event.GetEventType();
-
     int controlid = event.GetId();
 
     if( m_pVariables[controlid].m_SliderLeftMouseIsDown == false )
         return;
 
     int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
-    LOGInfo( LOGTag, "OnSliderChanged: type:%d value:%d\n", eventtype, value );
+
+    //wxEventType eventtype = event.GetEventType();
+    //LOGInfo( LOGTag, "OnSliderChanged: type:%d value:%d\n", eventtype, value );
 
     OnSliderChanged( controlid, value, false );
 }

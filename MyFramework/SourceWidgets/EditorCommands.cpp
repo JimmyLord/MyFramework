@@ -117,5 +117,14 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
 }
 
+EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
+{
+    EditorCommand_PanelWatchNumberValueChanged* pCommand;
+    pCommand = MyNew EditorCommand_PanelWatchNumberValueChanged( *this );
+
+    pCommand->Do();
+    return pCommand;
+}
+
 //====================================================================================================
 //====================================================================================================

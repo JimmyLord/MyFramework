@@ -60,6 +60,10 @@ void CommandStack::Do(EditorCommand* pCommand)
 
 void CommandStack::Add(EditorCommand* pCommand)
 {
+    assert( pCommand );
+    if( pCommand == 0 )
+        return;
+
     m_UndoStack.push_back( pCommand );
 
     for( unsigned int i=0; i<m_RedoStack.size(); i++ )

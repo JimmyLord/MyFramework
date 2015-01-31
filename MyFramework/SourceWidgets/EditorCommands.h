@@ -18,6 +18,7 @@ public:
 
     virtual void Do() = 0;
     virtual void Undo() = 0;
+    virtual EditorCommand* Repeat() = 0; // make a copy of the command and execute it.
 };
 
 //====================================================================================================
@@ -38,6 +39,7 @@ public:
 
     virtual void Do();
     virtual void Undo();
+    virtual EditorCommand* Repeat();
 };
 
 //====================================================================================================
