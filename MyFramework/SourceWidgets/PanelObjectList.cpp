@@ -378,8 +378,8 @@ void PanelObjectList::RemoveObject(void* pObject)
 
         m_pTree_Objects->Delete( id );
 
-        if( m_pTree_Objects->GetChildrenCount( parentid ) == 0 )
-            m_pTree_Objects->Delete( parentid );
+        //if( m_pTree_Objects->GetChildrenCount( parentid ) == 0 && parentid != rootid )
+        //    m_pTree_Objects->Delete( parentid );
     }
 
     UpdateRootNodeObjectCount();
