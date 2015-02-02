@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -57,11 +57,10 @@ void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
     //LOGInfo( LOGTag, "PanelObjectList::OnTreeSelectionChanged\n" );
 
-    m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
-
     wxArrayTreeItemIds selecteditems;
-
     unsigned int numselected = m_pTree_Objects->GetSelections( selecteditems );
+
+    m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
 
     for( unsigned int i=0; i<numselected; i++ )
     {

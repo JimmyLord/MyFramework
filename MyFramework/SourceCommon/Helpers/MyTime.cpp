@@ -27,11 +27,20 @@ double MyTime_GetSystemTime(bool realtime)
     //LOGInfo( LOGTag, "time: sec(%d), usec(%d)\n", time.tv_sec, time.tv_usec );
     return time.tv_sec + ((double)time.tv_usec / 1000000);
 #elif MYFW_WINDOWS || MYFW_WP8 || MYFW_PPAPI
-    FILETIME ft;
-    GetSystemTimeAsFileTime(&ft);
-    unsigned long long tt = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-    double time = tt / 10000000.0;
-    return time;
+    //FILETIME ft;
+    //GetSystemTimeAsFileTime(&ft);
+    //unsigned long long tt = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    //double time = tt / 10000000.0;
+    //return time;
+    unsigned __int64 freq;
+    unsigned __int64 time;
+
+    QueryPerformanceFrequency( (LARGE_INTEGER*)&freq );
+    QueryPerformanceCounter( (LARGE_INTEGER*)&time );
+
+    double timeseconds = (double)time / freq;
+
+    return timeseconds;
 #elif MYFW_BADA
     long long ticks = 0;
     result res = Osp::System::SystemTime::GetTicks( ticks );

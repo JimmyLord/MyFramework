@@ -110,7 +110,8 @@ void MainFrame::AddPanes()
     m_pGLCanvas->SetSize( 600, 600 );
 
     // Create the undo/redo command stack
-    m_pCommandStack = MyNew CommandStack;
+    if( m_pCommandStack == 0 ) // created in GameMainFrame?
+        m_pCommandStack = MyNew CommandStack;
 
     // create all the panels we need
     g_pPanelWatch = MyNew PanelWatch( this, m_pCommandStack );
@@ -373,7 +374,7 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     // To avoid flashing on MSW
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
-    m_LastTimeTicked = MyTime_GetSystemTime();
+    m_LastTimeTicked = MyTime_GetRunningTime();
 }
 
 MainGLCanvas::~MainGLCanvas()
@@ -680,7 +681,7 @@ void MainGLCanvas::Draw()
     {
         if( m_TickGameCore )
         {
-            double currtime = MyTime_GetSystemTime();
+            double currtime = MyTime_GetRunningTime();
             double timepassed = currtime - m_LastTimeTicked;
             m_LastTimeTicked = currtime;
 
