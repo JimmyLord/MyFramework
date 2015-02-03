@@ -93,7 +93,7 @@ void PanelWatch::ClearAllVariables()
     m_NumVariables = 0;
 }
 
-int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -107,11 +107,13 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
     m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = 0;
     m_pVariables[m_NumVariables].m_pOnValueChangedCallBackFunc = pOnValueChangedCallBackFunc;
 
-    AddControlsForVariable( name );
+    if( addcontrols )
+    {
+        AddControlsForVariable( name, m_NumVariables, -1, 0 );
+        UpdatePanel();
+    }
 
     m_NumVariables++;
-
-    UpdatePanel();
 
     return m_NumVariables-1;
 }
@@ -130,7 +132,7 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
     m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = pOnDropCallBackFunc;
     m_pVariables[m_NumVariables].m_pOnValueChangedCallBackFunc = pOnValueChangedCallBackFunc;
 
-    AddControlsForVariable( name );
+    AddControlsForVariable( name, m_NumVariables, -1, 0 );
 
     m_NumVariables++;
 
@@ -141,37 +143,63 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
 
 int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc );
+    return AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+}
+
+int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    int first;
+    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector2->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "y", &pVector2->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+
+    AddControlsForVariable( name, first+0, 0, "x" );
+    AddControlsForVariable( name, first+1, 1, "y" );
+
+    return first;
+}
+
+int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    int first;
+    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector3->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "y", &pVector3->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "z", &pVector3->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+
+    AddControlsForVariable( name, first+0, 0, "x" );
+    AddControlsForVariable( name, first+1, 1, "y" );
+    AddControlsForVariable( name, first+2, 2, "z" );
+
+    return first;
 }
 
 int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
@@ -193,7 +221,7 @@ int PanelWatch::AddSpace()
     return m_NumVariables-1;
 }
 
-void PanelWatch::AddControlsForVariable(const char* name)
+void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname)
 {
     int PaddingTop = 3;
     int PaddingBottom = 3;
@@ -206,61 +234,101 @@ void PanelWatch::AddControlsForVariable(const char* name)
     int ControlHeight = ControlPaddingTop + 20 + ControlPaddingBottom;
 
     int PosX = PaddingLeft + ControlPaddingLeft;
-    int PosY = PaddingTop + m_NumVariables*ControlHeight;
+    int PosY; // = PaddingTop + variablenum*ControlHeight;
+    if( variablenum == 0 ) // first variable in list
+        PosY = PaddingTop + variablenum*ControlHeight;
+    else
+        PosY = m_pVariables[variablenum-1].m_Rect_XYWH.y + m_pVariables[variablenum-1].m_Rect_XYWH.w;
+
+    if( component >= 1 )
+    {
+        PosX = m_pVariables[variablenum-1].m_Rect_XYWH.x + m_pVariables[variablenum-1].m_Rect_XYWH.z;
+        PosY = m_pVariables[variablenum-1].m_Rect_XYWH.y;
+    }
+
     int WindowWidth = 300;
 
     int TextHeight = 20;
     int TextCtrlHeight = 20;
     int SliderHeight = 20;
 
+    wxString variablename = name;
+    
     int TextWidth = 100;
     int SliderWidth = 120;
     int TextCtrlWidth = 70;
 
-    if( m_pVariables[m_NumVariables].m_Description != 0 )
+    if( component >= 0 )
+    {
+        TextWidth = 5;
+        SliderWidth = 30;
+        TextCtrlWidth = 45;
+
+        if( component == 0 )
+        {
+            TextWidth = 60;
+            variablename = name;
+            variablename.Append( " " );
+            variablename.Append( componentname );
+        }
+        else
+        {
+            variablename = componentname;
+        }
+    }
+
+    if( m_pVariables[variablenum].m_Description != 0 )
     {
         TextCtrlWidth = 150;
     }
 
+    m_pVariables[variablenum].m_Rect_XYWH.x = PosX;
+    m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
+    m_pVariables[variablenum].m_Rect_XYWH.z = TextWidth + SliderWidth + TextCtrlWidth;
+    m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
+
     // Text label
     {
-        m_pVariables[m_NumVariables].m_Handle_StaticText = MyNew wxStaticText( this, m_NumVariables, name, wxPoint(PosX, PosY), wxSize(TextWidth, TextHeight));
+        m_pVariables[variablenum].m_Handle_StaticText = MyNew wxStaticText( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(TextWidth, TextHeight));
 
         PosX += TextWidth;
     }
 
     // Slider
-    if( m_pVariables[m_NumVariables].m_Description == 0 )
+    if( m_pVariables[variablenum].m_Description == 0 )
     {
         float sliderfloatmultiplier = 1;
-        if( m_pVariables[m_NumVariables].m_Type == PanelWatchType_Float ||
-            m_pVariables[m_NumVariables].m_Type == PanelWatchType_Double )
+        if( m_pVariables[variablenum].m_Type == PanelWatchType_Float ||
+            m_pVariables[variablenum].m_Type == PanelWatchType_Double ) //|| 
+            //m_pVariables[variablenum].m_Type == PanelWatchType_Vector3 )
         {
             sliderfloatmultiplier = WXSlider_Float_Multiplier;
         }
 
-        m_pVariables[m_NumVariables].m_Handle_Slider = MyNew wxSlider( this, m_NumVariables, 0,
-            m_pVariables[m_NumVariables].m_Range.x * sliderfloatmultiplier, // min
-            m_pVariables[m_NumVariables].m_Range.y * sliderfloatmultiplier, // max
+        m_pVariables[variablenum].m_Handle_Slider = MyNew wxSlider( this, variablenum, 0,
+            m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier, // min
+            m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier, // max
             wxPoint(PosX, PosY), wxSize(SliderWidth, SliderHeight) );
+
+        //m_pVariables[variablenum].m_Handle_Slider->set
 
         PosX += SliderWidth;
 
         // if control gets focus, stop updates.
-        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
-        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
-        m_pVariables[m_NumVariables].m_Handle_Slider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
     }
 
     // Edit box
     {
-        wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, m_NumVariables, "",
+        wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
             wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
 
-        m_pVariables[m_NumVariables].m_Handle_TextCtrl = pTextCtrl;
+        m_pVariables[variablenum].m_Handle_TextCtrl = pTextCtrl;
 
         PosX += TextCtrlWidth;
 
@@ -268,18 +336,18 @@ void PanelWatch::AddControlsForVariable(const char* name)
         pTextCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
-        if( m_pVariables[m_NumVariables].m_pOnDropCallbackFunc )
+        if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         {
             PanelWatchDropTarget* pDropTarget = MyNew PanelWatchDropTarget;
-            pDropTarget->m_pCallbackObj = m_pVariables[m_NumVariables].m_pCallbackObj;
-            pDropTarget->m_pCallbackFunc = m_pVariables[m_NumVariables].m_pOnDropCallbackFunc;
-            pDropTarget->m_ControlIndex = m_NumVariables;
+            pDropTarget->m_pCallbackObj = m_pVariables[variablenum].m_pCallbackObj;
+            pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
+            pDropTarget->m_ControlIndex = variablenum;
 
             pTextCtrl->SetDropTarget( pDropTarget );            
         }
     }
 
-    int height = PaddingTop + (m_NumVariables+1)*ControlHeight + PaddingBottom;
+    int height = PaddingTop + (variablenum+1)*ControlHeight + PaddingBottom;
 
     SetScrollbars( 1, 1, PosX+10, height, 0, 0 );
 }
@@ -461,6 +529,11 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
         }
         break;
 
+    //case PanelWatchType_Vector3:
+    //    if( isblank == false )
+    //    {
+    //    }
+
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Unknown:
     default:
@@ -470,7 +543,9 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
     if( m_pVariables[controlid].m_Handle_Slider )
     {
         float sliderfloatmultiplier = 1;
-        if( m_pVariables[controlid].m_Type == PanelWatchType_Float || m_pVariables[controlid].m_Type == PanelWatchType_Double )
+        if( m_pVariables[controlid].m_Type == PanelWatchType_Float ||
+            m_pVariables[controlid].m_Type == PanelWatchType_Double ) //||
+            //m_pVariables[controlid].m_Type == PanelWatchType_Vector3 )
         {
             sliderfloatmultiplier = WXSlider_Float_Multiplier;
         }
@@ -489,19 +564,29 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
     }    
 
     // call the parent object to say it's value changed.
-    if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc &&
-        valuenew != valueold )
+    if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
     {
-        // add the command to the undo stack and change the value at the same time.
-        m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
-            valuenew - valueold,
-            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
-            m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
-
-        //m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
-
-        m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
+        if( m_pVariables[controlid].m_Type == PanelWatchType_PointerWithDesc )
+        {
+            // TODO: if typed into a pointer box, deal with it... along with undo/redo.
+            m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
+        }
+        else
+        {
+            if( valueold != valuenew )
+            {
+                // add the command to the undo stack and change the value at the same time.
+                m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
+                    valuenew - valueold,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            }
+        }
     }
+
+    m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
+    if( controlid < m_NumVariables && m_pVariables[controlid+1].m_Handle_Slider )
+        m_pVariables[controlid+1].m_Handle_Slider->Navigate();
 }
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)
@@ -550,6 +635,10 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     case PanelWatchType_Double:
         *((double*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
         break;
+
+    //case PanelWatchType_Vector3:
+    //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+    //    break;
     }
 
     // call the parent object to say it's value changed.
@@ -562,16 +651,22 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
             double valuenew = value;
             double valueold = m_pVariables[controlid].m_SliderValueOnLeftMouseDown;
 
-            if( m_pVariables[controlid].m_Type == PanelWatchType_Float || m_pVariables[controlid].m_Type == PanelWatchType_Double )
+            if( m_pVariables[controlid].m_Type == PanelWatchType_Float ||
+                m_pVariables[controlid].m_Type == PanelWatchType_Double ) //||
+                //m_pVariables[controlid].m_Type == PanelWatchType_Vector3 )
             {
                 valuenew /= WXSlider_Float_Multiplier;
                 valueold /= WXSlider_Float_Multiplier;
             }
 
-            m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
-                valuenew - valueold,
-                m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
-                m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            if( valueold != valuenew )
+            {
+                // add the command to the undo stack and value was already changed.
+                m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
+                    valuenew - valueold,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            }
         }
     }
 
@@ -648,6 +743,14 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             }
             break;
 
+        //case PanelWatchType_Vector3:
+        //    {
+        //        double valuedouble = *(double*)m_pVariables[i].m_Pointer;
+        //        slidervalue = valuedouble * WXSlider_Float_Multiplier;
+        //        sprintf_s( tempstring, 50, "%0.2f", valuedouble );
+        //    }
+        //    break;
+
         case PanelWatchType_PointerWithDesc:
             {
                 sprintf_s( tempstring, 50, "%s", m_pVariables[i].m_Description );
@@ -658,7 +761,9 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             continue;
         }
 
-        m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
+        if( m_pVariables[i].m_Handle_TextCtrl != 0 )
+            m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
+
         if( m_pVariables[i].m_Handle_Slider != 0 )
             m_pVariables[i].m_Handle_Slider->SetValue( slidervalue );
     }

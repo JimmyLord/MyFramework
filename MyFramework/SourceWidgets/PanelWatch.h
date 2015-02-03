@@ -24,6 +24,7 @@ enum PanelWatch_Types
     PanelWatchType_Bool,
     PanelWatchType_Float,
     PanelWatchType_Double,
+    //PanelWatchType_Vector3,
     PanelWatchType_PointerWithDesc,
     PanelWatchType_Unknown,
 };
@@ -63,6 +64,8 @@ struct VariableProperties
     PanelWatchCallback m_pOnDropCallbackFunc;
     PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
 
+    Vector4Int m_Rect_XYWH;
+
     int m_SliderValueOnLeftMouseDown;
     bool m_SliderLeftMouseIsDown;
 };
@@ -81,7 +84,7 @@ public:
     CommandStack* m_pCommandStack;
 
 protected:
-    void AddControlsForVariable(const char* name);
+    void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname);
 
 public:
     void UpdatePanel(int controltoupdate = -1);
@@ -104,7 +107,7 @@ public:
 
     void ClearAllVariables();
 
-    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc);
+    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
     int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc);
 
     int AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
@@ -114,6 +117,8 @@ public:
     int AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace();
 };
