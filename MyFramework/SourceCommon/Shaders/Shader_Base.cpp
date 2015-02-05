@@ -77,7 +77,7 @@ bool Shader_Base::LoadAndCompile()
 
     m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
 
-    m_uHandle_ShadowLightWVP = GetUniformLocation( m_ProgramHandle, "u_ShadowLightMVP" );
+    m_uHandle_ShadowLightWVP = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVP" );
     m_uHandle_ShadowTexture =  GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
 
     m_uHandle_TextureColor =     GetUniformLocation( m_ProgramHandle, "u_TextureColor" );

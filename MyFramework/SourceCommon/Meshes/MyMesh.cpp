@@ -865,66 +865,8 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
 
 void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
-
-    int numsides = 4;
-    unsigned char numverts = (unsigned char)(2 * (numsides+1));
-    unsigned int numindices = 6 * numsides;
-    m_NumVertsToDraw = numverts;
-    m_NumIndicesToDraw = numindices;
-
+    CreateCylinder( thickness, 4, 0, length, 0, 1, 0, 1, 0, 1, 0, 1 );
     m_Tint = color;
-
-    if( m_pVertexBuffer == 0 )
-    {
-        m_VertexFormat = VertexFormat_XYZ;
-        Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_TransformAxis", "Verts" );
-    }
-
-    if( m_pIndexBuffer == 0 )
-    {
-        unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_TransformAxis", "Indices" );
-    }
-
-    m_PrimitiveType = GL_TRIANGLES;
-
-    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_pVertexBuffer->m_pData;
-    unsigned char* pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
-
-    unsigned char vertnum = 0;
-    int indexnum = 0;
-
-    // create verts
-    for( int i=0; i<=numsides; i++ )
-    {
-        float angle = 2*PI / numsides * i;
-
-        pVerts[vertnum + 0].x = cos( angle ) * thickness;
-        pVerts[vertnum + 0].y = sin( angle ) * thickness;
-        pVerts[vertnum + 0].z = 0;
-
-        pVerts[vertnum + 1].x = cos( angle ) * thickness;
-        pVerts[vertnum + 1].y = sin( angle ) * thickness;
-        pVerts[vertnum + 1].z = -length;
-
-        if( i < numsides )
-        {
-            pIndices[indexnum + 0] = vertnum + 2;
-            pIndices[indexnum + 1] = vertnum + 0;
-            pIndices[indexnum + 2] = vertnum + 1;
-            pIndices[indexnum + 3] = vertnum + 2;
-            pIndices[indexnum + 4] = vertnum + 1;
-            pIndices[indexnum + 5] = vertnum + 3;
-        }
-
-        vertnum += 2;
-        indexnum += 6;
-    }
-
-    m_MeshReady = true;
 }
 
 void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)

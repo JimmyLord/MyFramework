@@ -32,6 +32,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
         m_pVariables[i].m_Handle_StaticText = 0;
         m_pVariables[i].m_Handle_TextCtrl = 0;
         m_pVariables[i].m_Handle_Slider = 0;
+        m_pVariables[i].m_Handle_ColourPicker = 0;
         m_pVariables[i].m_Pointer = 0;
         m_pVariables[i].m_Range.Set( 0, 0 );
         m_pVariables[i].m_Description = 0;
@@ -51,7 +52,8 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
     //Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler(PanelWatch::OnSliderChanged) );
     Connect( wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(PanelWatch::OnSliderChanged) );
     //Connect( wxEVT_SLIDER, wxScrollEventHandler(PanelWatch::OnSliderChanged) );
-    Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(PanelWatch::OnTextCtrlChanged) );
+    Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(PanelWatch::OnTextCtrlEnter) );
+    Connect( wxEVT_COLOURPICKER_CHANGED, wxColourPickerEventHandler(PanelWatch::OnColourPickerChanged) );    
     Connect( wxEVT_TIMER, wxTimerEventHandler(PanelWatch::OnTimer) );
 }
 
@@ -74,14 +76,14 @@ void PanelWatch::ClearAllVariables()
             this->RemoveChild( m_pVariables[i].m_Handle_TextCtrl );
         if( m_pVariables[i].m_Handle_Slider != 0 )
             this->RemoveChild( m_pVariables[i].m_Handle_Slider );
+        if( m_pVariables[i].m_Handle_ColourPicker != 0 )
+            this->RemoveChild( m_pVariables[i].m_Handle_ColourPicker );
 
         SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
         SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
         SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
+        SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
 
-        m_pVariables[i].m_Handle_StaticText = 0;
-        m_pVariables[i].m_Handle_TextCtrl = 0;
-        m_pVariables[i].m_Handle_Slider = 0;
         m_pVariables[i].m_Pointer = 0;
         m_pVariables[i].m_Range.Set( 0, 0 );
         m_pVariables[i].m_Description = 0;
@@ -202,6 +204,35 @@ int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float
     return first;
 }
 
+int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    int first;
+    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector4->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "y", &pVector4->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "z", &pVector4->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfType( PanelWatchType_Float, "w", &pVector4->w, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+
+    AddControlsForVariable( name, first+0, 0, "x" );
+    AddControlsForVariable( name, first+1, 1, "y" );
+    AddControlsForVariable( name, first+2, 2, "z" );
+    AddControlsForVariable( name, first+3, 3, "w" );
+
+    return first;
+}
+
+int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    // TODO: maybe? change this to a color picker that supports alpha.
+    int first;
+    first = AddVariableOfType( PanelWatchType_ColorFloat, name, pColorFloat, 0, 0, 0, 0 );
+
+    // add alpha as a float
+    AddVariableOfType( PanelWatchType_Float, "a", &pColorFloat->a, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddControlsForVariable( name, first+1, 1, "a" );
+
+    return first;
+}
+
 int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     return AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc );
@@ -282,6 +313,12 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         TextCtrlWidth = 150;
     }
 
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
+    {
+        SliderWidth = 0;
+        TextCtrlWidth = 115; // wxColourPicker
+    }
+
     m_pVariables[variablenum].m_Rect_XYWH.x = PosX;
     m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
     m_pVariables[variablenum].m_Rect_XYWH.z = TextWidth + SliderWidth + TextCtrlWidth;
@@ -295,7 +332,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     // Slider
-    if( m_pVariables[variablenum].m_Description == 0 )
+    if( m_pVariables[variablenum].m_Description == 0 &&
+        m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat )
     {
         float sliderfloatmultiplier = 1;
         if( m_pVariables[variablenum].m_Type == PanelWatchType_Float ||
@@ -324,6 +362,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     // Edit box
+    if( m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat )
     {
         wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
             wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
@@ -334,7 +373,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
         // if control gets focus, stop updates.
         pTextCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnEditBoxKillFocus), 0, this );
 
         if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         {
@@ -345,6 +384,31 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
             pTextCtrl->SetDropTarget( pDropTarget );            
         }
+    }
+
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
+    {
+        // TODO: change this to a color picker that supports alpha.
+        wxColourPickerCtrl* pCtrl = MyNew wxColourPickerCtrl( this, variablenum, "",
+            wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight) );
+
+        m_pVariables[variablenum].m_Handle_ColourPicker = pCtrl;
+
+        PosX += TextCtrlWidth;
+
+        // if control gets focus, stop updates.
+        pCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+        pCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+
+        //if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
+        //{
+        //    PanelWatchDropTarget* pDropTarget = MyNew PanelWatchDropTarget;
+        //    pDropTarget->m_pCallbackObj = m_pVariables[variablenum].m_pCallbackObj;
+        //    pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
+        //    pDropTarget->m_ControlIndex = variablenum;
+
+        //    pCtrl->SetDropTarget( pDropTarget );            
+        //}
     }
 
     int height = PaddingTop + (variablenum+1)*ControlHeight + PaddingBottom;
@@ -386,10 +450,16 @@ void PanelWatch::OnSetFocus(wxFocusEvent& event)
 void PanelWatch::OnKillFocus(wxFocusEvent& event)
 {
     //LOGInfo( LOGTag, "OnKillFocus\n" );
-
     m_pTimer->Start();
-
     event.Skip();
+}
+
+void PanelWatch::OnEditBoxKillFocus(wxFocusEvent& event)
+{
+    int controlid = event.GetId();
+    OnTextCtrlChanged( controlid );
+
+    OnKillFocus( event );
 }
 
 void PanelWatch::OnMouseDown(wxMouseEvent& event)
@@ -449,10 +519,18 @@ void PanelWatch::OnTimer(wxTimerEvent& event)
     UpdatePanel();
 }
 
-void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
+void PanelWatch::OnTextCtrlEnter(wxCommandEvent& event)
 {
     int controlid = event.GetId();
 
+    m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
+    if( controlid < m_NumVariables && m_pVariables[controlid+1].m_Handle_Slider )
+        m_pVariables[controlid+1].m_Handle_Slider->Navigate();
+}
+
+void PanelWatch::OnTextCtrlChanged(int controlid)
+{
+    //LOGInfo( LOGTag, "OnTextCtrlChanged start %f\n", *(float*)m_pVariables[controlid].m_Pointer );
     wxString wxstr = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
 
     bool isblank = false;
@@ -534,6 +612,7 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
     //    {
     //    }
 
+    case PanelWatchType_ColorFloat:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Unknown:
     default:
@@ -564,7 +643,7 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
     }    
 
     // call the parent object to say it's value changed.
-    if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+    //if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
     {
         if( m_pVariables[controlid].m_Type == PanelWatchType_PointerWithDesc )
         {
@@ -584,9 +663,7 @@ void PanelWatch::OnTextCtrlChanged(wxCommandEvent& event)
         }
     }
 
-    m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
-    if( controlid < m_NumVariables && m_pVariables[controlid+1].m_Handle_Slider )
-        m_pVariables[controlid+1].m_Handle_Slider->Navigate();
+    //LOGInfo( LOGTag, "OnTextCtrlChanged end %f\n", *(float*)m_pVariables[controlid].m_Pointer );
 }
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)
@@ -673,6 +750,27 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     UpdatePanel( controlid );
 }
 
+void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
+{
+    int controlid = event.GetId();
+
+    assert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat );
+
+    wxColour colour = m_pVariables[controlid].m_Handle_ColourPicker->GetColour();
+
+    ColorFloat asfloats;
+    asfloats.r = colour.Red()   / 255.0f;
+    asfloats.g = colour.Green() / 255.0f;
+    asfloats.b = colour.Blue()  / 255.0f;
+    asfloats.a = ((ColorFloat*)m_pVariables[controlid].m_Pointer)->a; // colour picker doesn't do alpha.
+
+    // add the command to the undo stack and change the value at the same time.
+    m_pCommandStack->Do( MyNew EditorCommand_PanelWatchColorChanged(
+        asfloats,
+        m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+        m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+}
+
 void PanelWatch::UpdatePanel(int controltoupdate)
 {
     for( int i=0; i<m_NumVariables; i++ )
@@ -750,6 +848,17 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         //        sprintf_s( tempstring, 50, "%0.2f", valuedouble );
         //    }
         //    break;
+
+        case PanelWatchType_ColorFloat:
+            {
+                ColorFloat asfloats = *(ColorFloat*)m_pVariables[i].m_Pointer;
+                wxColour colour( (unsigned char)asfloats.r * 255.0f,
+                                 (unsigned char)asfloats.g * 255.0f,
+                                 (unsigned char)asfloats.b * 255.0f,
+                                 (unsigned char)asfloats.a * 255.0f );
+                m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
+            }
+            break;
 
         case PanelWatchType_PointerWithDesc:
             {

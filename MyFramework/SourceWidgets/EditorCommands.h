@@ -44,4 +44,26 @@ public:
 
 //====================================================================================================
 
+class EditorCommand_PanelWatchColorChanged : public EditorCommand
+{
+protected:
+    ColorFloat m_NewColor;
+    ColorFloat m_OldColor;
+    PanelWatch_Types m_Type;
+    void* m_Pointer;
+
+    PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
+    void* m_pCallbackObj;
+
+public:
+    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
+    virtual ~EditorCommand_PanelWatchColorChanged();
+
+    virtual void Do();
+    virtual void Undo();
+    virtual EditorCommand* Repeat();
+};
+
+//====================================================================================================
+
 #endif // __EditorCommands_H__

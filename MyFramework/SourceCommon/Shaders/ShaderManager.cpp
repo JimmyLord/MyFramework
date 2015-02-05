@@ -245,6 +245,9 @@ void BaseShader::DisableAttributeArray(GLint index)
     if( index != -1 )
     {
         MyDisableVertexAttribArray( index );
+
+        // TODO: set this attribute override value in the MyMesh object.
+        glVertexAttrib3f( index, 0, 1, 0 );
     }
 }
 

@@ -97,6 +97,7 @@
 #include "wx/aui/aui.h"
 #include "wx/listctrl.h"
 #include "wx/treectrl.h"
+#include "wx/clrpicker.h"
 #include "wx/dnd.h"
 #pragma warning (default : 4996)
 #include <vector>

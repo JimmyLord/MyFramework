@@ -25,6 +25,7 @@ enum PanelWatch_Types
     PanelWatchType_Float,
     PanelWatchType_Double,
     //PanelWatchType_Vector3,
+    PanelWatchType_ColorFloat,
     PanelWatchType_PointerWithDesc,
     PanelWatchType_Unknown,
 };
@@ -55,6 +56,7 @@ struct VariableProperties
     wxStaticText* m_Handle_StaticText;
     wxTextCtrl* m_Handle_TextCtrl;
     wxSlider* m_Handle_Slider;
+    wxColourPickerCtrl* m_Handle_ColourPicker;
 
     void* m_Pointer;
     Vector2 m_Range;
@@ -91,15 +93,18 @@ public:
 
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
+    void OnEditBoxKillFocus(wxFocusEvent& event);
 
     void OnMouseDown(wxMouseEvent& event);
     void OnMouseUp(wxMouseEvent& event);
     void OnMouseMove(wxMouseEvent& event);
 
     void OnTimer(wxTimerEvent& event);
-    void OnTextCtrlChanged(wxCommandEvent& event);
+    void OnTextCtrlEnter(wxCommandEvent& event);
+    void OnTextCtrlChanged(int controlid);
     void OnSliderChanged(wxScrollEvent& event);
     void OnSliderChanged(int controlid, int value, bool addundocommand);//wxScrollEvent& event);
+    void OnColourPickerChanged(wxColourPickerEvent& event);
 
 public:
     PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack);
@@ -119,6 +124,8 @@ public:
     int AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace();
 };
