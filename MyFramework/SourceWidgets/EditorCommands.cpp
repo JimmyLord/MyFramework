@@ -72,7 +72,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true );
 }
 
 void EditorCommand_PanelWatchNumberValueChanged::Undo()
@@ -118,7 +118,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true );
 }
 
 EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
@@ -157,7 +157,7 @@ void EditorCommand_PanelWatchColorChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true );
 }
 
 void EditorCommand_PanelWatchColorChanged::Undo()
@@ -168,7 +168,7 @@ void EditorCommand_PanelWatchColorChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true );
 }
 
 EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()

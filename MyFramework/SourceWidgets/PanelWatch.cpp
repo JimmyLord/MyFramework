@@ -503,11 +503,11 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
         wxRect rect = m_pVariables[controlid].m_Handle_Slider->GetClientRect();
         int min = m_pVariables[controlid].m_Handle_Slider->GetMin();
         int max = m_pVariables[controlid].m_Handle_Slider->GetMax();
-        if( pos.x > rect.x + rect.width )
+        if( pos.x > rect.x + rect.width + 20 )
         {
             m_pVariables[controlid].m_Handle_Slider->SetMax( max + 1000 );
         }
-        if( pos.x < rect.x )
+        if( pos.x < rect.x - 20 )
         {
             m_pVariables[controlid].m_Handle_Slider->SetMin( min - 1000 );
         }
@@ -638,8 +638,8 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
             m_pVariables[controlid].m_Range.y = valuenew;
         }
 
-        m_pVariables[controlid].m_Handle_Slider->SetRange( m_pVariables[controlid].m_Range.x * WXSlider_Float_Multiplier,
-                                                           m_pVariables[controlid].m_Range.y * WXSlider_Float_Multiplier );
+        m_pVariables[controlid].m_Handle_Slider->SetRange( m_pVariables[controlid].m_Range.x * sliderfloatmultiplier,
+                                                           m_pVariables[controlid].m_Range.y * sliderfloatmultiplier );
     }    
 
     // call the parent object to say it's value changed.
@@ -648,7 +648,7 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
         if( m_pVariables[controlid].m_Type == PanelWatchType_PointerWithDesc )
         {
             // TODO: if typed into a pointer box, deal with it... along with undo/redo.
-            m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
+            m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
         }
         else
         {
@@ -718,10 +718,10 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     //    break;
     }
 
-    // call the parent object to say it's value changed.
-    if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
     {
-        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
+        // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
+        if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+            m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false );
 
         if( addundocommand )
         {
@@ -743,6 +743,9 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
                     valuenew - valueold,
                     m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
                     m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+    
+                // call the parent object to say it's value changed... finished changing.
+                m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
             }
         }
     }

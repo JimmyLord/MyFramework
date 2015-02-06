@@ -709,8 +709,10 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
 void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles)
 {
     int numverts = vertcount.x * vertcount.y;
-    if( numverts > 65535 )
+    if( numverts < 0 || numverts > 65535 )
         return;
+
+    LOGInfo( LOGTag, "MyMesh::CreatePlane\n" );
 
     unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
     unsigned int numindices = numtris * 3;
@@ -731,12 +733,12 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     }
 
     // delete the old buffers, if we want a plane with more.
-    if( GetNumVerts() < numverts )
+    if( numverts > GetNumVerts() )
     {
         m_pVertexBuffer->FreeBufferedData();
         m_VertexFormat = VertexFormat_XYZUV;
-        Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
-        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
+        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
+        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
 
         //if( createtriangles )
         {
