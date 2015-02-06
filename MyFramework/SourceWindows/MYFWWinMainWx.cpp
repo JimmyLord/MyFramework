@@ -17,15 +17,7 @@
 bool g_EscapeButtonWillQuit;
 bool g_CloseProgramRequested;
 
-bool m_KeysDown[512];
-
 unsigned int g_GLCanvasIDActive = 0;
-
-bool MYFW_GetKey(int value)
-{
-    assert( value >= 0 && value < 512 );
-    return m_KeysDown[value];
-}
 
 GLViewTypes g_CurrentGLViewType;
 
@@ -36,11 +28,6 @@ MainFrame::MainFrame(wxWindow* parent)
     WinMain_GetClientSize( &width, &height, &g_CurrentGLViewType );
 
     SetClientSize( width, height );
-
-    for( int i=0; i<512; i++ )
-    {
-        m_KeysDown[i] = 0;
-    }
 
     // Create the menu bar
     {
@@ -375,6 +362,11 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
     m_LastTimeTicked = MyTime_GetRunningTime();
+
+    for( int i=0; i<512; i++ )
+    {
+        m_KeysDown[i] = 0;
+    }
 }
 
 MainGLCanvas::~MainGLCanvas()
@@ -679,6 +671,19 @@ void MainGLCanvas::Draw()
 
     if( g_pGameCore )
     {
+        // Generate keyheld messages:
+        //for( int i=0; i<GCBI_NumButtons; i++ )
+        //{
+        //    if( m_ButtonsHeld[i] )
+        //        g_pGameCore->OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
+        //}
+
+        for( int i=0; i<512; i++ )
+        {
+            if( m_KeysDown[i] )
+                g_pGameCore->OnKey( GCBA_Held, i, i );
+        }
+
         if( m_TickGameCore )
         {
             double currtime = MyTime_GetRunningTime();

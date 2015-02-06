@@ -78,8 +78,10 @@ public:
     int m_LastInputMethodUsed;
 
     bool m_ButtonsHeld[GCBI_NumButtons];
+    bool m_KeysHeld[255];
     
     float m_TimeSinceGameStarted;
+    float m_TimePassedUnpausedLastFrame;
 
 public:
     SoundPlayer* m_pSoundPlayer;
@@ -108,8 +110,13 @@ public:
 
     virtual void OnTouch(int action, int id, float x, float y, float pressure, float size);
     virtual void OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);
+    virtual void OnKey(GameCoreButtonActions action, int keycode, int unicodechar);
+
+    // OnKeyDown and OnKeyUp are used by platform-specific code, games should override OnKeys();
     virtual void OnKeyDown(int keycode, int unicodechar);
     virtual void OnKeyUp(int keycode, int unicodechar);
+
+    virtual bool IsKeyHeld(int keycode);
 
     virtual void OnPurchaseComplete(const char* id, const char* sku, IAPErrorCodes errorcode, bool newpurchase) { }
 

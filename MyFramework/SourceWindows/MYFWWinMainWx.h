@@ -39,7 +39,6 @@ enum MenuIDs
     myID_NumIDs,
 };
 
-bool MYFW_GetKey(int value);
 void WinMain_CreateGameCore();
 MainFrame* WinMain_CreateMainFrame();
 void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
@@ -99,6 +98,8 @@ extern wxGLContext* m_GLContext;
 class MainGLCanvas : public wxGLCanvas
 {
 public:
+    bool m_KeysDown[512];
+
     unsigned int m_GLCanvasID;
 
     int m_MouseCaptured_ButtonsHeld;

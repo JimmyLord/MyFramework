@@ -40,6 +40,9 @@ GameCore::GameCore()
 
     for( int i=0; i<GCBI_NumButtons; i++ )
         m_ButtonsHeld[i] = false;
+
+    for( int i=0; i<255; i++ )
+        m_KeysHeld[i] = false;
 }
 
 GameCore::~GameCore()
@@ -124,6 +127,8 @@ bool GameCore::IsReadyToRender()
 
 double GameCore::Tick(double TimePassed)
 {
+    m_TimePassedUnpausedLastFrame = TimePassed;
+
     m_TimeSinceGameStarted += (float)TimePassed;
 
     //if( m_GLSurfaceIsValid == false )
@@ -274,12 +279,34 @@ void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
         m_ButtonsHeld[id] = false;
 }
 
+void GameCore::OnKey(GameCoreButtonActions action, int keycode, int unicodechar)
+{
+}
+
 void GameCore::OnKeyDown(int keycode, int unicodechar)
 {
     m_LastInputMethodUsed = InputMethod_Keyboard;
+
+    if( keycode >= 0 && keycode < 255 )
+        m_KeysHeld[keycode] = true;
+
+    OnKey( GCBA_Down, keycode, unicodechar );
 }
 
 void GameCore::OnKeyUp(int keycode, int unicodechar)
 {
     m_LastInputMethodUsed = InputMethod_Keyboard;
+
+    if( keycode >= 0 && keycode < 255 )
+        m_KeysHeld[keycode] = false;
+
+    OnKey( GCBA_Up, keycode, unicodechar );
+}
+
+bool GameCore::IsKeyHeld(int keycode)
+{
+    if( keycode >= 0 && keycode < 255 )
+        return m_KeysHeld[keycode];
+
+    return false;
 }
