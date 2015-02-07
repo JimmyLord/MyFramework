@@ -648,7 +648,8 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
         if( m_pVariables[controlid].m_Type == PanelWatchType_PointerWithDesc )
         {
             // TODO: if typed into a pointer box, deal with it... along with undo/redo.
-            m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+            if( m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+                m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
         }
         else
         {
@@ -745,7 +746,8 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
                     m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
     
                 // call the parent object to say it's value changed... finished changing.
-                m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+                if( m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+                    m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
             }
         }
     }
