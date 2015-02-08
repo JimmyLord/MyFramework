@@ -54,6 +54,7 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pTextureManager );
     SAFE_DELETE( g_pBufferManager );
     SAFE_DELETE( g_pMeshManager );
+    SAFE_DELETE( g_pLightManager );
     SAFE_DELETE( g_pShaderManager );
     SAFE_DELETE( g_pShaderGroupManager );
     SAFE_DELETE( m_pSoundPlayer );
@@ -79,6 +80,8 @@ void GameCore::InitializeManagers()
         g_pBufferManager = MyNew BufferManager;
     if( g_pMeshManager == 0 )
         g_pMeshManager = MyNew MeshManager;
+    if( g_pLightManager == 0 )
+        g_pLightManager = MyNew LightManager;
     if( g_pShaderManager == 0 )
         g_pShaderManager = MyNew ShaderManager;
     if( g_pShaderGroupManager == 0 )

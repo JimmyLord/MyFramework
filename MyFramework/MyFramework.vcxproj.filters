@@ -519,6 +519,9 @@
     <ClCompile Include="SourceWidgets\EditorCommands.cpp">
       <Filter>Source-Platform\Source - Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\LightManager.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1117,6 +1120,9 @@
     </ClInclude>
     <ClInclude Include="SourceWidgets\EditorCommands.h">
       <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\LightManager.h">
+      <Filter>Source\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

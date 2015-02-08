@@ -323,6 +323,7 @@ typedef int socklen_t;
 #include "Meshes/MyMesh.h"
 #include "Meshes/BufferManager.h"
 #include "Meshes/MyLight.h"
+#include "Meshes/LightManager.h"
 #include "Sprites/MySprite.h"
 #include "Sprites/MySprite_XYZVertexColor.h"
 //#include "Sprites/MySprite9.h"

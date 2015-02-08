@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,29 +7,27 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __MyLight_H__
-#define __MyLight_H__
+#ifndef __LightManager_H__
+#define __LightManager_H__
 
-enum LightTypes
-{
-    LightType_None,
-    LightType_Directional,
-    LightType_Point,
-    LightType_Spot,
-};
+class LightManager;
 
-class MyLight : public CPPListNode
+extern LightManager* g_pLightManager;
+
+class LightManager
 {
 public:
-    LightTypes m_LightType;
-    Vector3 m_Position;
-    Vector3 m_SpotDirection;
-    ColorFloat m_Color;
-    Vector3 m_Attenuation;
+    CPPListHead m_LightList;
+    MyLight m_LightArray[8];
 
 public:
-    MyLight();
-    virtual ~MyLight();
+    LightManager();
+    virtual ~LightManager();
+
+    MyLight* CreateLight();
+    void DestroyLight(MyLight* pLight);
+
+    int FindNearestLights(int numtofind, MyLight** ppLightArray);
 };
 
-#endif //__MyLight_H__
+#endif //__LightManager_H__
