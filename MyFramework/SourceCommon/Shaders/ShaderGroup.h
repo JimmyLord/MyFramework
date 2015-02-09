@@ -29,27 +29,26 @@ extern ShaderPassTypes g_ActiveShaderPass;
 
 class ShaderGroup : public CPPListNode, public RefCount
 {
+    static const int MAX_LIGHTS = 4;
+
 protected:
     const char* m_Name; // managed externally.
-    BaseShader* m_pShaderPasses[ShaderPass_NumTypes];
+    BaseShader* m_pShaderPasses[ShaderPass_NumTypes][MAX_LIGHTS+1];
+    unsigned int m_MaxLightsShaderCanUse;
+
+protected:
+    void Initialize();
+    void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
-    ShaderGroup(char* name = 0);
-    ShaderGroup(BaseShader* pMainPass, char* name = 0);
-    ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name = 0);
+    ShaderGroup(MyFileObject* pFile, char* name = 0);
+
     ~ShaderGroup();
 
     const char* GetName() { return m_Name; }
 
-    BaseShader* GlobalPass();
-
-    BaseShader* GetShader(ShaderPassTypes pass) { return m_pShaderPasses[pass]; }
-
-    void SetShader(ShaderPassTypes pass, BaseShader* pShader);
-    void SetShaders(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass);
-
-    void SetFileForAllPasses(const char* pFilename);
-    void SetFileForAllPasses(MyFileObject* pFile);
+    BaseShader* GlobalPass(int numlights = 0);
+    BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0);
 
 public:
 #if MYFW_USING_WX

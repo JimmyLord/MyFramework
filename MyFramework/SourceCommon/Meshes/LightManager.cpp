@@ -38,22 +38,62 @@ void LightManager::DestroyLight(MyLight* pLight)
     delete pLight;
 }
 
-int LightManager::FindNearestLights(int numtofind, MyLight** ppLightArray)
+int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray)
 {
     assert( numtofind > 0 );
 
-    int numfound = 0;
+    if( numtofind > MAX_LIGHTS )
+        numtofind = MAX_LIGHTS;
 
+    // TODO: store lights in a quad-tree and maybe cache the nearest lights between frames.
+
+    float distances[MAX_LIGHTS];
+    MyLight* lights[MAX_LIGHTS];
+    float furthest = 10000;
+    for( int i=0; i<MAX_LIGHTS; i++ )
+    {
+        distances[i] = 10000;
+        lights[i] = 0;
+    }
+
+    // find nearest lights, based purely on distance from center.
+    // TODO: take brightness into account.
     for( CPPListNode* pNode = m_LightList.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         MyLight* pLight = (MyLight*)pNode;
 
-        // TODO: find nearby lights, return first lights for now.
-        m_LightArray[numfound] = *pLight;
-        numfound++;
+        float distance = (pLight->m_Position - pos).LengthSquared();
+        if( distance < furthest )
+        {
+            for( int i=0; i<numtofind; i++ )
+            {
+                if( distance < distances[i] )
+                {
+                    for( int j=4-1; j>i; j-- )
+                    {
+                        distances[j] = distances[j-1];
+                        lights[j] = lights[j-1];
+                    }
 
-        if( numfound >= numtofind )
+                    furthest = distances[numtofind];
+
+                    distances[i] = distance;
+                    lights[i] = pLight;
+                    
+                    break;
+                }
+            }
+        }
+    }
+
+    int numfound = 0;
+    for( int i=0; i<numtofind; i++ )
+    {
+        if( lights[i] == 0 )
             break;
+
+        m_LightArray[numfound] = *lights[i];
+        numfound++;
     }
 
     *ppLightArray = m_LightArray;

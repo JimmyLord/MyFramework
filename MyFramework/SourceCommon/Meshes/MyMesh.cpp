@@ -733,20 +733,22 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     }
 
     // delete the old buffers, if we want a plane with more.
-    if( numverts > GetNumVerts() )
+    if( sizeof(Vertex_XYZUV)*numverts > m_pVertexBuffer->m_DataSize )
     {
         m_pVertexBuffer->FreeBufferedData();
         m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
         m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
-
-        //if( createtriangles )
-        {
-            m_pIndexBuffer->FreeBufferedData();
-            unsigned short* pIndices = MyNew unsigned short[numindices];
-            m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
-        }
     }
+
+    if( sizeof(unsigned short)*numindices > m_pIndexBuffer->m_DataSize )
+    {
+        m_pIndexBuffer->FreeBufferedData();
+        unsigned short* pIndices = MyNew unsigned short[numindices];
+        m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+    }
+
+    m_pIndexBuffer->m_BytesPerIndex = 2;
 
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_pVertexBuffer->m_pData;
     m_pVertexBuffer->m_Dirty = true;
@@ -798,6 +800,233 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
     m_MeshReady = true;
 };
+
+void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
+{
+    // from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+
+    int numverts = 12;
+    unsigned int numtris = 20;
+    unsigned int numindices = numtris * 3;
+    int bytesperindex = sizeof(unsigned char);
+
+    m_NumVertsToDraw = (unsigned short)numverts;
+    m_NumIndicesToDraw = numindices;
+
+    if( m_pVertexBuffer == 0 )
+    {
+        m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    if( m_pIndexBuffer == 0 )
+    {
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    // delete the old buffers, if we want an icosphere with more.
+    if( sizeof(Vertex_XYZUV)*numverts > m_pVertexBuffer->m_DataSize )
+    {
+        m_pVertexBuffer->FreeBufferedData();
+        m_VertexFormat = VertexFormat_XYZUV;
+        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
+        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Icosphere", "Verts" );
+    }
+
+    if( bytesperindex*numindices > m_pIndexBuffer->m_DataSize )
+    {
+        m_pIndexBuffer->FreeBufferedData();
+        unsigned char* pIndices = MyNew unsigned char[numindices];
+        m_pIndexBuffer->InitializeBuffer( pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
+    }
+
+    m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
+
+    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_pVertexBuffer->m_pData;
+    m_pVertexBuffer->m_Dirty = true;
+
+    unsigned char* pIndices = 0;
+    pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
+    m_pIndexBuffer->m_Dirty = true;
+
+    // create 12 vertices of a icosahedron
+    float t = (1.0 + sqrt(5.0)) / 2.0;
+
+    pVerts[ 0].pos.Set( -1,  t,  0 );
+    pVerts[ 1].pos.Set(  1,  t,  0 );
+    pVerts[ 2].pos.Set( -1, -t,  0 );
+    pVerts[ 3].pos.Set(  1, -t,  0 );
+
+    pVerts[ 4].pos.Set(  0, -1,  t );
+    pVerts[ 5].pos.Set(  0,  1,  t );
+    pVerts[ 6].pos.Set(  0, -1, -t );
+    pVerts[ 7].pos.Set(  0,  1, -t );
+
+    pVerts[ 8].pos.Set(  t,  0, -1 );
+    pVerts[ 9].pos.Set(  t,  0,  1 );
+    pVerts[10].pos.Set( -t,  0, -1 );
+    pVerts[11].pos.Set( -t,  0,  1 );
+
+    // create 20 triangles of the icosahedron
+    unsigned char indexlist[] =
+    {
+       0, 11,  5,    0,  5,  1,    0,  1,  7,    0,  7, 10,    0, 10, 11,  // 5 faces around point 0
+       1,  5,  9,    5, 11,  4,   11, 10,  2,   10,  7,  6,    7,  1,  8,  // 5 adjacent faces 
+       3,  9,  4,    3,  4,  2,    3,  2,  6,    3,  6,  8,    3,  8,  9,  // 5 faces around point 3
+       4,  9,  5,    2,  4, 11,    6,  2, 10,    8,  6,  7,    9,  8,  1,  // 5 adjacent faces
+    };
+
+    for( int i=0; i<80; i++ )
+        pIndices[i] = indexlist[i];
+
+    m_MeshReady = true;
+
+    //public class IcoSphereCreator
+    //{
+    //    private struct TriangleIndices
+    //    {
+    //        public int v1;
+    //        public int v2;
+    //        public int v3;
+
+    //        public TriangleIndices(int v1, int v2, int v3)
+    //        {
+    //            this.v1 = v1;
+    //            this.v2 = v2;
+    //            this.v3 = v3;
+    //        }
+    //    }
+
+    //    private MeshGeometry3D geometry;
+    //    private int index;
+    //    private Dictionary<Int64, int> middlePointIndexCache;
+
+    //    // add vertex to mesh, fix position to be on unit sphere, return index
+    //    private int addVertex(Point3D p)
+    //    {
+    //        double length = Math.Sqrt(p.X * p.X + p.Y * p.Y + p.Z * p.Z);
+    //        geometry.Positions.Add(new Point3D(p.X/length, p.Y/length, p.Z/length));
+    //        return index++;
+    //    }
+
+    //    // return index of point in the middle of p1 and p2
+    //    private int getMiddlePoint(int p1, int p2)
+    //    {
+    //        // first check if we have it already
+    //        bool firstIsSmaller = p1 < p2;
+    //        Int64 smallerIndex = firstIsSmaller ? p1 : p2;
+    //        Int64 greaterIndex = firstIsSmaller ? p2 : p1;
+    //        Int64 key = (smallerIndex << 32) + greaterIndex;
+
+    //        int ret;
+    //        if (this.middlePointIndexCache.TryGetValue(key, out ret))
+    //        {
+    //            return ret;
+    //        }
+
+    //        // not in cache, calculate it
+    //        Point3D point1 = this.geometry.Positions[p1];
+    //        Point3D point2 = this.geometry.Positions[p2];
+    //        Point3D middle = new Point3D(
+    //            (point1.X + point2.X) / 2.0, 
+    //            (point1.Y + point2.Y) / 2.0, 
+    //            (point1.Z + point2.Z) / 2.0);
+
+    //        // add vertex makes sure point is on unit sphere
+    //        int i = addVertex(middle); 
+
+    //        // store it, return index
+    //        this.middlePointIndexCache.Add(key, i);
+    //        return i;
+    //    }
+
+    //    public MeshGeometry3D Create(int recursionLevel)
+    //    {
+    //        this.geometry = new MeshGeometry3D();
+    //        this.middlePointIndexCache = new Dictionary<long, int>();
+    //        this.index = 0;
+
+    //        // create 12 vertices of a icosahedron
+    //        var t = (1.0 + Math.Sqrt(5.0)) / 2.0;
+
+    //        addVertex(new Point3D(-1,  t,  0));
+    //        addVertex(new Point3D( 1,  t,  0));
+    //        addVertex(new Point3D(-1, -t,  0));
+    //        addVertex(new Point3D( 1, -t,  0));
+
+    //        addVertex(new Point3D( 0, -1,  t));
+    //        addVertex(new Point3D( 0,  1,  t));
+    //        addVertex(new Point3D( 0, -1, -t));
+    //        addVertex(new Point3D( 0,  1, -t));
+
+    //        addVertex(new Point3D( t,  0, -1));
+    //        addVertex(new Point3D( t,  0,  1));
+    //        addVertex(new Point3D(-t,  0, -1));
+    //        addVertex(new Point3D(-t,  0,  1));
+
+
+    //        // create 20 triangles of the icosahedron
+    //        var faces = new List<TriangleIndices>();
+
+    //        // 5 faces around point 0
+    //        faces.Add(new TriangleIndices(0, 11, 5));
+    //        faces.Add(new TriangleIndices(0, 5, 1));
+    //        faces.Add(new TriangleIndices(0, 1, 7));
+    //        faces.Add(new TriangleIndices(0, 7, 10));
+    //        faces.Add(new TriangleIndices(0, 10, 11));
+
+    //        // 5 adjacent faces 
+    //        faces.Add(new TriangleIndices(1, 5, 9));
+    //        faces.Add(new TriangleIndices(5, 11, 4));
+    //        faces.Add(new TriangleIndices(11, 10, 2));
+    //        faces.Add(new TriangleIndices(10, 7, 6));
+    //        faces.Add(new TriangleIndices(7, 1, 8));
+
+    //        // 5 faces around point 3
+    //        faces.Add(new TriangleIndices(3, 9, 4));
+    //        faces.Add(new TriangleIndices(3, 4, 2));
+    //        faces.Add(new TriangleIndices(3, 2, 6));
+    //        faces.Add(new TriangleIndices(3, 6, 8));
+    //        faces.Add(new TriangleIndices(3, 8, 9));
+
+    //        // 5 adjacent faces 
+    //        faces.Add(new TriangleIndices(4, 9, 5));
+    //        faces.Add(new TriangleIndices(2, 4, 11));
+    //        faces.Add(new TriangleIndices(6, 2, 10));
+    //        faces.Add(new TriangleIndices(8, 6, 7));
+    //        faces.Add(new TriangleIndices(9, 8, 1));
+
+
+    //        // refine triangles
+    //        for (int i = 0; i < recursionLevel; i++)
+    //        {
+    //            var faces2 = new List<TriangleIndices>();
+    //            foreach (var tri in faces)
+    //            {
+    //                // replace triangle by 4 triangles
+    //                int a = getMiddlePoint(tri.v1, tri.v2);
+    //                int b = getMiddlePoint(tri.v2, tri.v3);
+    //                int c = getMiddlePoint(tri.v3, tri.v1);
+
+    //                faces2.Add(new TriangleIndices(tri.v1, a, c));
+    //                faces2.Add(new TriangleIndices(tri.v2, b, a));
+    //                faces2.Add(new TriangleIndices(tri.v3, c, b));
+    //                faces2.Add(new TriangleIndices(a, b, c));
+    //            }
+    //            faces = faces2;
+    //        }
+
+    //        // done, now add triangles to mesh
+    //        foreach (var tri in faces)
+    //        {
+    //            this.geometry.TriangleIndices.Add(tri.v1);
+    //            this.geometry.TriangleIndices.Add(tri.v2);
+    //            this.geometry.TriangleIndices.Add(tri.v3);
+    //        }
+
+    //        return this.geometry;        
+    //    }
+    //}
+}
 
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {
@@ -954,7 +1183,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     }
     else
     {
-        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass( numlights );
         if( pShader )
         {
             if( pShader->ActivateAndProgramShader( (VertexFormats)m_VertexFormat,

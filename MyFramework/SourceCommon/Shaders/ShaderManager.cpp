@@ -68,6 +68,7 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* FSpredef, boo
         int vslen = (int)strlen( VSpredef );
         if( alsousedefaults )
             vslen += strlen( VERTEXPREDEFINES );
+        vslen += 1;
         char* newvsstr = MyNew char[vslen];
         strcpy_s( newvsstr, vslen, VSpredef );
         if( alsousedefaults )

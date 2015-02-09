@@ -19,10 +19,14 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup(char* name)
+ShaderGroup::ShaderGroup(MyFileObject* pFile, char* name)
 : m_Name(name)
 {
-    SetShaders( 0, 0, 0 );
+    assert( name != 0 );
+
+    Initialize();
+
+    SetFileForAllPasses( pFile );
     g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
@@ -30,34 +34,28 @@ ShaderGroup::ShaderGroup(char* name)
 #endif
 }
 
-ShaderGroup::ShaderGroup(BaseShader* pMainPass, char* name)
-: m_Name(name)
+void ShaderGroup::Initialize()
 {
-    SetShaders( pMainPass, 0, 0 );
-    g_pShaderGroupManager->AddShaderGroup( this );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
-#endif
-}
-
-ShaderGroup::ShaderGroup(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass, char* name)
-: m_Name(name)
-{
-    SetShaders( pMainPass, pMainPassNoShadow, pShadowCastRGBAPass );
-    g_pShaderGroupManager->AddShaderGroup( this );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
-#endif
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    {
+        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
+        {
+            m_pShaderPasses[p][lc] = MyNew Shader_Base( (ShaderPassTypes)p );
+        }
+    }
 }
 
 ShaderGroup::~ShaderGroup()
 {
     this->Remove(); // remove this node from the shadergroupmanager's list
 
-    for( int i=0; i<ShaderPass_NumTypes; i++ )
-        SAFE_DELETE( m_pShaderPasses[i] );    
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    {
+        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
+        {
+            SAFE_DELETE( m_pShaderPasses[p][lc] );
+        }
+    }
 
 #if MYFW_USING_WX
     if( g_pPanelMemory )
@@ -73,41 +71,52 @@ void ShaderGroup::OnDrag()
 }
 #endif //MYFW_USING_WX
 
-BaseShader* ShaderGroup::GlobalPass()
+BaseShader* ShaderGroup::GlobalPass(int numlights)
 {
     //return m_pShaderPasses[ShaderPass_Main];
-    return m_pShaderPasses[g_ActiveShaderPass];
+    return GetShader( g_ActiveShaderPass, numlights );
 }
 
-void ShaderGroup::SetShader(ShaderPassTypes pass, BaseShader* pShader)
+BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights)
 {
-    m_pShaderPasses[pass] = pShader;
-}
-
-void ShaderGroup::SetShaders(BaseShader* pMainPass, BaseShader* pMainPassNoShadow, BaseShader* pShadowCastRGBAPass)
-{
-    m_pShaderPasses[ShaderPass_Main] = pMainPass;
-    m_pShaderPasses[ShaderPass_MainNoReceiveShadows] = pMainPassNoShadow;
-    m_pShaderPasses[ShaderPass_ShadowCastRGBA] = pShadowCastRGBAPass;
-}
-
-void ShaderGroup::SetFileForAllPasses(const char* pFilename)
-{
-    for( int i=0; i<ShaderPass_NumTypes; i++ )
+    if( numlights > MAX_LIGHTS )
     {
-        if( m_pShaderPasses[i] )
-            m_pShaderPasses[i]->m_pFilename = pFilename;
+        LOGError( LOGTag, "ShaderGroup::GetShader() asking for too many lights\n" );
+        numlights = MAX_LIGHTS;
     }
+
+    // find the first shader that supports the correct number of lights or less.
+    for( unsigned int lc = numlights; lc >= 0; lc-- )
+    {
+        if( m_pShaderPasses[pass][lc] != 0 )
+            return m_pShaderPasses[pass][lc];
+    }
+
+    return 0;
 }
 
 void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
-    for( int i=0; i<ShaderPass_NumTypes; i++ )
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
-        if( m_pShaderPasses[i] )
+        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
         {
-            m_pShaderPasses[i]->m_pFile = pFile;
-            pFile->AddRef();
+            if( m_pShaderPasses[p][lc] )
+            {
+                m_pShaderPasses[p][lc]->m_pFile = pFile;
+                pFile->AddRef();
+
+                if( lc == 0 )
+                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 0\n", "#define NUM_LIGHTS 0\n", true );
+                if( lc == 1 )
+                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 1\n", "#define NUM_LIGHTS 1\n", true );
+                if( lc == 2 )
+                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 2\n", "#define NUM_LIGHTS 2\n", true );
+                if( lc == 3 )
+                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 3\n", "#define NUM_LIGHTS 3\n", true );
+                if( lc == 4)
+                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 4\n", "#define NUM_LIGHTS 4\n", true );
+            }
         }
     }
 }

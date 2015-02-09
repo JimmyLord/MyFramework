@@ -16,9 +16,11 @@ extern LightManager* g_pLightManager;
 
 class LightManager
 {
+    static const int MAX_LIGHTS = 8;
+
 public:
     CPPListHead m_LightList;
-    MyLight m_LightArray[8];
+    MyLight m_LightArray[MAX_LIGHTS];
 
 public:
     LightManager();
@@ -27,7 +29,7 @@ public:
     MyLight* CreateLight();
     void DestroyLight(MyLight* pLight);
 
-    int FindNearestLights(int numtofind, MyLight** ppLightArray);
+    int FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray);
 };
 
 #endif //__LightManager_H__

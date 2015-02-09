@@ -12,10 +12,10 @@
 
 class MyLight;
 
-#define MAX_LIGHTS  4
-
 class Shader_Base : public BaseShader
 {
+    static const int MAX_LIGHTS = 4;
+
 public:
     GLint m_aHandle_Position;
     GLint m_aHandle_UVCoord;
