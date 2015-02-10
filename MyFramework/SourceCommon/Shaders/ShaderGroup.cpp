@@ -97,14 +97,19 @@ BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights)
 
 void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
+    MyFileObjectShader* pFileShader = dynamic_cast<MyFileObjectShader*>( pFile );
+    assert( pFileShader );
+    if( pFileShader == 0 )
+        return;
+
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
         for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
         {
             if( m_pShaderPasses[p][lc] )
             {
-                m_pShaderPasses[p][lc]->m_pFile = pFile;
-                pFile->AddRef();
+                m_pShaderPasses[p][lc]->m_pFile = pFileShader;
+                pFileShader->AddRef();
 
                 if( lc == 0 )
                     m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 0\n", "#define NUM_LIGHTS 0\n", true );

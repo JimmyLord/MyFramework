@@ -256,7 +256,26 @@ void MainFrame::ResizeViewport()
     m_pGLCanvas->ResizeViewport();
 }
 
-IMPLEMENT_APP( MainApp );
+IMPLEMENT_APP_NO_MAIN( MainApp );
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+    MarkAllExistingAllocationsAsStatic();
+
+    wxDISABLE_DEBUG_SUPPORT();
+
+    int ret = wxEntry( hInstance, hPrevInstance, lpCmdLine, nCmdShow ); //argc, argv);
+    wxEntryCleanup();
+
+    //_CrtDumpMemoryLeaks();
+    ValidateAllocations( true );
+
+    return ret;
+}
+
+MainApp::~MainApp()
+{
+}
 
 bool MainApp::OnInit()
 {

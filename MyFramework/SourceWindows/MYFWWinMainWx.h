@@ -52,6 +52,8 @@ public:
     MainFrame* m_pMainFrame;
 
 public:
+    ~MainApp();
+
     virtual bool OnInit();
     virtual int FilterEvent(wxEvent& event);
 };

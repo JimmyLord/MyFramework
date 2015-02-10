@@ -14,8 +14,6 @@
 #include "../../../LodePNG/lodepng.h"
 #pragma warning (default : 4996)
 
-char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
-
 FileManager* g_pFileManager = 0;
 
 FileManager::FileManager()
@@ -81,7 +79,14 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     }
 
     // if the file wasn't already loaded create a new one and load it up.
-    pFile = MyNew MyFileObject;
+    pFile = 0;
+    
+    int len = strlen( filename );
+    if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
+        pFile = MyNew MyFileObjectShader;
+    else
+        pFile = MyNew MyFileObject;
+
     pFile->RequestFile( filename );
 
     m_FilesStillLoading.AddTail( pFile );
@@ -144,150 +149,6 @@ void FileManager::Tick()
 #endif
         }
     }
-}
-
-MyFileObject::MyFileObject()
-{
-    m_FullPath = 0;
-    m_FilenameWithoutExtension = 0;
-    m_ExtensionWithDot = 0;
-    m_LoadFailed = false;
-    m_FileReady = false;
-    m_FileLength = 0;
-    m_pBuffer = 0;
-    m_BytesRead = 0;
-
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
-}
-
-MyFileObject::~MyFileObject()
-{
-    // make sure you call ->Release.  don't delete a file object, it's refcounted.
-#if MYFW_WINDOWS
-    assert( Prev );
-#endif
-    if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
-        Remove();
-
-    SAFE_DELETE_ARRAY( m_FullPath );
-    SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
-    SAFE_DELETE_ARRAY( m_ExtensionWithDot );
-    SAFE_DELETE_ARRAY( m_pBuffer );
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveFile( this );
-#endif
-}
-
-#if MYFW_USING_WX
-void MyFileObject::OnDrag()
-{
-    g_DragAndDropStruct.m_Type = DragAndDropType_FileObjectPointer;
-    g_DragAndDropStruct.m_Value = this;
-}
-#endif //MYFW_USING_WX
-
-void MyFileObject::RequestFile(const char* filename)
-{
-    assert( filename != 0 );
-    if( filename == 0 )
-        return;
-
-    LOGInfo( LOGTag, "RequestFile %s\n", filename );
-
-    int len = (int)strlen( filename );
-    assert( len > 0 );
-    if( len <= 0 )
-        return;
-
-    m_FullPath = MyNew char[len+1];
-    strcpy_s( m_FullPath, len+1, filename );
-
-    int extensionstartlocation = len;
-    {
-        while( extensionstartlocation > 0 )
-        {
-            if( filename[extensionstartlocation] == '.' )
-            {
-                int extensionlen = len-extensionstartlocation;
-                m_ExtensionWithDot = MyNew char[extensionlen+1];
-                strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
-                m_ExtensionWithDot[extensionlen] = 0;
-                break;
-            }
-            extensionstartlocation--;
-        }
-
-        if( m_ExtensionWithDot == 0 )
-        {
-            m_ExtensionWithDot = MyNew char[2];
-            m_ExtensionWithDot[0] = '.';
-            m_ExtensionWithDot[1] = 0;
-
-            extensionstartlocation = len;
-        }
-    }
-
-    {
-        int i = extensionstartlocation;
-        while( i >= 0 )
-        {
-            if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
-            {
-                i++;
-                int namelen = extensionstartlocation-i;
-                m_FilenameWithoutExtension = MyNew char[namelen+1];
-                strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
-                m_FilenameWithoutExtension[namelen] = 0;
-                break;
-            }
-            i--;
-        }
-    }
-}
-
-void MyFileObject::Tick()
-{
-    if( m_FileReady == false && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
-    {
-        int length = 0;
-
-        char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
-        if( length > 0 && buffer != 0 )
-            FakeFileLoad( buffer, length );
-    }
-
-    if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )
-        m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading--;
-}
-
-void MyFileObject::FakeFileLoad(char* buffer, int length)
-{
-    assert( buffer != 0 && length > 0 );
-    if( buffer == 0 || length <= 0 )
-        return;
-
-    m_pBuffer = buffer;
-    m_FileLength = length;
-    m_BytesRead = length;
-    m_FileReady = true;
-}
-
-void MyFileObject::UnloadContents()
-{
-    SAFE_DELETE_ARRAY( m_pBuffer );
-    m_FileLength = 0;
-    m_BytesRead = 0;
-    m_LoadFailed = false;
-    m_FileReady = false;
-
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveFile( this );
-#endif
 }
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()
@@ -421,55 +282,6 @@ MyFileObject* RequestFile(const char* filename)
     return g_pFileManager->RequestFile( filename );
 }
 #endif
-
-char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* file, unsigned long line)
-{
-    FILE* filehandle;
-
-#if MYFW_WINDOWS
-    const char* fullpath = filename;
-
-    errno_t error = fopen_s( &filehandle, fullpath, "rb" );
-#elif MYFW_BLACKBERRY
-    char fullpath[MAX_PATH];
-    sprintf_s( fullpath, MAX_PATH, "app/native/%s", filename );
-
-    filehandle = fopen( fullpath, "rb" );
-#elif MYFW_IOS
-    const char* fullpath = filename;
-    
-    filehandle = IOS_fopen( fullpath );
-#else
-    char* fullpath = filename;
-
-    filehandle = fopen( fullpath, "rb" );
-#endif
-
-    char* filecontents = 0;
-
-    if( filehandle )
-    {
-        fseek( filehandle, 0, SEEK_END );
-        long size = ftell( filehandle );
-        rewind( filehandle );
-
-        filecontents = MyNew char[size+1];
-        //filecontents = new(__FILE__, __LINE__) char[size];
-        fread( filecontents, size, 1, filehandle );
-        filecontents[size] = 0;
-
-        if( length )
-            *length = (int)size+1;
-        
-        fclose( filehandle );
-    }
-    else
-    {
-        LOGError( LOGTag, "File not found: %s\n", fullpath );
-    }
-
-    return filecontents;
-}
 
 GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
 {

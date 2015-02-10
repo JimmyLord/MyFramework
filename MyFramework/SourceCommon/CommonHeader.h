@@ -10,6 +10,24 @@
 #ifndef __CommonHeader_H__
 #define __CommonHeader_H__
 
+//#ifdef __WXMSW__
+//    #include <wx/msw/msvcrt.h>      // redefines the new() operator 
+//#endif
+
+//#if MYFW_WINDOWS && _DEBUG
+//#define _CRTDBG_MAP_ALLOC
+//#include <malloc.h>
+//#include <stdlib.h>
+//#include <crtdbg.h>
+//#ifndef DBG_NEW
+//    #ifdef new
+//        #undef new
+//    #endif
+//    #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+//    #define new DBG_NEW
+//#endif
+//#endif //MYFW_WINDOWS && _DEBUG
+
 //#include "../../../MyLocalInclude.h"
 
 #define USE_OPENGL 1
@@ -29,13 +47,14 @@
 #pragma warning(3:4266) // no override available for virtual member function from base 'type'; function is hidden
 #pragma warning(3:4302) // truncation from 'type1' to 'type2'
 #pragma warning(3:4389) // signed/unsigned mismatch
+//#pragma warning(3:4510) // default constructor could not be generated
+//#pragma warning(3:4610) // class 'type' can never be instantiated - user defined constructor required
 //#pragma warning(3:4702) // unreachable code
 #pragma warning(3:4826) // conversion from 'type1' to 'type2' is sign-extended. This may cause unexpected runtime behavior
 #pragma warning(3:4905) // wide string literal cast to 'LPSTR'
 #pragma warning(3:4906) // string literal cast to 'LPWSTR'
 #pragma warning(3:4928) // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
-//#pragma warning(3:4510) // default constructor could not be generated
-//#pragma warning(3:4610) // class 'type' can never be instantiated - user defined constructor required
+//#pragma warning(disable:4996) // deprecated function
 #endif
 
 #if MYFW_WP8
@@ -304,6 +323,8 @@ typedef int socklen_t;
 #define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
+#include "Helpers/MyFileObject.h"
+#include "Shaders/MyFileObjectShader.h"
 #include "Helpers/FileManager.h"
 #include "Helpers/MyTime.h"
 #include "Helpers/ExternalTools.h"

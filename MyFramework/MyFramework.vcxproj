@@ -4030,6 +4030,7 @@
     <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp" />
     <ClCompile Include="SourceCommon\Helpers\FileManager.cpp" />
+    <ClCompile Include="SourceCommon\Helpers\MyFileObject.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyMemory.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTime.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp" />
@@ -4146,6 +4147,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|BlackBerry'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|BlackBerry'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp" />
     <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp" />
@@ -7253,6 +7255,7 @@
     <ClInclude Include="SourceCommon\Helpers\ExternalTools.h" />
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h" />
     <ClInclude Include="SourceCommon\Helpers\FileManager.h" />
+    <ClInclude Include="SourceCommon\Helpers\MyFileObject.h" />
     <ClInclude Include="SourceCommon\Helpers\MyMemory.h" />
     <ClInclude Include="SourceCommon\Helpers\MyTime.h" />
     <ClInclude Include="SourceCommon\Helpers\MyTweener.h" />
@@ -7349,6 +7352,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h" />
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
+    <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
     <ClInclude Include="SourceCommon\Shaders\GLHelpers.h" />
     <ClInclude Include="SourceCommon\Shaders\ShaderGroup.h" />

@@ -47,40 +47,6 @@ public:
     MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }
 };
 
-class MyFileObject : public CPPListNode, public RefCount
-{
-    friend class FileManager;
-
-public:
-    char* m_FullPath;
-    char* m_FilenameWithoutExtension;
-    char* m_ExtensionWithDot; // will be "." if no extension
-    bool m_LoadFailed;
-    bool m_FileReady;
-    unsigned int m_FileLength;
-    char* m_pBuffer;
-    int m_BytesRead;
-
-    int m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading;
-
-public:
-    MyFileObject();
-    ~MyFileObject();
-
-protected:
-    void RequestFile(const char* filename);
-
-    void Tick();
-    void FakeFileLoad(char* buffer, int length);
-    void UnloadContents();
-
-public:
-#if MYFW_USING_WX
-    static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-#endif //MYFW_USING_WX
-};
-
 enum SaveFileOperation
 {
     SFO_None,

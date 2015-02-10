@@ -522,6 +522,12 @@
     <ClCompile Include="SourceCommon\Meshes\LightManager.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\MyFileObject.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1123,6 +1129,12 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\LightManager.h">
       <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h">
+      <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\MyFileObject.h">
+      <Filter>Source\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
