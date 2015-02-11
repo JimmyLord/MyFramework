@@ -42,6 +42,7 @@ public:
     MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
     void Tick();
+    int ReloadAnyUpdatedFiles();
 
     MyFileObject* GetFirstFileLoaded() { return (MyFileObject*)m_FilesLoaded.GetHead(); }
     MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }

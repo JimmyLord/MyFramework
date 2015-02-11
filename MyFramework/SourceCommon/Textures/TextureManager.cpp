@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -125,7 +117,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     // if the file load hasn't started... start the file load.
     assert( pTextureDef->m_pFile == 0 );
 #if MYFW_ANDROID
-    LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
+    //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
     if( pTextureDef->m_pFile == 0 )
     {
         pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
@@ -134,9 +126,9 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
 #else
     if( pTextureDef->m_pFile == 0 )
     {
-        LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
+        //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
         pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
-        LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
+        //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
     }
 #endif
 
@@ -216,7 +208,7 @@ void TextureManager::Tick()
         texturesloadedthistick++;
 
         TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-        LOGInfo( LOGTag, "Loading Texture: %s\n", pTextureDef->m_Filename );
+        //LOGInfo( LOGTag, "Loading Texture: %s\n", pTextureDef->m_Filename );
 
         // if we have an opengl texture, then nothing to do.  this shouldn't happen, loaded textures should be in "m_LoadedTextures".
         assert( pTextureDef->m_TextureID == 0 );
@@ -229,7 +221,7 @@ void TextureManager::Tick()
         bool textureloaded = false;
 
 #if MYFW_ANDROID
-        LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
+        //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
         if( pTextureDef->m_pFile == 0 )
         {
             pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
@@ -237,7 +229,7 @@ void TextureManager::Tick()
         }
         else
         {
-            LOGInfo( LOGTag, "Loading Texture: calling Android_LoadTextureFromMemory\n" );
+            //LOGInfo( LOGTag, "Loading Texture: calling Android_LoadTextureFromMemory\n" );
             pTextureDef->m_TextureID = Android_LoadTextureFromMemory( pTextureDef );
             textureloaded = true;
         }
@@ -245,22 +237,22 @@ void TextureManager::Tick()
         // if the file load hasn't started... start the file load.
         if( pTextureDef->m_pFile == 0 )
         {
-            LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
+            //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
             pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
-            LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
+            //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
         }
         else
         {
             // if the file is ready, create an opengl texture from it.
             if( pTextureDef->m_pFile->m_FileReady )
             {
-                LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile->m_FileReady\n" );
+                //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile->m_FileReady\n" );
                 pTextureDef->m_TextureID = CreateTextureFromBuffer( pTextureDef );
-                LOGInfo( LOGTag, "Loading Texture: CreateTextureFromBuffer\n" );
+                //LOGInfo( LOGTag, "Loading Texture: CreateTextureFromBuffer\n" );
 
                 if( pTextureDef->m_TextureID != 0 )
                 {
-                    LOGInfo( LOGTag, "Loading Texture: textureloaded = true\n" );
+                    //LOGInfo( LOGTag, "Loading Texture: textureloaded = true\n" );
                     textureloaded = true;
                 }
             }

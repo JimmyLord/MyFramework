@@ -24,6 +24,10 @@ public:
     char* m_pBuffer;
     int m_BytesRead;
 
+#if MYFW_WINDOWS
+    FILETIME m_FileLastWriteTime;
+#endif
+
     int m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading;
 
 public:
@@ -36,6 +40,8 @@ protected:
     void Tick();
     void FakeFileLoad(char* buffer, int length);
     void UnloadContents();
+
+    bool IsNewVersionAvailable();
 
 public:
 #if MYFW_USING_WX

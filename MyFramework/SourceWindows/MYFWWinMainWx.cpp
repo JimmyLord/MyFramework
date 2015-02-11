@@ -277,8 +277,12 @@ MainApp::~MainApp()
 {
 }
 
+MainApp* g_pMainApp = 0;
+
 bool MainApp::OnInit()
 {
+    g_pMainApp = this;
+
     m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );
     m_pMainFrame->AddPanes();
     m_pMainFrame->UpdateAUIManagerAndLoadPerspective();
@@ -696,6 +700,28 @@ void MainGLCanvas::Draw()
         //    if( m_ButtonsHeld[i] )
         //        g_pGameCore->OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
         //}
+
+        // deal with losing and gaining focus;
+        if( g_pMainApp->m_pMainFrame->IsActive() )
+        {
+            if( g_pMainApp->m_HasFocus == false )
+            {
+                //LOGInfo( LOGTag, "g_pMainApp gained focus\n" );
+                g_pGameCore->OnFocusGained();
+            }
+
+            g_pMainApp->m_HasFocus = true;
+        }
+        else
+        {
+            if( g_pMainApp->m_HasFocus == true )
+            {
+                //LOGInfo( LOGTag, "g_pMainApp lost focus\n" );
+                g_pGameCore->OnFocusLost();
+            }
+
+            g_pMainApp->m_HasFocus = false;
+        }
 
         for( int i=0; i<512; i++ )
         {

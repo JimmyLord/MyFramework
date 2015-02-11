@@ -51,6 +51,8 @@ class MainApp : public wxApp
 public:
     MainFrame* m_pMainFrame;
 
+    bool m_HasFocus;
+
 public:
     ~MainApp();
 

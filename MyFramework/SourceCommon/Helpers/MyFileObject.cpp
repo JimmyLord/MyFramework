@@ -11,6 +11,16 @@
 
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 
+#if MYFW_WINDOWS
+void GetFileData(const char* path, WIN32_FIND_DATAA* data)
+{
+    HANDLE handle = FindFirstFileA( path, data );
+
+    if( handle != INVALID_HANDLE_VALUE )
+        FindClose( handle );
+}
+#endif
+
 char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* file, unsigned long line)
 {
     FILE* filehandle;
@@ -71,7 +81,11 @@ MyFileObject::MyFileObject()
     m_pBuffer = 0;
     m_BytesRead = 0;
 
+#if _DEBUG
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
+#else
+    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
+#endif
 }
 
 MyFileObject::~MyFileObject()
@@ -170,10 +184,37 @@ void MyFileObject::Tick()
         char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
         if( length > 0 && buffer != 0 )
             FakeFileLoad( buffer, length );
+
+#if MYFW_WINDOWS
+        WIN32_FIND_DATAA data;
+        GetFileData( m_FullPath, &data );
+
+        m_FileLastWriteTime = data.ftLastWriteTime;
+#endif
     }
 
     if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )
         m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading--;
+}
+
+bool MyFileObject::IsNewVersionAvailable()
+{
+    bool updated = false;
+
+#if MYFW_WINDOWS
+    WIN32_FIND_DATAA data;
+    GetFileData( m_FullPath, &data );
+
+    if( data.ftLastWriteTime.dwHighDateTime != m_FileLastWriteTime.dwHighDateTime ||
+        data.ftLastWriteTime.dwLowDateTime != m_FileLastWriteTime.dwLowDateTime )
+    {
+        updated = true;
+    }
+
+    m_FileLastWriteTime = data.ftLastWriteTime;
+#endif
+
+    return updated;
 }
 
 void MyFileObject::FakeFileLoad(char* buffer, int length)
@@ -196,7 +237,11 @@ void MyFileObject::UnloadContents()
     m_LoadFailed = false;
     m_FileReady = false;
 
+#if _DEBUG
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
+#else
+    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
+#endif
 
 #if MYFW_USING_WX
     if( g_pPanelMemory )

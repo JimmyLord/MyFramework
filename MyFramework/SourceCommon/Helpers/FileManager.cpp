@@ -132,7 +132,7 @@ void FileManager::Tick()
         pNextNode = pNode->GetNext();
 
         MyFileObject* pFile = (MyFileObject*)pNode;
-        LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
+        //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
         // sanity check, make sure file isn't already loaded.
         assert( pFile->m_FileReady == false );
@@ -142,6 +142,8 @@ void FileManager::Tick()
         // if we're done loading, move the file into the loaded list.
         if( pFile->m_FileReady )
         {
+            LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
+
             m_FilesLoaded.MoveTail( pFile );
 
 #if MYFW_USING_WX
@@ -149,6 +151,29 @@ void FileManager::Tick()
 #endif
         }
     }
+}
+
+int FileManager::ReloadAnyUpdatedFiles()
+{
+    int numfilesupdated = 0;
+
+    CPPListNode* pNextNode;
+    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNextNode )
+    {
+        pNextNode = pNode->GetNext();
+
+        MyFileObject* pFile = (MyFileObject*)pNode;
+
+        bool updateavailable = pFile->IsNewVersionAvailable();
+
+        if( updateavailable )
+        {
+            ReloadFile( pFile );
+            numfilesupdated++;
+        }
+    }
+
+    return numfilesupdated;
 }
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()

@@ -58,7 +58,7 @@ GLint GetAttributeLocation(GLuint programhandle, const char* name, ...)
 
     if( handle == -1 )
     {
-        LOGInfo( LOGTag, "Attribute not found: %s\n", name );
+        //LOGInfo( LOGTag, "Attribute not found: %s\n", name );
     }
 
     return handle;
