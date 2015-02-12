@@ -17,6 +17,11 @@ CommandStack::CommandStack()
 
 CommandStack::~CommandStack()
 {
+    for( unsigned int i=0; i<m_UndoStack.size(); i++ )
+        delete( m_UndoStack[i] );
+
+    for( unsigned int i=0; i<m_RedoStack.size(); i++ )
+        delete( m_RedoStack[i] );
 }
 
 void CommandStack::Undo(unsigned int levels)

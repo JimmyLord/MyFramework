@@ -148,7 +148,7 @@ double GameCore::Tick(double TimePassed)
         g_pGameServiceManager->Tick( "Z10" );
 #else
     g_pGameServiceManager->Tick();
-#endif
+#endif //MYFW_BLACKBERRY10
 
     if( m_KeyboardOpenRequested )
     {
@@ -160,6 +160,13 @@ double GameCore::Tick(double TimePassed)
         m_KeyboardCloseRequested = false;
         ShowKeyboard( false );
     }
+
+#if MYFW_USING_WX
+    if( g_pPanelObjectList->m_PanelWatchNeedsUpdate )
+    {
+        g_pPanelObjectList->UpdatePanelWatchWithSelectedItems();
+    }
+#endif //MYFW_USING_WX
 
     return TimePassed;
 }

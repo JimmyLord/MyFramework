@@ -15,6 +15,24 @@
 
 PanelWatch* g_pPanelWatch = 0;
 
+PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = 
+{ // control    label                                          widths
+  // height, font,wdt,pdg, style                   slider, editbox, colorpicker
+  //          hgt     bot,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Double,
+  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Vector3,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,        115, }, //PanelWatchType_ColorFloat,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_PointerWithDesc,
+    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      75,          0, }, //PanelWatchType_SpaceWithLabel,
+    {    -1,  -1,  -1, -1, -1,                         -1,      -1,         -1, }, //PanelWatchType_Unknown,
+};
+
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 : wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
@@ -238,14 +256,17 @@ int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, cons
     return AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc );
 }
 
-int PanelWatch::AddSpace()
+int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
-    m_pVariables[m_NumVariables].m_Pointer = 0;
-    m_pVariables[m_NumVariables].m_Type = PanelWatchType_Unknown;
+    m_pVariables[m_NumVariables].m_Type = PanelWatchType_SpaceWithLabel;
+    m_pVariables[m_NumVariables].m_pOnValueChangedCallBackFunc = pOnValueChangedCallBackFunc;
+    m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
+
+    AddControlsForVariable( name, m_NumVariables, -1, 0 );
 
     m_NumVariables++;
 
@@ -262,7 +283,10 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     int ControlPaddingBottom = 0;
     int ControlPaddingLeft = 0;
 
-    int ControlHeight = ControlPaddingTop + 20 + ControlPaddingBottom;
+    PanelWatch_Types type = m_pVariables[variablenum].m_Type;
+    PanelWatchControlInfo* pInfo = &g_PanelWatchControlInfo[type];
+
+    int ControlHeight = ControlPaddingTop + pInfo->height + ControlPaddingBottom;
 
     int PosX = PaddingLeft + ControlPaddingLeft;
     int PosY; // = PaddingTop + variablenum*ControlHeight;
@@ -279,25 +303,25 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
     int WindowWidth = 300;
 
-    int TextHeight = 20;
+    int LabelHeight = g_PanelWatchControlInfo[type].height;
     int TextCtrlHeight = 20;
     int SliderHeight = 20;
 
     wxString variablename = name;
     
-    int TextWidth = 100;
+    int LabelWidth = pInfo->labelwidth;
     int SliderWidth = 120;
     int TextCtrlWidth = 70;
 
     if( component >= 0 )
     {
-        TextWidth = 5;
+        LabelWidth = 5;
         SliderWidth = 30;
         TextCtrlWidth = 45;
 
         if( component == 0 )
         {
-            TextWidth = 60;
+            LabelWidth = 60;
             variablename = name;
             variablename.Append( " " );
             variablename.Append( componentname );
@@ -321,19 +345,31 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
     m_pVariables[variablenum].m_Rect_XYWH.x = PosX;
     m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
-    m_pVariables[variablenum].m_Rect_XYWH.z = TextWidth + SliderWidth + TextCtrlWidth;
+    m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + SliderWidth + TextCtrlWidth;
     m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
 
     // Text label
     {
-        m_pVariables[variablenum].m_Handle_StaticText = MyNew wxStaticText( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(TextWidth, TextHeight));
+        m_pVariables[variablenum].m_Handle_StaticText = MyNew wxStaticText( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight), pInfo->labelstyle );
+        m_pVariables[variablenum].m_Handle_StaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
 
-        PosX += TextWidth;
+        if( m_pVariables[variablenum].m_Type == PanelWatchType_SpaceWithLabel )
+        {
+            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxColour(0,100,0,0) );
+            m_pVariables[variablenum].m_Handle_StaticText->SetForegroundColour( wxColour(255,255,255,255) );
+        }
+
+        PosX += LabelWidth;
+        m_pVariables[variablenum].m_Rect_XYWH.w += pInfo->labelpaddingbottom;
+
+        m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText), 0, this );
+
+        //m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+        //m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
     }
 
     // Slider
-    if( m_pVariables[variablenum].m_Description == 0 &&
-        m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat )
+    if( pInfo->sliderwidth != -1 )
     {
         float sliderfloatmultiplier = 1;
         if( m_pVariables[variablenum].m_Type == PanelWatchType_Float ||
@@ -362,7 +398,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     // Edit box
-    if( m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat )
+    if( m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat &&
+        m_pVariables[variablenum].m_Type != PanelWatchType_SpaceWithLabel )
     {
         wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
             wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
@@ -468,10 +505,13 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
-    int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
+    if( m_pVariables[controlid].m_Handle_Slider )
+    {
+        int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
 
-    m_pVariables[controlid].m_SliderLeftMouseIsDown = true;
-    m_pVariables[controlid].m_SliderValueOnLeftMouseDown = value;
+        m_pVariables[controlid].m_SliderLeftMouseIsDown = true;
+        m_pVariables[controlid].m_SliderValueOnLeftMouseDown = value;
+    }
 }
 
 void PanelWatch::OnMouseUp(wxMouseEvent& event)
@@ -480,14 +520,17 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
-    int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
+    if( m_pVariables[controlid].m_Handle_Slider )
+    {
+        int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
 
-    //wxEventType eventtype = event.GetEventType();
-    //LOGInfo( LOGTag, "OnMouseUp: type:%d value:%d\n", eventtype, value );
+        //wxEventType eventtype = event.GetEventType();
+        //LOGInfo( LOGTag, "OnMouseUp: type:%d value:%d\n", eventtype, value );
 
-    m_pVariables[controlid].m_SliderLeftMouseIsDown = false;
+        m_pVariables[controlid].m_SliderLeftMouseIsDown = false;
 
-    OnSliderChanged( controlid, value, true );
+        OnSliderChanged( controlid, value, true );
+    }
 }
 
 void PanelWatch::OnMouseMove(wxMouseEvent& event)
@@ -512,6 +555,17 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
             m_pVariables[controlid].m_Handle_Slider->SetMin( min - 1000 );
         }
     }
+}
+
+void PanelWatch::OnClickStaticText(wxMouseEvent& event)
+{
+    //LOGInfo( LOGTag, "OnMouseDown:\n" );
+    event.Skip();
+
+    int controlid = event.GetId();
+
+    if( m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+        m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
 }
 
 void PanelWatch::OnTimer(wxTimerEvent& event)
@@ -614,7 +668,9 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
 
     case PanelWatchType_ColorFloat:
     case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Unknown:
+    case PanelWatchType_NumTypes:
     default:
         break;
     }

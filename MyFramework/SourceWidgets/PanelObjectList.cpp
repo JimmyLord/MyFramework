@@ -1,18 +1,10 @@
 //
 // Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -39,6 +31,8 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     m_pCallbackFunctionObject = 0;
     m_pOnTreeSelectionChangedFunction = 0;
 
+    m_PanelWatchNeedsUpdate = false;
+
     Update();
 
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
@@ -55,6 +49,16 @@ PanelObjectList::~PanelObjectList()
 
 void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
+    UpdatePanelWatchWithSelectedItems();
+}
+
+void PanelObjectList::UpdatePanelWatchWithSelectedItems()
+{
+    m_PanelWatchNeedsUpdate = false;
+
+    // stop draws on watch panel
+    g_pPanelWatch->Freeze();
+
     //LOGInfo( LOGTag, "PanelObjectList::OnTreeSelectionChanged\n" );
 
     wxArrayTreeItemIds selecteditems;
@@ -62,17 +66,21 @@ void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 
     m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
 
-    for( unsigned int i=0; i<numselected; i++ )
+	// TODO: if multiple selected, show common properties.
+    for( unsigned int i=0; i<1; i++ )//numselected; i++ )
     {
         // pass left click event through to the item.
         wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
         //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
-        if( pData && pData->m_pLeftClickFunction )
+        if( i == 0 && pData && pData->m_pLeftClickFunction )
         {
             pData->m_pLeftClickFunction( pData->m_pObject );
         }
     }
+
+    // resume draws on watch panel
+    g_pPanelWatch->Thaw();
 }
 
 void PanelObjectList::OnTreeBeginLabelEdit(wxTreeEvent& event)

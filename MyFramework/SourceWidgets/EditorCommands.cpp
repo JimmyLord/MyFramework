@@ -63,7 +63,9 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
 
     case PanelWatchType_ColorFloat:
     case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Unknown:
+    case PanelWatchType_NumTypes:
     default:
         assert( false );
     }
@@ -109,7 +111,9 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
 
     case PanelWatchType_ColorFloat:
     case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Unknown:
+    case PanelWatchType_NumTypes:
     default:
         assert( false );
     }

@@ -15,6 +15,18 @@ class CommandStack;
 #define MAX_PanelWatch_VARIABLES        40
 #define WXSlider_Float_Multiplier       10000.0f
 
+struct PanelWatchControlInfo
+{
+    int height;
+    int labelfontheight;
+    int labelwidth;
+    int labelpaddingbottom;
+    int labelstyle;
+    int sliderwidth;
+    int editboxwidth;
+    int colorpickerwidth;
+};
+
 enum PanelWatch_Types
 {
     PanelWatchType_Int,
@@ -27,8 +39,12 @@ enum PanelWatch_Types
     //PanelWatchType_Vector3,
     PanelWatchType_ColorFloat,
     PanelWatchType_PointerWithDesc,
+    PanelWatchType_SpaceWithLabel,
     PanelWatchType_Unknown,
+    PanelWatchType_NumTypes,
 };
+
+extern PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes];
 
 class PanelWatch;
 
@@ -99,6 +115,8 @@ public:
     void OnMouseUp(wxMouseEvent& event);
     void OnMouseMove(wxMouseEvent& event);
 
+    void OnClickStaticText(wxMouseEvent& event);
+
     void OnTimer(wxTimerEvent& event);
     void OnTextCtrlEnter(wxCommandEvent& event);
     void OnTextCtrlChanged(int controlid);
@@ -127,7 +145,7 @@ public:
     int AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
-    int AddSpace();
+    int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
 };
 
 #endif // __PanelWatch_H__
