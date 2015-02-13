@@ -153,7 +153,7 @@ void FileManager::Tick()
     }
 }
 
-int FileManager::ReloadAnyUpdatedFiles()
+int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc)
 {
     int numfilesupdated = 0;
 
@@ -169,6 +169,7 @@ int FileManager::ReloadAnyUpdatedFiles()
         if( updateavailable )
         {
             ReloadFile( pFile );
+            pCallbackFunc( pFile );
             numfilesupdated++;
         }
     }

@@ -23,6 +23,8 @@ MyFileObject* RequestFile(const char* filename);
 #endif
 GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
 
+typedef void (*FileManager_OnFileUpdated_CallbackFunction)(MyFileObject* pFile);
+
 class FileManager
 {
 protected:
@@ -42,7 +44,7 @@ public:
     MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
     void Tick();
-    int ReloadAnyUpdatedFiles();
+    int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc);
 
     MyFileObject* GetFirstFileLoaded() { return (MyFileObject*)m_FilesLoaded.GetHead(); }
     MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }
