@@ -67,12 +67,16 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
 
 	// TODO: if multiple selected, show common properties.
-    for( unsigned int i=0; i<1; i++ )//numselected; i++ )
+    if( numselected > 0 )
+    //for( unsigned int i=0; i<numselected; i++ )
     {
+        int i = 0;
+
         // pass left click event through to the item.
         wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
         //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
+
         if( i == 0 && pData && pData->m_pLeftClickFunction )
         {
             pData->m_pLeftClickFunction( pData->m_pObject );
