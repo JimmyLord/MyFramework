@@ -24,11 +24,11 @@ GLViewTypes g_CurrentGLViewType;
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
-    int m_WindowX = 0;
-    int m_WindowY = 0;
-    int m_ClientWidth = 0;
-    int m_ClientHeight = 0;
-    bool m_Maximized = false;
+    m_WindowX = 0;
+    m_WindowY = 0;
+    m_ClientWidth = 0;
+    m_ClientHeight = 0;
+    m_Maximized = false;
 }
 
 MainFrame::~MainFrame()
@@ -90,6 +90,7 @@ void MainFrame::InitFrame()
 
         Connect( wxEVT_MOVE, wxMoveEventHandler(MainFrame::OnMove) );
         Connect( wxEVT_SIZE, wxSizeEventHandler(MainFrame::OnSize) );
+        Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler(MainFrame::OnCloseWindow) );
 
         Connect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnQuit) );
         
@@ -183,6 +184,13 @@ void MainFrame::OnSize(wxSizeEvent& event)
         m_ClientWidth = this->GetClientRect().width;
         m_ClientHeight = this->GetClientRect().height;
     }
+}
+
+void MainFrame::OnCloseWindow(wxCloseEvent& event)
+{
+    OnClose();
+
+    event.Skip();
 }
 
 void MainFrame::OnQuit(wxCommandEvent& event)

@@ -96,6 +96,7 @@ public:
     
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
+    void OnCloseWindow(wxCloseEvent& event);
 
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
