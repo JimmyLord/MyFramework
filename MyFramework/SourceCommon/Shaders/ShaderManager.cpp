@@ -224,6 +224,11 @@ bool BaseShader::LoadAndCompile()
                                      VSPreLen, pVSPre, FSPreLen, pFSPre,
                                      numchunks, pStrings, pLengths );
 
+    if( m_ProgramHandle == 0 )
+    {
+        LOGError( "Failed to create program from %s\n", m_pFile->m_FullPath );
+    }
+
     delete[] pStrings;
     delete[] pLengths;
 

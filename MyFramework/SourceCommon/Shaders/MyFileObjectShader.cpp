@@ -115,7 +115,7 @@ int MyFileObjectShader::GetShaderChunks(const char** pStrings, int* pLengths)
         pStrings[count] = &m_pBuffer[currentoffset];
     }
 
-    pLengths[count] = m_FileLength - currentoffset;
+    pLengths[count] = m_FileLength-1 - currentoffset;
 
     return count+1;
 }

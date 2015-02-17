@@ -81,6 +81,11 @@ MyFileObject::MyFileObject()
     m_pBuffer = 0;
     m_BytesRead = 0;
 
+#if MYFW_WINDOWS
+    m_FileLastWriteTime.dwHighDateTime = 0;
+    m_FileLastWriteTime.dwLowDateTime = 0;
+#endif
+
 #if _DEBUG
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
 #else
@@ -182,6 +187,13 @@ void MyFileObject::Tick()
         int length = 0;
 
         char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
+
+        if( buffer == 0 )
+        {
+            m_LoadFailed = true; // file not found.
+            return;
+        }
+
         if( length > 0 && buffer != 0 )
             FakeFileLoad( buffer, length );
 
@@ -200,9 +212,11 @@ void MyFileObject::Tick()
 bool MyFileObject::IsNewVersionAvailable()
 {
     bool updated = false;
+    m_LoadFailed = false; // file now exists? allow it to load.
 
 #if MYFW_WINDOWS
     WIN32_FIND_DATAA data;
+    memset( &data, 0, sizeof( data ) );
     GetFileData( m_FullPath, &data );
 
     if( data.ftLastWriteTime.dwHighDateTime != m_FileLastWriteTime.dwHighDateTime ||

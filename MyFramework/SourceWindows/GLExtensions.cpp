@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -146,7 +146,7 @@ void OpenGL_InitExtensions()
     glGetProgramInfoLog             = (PFNGLGETPROGRAMINFOLOGPROC)          wglGetProcAddress( "glGetProgramInfoLog" );
     glGetProgramiv                  = (PFNGLGETPROGRAMIVPROC)               wglGetProcAddress( "glGetProgramiv" );
     glGetShaderInfoLog              = (PFNGLGETSHADERINFOLOGPROC)           wglGetProcAddress( "glGetShaderInfoLog" );
-    glGetShaderSource               = (PFNGLGETSHADERSOURCEPROC)            wglGetProcAddress( "glShaderSource" );
+    glGetShaderSource               = (PFNGLGETSHADERSOURCEPROC)            wglGetProcAddress( "glGetShaderSource" );
     glGetShaderiv                   = (PFNGLGETSHADERIVPROC)                wglGetProcAddress( "glGetShaderiv" );
     glGetUniformLocation            = (PFNGLGETUNIFORMLOCATIONPROC)         wglGetProcAddress( "glGetUniformLocation" );
 

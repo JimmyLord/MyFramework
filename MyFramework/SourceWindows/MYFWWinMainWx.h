@@ -78,15 +78,25 @@ public:
     wxString m_DefaultPerspectiveString;
     wxString m_SavedPerspectiveString;
 
+    int m_WindowX;
+    int m_WindowY;
+    int m_ClientWidth;
+    int m_ClientHeight;
+    bool m_Maximized;
+
 public:
     MainFrame(wxWindow* parent);
     ~MainFrame();
 
+    virtual void InitFrame();
     virtual void AddPanes();
     void UpdateAUIManagerAndLoadPerspective();
     virtual void OnPostInit() {}
     virtual void OnClose() {}
     
+    void OnMove(wxMoveEvent& event);
+    void OnSize(wxSizeEvent& event);
+
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
     void OnKeyPressed(wxKeyEvent& event);

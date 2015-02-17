@@ -194,12 +194,31 @@ GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, c
     return shaderid;
 }
 
+void printShaderSource(GLuint shaderhandle)
+{
+    GLint bufLength = 0;
+    glGetShaderiv( shaderhandle, GL_SHADER_SOURCE_LENGTH, &bufLength );
+
+    if( bufLength )
+    {
+        char* buf = (char*)malloc( bufLength );
+        if( buf )
+        {
+            GLsizei lengthreturned;
+            glGetShaderSource( shaderhandle, bufLength, &lengthreturned, buf );
+            LOGError( LOGTag, "shader source:\n%s\n", buf );
+
+            free(buf);
+        }
+    }
+}
+
 GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths)
 {
     checkGlError( "createProgram" );
 
     ppChunks[1] = pPreVertexSource;
-    pLengths[1] = prefslen;
+    pLengths[1] = prevslen;
     *vsid = loadShader( GL_VERTEX_SHADER, numchunks, ppChunks, pLengths );
     if( *vsid == 0 )
     {
@@ -243,6 +262,9 @@ GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreV
                     LOGError( LOGTag, "Could not link program:\n%s\n", buf );
 
                     assert( false );
+
+                    printShaderSource( *vsid );
+                    printShaderSource( *fsid );
 
                     free(buf);
                 }

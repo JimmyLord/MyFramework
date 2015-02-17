@@ -137,6 +137,10 @@ void FileManager::Tick()
         // sanity check, make sure file isn't already loaded.
         assert( pFile->m_FileReady == false );
 
+        // if the file already failed to load, give up on it.  TODO: reset m_LoadFailed when focus regained and try all files again.
+        if( pFile->m_LoadFailed )
+            continue;
+
         pFile->Tick();
 
         // if we're done loading, move the file into the loaded list.
@@ -158,6 +162,22 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
     int numfilesupdated = 0;
 
     CPPListNode* pNextNode;
+    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+    {
+        pNextNode = pNode->GetNext();
+
+        MyFileObject* pFile = (MyFileObject*)pNode;
+
+        bool updateavailable = pFile->IsNewVersionAvailable();
+
+        if( updateavailable )
+        {
+            ReloadFile( pFile );
+            pCallbackFunc( pFile );
+            numfilesupdated++;
+        }
+    }
+
     for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNextNode )
     {
         pNextNode = pNode->GetNext();

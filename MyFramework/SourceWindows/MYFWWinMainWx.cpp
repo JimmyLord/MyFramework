@@ -24,10 +24,37 @@ GLViewTypes g_CurrentGLViewType;
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
+    int m_WindowX = 0;
+    int m_WindowY = 0;
+    int m_ClientWidth = 0;
+    int m_ClientHeight = 0;
+    bool m_Maximized = false;
+}
+
+MainFrame::~MainFrame()
+{
+    SAFE_DELETE( m_pGLCanvas );
+
+    SAFE_DELETE( m_pCommandStack );
+
+    SAFE_DELETE( g_pPanelWatch );
+    SAFE_DELETE( g_pPanelMemory );
+    SAFE_DELETE( g_pPanelObjectList );
+
+    // deinitialize the frame manager
+    m_AUIManager.UnInit();
+}
+
+void MainFrame::InitFrame()
+{
     int width, height;
+
     WinMain_GetClientSize( &width, &height, &g_CurrentGLViewType );
 
-    SetClientSize( width, height );
+    if( m_ClientWidth == 0 )
+        m_ClientWidth = width;
+    if( m_ClientHeight == 0 )
+        m_ClientHeight = height;
 
     // Create the menu bar
     {
@@ -56,6 +83,14 @@ MainFrame::MainFrame(wxWindow* parent)
         m_MenuBar->Append( m_Aspect, wxT("&Aspect") );
         SetMenuBar( m_MenuBar );
 
+        // set the window position and client size after attaching the main menu.
+        SetPosition( wxPoint( m_WindowX, m_WindowY ) );
+        SetClientSize( m_ClientWidth, m_ClientHeight );
+        Maximize( m_Maximized );
+
+        Connect( wxEVT_MOVE, wxMoveEventHandler(MainFrame::OnMove) );
+        Connect( wxEVT_SIZE, wxSizeEventHandler(MainFrame::OnSize) );
+
         Connect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnQuit) );
         
         Connect( myID_Undo, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
@@ -73,20 +108,6 @@ MainFrame::MainFrame(wxWindow* parent)
 
     // notify wxAUI which frame to use
     m_AUIManager.SetManagedWindow( this );
-}
-
-MainFrame::~MainFrame()
-{
-    SAFE_DELETE( m_pGLCanvas );
-
-    SAFE_DELETE( m_pCommandStack );
-
-    SAFE_DELETE( g_pPanelWatch );
-    SAFE_DELETE( g_pPanelMemory );
-    SAFE_DELETE( g_pPanelObjectList );
-
-    // deinitialize the frame manager
-    m_AUIManager.UnInit();
 }
 
 void MainFrame::AddPanes()
@@ -130,6 +151,37 @@ void MainFrame::UpdateAUIManagerAndLoadPerspective()
         m_SavedPerspectiveString = wxString( string );
         m_AUIManager.LoadPerspective( m_SavedPerspectiveString );
         delete[] string;
+    }
+}
+
+void MainFrame::OnMove(wxMoveEvent& event)
+{
+    if( this->IsMaximized() )
+    {
+        m_Maximized = true;
+    }
+    else
+    {
+        m_Maximized = false;
+
+        m_WindowX = this->GetPosition().x;
+        m_WindowY = this->GetPosition().y;
+        m_ClientWidth = this->GetClientRect().width;
+        m_ClientHeight = this->GetClientRect().height;
+    }
+}
+
+void MainFrame::OnSize(wxSizeEvent& event)
+{
+    if( this->IsMaximized() )
+    {
+        m_Maximized = true;
+    }
+    else
+    {
+        m_Maximized = false;
+        m_ClientWidth = this->GetClientRect().width;
+        m_ClientHeight = this->GetClientRect().height;
     }
 }
 
@@ -284,6 +336,7 @@ bool MainApp::OnInit()
     g_pMainApp = this;
 
     m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );
+    m_pMainFrame->InitFrame();
     m_pMainFrame->AddPanes();
     m_pMainFrame->UpdateAUIManagerAndLoadPerspective();
     m_pMainFrame->ResizeViewport();
