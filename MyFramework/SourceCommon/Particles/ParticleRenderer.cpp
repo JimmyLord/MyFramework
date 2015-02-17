@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -68,12 +60,12 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
     unsigned int numindices = 0;
 #endif
 
-    Vertex_PointSprite* pVerts = MyNew Vertex_PointSprite[numverts];
+    Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
     m_NumVertsAllocated = numverts;
 
     LOGInfo( LOGTag, "ParticleRenderer: about to call glGenBuffers\n" );
 
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_PointSprite)*numverts, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, true, 2, VertexFormat_PointSprite, category, "Particles-Verts" );
+    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 
     LOGInfo( LOGTag, "ParticleRenderer: m_pVertexBuffer->m_BufferID = %d\n", m_pVertexBuffer->m_CurrentBufferID );
 
@@ -112,6 +104,11 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
 void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
 {
+    AddPoint( Vector3( pos.x, pos.y, 0 ), rot, color, size );
+}
+
+void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float size)
+{
     //assert( m_ParticleCount < m_NumVertsAllocated );
     unsigned int vertexnum = m_ParticleCount;
 
@@ -119,7 +116,7 @@ void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float s
     vertexnum *= 4;
 #endif
 
-    Vertex_PointSprite* pVerts = (Vertex_PointSprite*)m_pVertexBuffer->m_pData;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
     m_pVertexBuffer->m_Dirty = true;
 
     if( vertexnum < m_NumVertsAllocated )
@@ -128,13 +125,14 @@ void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float s
         {
             pVerts[vertexnum].x = pos.x;
             pVerts[vertexnum].y = pos.y;
+            pVerts[vertexnum].z = pos.z;
 
             pVerts[vertexnum].r = color.r;
             pVerts[vertexnum].g = color.g;
             pVerts[vertexnum].b = color.b;
             pVerts[vertexnum].a = color.a;
 
-            pVerts[vertexnum].size = size * m_2DCameraZoom;
+            //pVerts[vertexnum].size = size * m_2DCameraZoom;
 
             pVerts[vertexnum+1] = pVerts[vertexnum];
             pVerts[vertexnum+2] = pVerts[vertexnum];
@@ -163,6 +161,7 @@ void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float s
         }
 #else
         {
+            assert( false ); // not supported
             float screenw = (float)g_pGameCore->m_WindowWidth;
             float screenh = (float)g_pGameCore->m_WindowHeight;
 
@@ -203,6 +202,8 @@ void ParticleRenderer::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDef
 {
     m_pShaderGroup = pShaderGroup;
     m_pTexture = pTexture;
+
+    m_pVertexBuffer->ResetVAOs();
 }
 
 void ParticleRenderer::Draw(MyMatrix* matviewproj)
@@ -243,32 +244,28 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
 #endif
 
     if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_PointSprite)*numverts );
+        m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_XYZUV_RGBA)*numverts );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    //glBindBuffer( GL_ARRAY_BUFFER, m_pVertexBuffer->m_CurrentBufferID );
-    //glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(Vertex_PointSprite)*numverts, pVerts );
-
-    //if( ((Shader_PointSprite*)m_pShader)->ActivateAndProgramShader( matviewproj, &m_Position, (Vertex_XYZUV*)m_pVerts, m_pTexture->m_TextureID ) )
-    //if( ((Shader_PointSprite*)m_pShader)->ActivateAndProgramShader( matviewproj, 0, (Vertex_PointSprite*)m_pVerts, m_pTexture->m_TextureID ) )
-    //if( ((Shader_PointSprite*)m_pShader)->ActivateAndProgramShader( matviewproj, 0, (Vertex_PointSprite*)m_pVerts, m_pTexture->m_TextureID ) )
 #if USE_INDEXED_TRIANGLES
     if( ((Shader_Base*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
-        VertexFormat_PointSprite, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+        VertexFormat_XYZUV_RGBA, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
         matviewproj, 0, m_pTexture->m_TextureID ) )
     {
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
         m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
 #else
-    if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
-        matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
-    {
-        MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
-        m_pShaderGroup->GlobalPass()->DeactivateShader();
-    }
+    // not supporting point sprites anymore.
+    assert( false );
+    //if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
+    //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
+    //{
+    //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
+    //    m_pShaderGroup->GlobalPass()->DeactivateShader();
+    //}
 #endif
 
     //glEnable( GL_BLEND );

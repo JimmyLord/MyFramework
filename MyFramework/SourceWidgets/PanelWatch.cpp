@@ -913,10 +913,10 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         case PanelWatchType_ColorFloat:
             {
                 ColorFloat asfloats = *(ColorFloat*)m_pVariables[i].m_Pointer;
-                wxColour colour( (unsigned char)asfloats.r * 255.0f,
-                                 (unsigned char)asfloats.g * 255.0f,
-                                 (unsigned char)asfloats.b * 255.0f,
-                                 (unsigned char)asfloats.a * 255.0f );
+                wxColour colour( (unsigned char)(asfloats.r * 255.0f),
+                                 (unsigned char)(asfloats.g * 255.0f),
+                                 (unsigned char)(asfloats.b * 255.0f),
+                                 (unsigned char)(asfloats.a * 255.0f) );
                 m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
             }
             break;
