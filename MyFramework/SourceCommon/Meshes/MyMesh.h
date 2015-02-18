@@ -50,6 +50,7 @@ public:
     void CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic = false);
 
     void CreateFromOBJFile(MyFileObject* pFile);
+    void CreateFromMyMeshFile(MyFileObject* pFile);
 
     void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags);
     void CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags);

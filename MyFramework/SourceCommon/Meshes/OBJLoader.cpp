@@ -401,9 +401,9 @@ foundduplicate_skiptonextvert:
     int indexcount = numtriangles * 3;
 
     int bytesperindex = 1;
-    if( numverts > 255 && numverts < 65536 )
+    if( numverts > 256 && numverts <= 256*256 )
         bytesperindex = 2;
-    if( numverts >= 65536 )
+    else if( numverts > 256*256 )
         bytesperindex = 4;
 
     float* verts = MyNew float[vertbuffersize];

@@ -340,6 +340,7 @@ typedef int socklen_t;
 #include "Shaders/Shader_Base.h"
 #include "Shaders/ListOfShaders.h"
 #include "Meshes/MeshManager.h"
+#include "Meshes/MyMeshLoader.h"
 #include "Meshes/OBJLoader.h"
 #include "Meshes/MyMesh.h"
 #include "Meshes/BufferManager.h"

@@ -103,10 +103,35 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
     {
         LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
 
-        m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-        m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+        if( m_pVertexBuffer && m_pIndexBuffer )
+        {
+            m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+            m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
 
-        m_MeshReady = true;
+            m_MeshReady = true;
+        }
+    }
+}
+
+void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
+{
+    pFile->AddRef();
+    SAFE_RELEASE( m_pSourceFile );
+    m_pSourceFile = pFile;
+
+    m_MeshReady = false;
+
+    if( pFile->m_FileReady )
+    {
+        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer );
+
+        if( m_pVertexBuffer && m_pIndexBuffer )
+        {
+            m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+            m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+
+            m_MeshReady = true;
+        }
     }
 }
 
@@ -1139,6 +1164,10 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
         {
             CreateFromOBJFile( m_pSourceFile );
+        }
+        if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
+        {
+            CreateFromMyMeshFile( m_pSourceFile );
         }
         return;
     }

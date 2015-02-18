@@ -4040,6 +4040,7 @@
     <ClCompile Include="SourceCommon\Meshes\MeshManager.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyLight.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp" />
+    <ClCompile Include="SourceCommon\Meshes\MyMeshLoader.cpp" />
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameServiceManager.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp" />
@@ -7267,6 +7268,7 @@
     <ClInclude Include="SourceCommon\Meshes\MeshManager.h" />
     <ClInclude Include="SourceCommon\Meshes\MyLight.h" />
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h" />
+    <ClInclude Include="SourceCommon\Meshes\MyMeshLoader.h" />
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h" />
     <ClInclude Include="SourceCommon\Networking\GameServiceManager.h" />
     <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h" />
