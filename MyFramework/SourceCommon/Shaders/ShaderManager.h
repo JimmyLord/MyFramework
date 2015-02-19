@@ -59,6 +59,7 @@ public:
     virtual bool LoadAndCompile();
 
     void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+    void InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
     void DisableAttributeArray(GLint index);
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);

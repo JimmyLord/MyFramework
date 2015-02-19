@@ -27,6 +27,9 @@ protected:
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
 
+    MyList<char*> m_pBoneNames;
+    MyList<MyMatrix> m_pBoneMatrices;
+
 public:
     MyFileObject* m_pSourceFile;
     bool m_MeshReady;
@@ -69,6 +72,8 @@ public:
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
+
+    void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
 
     void RebuildIndices();
 

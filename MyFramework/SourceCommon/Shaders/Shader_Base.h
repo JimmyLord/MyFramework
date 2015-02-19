@@ -21,6 +21,8 @@ public:
     GLint m_aHandle_UVCoord;
     GLint m_aHandle_Normal;
     GLint m_aHandle_VertexColor;
+    GLint m_aHandle_BoneIndex;
+    GLint m_aHandle_BoneWeight;
 
     GLint m_uHandle_World;
     GLint m_uHandle_ViewProj;

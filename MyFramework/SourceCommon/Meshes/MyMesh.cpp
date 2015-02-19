@@ -45,6 +45,11 @@ MyMesh::~MyMesh()
 
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
+
+    while( m_pBoneNames.Count() )
+    {
+        delete[] m_pBoneNames.RemoveIndex( 0 );
+    }
 }
 
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)

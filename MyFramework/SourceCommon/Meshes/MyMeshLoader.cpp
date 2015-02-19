@@ -10,7 +10,7 @@
 #include "CommonHeader.h"
 #include "MyMeshLoader.h"
 
-void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO)
+void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -26,7 +26,52 @@ void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO
     cJSONExt_GetUnsignedInt( root, "TotalIndices", &totalindices );
     cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
 
-    // TODO: read in bone info.
+    unsigned int numuvchannels = 0;
+    bool hasnormals = false;
+    bool hastangents = false;
+    bool hasbitangents = false;
+    bool hascolor = false;
+    unsigned int mostbonesinfluences = 0;
+
+    cJSONExt_GetUnsignedInt( root, "VF-uv", &numuvchannels );
+    cJSONExt_GetBool( root, "VF-normal", &hasnormals );
+    cJSONExt_GetBool( root, "VF-tangent", &hastangents );
+    cJSONExt_GetBool( root, "VF-bitangent", &hasbitangents );
+    cJSONExt_GetBool( root, "VF-color", &hascolor );
+    cJSONExt_GetUnsignedInt( root, "VF-mostweights", &mostbonesinfluences );
+
+    VertexFormats vertexformat = FindAppropriateVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
+
+    // Read in bone info.
+    if( totalbones )
+    {
+        m_pBoneNames.AllocateObjects( totalbones );
+        m_pBoneMatrices.AllocateObjects( totalbones );
+
+        cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
+        assert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
+        for( unsigned int i=0; i<totalbones; i++ )
+        {
+            cJSON* bone = cJSON_GetArrayItem( bones, i );
+            if( bone )
+            {
+                //cJSON* nameobj = cJSON_GetObjectItem( bone, "Name" );
+                //if( nameobj && nameobj->valuestring )
+                //{
+                //    int namelen = strlen( nameobj->valuestring );
+                //    char* bonename = MyNew char[namelen+1];
+                //    strcpy_s( bonename, namelen+1, nameobj->valuestring );
+
+                //    m_pBoneNames.Add( bonename );
+                //}
+                int namelen = strlen( bone->valuestring );
+                char* bonename = MyNew char[namelen+1];
+                strcpy_s( bonename, namelen+1, bone->valuestring );
+
+                m_pBoneNames.Add( bonename );
+            }
+        }
+    }
 
     cJSON_Delete( root );
 
@@ -46,30 +91,30 @@ void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO
 
     if( firstrawbyteindex != 0 )
     {
-        VertexFormats format = VertexFormat_XYZUVNorm;
-
-        //if( VertexUVs && VertexNormals )
-        //    format = VertexFormat_XYZUVNorm;
-        //else if( VertexUVs )
-        //    format = VertexFormat_XYZUV;
-        //else if( VertexNormals )
-        //    format = VertexFormat_XYZNorm;
-        //else
-        //    format = VertexFormat_XYZ;
-
         int bytesperindex = 4;
         if( totalverts <= 256 )
             bytesperindex = 1;
         else if( totalverts <= 256*256 )
             bytesperindex = 2;
 
-        unsigned int vertbuffersize = totalverts*g_VertexFormatSizes[format];
+        unsigned int vertbuffersize = totalverts*g_VertexFormatSizes[vertexformat];
         unsigned int indexbuffersize = totalindices * bytesperindex;
         unsigned char* verts = MyNew unsigned char[vertbuffersize];
         unsigned char* indices = MyNew unsigned char[indexbuffersize];
 
-        memcpy( verts, &buffer[firstrawbyteindex], vertbuffersize );
-        memcpy( indices, &buffer[firstrawbyteindex+vertbuffersize], indexbuffersize );
+        unsigned int rawbyteoffset = firstrawbyteindex;
+
+        // read the raw data:
+        {
+            m_pBoneMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );// read bone matrices
+            rawbyteoffset += sizeof(MyMatrix)*totalbones;
+
+            //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
+            memcpy( verts, &buffer[rawbyteoffset], vertbuffersize ); // read vert buffer bytes
+            rawbyteoffset += vertbuffersize;
+
+            memcpy( indices, &buffer[rawbyteoffset], indexbuffersize ); // read index buffer bytes
+        }
 
         // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
         if( *ppVBO == 0 )
@@ -83,7 +128,7 @@ void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO
         }
 
         // The buffer will delete the allocated arrays of verts/indices
-        (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, format, "MyMeshLoader", "VBO" );
+        (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, vertexformat, "MyMeshLoader", "VBO" );
         (*ppIBO)->InitializeBuffer( indices, indexbuffersize, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
 
         //delete[] verts;

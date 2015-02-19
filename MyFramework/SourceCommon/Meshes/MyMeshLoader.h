@@ -10,7 +10,6 @@
 #ifndef __MyMeshLoader_H__
 #define __MyMeshLoader_H__
 
-// return 2 BufferDefinition pointers.
-void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+// nothing here.  LoadMyMesh function is a member of MyMesh.
 
 #endif //__MyMeshLoader_H__

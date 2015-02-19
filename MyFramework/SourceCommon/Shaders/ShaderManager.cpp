@@ -289,6 +289,19 @@ void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, 
     }
 }
 
+void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
+{
+    if( index != -1 )
+    {
+        MyEnableVertexAttribArray( index );
+        glVertexAttribIPointer( index, size, type, stride, pointer );
+    }
+    else
+    {
+        //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
+    }
+}
+
 void BaseShader::DisableAttributeArray(GLint index)
 {
     if( index != -1 )

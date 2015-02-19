@@ -10,7 +10,7 @@
 #ifndef __VertexFormats_H__
 #define __VertexFormats_H__
 
-enum VertexFormats
+enum VertexFormats // ADDING_NEW_VertexFormat
 {
     VertexFormat_Invalid = -1,
     VertexFormat_Sprite,
@@ -20,11 +20,24 @@ enum VertexFormats
     VertexFormat_XYZUVNorm,
     VertexFormat_XYZNorm,
     VertexFormat_PointSprite,
+    VertexFormat_XYZUVNorm_RGBA,
+    VertexFormat_XYZUVNorm_RGBA_1Bones,
+    VertexFormat_XYZUVNorm_RGBA_2Bones,
+    VertexFormat_XYZUVNorm_RGBA_3Bones,
+    VertexFormat_XYZUVNorm_RGBA_4Bones,
     VertexFormat_NumFormats,
     VertexFormat_None = VertexFormat_NumFormats,
 };
 
 extern unsigned int g_VertexFormatSizes[VertexFormat_NumFormats];
+
+VertexFormats FindAppropriateVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences);
+    unsigned int m_NumUVChannels;
+    bool m_HasNormals;
+    bool m_HasTangents;
+    bool m_HasBitangents;
+    bool m_HasColor;
+    unsigned int m_MostBonesInfluences;
 
 struct Vertex_Base
 {
@@ -105,6 +118,54 @@ struct Vertex_PointSprite
     unsigned char b;
     unsigned char a;
     float size;
+};
+
+struct Vertex_XYZUVNorm_RGBA
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    ColorByte color;
+};
+
+struct Vertex_XYZUVNorm_RGBA_1Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    ColorByte color;
+    unsigned int boneindex[1];
+    float weight[1];
+};
+
+struct Vertex_XYZUVNorm_RGBA_2Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    ColorByte color;
+    unsigned int boneindex[2];
+    float weight[2];
+};
+
+struct Vertex_XYZUVNorm_RGBA_3Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    ColorByte color;
+    unsigned int boneindex[3];
+    float weight[3];
+};
+
+struct Vertex_XYZUVNorm_RGBA_4Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    ColorByte color;
+    unsigned int boneindex[4];
+    float weight[4];
 };
 
 #endif //__VertexFormats_H__
