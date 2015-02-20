@@ -531,6 +531,9 @@
     <ClCompile Include="SourceCommon\Meshes\MyMeshLoader.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MyAnimation.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1140,6 +1143,9 @@
       <Filter>Source\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MyMeshLoader.h">
+      <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\MyAnimation.h">
       <Filter>Source\Meshes</Filter>
     </ClInclude>
   </ItemGroup>

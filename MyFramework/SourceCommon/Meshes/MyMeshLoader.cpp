@@ -19,12 +19,14 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     unsigned int totalverts = 0;
     unsigned int totalindices = 0;
     unsigned int totalbones = 0;
+    unsigned int totalnodes = 0;
 
     cJSON* root = cJSON_Parse( buffer );
 
     cJSONExt_GetUnsignedInt( root, "TotalVerts", &totalverts );
     cJSONExt_GetUnsignedInt( root, "TotalIndices", &totalindices );
     cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
+    cJSONExt_GetUnsignedInt( root, "TotalNodes", &totalnodes );
 
     unsigned int numuvchannels = 0;
     bool hasnormals = false;
@@ -45,8 +47,9 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     // Read in bone info.
     if( totalbones )
     {
-        m_pBoneNames.AllocateObjects( totalbones );
-        m_pBoneMatrices.AllocateObjects( totalbones );
+        m_BoneNames.AllocateObjects( totalbones );
+        m_BoneOffsetMatrices.AllocateObjects( totalbones );
+        m_BoneFinalMatrices.AllocateObjects( totalbones );
 
         cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
         assert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
@@ -55,21 +58,39 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             cJSON* bone = cJSON_GetArrayItem( bones, i );
             if( bone )
             {
-                //cJSON* nameobj = cJSON_GetObjectItem( bone, "Name" );
-                //if( nameobj && nameobj->valuestring )
-                //{
-                //    int namelen = strlen( nameobj->valuestring );
-                //    char* bonename = MyNew char[namelen+1];
-                //    strcpy_s( bonename, namelen+1, nameobj->valuestring );
-
-                //    m_pBoneNames.Add( bonename );
-                //}
                 int namelen = strlen( bone->valuestring );
                 char* bonename = MyNew char[namelen+1];
                 strcpy_s( bonename, namelen+1, bone->valuestring );
 
-                m_pBoneNames.Add( bonename );
+                m_BoneNames.Add( bonename );
             }
+        }
+    }
+
+    // Read in skeleton's node tree.
+    if( totalnodes > 0 )
+    {
+        m_pSkeletonNodeTree.AllocateObjects( totalnodes );
+
+        cJSON* rootnode = cJSON_GetObjectItem( root, "Nodes" );
+
+        LoadMyMesh_ReadNode( rootnode->child, 0 );
+    }
+
+    // Read in the animations.
+    cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
+    int totalanims = cJSON_GetArraySize( animarray );
+    if( totalanims > 0 )
+    {
+        m_pAnimations.AllocateObjects( totalanims );
+
+        for( int ai=0; ai<totalanims; ai++ )
+        {
+            MyAnimation* pAnim = MyNew MyAnimation;
+            m_pAnimations.Add( pAnim );
+
+            cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
+            pAnim->ImportFromJSON( pAnimObj );
         }
     }
 
@@ -106,14 +127,36 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
 
         // read the raw data:
         {
-            m_pBoneMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );// read bone matrices
-            rawbyteoffset += sizeof(MyMatrix)*totalbones;
+            // read bone matrices
+            {
+                if( totalbones > 0 )
+                {
+                    m_BoneOffsetMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );
+                    rawbyteoffset += sizeof(MyMatrix)*totalbones;
+                }
 
-            //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
-            memcpy( verts, &buffer[rawbyteoffset], vertbuffersize ); // read vert buffer bytes
+                // initialize all the final bone matrices to identity.
+                MyMatrix matidentity;
+                matidentity.SetIdentity();
+                for( unsigned int i=0; i<totalbones; i++ )
+                {
+                    m_BoneFinalMatrices.Add( matidentity );
+                }
+            }
+
+            // read vert buffer bytes //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
+            memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
             rawbyteoffset += vertbuffersize;
 
-            memcpy( indices, &buffer[rawbyteoffset], indexbuffersize ); // read index buffer bytes
+            // read index buffer bytes
+            memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
+            rawbyteoffset += indexbuffersize;
+
+            // read animation channels
+            for( int ai=0; ai<totalanims; ai++ )
+            {
+                rawbyteoffset += m_pAnimations[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset] );
+            }
         }
 
         // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
@@ -133,5 +176,43 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
 
         //delete[] verts;
         //delete[] indices;
+    }
+}
+
+void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
+{
+    MySkeletonNode skelnodetoadd;
+    int skelnodeindex = m_pSkeletonNodeTree.Count();
+    m_pSkeletonNodeTree.Add( skelnodetoadd );
+
+    MySkeletonNode& skelnode = m_pSkeletonNodeTree[skelnodeindex];
+
+    // Add this node as a child of the parent.
+    if( pParentSkelNode )
+        pParentSkelNode->m_pChildren.Add( &m_pSkeletonNodeTree[skelnodeindex] );
+
+    char* name = pNode->string;
+    assert( name );
+
+    // add the name.
+    int namelen = strlen(name);
+    skelnode.m_Name = MyNew char[namelen+1];
+    strcpy_s( skelnode.m_Name, namelen+1, name );
+
+    // get count of children.
+    unsigned int childcount = cJSONExt_GetDirectChildCount( pNode );
+
+    if( childcount > 0 )
+    {
+        // allocate enough pointer for each child.
+        skelnode.m_pChildren.AllocateObjects( childcount );
+
+        // recurse through the children.
+        cJSON* childnode = pNode->child;
+        while( childnode )
+        {
+            LoadMyMesh_ReadNode( childnode, &m_pSkeletonNodeTree[skelnodeindex] );
+            childnode = childnode->next;
+        }
     }
 }

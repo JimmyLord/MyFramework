@@ -85,6 +85,9 @@
 #include <assert.h>
 #include <limits.h>
 
+#include "../../cJSON/cJSON.h"
+#include "JSON/cJSONHelpers.h"
+
 #include "DataTypes/CPPList.h"
 #include "Helpers/RefCount.h"
 #include "Helpers/MyMemory.h"
@@ -341,6 +344,7 @@ typedef int socklen_t;
 #include "Shaders/ListOfShaders.h"
 #include "Meshes/MeshManager.h"
 #include "Meshes/OBJLoader.h"
+#include "Meshes/MyAnimation.h"
 #include "Meshes/MyMesh.h"
 #include "Meshes/MyMeshLoader.h"
 #include "Meshes/BufferManager.h"
@@ -364,9 +368,6 @@ typedef int socklen_t;
 #include "Particles/ParticleRenderer.h"
 
 #include "GameCore.h"
-
-#include "../../cJSON/cJSON.h"
-#include "JSON/cJSONHelpers.h"
 
 #if MYFW_USING_WX
 #include "../SourceWidgets/PanelObjectList.h"

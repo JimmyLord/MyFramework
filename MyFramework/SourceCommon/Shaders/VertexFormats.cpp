@@ -17,6 +17,10 @@ unsigned int g_VertexFormatSizes[VertexFormat_NumFormats] = // ADDING_NEW_Vertex
     sizeof( Vertex_XYZUV ),
     sizeof( Vertex_XYZUV_RGBA ),
     sizeof( Vertex_XYZUVNorm ),
+    sizeof( Vertex_XYZUVNorm_1Bones ),
+    sizeof( Vertex_XYZUVNorm_2Bones ),
+    sizeof( Vertex_XYZUVNorm_3Bones ),
+    sizeof( Vertex_XYZUVNorm_4Bones ),
     sizeof( Vertex_XYZNorm ),
     sizeof( Vertex_PointSprite ),
     sizeof( Vertex_XYZUVNorm_RGBA ),
@@ -28,7 +32,20 @@ unsigned int g_VertexFormatSizes[VertexFormat_NumFormats] = // ADDING_NEW_Vertex
 
 VertexFormats FindAppropriateVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences)
 {
-    if( numuvs == 1 && normals && color )
+    if( numuvs == 1 && normals && color == false )
+    {
+        if( boneinfluences == 0 )
+            return VertexFormat_XYZUVNorm;
+        if( boneinfluences == 1 )
+            return VertexFormat_XYZUVNorm_1Bones;
+        if( boneinfluences == 2 )
+            return VertexFormat_XYZUVNorm_2Bones;
+        if( boneinfluences == 3 )
+            return VertexFormat_XYZUVNorm_3Bones;
+        if( boneinfluences == 4 )
+            return VertexFormat_XYZUVNorm_4Bones;
+    }
+    else if( numuvs == 1 && normals && color )
     {
         if( boneinfluences == 0 )
             return VertexFormat_XYZUVNorm_RGBA;

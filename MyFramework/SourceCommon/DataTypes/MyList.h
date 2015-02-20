@@ -151,7 +151,7 @@ public:
         return m_Count;
     }
 
-    MyType operator[] (int i)
+    MyType& operator[] (int i)
     {
         return m_Objects[i];
     }

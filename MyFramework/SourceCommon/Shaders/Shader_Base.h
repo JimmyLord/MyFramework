@@ -39,6 +39,8 @@ public:
     GLint m_uHandle_TextureSpecColor;
     GLint m_uHandle_Shininess;
 
+    GLint m_uHandle_BoneTransforms;
+
     GLint m_uTime;
 
     GLint m_uHandle_CameraPos;
@@ -77,6 +79,7 @@ public:
     void ProgramLights(MyLight* lights, int numlights);
     void ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowviewprojmatrix, GLuint shadowtexid);
     void ProgramLightmap(GLuint texid);
+    void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
 };
 
 #endif //__Shader_Base_H__

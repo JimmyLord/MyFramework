@@ -46,9 +46,14 @@ MyMesh::~MyMesh()
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
 
-    while( m_pBoneNames.Count() )
+    while( m_BoneNames.Count() )
     {
-        delete[] m_pBoneNames.RemoveIndex( 0 );
+        delete[] m_BoneNames.RemoveIndex( 0 );
+    }
+
+    while( m_pAnimations.Count() )
+    {
+        delete m_pAnimations.RemoveIndex( 0 );
     }
 }
 
@@ -1242,6 +1247,20 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 {
                     pShader->ProgramLightmap( lightmaptexid );
                     checkGlError( "Drawing Mesh ProgramLightmap()" );
+                }
+
+                if( m_BoneFinalMatrices.Count() > 0 )
+                {
+                    //int bone = 31;
+
+                    //MyMatrix invoffset = m_BoneOffsetMatrices[bone];
+                    //invoffset.Inverse();
+                    //m_BoneFinalMatrices[bone].SetIdentity();
+                    //m_BoneFinalMatrices[bone] = m_BoneOffsetMatrices[bone] * m_BoneFinalMatrices[bone];
+                    //m_BoneFinalMatrices[bone].Rotate( MyTime_GetSystemTime() * 50, 0, 1, 0 );
+                    //m_BoneFinalMatrices[bone] = invoffset * m_BoneFinalMatrices[bone];
+
+                    pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
                 }
 
                 int indexbuffertype = GL_UNSIGNED_BYTE;

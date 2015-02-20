@@ -18,6 +18,10 @@ enum VertexFormats // ADDING_NEW_VertexFormat
     VertexFormat_XYZUV,
     VertexFormat_XYZUV_RGBA,
     VertexFormat_XYZUVNorm,
+    VertexFormat_XYZUVNorm_1Bones,
+    VertexFormat_XYZUVNorm_2Bones,
+    VertexFormat_XYZUVNorm_3Bones,
+    VertexFormat_XYZUVNorm_4Bones,
     VertexFormat_XYZNorm,
     VertexFormat_PointSprite,
     VertexFormat_XYZUVNorm_RGBA,
@@ -98,6 +102,42 @@ struct Vertex_XYZUVNorm
     Vector3 pos;
     Vector2 uv;
     Vector3 normal;
+};
+
+struct Vertex_XYZUVNorm_1Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    unsigned int boneindex[1];
+    float weight[1];
+};
+
+struct Vertex_XYZUVNorm_2Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    unsigned int boneindex[2];
+    float weight[2];
+};
+
+struct Vertex_XYZUVNorm_3Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    unsigned int boneindex[3];
+    float weight[3];
+};
+
+struct Vertex_XYZUVNorm_4Bones
+{
+    Vector3 pos;
+    Vector2 uv;
+    Vector3 normal;
+    unsigned int boneindex[4];
+    float weight[4];
 };
 
 struct Vertex_XYZNorm

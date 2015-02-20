@@ -17,6 +17,18 @@ class VAODefinition;
 class MyLight;
 class ShaderGroup;
 
+struct MySkeletonNode
+{
+    char* m_Name;
+    MyList<MySkeletonNode*> m_pChildren;
+
+    MySkeletonNode()
+    {
+        m_Name = 0;
+    }
+    ~MySkeletonNode() { delete[] m_Name; }
+};
+
 class MyMesh : public CPPListNode, public RefCount
 {
 protected:
@@ -27,8 +39,11 @@ protected:
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
 
-    MyList<char*> m_pBoneNames;
-    MyList<MyMatrix> m_pBoneMatrices;
+    MyList<char*> m_BoneNames;
+    MyList<MyMatrix> m_BoneOffsetMatrices;
+    MyList<MyMatrix> m_BoneFinalMatrices;
+    MyList<MySkeletonNode> m_pSkeletonNodeTree;
+    MyList<MyAnimation*> m_pAnimations;
 
 public:
     MyFileObject* m_pSourceFile;
@@ -74,6 +89,7 @@ public:
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
 
     void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+    void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
 
     void RebuildIndices();
 
