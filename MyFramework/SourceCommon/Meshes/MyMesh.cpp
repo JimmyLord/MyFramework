@@ -1169,6 +1169,8 @@ void MyMesh::RebuildIndices()
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
 {
+    RebuildAnimationMatrices( MyTime_GetUnpausedTime() );
+
     if( m_MeshReady == false )
     {
         if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
@@ -1284,6 +1286,64 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 checkGlError( "Drawing Mesh DeactivateShader()" );
             }
         }
+    }
+}
+
+void MyMesh::RebuildAnimationMatrices(double time)
+{
+    if( m_pAnimations.Count() == 0 )
+        return;
+
+    float TicksPerSecond = m_pAnimations[0]->m_TicksPerSecond;
+    double TimeInTicks = time * TicksPerSecond;
+    float AnimationTime = (float)fmod( TimeInTicks, (double)m_pAnimations[0]->m_Duration );
+
+    MyMatrix matidentity;
+    matidentity.SetIdentity();
+    RebuildNode( AnimationTime, 0, &matidentity );
+
+    //Transforms.resize(m_NumBones);
+
+    //for (uint i = 0 ; i < m_NumBones ; i++) {
+    //    Transforms[i] = m_BoneInfo[i].FinalTransformation;
+    //}
+}
+
+void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTransform)
+{
+    assert( nodeindex < m_pSkeletonNodeTree.Count() );
+
+    MyAnimation* pAnim = m_pAnimations[0];
+
+    MySkeletonNode* pNode = &m_pSkeletonNodeTree[nodeindex];
+
+    int boneindex = m_pSkeletonNodeTree[nodeindex].m_BoneIndex;
+    MyMatrix localtransform;
+
+    //if( boneindex > 1 )
+    //    boneindex = -1;
+
+    if( 0 )//boneindex != -1 )
+    {
+        Vector3 translation = pAnim->GetInterpolatedTranslation( time, boneindex );
+        Vector4 rotation = pAnim->GetInterpolatedRotation( time, boneindex );
+        Vector3 scale = pAnim->GetInterpolatedScaling( time, boneindex );
+
+        localtransform.CreateSRT( scale, rotation.XYZ(), translation );
+    }
+    else
+    {
+        localtransform = m_pSkeletonNodeTree[nodeindex].m_Transform;
+    }
+
+    MyMatrix fulltransform = *pParentTransform * localtransform;
+
+    if( boneindex != -1 )
+        m_BoneFinalMatrices[boneindex] = fulltransform * m_BoneOffsetMatrices[boneindex];
+
+    for( unsigned int cni=0; cni<m_pSkeletonNodeTree[nodeindex].m_pChildren.Count(); cni++)
+    {
+        RebuildNode( time, m_pSkeletonNodeTree[nodeindex].m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
     }
 }
 

@@ -152,6 +152,13 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
             rawbyteoffset += indexbuffersize;
 
+            // Read in the node transforms
+            for( unsigned int ni=0; ni<totalnodes; ni++ )
+            {
+                m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
+                rawbyteoffset += sizeof(MyMatrix);
+            }
+
             // read animation channels
             for( int ai=0; ai<totalanims; ai++ )
             {
@@ -179,6 +186,15 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     }
 }
 
+int MyMesh::FindBoneIndexByName(char* name)
+{
+    for( unsigned int i=0; i<m_BoneNames.Count(); i++ )
+        if( strcmp( m_BoneNames[i], name ) == 0 )
+            return i;
+
+    return -1;
+}
+
 void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
 {
     MySkeletonNode skelnodetoadd;
@@ -193,6 +209,9 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
 
     char* name = pNode->string;
     assert( name );
+
+    skelnode.m_SkeletonNodeIndex = skelnodeindex;
+    skelnode.m_BoneIndex = FindBoneIndexByName( name );
 
     // add the name.
     int namelen = strlen(name);

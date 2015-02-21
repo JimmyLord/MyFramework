@@ -66,6 +66,46 @@ void MyAnimation::SetNumberOfChannels(unsigned int numchannels)
     }
 }
 
+Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int nodeindex)
+{
+    //return Vector3( 0, 0, 0 );
+
+    //return m_pChannels[nodeindex]->m_TranslationValues[0];
+
+    MyChannel* pChannel = m_pChannels[nodeindex];
+
+    int startindex = 0;
+    while( time > pChannel->m_TranslationTimes[startindex] )
+        startindex++;
+    startindex -= 1;
+    int endindex = startindex+1;
+
+    float starttimestamp = pChannel->m_TranslationTimes[startindex];
+    float endtimestamp = pChannel->m_TranslationTimes[endindex];
+
+    float timebetweenframes = endtimestamp - starttimestamp;
+    float perctimepassed = (time - starttimestamp) / timebetweenframes;
+    assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+
+    Vector3& StartTranslation = pChannel->m_TranslationValues[startindex];
+    Vector3& EndTranslation = pChannel->m_TranslationValues[endindex];
+
+    Vector3 result = StartTranslation + (EndTranslation - StartTranslation) * perctimepassed;
+    return result;
+}
+
+Vector4 MyAnimation::GetInterpolatedRotation(float time, unsigned int nodeindex)
+{
+    return Vector4( 0, 0, 0, 1 );
+}
+
+Vector3 MyAnimation::GetInterpolatedScaling(float time, unsigned int nodeindex)
+{
+    return Vector3( 1, 1, 1 );
+}
+
+//==================================
+
 int MyChannel::ImportFromBuffer(char* pBuffer)
 {
     // channel id

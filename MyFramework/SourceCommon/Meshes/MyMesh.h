@@ -20,11 +20,16 @@ class ShaderGroup;
 struct MySkeletonNode
 {
     char* m_Name;
+    int m_SkeletonNodeIndex;
+    int m_BoneIndex;    
     MyList<MySkeletonNode*> m_pChildren;
+    MyMatrix m_Transform;
 
     MySkeletonNode()
     {
         m_Name = 0;
+        m_SkeletonNodeIndex = 0;
+        m_BoneIndex = 0;
     }
     ~MySkeletonNode() { delete[] m_Name; }
 };
@@ -87,6 +92,11 @@ public:
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
+
+    void RebuildAnimationMatrices(double time);
+    void RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTransform);
+
+    int FindBoneIndexByName(char* name);
 
     void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);

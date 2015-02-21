@@ -30,7 +30,7 @@ public:
 
 class MyAnimation
 {
-protected:
+public:
     char* m_Name;
     float m_Duration;
     float m_TicksPerSecond;
@@ -48,6 +48,10 @@ public:
     int ImportChannelsFromBuffer(char* pBuffer);
 
     void SetNumberOfChannels(unsigned int numchannels);
+
+    Vector3 GetInterpolatedTranslation(float time, unsigned int nodeindex);
+    Vector4 GetInterpolatedRotation(float time, unsigned int nodeindex);
+    Vector3 GetInterpolatedScaling(float time, unsigned int nodeindex);
 };
 
 #endif //__MyAnimation_H__
