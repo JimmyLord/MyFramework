@@ -66,16 +66,33 @@ void MyAnimation::SetNumberOfChannels(unsigned int numchannels)
     }
 }
 
-Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int nodeindex)
+int MyAnimation::FindChannelIndexForNode(unsigned int nodeindex)
 {
-    //return Vector3( 0, 0, 0 );
+    unsigned int ci;
+    for( ci=0; ci<m_pChannels.Count(); ci++ )
+    {
+        if( m_pChannels[ci]->m_NodeIndex == (int)nodeindex )
+            break;
+    }
 
-    //return m_pChannels[nodeindex]->m_TranslationValues[0];
+    if( ci == m_pChannels.Count() )
+        return -1;
 
-    MyChannel* pChannel = m_pChannels[nodeindex];
+    return ci;
+}
+
+Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int channelindex)
+{
+    MyChannel* pChannel = m_pChannels[channelindex];
+
+    // we need at least two values to interpolate...
+    if( pChannel->m_TranslationTimes.Count() == 1 )
+    {
+        return m_pChannels[channelindex]->m_TranslationValues[0];
+    }
 
     int startindex = 0;
-    while( time > pChannel->m_TranslationTimes[startindex] )
+    while( time > pChannel->m_TranslationTimes[startindex] && startindex < (int)pChannel->m_TranslationTimes.Count()-1 )
         startindex++;
     startindex -= 1;
     int endindex = startindex+1;
@@ -85,7 +102,7 @@ Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int nodeind
 
     float timebetweenframes = endtimestamp - starttimestamp;
     float perctimepassed = (time - starttimestamp) / timebetweenframes;
-    assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+    //assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
 
     Vector3& StartTranslation = pChannel->m_TranslationValues[startindex];
     Vector3& EndTranslation = pChannel->m_TranslationValues[endindex];
@@ -94,12 +111,40 @@ Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int nodeind
     return result;
 }
 
-Vector4 MyAnimation::GetInterpolatedRotation(float time, unsigned int nodeindex)
+MyQuat MyAnimation::GetInterpolatedRotation(float time, unsigned int channelindex)
 {
-    return Vector4( 0, 0, 0, 1 );
+    MyChannel* pChannel = m_pChannels[channelindex];
+
+    // we need at least two values to interpolate...
+    if( pChannel->m_RotationTimes.Count() == 1 )
+    {
+        return m_pChannels[channelindex]->m_RotationValues[0];
+    }
+
+    // TODO: fix start/end times.  Some channels seem to have different end times(tick counts).
+    //       might need to force a final key onto each channel to compensate... not sure.
+    //       fmod for time is in MyMesh::RebuildAnimationMatrices.
+    int startindex = 0;
+    while( time > pChannel->m_RotationTimes[startindex] && startindex < (int)pChannel->m_RotationTimes.Count()-1 )
+        startindex++;
+    startindex -= 1;
+    int endindex = startindex+1;
+
+    float starttimestamp = pChannel->m_RotationTimes[startindex];
+    float endtimestamp = pChannel->m_RotationTimes[endindex];
+
+    float timebetweenframes = endtimestamp - starttimestamp;
+    float perctimepassed = (time - starttimestamp) / timebetweenframes;
+    //assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+
+    MyQuat& StartRotation = pChannel->m_RotationValues[startindex];
+    MyQuat& EndRotation = pChannel->m_RotationValues[endindex];
+    MyQuat result = MyQuat::Lerp( StartRotation, EndRotation, perctimepassed ).GetNormalized();
+    //MyQuat result = MyQuat::Slerp( StartRotation, EndRotation, perctimepassed );
+    return result;
 }
 
-Vector3 MyAnimation::GetInterpolatedScaling(float time, unsigned int nodeindex)
+Vector3 MyAnimation::GetInterpolatedScaling(float time, unsigned int channelindex)
 {
     return Vector3( 1, 1, 1 );
 }
@@ -122,7 +167,7 @@ int MyChannel::ImportFromBuffer(char* pBuffer)
     int byteoffset = 0;
     unsigned int numkeys;
 
-    m_Index = *(int*)&pBuffer[byteoffset];
+    m_NodeIndex = *(int*)&pBuffer[byteoffset];
     byteoffset += sizeof( int );
 
     // translation keys
@@ -147,8 +192,8 @@ int MyChannel::ImportFromBuffer(char* pBuffer)
         m_RotationValues.AllocateObjects( numkeys );
         m_RotationTimes.BlockFill( &pBuffer[byteoffset], sizeof(float)*numkeys, numkeys );
         byteoffset += sizeof(float)*numkeys;
-        m_RotationValues.BlockFill( &pBuffer[byteoffset], sizeof(Vector4)*numkeys, numkeys );
-        byteoffset += sizeof(Vector4)*numkeys;
+        m_RotationValues.BlockFill( &pBuffer[byteoffset], sizeof(MyQuat)*numkeys, numkeys );
+        byteoffset += sizeof(MyQuat)*numkeys;
     }
 
     // scale keys

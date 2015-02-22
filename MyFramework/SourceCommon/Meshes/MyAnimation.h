@@ -13,13 +13,13 @@
 class MyChannel
 {
 public:
-    int m_Index;
+    int m_NodeIndex;
 
     MyList<float> m_TranslationTimes;
     MyList<Vector3> m_TranslationValues;
 
     MyList<float> m_RotationTimes;
-    MyList<Vector4> m_RotationValues; // TODO: make a list of quaternions.
+    MyList<MyQuat> m_RotationValues;
 
     MyList<float> m_ScaleTimes;
     MyList<Vector3> m_ScaleValues;
@@ -49,9 +49,11 @@ public:
 
     void SetNumberOfChannels(unsigned int numchannels);
 
-    Vector3 GetInterpolatedTranslation(float time, unsigned int nodeindex);
-    Vector4 GetInterpolatedRotation(float time, unsigned int nodeindex);
-    Vector3 GetInterpolatedScaling(float time, unsigned int nodeindex);
+    int FindChannelIndexForNode(unsigned int nodeindex);
+
+    Vector3 GetInterpolatedTranslation(float time, unsigned int channelindex);
+    MyQuat GetInterpolatedRotation(float time, unsigned int channelindex);
+    Vector3 GetInterpolatedScaling(float time, unsigned int channelindex);
 };
 
 #endif //__MyAnimation_H__

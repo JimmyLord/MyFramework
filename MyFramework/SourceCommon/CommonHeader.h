@@ -93,6 +93,7 @@
 #include "Helpers/MyMemory.h"
 #include "Helpers/Utility.h"
 #include "DataTypes/Vector.h"
+#include "DataTypes/MyQuaternion.h"
 #include "DataTypes/MyMatrix.h"
 #include "DataTypes/Plane.h"
 #include "DataTypes/ColorStructs.h"

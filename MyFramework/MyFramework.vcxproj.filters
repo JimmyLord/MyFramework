@@ -534,6 +534,9 @@
     <ClCompile Include="SourceCommon\Meshes\MyAnimation.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1147,6 +1150,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MyAnimation.h">
       <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyQuaternion.h">
+      <Filter>Source\DataTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

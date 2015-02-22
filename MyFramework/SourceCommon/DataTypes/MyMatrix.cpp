@@ -82,6 +82,14 @@ void MyMatrix::CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos)
     Translate( pos.x, pos.y, pos.z );
 }
 
+void MyMatrix::CreateSRT(Vector3 scale, MyQuat rot, Vector3 pos)
+{
+    SetIdentity();
+    Scale( scale.x, scale.y, scale.z );
+    Rotate( rot );
+    Translate( pos.x, pos.y, pos.z );
+}
+
 void MyMatrix::Scale(float scale)
 {
     m11 *= scale; m21 *= scale; m31 *= scale; m41 *= scale;
@@ -146,6 +154,33 @@ void MyMatrix::Rotate(float angle, float x, float y, float z)
 
         *this = rotMat * *this;
     }
+}
+
+void MyMatrix::Rotate(MyQuat q)
+{
+    MyMatrix rotMat;
+
+    rotMat.m11 = 1.0f - 2.0f*q.y*q.y - 2.0f*q.z*q.z;
+    rotMat.m12 =        2.0f*q.x*q.y + 2.0f*q.z*q.w;
+    rotMat.m13 =        2.0f*q.x*q.z - 2.0f*q.y*q.w;
+    rotMat.m14 = 0.0f;
+
+    rotMat.m21 =        2.0f*q.x*q.y - 2.0f*q.z*q.w;
+    rotMat.m22 = 1.0f - 2.0f*q.x*q.x - 2.0f*q.z*q.z;
+    rotMat.m23 =        2.0f*q.y*q.z + 2.0f*q.x*q.w;
+    rotMat.m24 = 0.0f;
+
+    rotMat.m31 =        2.0f*q.x*q.z + 2.0f*q.y*q.w;
+    rotMat.m32 =        2.0f*q.y*q.z - 2.0f*q.x*q.w;
+    rotMat.m33 = 1.0f - 2.0f*q.x*q.x - 2.0f*q.y*q.y;
+    rotMat.m34 = 0.0f;
+
+    rotMat.m41 = 0.0f; 
+    rotMat.m42 = 0.0f;
+    rotMat.m43 = 0.0f; 
+    rotMat.m44 = 1.0f;
+
+    *this = rotMat * *this;
 }
 
 void MyMatrix::TranslatePreRotScale(Vector3 translate)

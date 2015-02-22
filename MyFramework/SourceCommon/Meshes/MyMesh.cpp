@@ -1301,12 +1301,6 @@ void MyMesh::RebuildAnimationMatrices(double time)
     MyMatrix matidentity;
     matidentity.SetIdentity();
     RebuildNode( AnimationTime, 0, &matidentity );
-
-    //Transforms.resize(m_NumBones);
-
-    //for (uint i = 0 ; i < m_NumBones ; i++) {
-    //    Transforms[i] = m_BoneInfo[i].FinalTransformation;
-    //}
 }
 
 void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTransform)
@@ -1317,23 +1311,23 @@ void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTr
 
     MySkeletonNode* pNode = &m_pSkeletonNodeTree[nodeindex];
 
-    int boneindex = m_pSkeletonNodeTree[nodeindex].m_BoneIndex;
+    int boneindex = pNode->m_BoneIndex;
+    int channelindex = pAnim->FindChannelIndexForNode( nodeindex );
+
     MyMatrix localtransform;
-
-    //if( boneindex > 1 )
-    //    boneindex = -1;
-
-    if( 0 )//boneindex != -1 )
+    if( channelindex != -1 )
     {
-        Vector3 translation = pAnim->GetInterpolatedTranslation( time, boneindex );
-        Vector4 rotation = pAnim->GetInterpolatedRotation( time, boneindex );
-        Vector3 scale = pAnim->GetInterpolatedScaling( time, boneindex );
+        Vector3 translation = pAnim->GetInterpolatedTranslation( time, channelindex );
+        MyQuat rotation = pAnim->GetInterpolatedRotation( time, channelindex );
+        Vector3 scale = pAnim->GetInterpolatedScaling( time, channelindex );
 
-        localtransform.CreateSRT( scale, rotation.XYZ(), translation );
+        MyMatrix nodetransform = pNode->m_Transform;
+
+        localtransform.CreateSRT( scale, rotation, translation );
     }
     else
     {
-        localtransform = m_pSkeletonNodeTree[nodeindex].m_Transform;
+        localtransform = pNode->m_Transform;
     }
 
     MyMatrix fulltransform = *pParentTransform * localtransform;
@@ -1341,9 +1335,9 @@ void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTr
     if( boneindex != -1 )
         m_BoneFinalMatrices[boneindex] = fulltransform * m_BoneOffsetMatrices[boneindex];
 
-    for( unsigned int cni=0; cni<m_pSkeletonNodeTree[nodeindex].m_pChildren.Count(); cni++)
+    for( unsigned int cni=0; cni<pNode->m_pChildren.Count(); cni++)
     {
-        RebuildNode( time, m_pSkeletonNodeTree[nodeindex].m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
+        RebuildNode( time, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
     }
 }
 

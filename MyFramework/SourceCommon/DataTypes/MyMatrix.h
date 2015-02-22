@@ -43,6 +43,7 @@ public:
     void Scale(float scale);
     void Scale(float sx, float sy, float sz);
     void Rotate(float angle, float x, float y, float z);
+    void Rotate(MyQuat q);
     void TranslatePreRotScale(Vector3 translate);
     void TranslatePreRotScale(float tx, float ty, float tz);
     void Translate(Vector3 pos);
@@ -57,6 +58,7 @@ public:
     void CreateScale(Vector3 scale);
     void CreateSRT(float scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
+    void CreateSRT(Vector3 scale, MyQuat rot, Vector3 pos);
     void CreateFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
     void CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ);
     void CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ);

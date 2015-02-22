@@ -3976,6 +3976,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\DataTypes\ColorStructs.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\MyMatrix.cpp" />
+    <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Plane.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Vector.cpp" />
     <ClCompile Include="SourceCommon\Fonts\BMFont.cpp" />
@@ -7202,6 +7203,7 @@
     <ClInclude Include="SourceCommon\DataTypes\MyActivePool.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyList.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyMatrix.h" />
+    <ClInclude Include="SourceCommon\DataTypes\MyQuaternion.h" />
     <ClInclude Include="SourceCommon\DataTypes\Plane.h" />
     <ClInclude Include="SourceCommon\DataTypes\Vector.h" />
     <ClInclude Include="SourceCommon\Fonts\BMFont.h" />
