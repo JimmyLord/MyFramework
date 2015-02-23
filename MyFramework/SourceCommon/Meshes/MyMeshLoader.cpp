@@ -78,19 +78,23 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     }
 
     // Read in the animations.
+    int totalanims = 0;
     cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
-    int totalanims = cJSON_GetArraySize( animarray );
-    if( totalanims > 0 )
+    if( animarray )
     {
-        m_pAnimations.AllocateObjects( totalanims );
-
-        for( int ai=0; ai<totalanims; ai++ )
+        totalanims = cJSON_GetArraySize( animarray );
+        if( totalanims > 0 )
         {
-            MyAnimation* pAnim = MyNew MyAnimation;
-            m_pAnimations.Add( pAnim );
+            m_pAnimations.AllocateObjects( totalanims );
 
-            cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
-            pAnim->ImportFromJSON( pAnimObj );
+            for( int ai=0; ai<totalanims; ai++ )
+            {
+                MyAnimation* pAnim = MyNew MyAnimation;
+                m_pAnimations.Add( pAnim );
+
+                cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
+                pAnim->ImportFromJSON( pAnimObj );
+            }
         }
     }
 

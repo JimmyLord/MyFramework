@@ -36,12 +36,6 @@ enum VertexFormats // ADDING_NEW_VertexFormat
 extern unsigned int g_VertexFormatSizes[VertexFormat_NumFormats];
 
 VertexFormats FindAppropriateVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences);
-    unsigned int m_NumUVChannels;
-    bool m_HasNormals;
-    bool m_HasTangents;
-    bool m_HasBitangents;
-    bool m_HasColor;
-    unsigned int m_MostBonesInfluences;
 
 struct Vertex_Base
 {
