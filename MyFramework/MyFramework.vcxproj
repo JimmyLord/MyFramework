@@ -4155,6 +4155,7 @@
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp" />
     <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp" />
+    <ClCompile Include="SourceCommon\Shaders\VertexFormatManager.cpp" />
     <ClCompile Include="SourceCommon\Shaders\VertexFormats.cpp" />
     <ClCompile Include="SourceCommon\Sound\SoundPlayerOpenAL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_64|Android'">true</ExcludedFromBuild>
@@ -7364,6 +7365,7 @@
     <ClInclude Include="SourceCommon\Shaders\ShaderGroup.h" />
     <ClInclude Include="SourceCommon\Shaders\ShaderManager.h" />
     <ClInclude Include="SourceCommon\Shaders\Shader_Base.h" />
+    <ClInclude Include="SourceCommon\Shaders\VertexFormatManager.h" />
     <ClInclude Include="SourceCommon\Shaders\VertexFormats.h" />
     <ClInclude Include="SourceCommon\Sound\SoundPlayerOpenAL.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_64|Android'">true</ExcludedFromBuild>

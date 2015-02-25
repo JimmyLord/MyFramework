@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,26 +7,26 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
-#include "VertexFormats.h"
+#ifndef __VertexFormatManager_H__
+#define __VertexFormatManager_H__
 
-unsigned int g_VertexFormatSizes[VertexFormat_NumFormats] = // ADDING_NEW_VertexFormat
+class VertexFormatManager;
+
+extern VertexFormatManager* g_pVertexFormatManager;
+
+class VertexFormatManager
 {
-    0,
-    sizeof( Vertex_Sprite ),
-    sizeof( Vertex_XYZ ),
-    sizeof( Vertex_XYZUV ),
-    sizeof( Vertex_XYZUV_RGBA ),
-    sizeof( Vertex_XYZUVNorm ),
-    sizeof( Vertex_XYZUVNorm_1Bones ),
-    sizeof( Vertex_XYZUVNorm_2Bones ),
-    sizeof( Vertex_XYZUVNorm_3Bones ),
-    sizeof( Vertex_XYZUVNorm_4Bones ),
-    sizeof( Vertex_XYZNorm ),
-    sizeof( Vertex_PointSprite ),
-    sizeof( Vertex_XYZUVNorm_RGBA ),
-    sizeof( Vertex_XYZUVNorm_RGBA_1Bones ),
-    sizeof( Vertex_XYZUVNorm_RGBA_2Bones ),
-    sizeof( Vertex_XYZUVNorm_RGBA_3Bones ),
-    sizeof( Vertex_XYZUVNorm_RGBA_4Bones ),
+    static const int MAX_DYNAMIC_VERTEX_FORMATS = 10; // TODO: fix this hardcodedness
+
+protected:
+    MyList<VertexFormat_Dynamic_Desc*> m_pDynamicVertexFormatDesc;
+
+public:
+    VertexFormatManager();
+    ~VertexFormatManager();
+
+    VertexFormat_Dynamic_Desc* FindDynamicVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences);
+    VertexFormat_Dynamic_Desc* GetDynamicVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences);
 };
+
+#endif //__VertexFormatManager_H__

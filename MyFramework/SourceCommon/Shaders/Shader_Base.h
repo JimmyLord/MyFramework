@@ -52,7 +52,7 @@ public:
 
 protected:
     //void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
-    void InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo, GLuint ibo);
+    void InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo);
     void InitializeVAO(GLuint vao);
 
     bool DoVAORequirementsMatch(Shader_Base* pShader);
@@ -67,10 +67,10 @@ public:
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);
 
-    bool ActivateAndProgramShader(VertexFormats vertformat, BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint = ColorByte::White(), ColorByte speccolor = ColorByte::White(), float shininess = 0);
+    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint = ColorByte::White(), ColorByte speccolor = ColorByte::White(), float shininess = 0);
     bool ActivateAndProgramShader();
 
-    void SetupAttributes(VertexFormats vertformat, BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable);
+    void SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable);
     void ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess);
     void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
     void ProgramTint(ColorByte tint);

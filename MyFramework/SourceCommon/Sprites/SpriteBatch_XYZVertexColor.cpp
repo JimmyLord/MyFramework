@@ -127,7 +127,7 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
 
     // Draw the contents of the buffers.
     if( ((Shader_Base*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
-            VertexFormat_XYZUV_RGBA, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, &pos, m_pTexture->m_TextureID ) )
     {
 #if USE_D3D

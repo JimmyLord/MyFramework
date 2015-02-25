@@ -773,7 +773,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         m_pVertexBuffer->FreeBufferedData();
         m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Plane", "Verts" );
+        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
     }
 
     if( sizeof(unsigned short)*numindices > m_pIndexBuffer->m_DataSize )
@@ -864,7 +864,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
         m_pVertexBuffer->FreeBufferedData();
         m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, "MyMesh_Icosphere", "Verts" );
+        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Icosphere", "Verts" );
     }
 
     if( bytesperindex*numindices > m_pIndexBuffer->m_DataSize )
@@ -1213,7 +1213,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         }
 
         Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass();
-        pShader->SetupAttributes( (VertexFormats)m_VertexFormat, m_pVertexBuffer, m_pIndexBuffer, false );
+        pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
         pShader->ProgramPosition( matviewproj, &m_Position );
 
         if( m_pIndexBuffer )
@@ -1227,7 +1227,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass( numlights );
         if( pShader )
         {
-            if( pShader->ActivateAndProgramShader( (VertexFormats)m_VertexFormat,
+            if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
                 matviewproj, &m_Position, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
             {

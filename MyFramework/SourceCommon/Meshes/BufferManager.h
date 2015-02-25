@@ -58,6 +58,7 @@ public:
         VertexFormats m_VertexFormat; // sanity check for GL_ARRAY_BUFFER'S, if this is a vertex buffer.
         int m_BytesPerIndex; // if this is an index buffer.
     };
+    VertexFormat_Dynamic_Desc* m_pFormatDesc;
     GLenum m_Target;
     GLenum m_Usage;
     bool m_Dirty;
@@ -73,7 +74,7 @@ public:
 
     void FreeBufferedData();
     void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
-    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
 };
 
 //class VAODefinition : public CPPListNode, public RefCount
@@ -114,7 +115,7 @@ public:
     // pData pointer passed in will be deleted by the BufferDefinition.
     BufferDefinition* CreateBuffer();
     BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
-    BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc);
+    BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
     //VAODefinition* CreateVAO();
     void Tick();
 

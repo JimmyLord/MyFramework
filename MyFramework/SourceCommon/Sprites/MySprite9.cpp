@@ -196,7 +196,7 @@ void MySprite9::Draw(MyMatrix* matviewproj)
     if( pShader )
     {
         if( pShader->ActivateAndProgramShader(
-                VertexFormat_Sprite, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
+                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
                 matviewproj, &m_Position, texid, m_Tint ) )
         {
 #if USE_D3D

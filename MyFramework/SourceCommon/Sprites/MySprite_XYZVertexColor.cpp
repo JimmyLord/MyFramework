@@ -191,7 +191,7 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
     if( pShader )
     {
         if( pShader->ActivateAndProgramShader(
-                VertexFormat_XYZUV_RGBA, m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
                 matviewproj, &m_Position, texid ) )
         {
 #if USE_D3D

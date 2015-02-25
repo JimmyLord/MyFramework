@@ -139,7 +139,7 @@ void Shader_Base::DeactivateShader(BufferDefinition* vbo)
     }
 }
 
-void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo, GLuint ibo)
+void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo)
 {
 #if USE_D3D
     assert( false );
@@ -307,6 +307,39 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, GLuint vbo
         InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_INT,            g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,boneindex) );
         InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,weight)    );
     }
+    else if( vertformat == VertexFormat_Dynamic )
+    {
+        InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_pos );
+        
+        if( pVertFormatDesc->offset_uv[0] )
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_uv[0] );
+        else
+            DisableAttributeArray( m_aHandle_UVCoord );
+
+        if( pVertFormatDesc->offset_normal )
+            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_normal );
+        else
+            DisableAttributeArray( m_aHandle_UVCoord );
+
+        if( pVertFormatDesc->offset_color )
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_color );
+        else
+            DisableAttributeArray( m_aHandle_UVCoord );
+
+        if( pVertFormatDesc->offset_boneindex )
+            InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_INT,            pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneindex );
+        else
+            DisableAttributeArray( m_aHandle_UVCoord );
+    
+        if( pVertFormatDesc->offset_boneweight )
+            InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneweight );
+        else
+            DisableAttributeArray( m_aHandle_UVCoord );
+    }
+    else
+    {
+        assert( false );
+    }
     // ADDING_NEW_VertexFormat
 #endif //USE_D3D
 }
@@ -326,7 +359,7 @@ bool Shader_Base::DoVAORequirementsMatch(Shader_Base* pShader)
     return false;
 }
 
-bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess)
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess)
 {
     if( m_Initialized == false )
     {
@@ -341,7 +374,7 @@ bool Shader_Base::ActivateAndProgramShader(VertexFormats vertformat, BufferDefin
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 
-    SetupAttributes( vertformat, vbo, ibo, true );
+    SetupAttributes( vbo, ibo, true );
 
     ProgramBaseUniforms( viewprojmatrix, worldmatrix, texid, tint, speccolor, shininess );
 
@@ -366,7 +399,7 @@ bool Shader_Base::ActivateAndProgramShader()
     return true;
 }
 
-void Shader_Base::SetupAttributes(VertexFormats vertformat, BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable)
+void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable)
 {
     if( usevaosifavailable == false || vbo->m_CurrentVAOInitialized[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == false )
     {
@@ -384,8 +417,9 @@ void Shader_Base::SetupAttributes(VertexFormats vertformat, BufferDefinition* vb
 #endif
         }
 
-        assert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
-        InitializeAttributeArrays( vertformat, vbo?vbo->m_CurrentBufferID:0, ibo?ibo->m_CurrentBufferID:0 );
+        //assert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
+        assert( vbo->m_VertexFormat != VertexFormat_None );
+        InitializeAttributeArrays( vbo->m_VertexFormat, vbo->m_pFormatDesc, vbo?vbo->m_CurrentBufferID:0, ibo?ibo->m_CurrentBufferID:0 );
     }
     else
     {

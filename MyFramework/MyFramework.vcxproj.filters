@@ -537,6 +537,9 @@
     <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp">
       <Filter>Source\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Shaders\VertexFormatManager.cpp">
+      <Filter>Source\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1153,6 +1156,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\MyQuaternion.h">
       <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Shaders\VertexFormatManager.h">
+      <Filter>Source\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

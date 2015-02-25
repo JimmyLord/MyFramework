@@ -56,6 +56,7 @@ BufferDefinition::BufferDefinition()
     m_pData = 0;
     m_DataSize = 0;
     m_VertexFormat = VertexFormat_Invalid;
+    m_pFormatDesc = 0;
     m_Target = GL_ARRAY_BUFFER; //GL_ELEMENT_ARRAY_BUFFER
     m_Usage = GL_STATIC_DRAW; //GL_DYNAMIC_DRAW //GL_STREAM_DRAW
     m_Dirty = true;
@@ -72,6 +73,8 @@ BufferDefinition::~BufferDefinition()
     if( g_pPanelMemory )
         g_pPanelMemory->RemoveBuffer( this );
 #endif
+
+    SAFE_DELETE( m_pFormatDesc ); // TODO: don't delete this here, make a vertex format manager.
 
     this->Remove();
 }
@@ -226,10 +229,10 @@ void BufferDefinition::FreeBufferedData()
 
 void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
 {
-    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc );
+    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, 0, category, desc );
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
     assert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
 
@@ -260,6 +263,7 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
     m_Target = target;
     m_Usage = usage;
     m_VertexFormat = format;
+    m_pFormatDesc = pVertexFormatDesc;
 
     if( bufferdata )
     {
@@ -344,7 +348,7 @@ BufferManager::~BufferManager()
 
 BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
 {
-    return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, category, desc);
+    return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, 0, category, desc);
 }
 
 BufferDefinition* BufferManager::CreateBuffer()
@@ -357,13 +361,13 @@ BufferDefinition* BufferManager::CreateBuffer()
     return pBufferDef;
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
     BufferDefinition* pBufferDef = CreateBuffer();
 
-    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format, category, desc );
+    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format, pVertexFormatDesc, category, desc );
 
     return pBufferDef;
 }

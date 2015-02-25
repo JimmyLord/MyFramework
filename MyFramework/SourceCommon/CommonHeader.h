@@ -339,6 +339,7 @@ typedef int socklen_t;
 #include "Helpers/MyTweener.h"
 #include "Shaders/GLHelpers.h"
 #include "Shaders/VertexFormats.h"
+#include "Shaders/VertexFormatManager.h"
 #include "Shaders/ShaderGroup.h"
 #include "Shaders/ShaderManager.h"
 #include "Shaders/Shader_Base.h"

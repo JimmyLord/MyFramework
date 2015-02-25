@@ -13,6 +13,7 @@
 enum VertexFormats // ADDING_NEW_VertexFormat
 {
     VertexFormat_Invalid = -1,
+    VertexFormat_Dynamic,
     VertexFormat_Sprite,
     VertexFormat_XYZ,
     VertexFormat_XYZUV,
@@ -35,7 +36,25 @@ enum VertexFormats // ADDING_NEW_VertexFormat
 
 extern unsigned int g_VertexFormatSizes[VertexFormat_NumFormats];
 
-VertexFormats FindAppropriateVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences);
+#define MAX_UV_CHANNELS         4
+#define MAX_BONE_INFLUENCES     4
+
+struct VertexFormat_Dynamic_Desc
+{
+    int stride;
+    
+    int num_uv_channels;
+    int num_bone_influences;
+
+    int offset_pos;
+    int offset_uv[MAX_UV_CHANNELS];
+    int offset_normal;
+    int offset_color;
+    int offset_tangent;
+    int offset_bitangent;
+    int offset_boneindex; //[MAX_BONE_INFLUENCES];
+    int offset_boneweight; //[MAX_BONE_INFLUENCES];
+};
 
 struct Vertex_Base
 {

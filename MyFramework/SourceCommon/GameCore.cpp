@@ -60,6 +60,7 @@ GameCore::~GameCore()
     SAFE_DELETE( m_pSoundPlayer );
     SAFE_DELETE( g_pGameServiceManager );
     SAFE_DELETE( g_pFileManager );
+    SAFE_DELETE( g_pVertexFormatManager );
 
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
@@ -88,6 +89,8 @@ void GameCore::InitializeManagers()
         g_pShaderGroupManager = MyNew ShaderGroupManager;
     if( g_pGameServiceManager == 0 )
         g_pGameServiceManager = MyNew GameServiceManager;
+    if( g_pVertexFormatManager == 0 )
+        g_pVertexFormatManager = MyNew VertexFormatManager;
 }
 
 void GameCore::OneTimeInit()

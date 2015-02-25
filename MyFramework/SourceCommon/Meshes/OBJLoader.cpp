@@ -504,7 +504,7 @@ foundduplicate_skiptonextvert:
     }
 
     // The buffer will delete the allocated arrays of verts/indices
-    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, format, "OBJLoader", "VBO" );
+    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, format, 0, "OBJLoader", "VBO" );
     (*ppIBO)->InitializeBuffer( indices, indexcount*bytesperindex, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "OBJLoader", "IBO" );
 
     //delete[] verts;

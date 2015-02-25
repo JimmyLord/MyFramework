@@ -42,7 +42,7 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     cJSONExt_GetBool( root, "VF-color", &hascolor );
     cJSONExt_GetUnsignedInt( root, "VF-mostweights", &mostbonesinfluences );
 
-    VertexFormats vertexformat = FindAppropriateVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
+    VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
 
     // Read in bone info.
     if( totalbones )
@@ -122,7 +122,7 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
         else if( totalverts <= 256*256 )
             bytesperindex = 2;
 
-        unsigned int vertbuffersize = totalverts*g_VertexFormatSizes[vertexformat];
+        unsigned int vertbuffersize = totalverts * pDesc->stride;
         unsigned int indexbuffersize = totalindices * bytesperindex;
         unsigned char* verts = MyNew unsigned char[vertbuffersize];
         unsigned char* indices = MyNew unsigned char[indexbuffersize];
@@ -182,7 +182,7 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
         }
 
         // The buffer will delete the allocated arrays of verts/indices
-        (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, vertexformat, "MyMeshLoader", "VBO" );
+        (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
         (*ppIBO)->InitializeBuffer( indices, indexbuffersize, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
 
         //delete[] verts;
