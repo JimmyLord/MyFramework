@@ -74,8 +74,6 @@ BufferDefinition::~BufferDefinition()
         g_pPanelMemory->RemoveBuffer( this );
 #endif
 
-    SAFE_DELETE( m_pFormatDesc ); // TODO: don't delete this here, make a vertex format manager.
-
     this->Remove();
 }
 

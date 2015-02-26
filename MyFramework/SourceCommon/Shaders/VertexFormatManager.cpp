@@ -20,7 +20,7 @@ VertexFormatManager::VertexFormatManager()
 VertexFormatManager::~VertexFormatManager()
 {
     while( m_pDynamicVertexFormatDesc.Count() )
-        delete m_pDynamicVertexFormatDesc[0];
+        delete m_pDynamicVertexFormatDesc.RemoveIndex( 0 );
 }
 
 VertexFormat_Dynamic_Desc* VertexFormatManager::FindDynamicVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences)
