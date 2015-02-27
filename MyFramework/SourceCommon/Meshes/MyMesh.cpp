@@ -1169,8 +1169,6 @@ void MyMesh::RebuildIndices()
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
 {
-    RebuildAnimationMatrices( MyTime_GetUnpausedTime() );
-
     if( m_MeshReady == false )
     {
         if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
