@@ -1222,7 +1222,11 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     }
     else
     {
-        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass( numlights );
+        int numboneinfluences = 0;
+        if( m_pVertexBuffer && m_pVertexBuffer->m_pFormatDesc )
+            numboneinfluences = m_pVertexBuffer->m_pFormatDesc->num_bone_influences;
+
+        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
         if( pShader )
         {
             if( pShader->ActivateAndProgramShader(

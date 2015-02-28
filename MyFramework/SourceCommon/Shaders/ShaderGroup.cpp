@@ -38,9 +38,12 @@ void ShaderGroup::Initialize()
 {
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
-        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
+        for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
         {
-            m_pShaderPasses[p][lc] = MyNew Shader_Base( (ShaderPassTypes)p );
+            for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+            {
+                m_pShaderPasses[p][lc][bc] = MyNew Shader_Base( (ShaderPassTypes)p );
+            }
         }
     }
 }
@@ -51,9 +54,12 @@ ShaderGroup::~ShaderGroup()
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
-        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
+        for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
         {
-            SAFE_DELETE( m_pShaderPasses[p][lc] );
+            for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+            {
+                SAFE_DELETE( m_pShaderPasses[p][lc][bc] );
+            }
         }
     }
 
@@ -71,25 +77,34 @@ void ShaderGroup::OnDrag()
 }
 #endif //MYFW_USING_WX
 
-BaseShader* ShaderGroup::GlobalPass(int numlights)
+BaseShader* ShaderGroup::GlobalPass(int numlights, int numbones)
 {
     //return m_pShaderPasses[ShaderPass_Main];
-    return GetShader( g_ActiveShaderPass, numlights );
+    return GetShader( g_ActiveShaderPass, numlights, numbones );
 }
 
-BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights)
+BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numbones)
 {
-    if( numlights > MAX_LIGHTS )
+    if( numlights > SHADERGROUP_MAX_LIGHTS )
     {
         LOGError( LOGTag, "ShaderGroup::GetShader() asking for too many lights\n" );
-        numlights = MAX_LIGHTS;
+        numlights = SHADERGROUP_MAX_LIGHTS;
     }
 
-    // find the first shader that supports the correct number of lights or less.
+    if( numbones > SHADERGROUP_MAX_BONE_INFLUENCES )
+    {
+        LOGError( LOGTag, "ShaderGroup::GetShader() asking for too many bones\n" );
+        numbones = SHADERGROUP_MAX_BONE_INFLUENCES;
+    }
+
+    // find the first shader that supports the correct number of lights/bones or less.
     for( unsigned int lc = numlights; lc >= 0; lc-- )
     {
-        if( m_pShaderPasses[pass][lc] != 0 )
-            return m_pShaderPasses[pass][lc];
+        for( unsigned int bc = numbones; bc >= 0; bc-- )
+        {
+            if( m_pShaderPasses[pass][lc][bc] != 0 )
+                return m_pShaderPasses[pass][lc][bc];
+        }
     }
 
     return 0;
@@ -104,23 +119,21 @@ void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
-        for( unsigned int lc=0; lc<MAX_LIGHTS+1; lc++ )
+        for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
         {
-            if( m_pShaderPasses[p][lc] )
+            for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
             {
-                m_pShaderPasses[p][lc]->m_pFile = pFileShader;
-                pFileShader->AddRef();
+                char tempstr[60]; // big enough to hold "#define NUM_LIGHTS 0\n#define NUM_INF_BONES 0\n"
 
-                if( lc == 0 )
-                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 0\n", "#define NUM_LIGHTS 0\n", true );
-                if( lc == 1 )
-                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 1\n", "#define NUM_LIGHTS 1\n", true );
-                if( lc == 2 )
-                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 2\n", "#define NUM_LIGHTS 2\n", true );
-                if( lc == 3 )
-                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 3\n", "#define NUM_LIGHTS 3\n", true );
-                if( lc == 4)
-                    m_pShaderPasses[p][lc]->OverridePredefs( "#define NUM_LIGHTS 4\n", "#define NUM_LIGHTS 4\n", true );
+                if( m_pShaderPasses[p][lc] )
+                {
+                    m_pShaderPasses[p][lc][bc]->m_pFile = pFileShader;
+                    pFileShader->AddRef();
+
+                    sprintf_s( tempstr, 50, "#define NUM_LIGHTS %d\n#define NUM_INF_BONES %d\n", lc, bc );
+
+                    m_pShaderPasses[p][lc][bc]->OverridePredefs( tempstr, tempstr, true );
+                }
             }
         }
     }

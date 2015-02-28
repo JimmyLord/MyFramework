@@ -29,11 +29,12 @@ extern ShaderPassTypes g_ActiveShaderPass;
 
 class ShaderGroup : public CPPListNode, public RefCount
 {
-    static const int MAX_LIGHTS = 4;
+    static const int SHADERGROUP_MAX_LIGHTS = 4;
+    static const int SHADERGROUP_MAX_BONE_INFLUENCES = 4;
 
 protected:
     const char* m_Name; // managed externally.
-    BaseShader* m_pShaderPasses[ShaderPass_NumTypes][MAX_LIGHTS+1];
+    BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
     unsigned int m_MaxLightsShaderCanUse;
 
 protected:
@@ -47,8 +48,8 @@ public:
 
     const char* GetName() { return m_Name; }
 
-    BaseShader* GlobalPass(int numlights = 0);
-    BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0);
+    BaseShader* GlobalPass(int numlights = 0, int numbones = 0);
+    BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0, int numbones = 0);
 
 public:
 #if MYFW_USING_WX
