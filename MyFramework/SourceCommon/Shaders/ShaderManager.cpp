@@ -172,14 +172,15 @@ bool BaseShader::LoadAndCompile()
         return false;
     }
 
-    if( m_pFile->m_LoadFailed )
+    if( m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
     {
         LOGInfo( LOGTag, "Shader failed to load\n" );
         return false;
     }
 
     // if the file isn't loaded, come back next frame and check again.
-    if( m_pFile->m_FileReady == false || (m_pFilePixelShader != 0 && m_pFilePixelShader->m_FileReady == false) )
+    if( m_pFile->m_FileLoadStatus != FileLoadStatus_Success ||
+        (m_pFilePixelShader != 0 && m_pFilePixelShader->m_FileLoadStatus != FileLoadStatus_Success) )
     {
         return false;
     }
@@ -302,14 +303,25 @@ void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type,
     }
 }
 
-void BaseShader::DisableAttributeArray(GLint index)
+void BaseShader::DisableAttributeArray(GLint index, Vector3 value)
 {
     if( index != -1 )
     {
         MyDisableVertexAttribArray( index );
 
         // TODO: set this attribute override value in the MyMesh object.
-        glVertexAttrib3f( index, 0, 1, 0 );
+        glVertexAttrib3fv( index, &value.x );
+    }
+}
+
+void BaseShader::DisableAttributeArray(GLint index, Vector4 value)
+{
+    if( index != -1 )
+    {
+        MyDisableVertexAttribArray( index );
+
+        // TODO: set this attribute override value in the MyMesh object.
+        glVertexAttrib4fv( index, &value.x );
     }
 }
 

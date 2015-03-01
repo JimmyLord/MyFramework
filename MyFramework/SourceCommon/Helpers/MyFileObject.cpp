@@ -75,8 +75,7 @@ MyFileObject::MyFileObject()
     m_FullPath = 0;
     m_FilenameWithoutExtension = 0;
     m_ExtensionWithDot = 0;
-    m_LoadFailed = false;
-    m_FileReady = false;
+    m_FileLoadStatus = FileLoadStatus_Loading;
     m_FileLength = 0;
     m_pBuffer = 0;
     m_BytesRead = 0;
@@ -182,7 +181,7 @@ void MyFileObject::RequestFile(const char* filename)
 
 void MyFileObject::Tick()
 {
-    if( m_FileReady == false && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
+    if( m_FileLoadStatus != FileLoadStatus_Success && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
     {
         int length = 0;
 
@@ -190,7 +189,7 @@ void MyFileObject::Tick()
 
         if( buffer == 0 )
         {
-            m_LoadFailed = true; // file not found.
+            m_FileLoadStatus = FileLoadStatus_Error_FileNotFound; // file not found.
             return;
         }
 
@@ -212,7 +211,8 @@ void MyFileObject::Tick()
 bool MyFileObject::IsNewVersionAvailable()
 {
     bool updated = false;
-    m_LoadFailed = false; // file now exists? allow it to load.
+    if( m_FileLoadStatus > FileLoadStatus_Success )
+        m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
 
 #if MYFW_WINDOWS
     WIN32_FIND_DATAA data;
@@ -240,7 +240,7 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
     m_pBuffer = buffer;
     m_FileLength = length;
     m_BytesRead = length;
-    m_FileReady = true;
+    m_FileLoadStatus = FileLoadStatus_Success;
 }
 
 void MyFileObject::UnloadContents()
@@ -248,8 +248,7 @@ void MyFileObject::UnloadContents()
     SAFE_DELETE_ARRAY( m_pBuffer );
     m_FileLength = 0;
     m_BytesRead = 0;
-    m_LoadFailed = false;
-    m_FileReady = false;
+    m_FileLoadStatus = FileLoadStatus_Loading;
 
 #if _DEBUG
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;

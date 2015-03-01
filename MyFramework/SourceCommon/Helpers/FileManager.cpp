@@ -135,16 +135,17 @@ void FileManager::Tick()
         //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
         // sanity check, make sure file isn't already loaded.
-        assert( pFile->m_FileReady == false );
+        assert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
 
-        // if the file already failed to load, give up on it.  TODO: reset m_LoadFailed when focus regained and try all files again.
-        if( pFile->m_LoadFailed )
+        // if the file already failed to load, give up on it.
+        //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
+        if( pFile->m_FileLoadStatus > FileLoadStatus_Success )
             continue;
 
         pFile->Tick();
 
         // if we're done loading, move the file into the loaded list.
-        if( pFile->m_FileReady )
+        if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
             LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
 

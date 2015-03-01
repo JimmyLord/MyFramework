@@ -50,6 +50,8 @@ protected:
     MyList<MySkeletonNode> m_pSkeletonNodeTree;
     MyList<MyAnimation*> m_pAnimations;
 
+    MyFileObject* m_pAnimationControlFile; // a .mymeshanim file that hold control info for the animation data.
+
 public:
     MyFileObject* m_pSourceFile;
     bool m_MeshReady;

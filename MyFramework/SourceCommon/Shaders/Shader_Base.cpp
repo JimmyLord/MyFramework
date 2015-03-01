@@ -165,53 +165,53 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     {
         InitializeAttributeArray( m_aHandle_Position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,x) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,u) );
-        DisableAttributeArray( m_aHandle_Normal );
-        DisableAttributeArray( m_aHandle_VertexColor );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZ )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZ), (void*)offsetof(Vertex_XYZ,x) );
-        DisableAttributeArray( m_aHandle_UVCoord );
-        DisableAttributeArray( m_aHandle_Normal );
-        DisableAttributeArray( m_aHandle_VertexColor );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
+        DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZUV )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,x) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,u) );
-        DisableAttributeArray( m_aHandle_Normal );
-        DisableAttributeArray( m_aHandle_VertexColor );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZUV_RGBA )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,x) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,u) );
-        DisableAttributeArray( m_aHandle_Normal );
+        DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
         InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,r) );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZUVNorm )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,pos) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,uv) );
         InitializeAttributeArray( m_aHandle_Normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZUVNorm_1Bones )
     {
         InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,pos)    );
         InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,uv)     );
         InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
         InitializeAttributeIArray( m_aHandle_BoneIndex,  1, GL_UNSIGNED_INT,            g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,boneindex) );
         InitializeAttributeArray( m_aHandle_BoneWeight,  1, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,weight)    );
     }
@@ -220,7 +220,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,pos)    );
         InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,uv)     );
         InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
         InitializeAttributeIArray( m_aHandle_BoneIndex,  2, GL_UNSIGNED_INT,            g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,boneindex) );
         InitializeAttributeArray( m_aHandle_BoneWeight,  2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,weight)    );
     }
@@ -229,7 +229,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,pos)    );
         InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,uv)     );
         InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
         InitializeAttributeIArray( m_aHandle_BoneIndex,  3, GL_UNSIGNED_INT,            g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,boneindex) );
         InitializeAttributeArray( m_aHandle_BoneWeight,  3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,weight)    );
     }
@@ -238,27 +238,27 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,pos)    );
         InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,uv)     );
         InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
         InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_INT,            g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,boneindex) );
         InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,weight)    );
     }
     else if( vertformat == VertexFormat_XYZNorm )
     {
         InitializeAttributeArray( m_aHandle_Position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,pos) );
-        DisableAttributeArray( m_aHandle_UVCoord );
+        DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
         InitializeAttributeArray( m_aHandle_Normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,normal) );
-        DisableAttributeArray( m_aHandle_VertexColor );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_PointSprite )
     {
         InitializeAttributeArray( m_aHandle_Position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,x) );
         InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,u) );
-        DisableAttributeArray( m_aHandle_Normal );
+        DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
         InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,r) );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
         //assert(false); // I stopped using point sprites, so this doesn't have a handle ATM;
         //InitializeAttributeArray( m_aHandle_Size, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,size) );
     }
@@ -268,8 +268,8 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,uv)        );
         InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,normal)    );
         InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertformat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,color)     );
-        DisableAttributeArray( m_aHandle_BoneIndex );
-        DisableAttributeArray( m_aHandle_BoneWeight );
+        DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
+        DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else if( vertformat == VertexFormat_XYZUVNorm_RGBA_1Bones )
     {
@@ -311,30 +311,33 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     {
         InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_pos );
         
-        if( pVertFormatDesc->offset_uv[0] )
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_uv[0] );
-        else
-            DisableAttributeArray( m_aHandle_UVCoord );
+        for( int i=0; i<pVertFormatDesc->num_uv_channels; i++ )
+        {
+            if( pVertFormatDesc->offset_uv[i] )
+                InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_uv[i] );
+            else
+                DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
+        }
 
         if( pVertFormatDesc->offset_normal )
             InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_normal );
         else
-            DisableAttributeArray( m_aHandle_UVCoord );
+            DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
 
         if( pVertFormatDesc->offset_color )
             InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_color );
         else
-            DisableAttributeArray( m_aHandle_UVCoord );
+            DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
 
         if( pVertFormatDesc->offset_boneindex )
             InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_INT,            pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneindex );
         else
-            DisableAttributeArray( m_aHandle_UVCoord );
+            DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
     
         if( pVertFormatDesc->offset_boneweight )
             InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneweight );
         else
-            DisableAttributeArray( m_aHandle_UVCoord );
+            DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
     else
     {

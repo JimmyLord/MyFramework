@@ -32,7 +32,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
     m_ScannedForIncludes = true;
 
-    assert( m_FileReady );
+    assert( m_FileLoadStatus == FileLoadStatus_Success );
 
     for( unsigned int i=0; i<m_FileLength; i++ )
     {
@@ -74,7 +74,7 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
     {
         assert( m_pIncludes[i].m_pIncludedFile != 0 );
         
-        if( m_pIncludes[i].m_pIncludedFile->m_FileReady == false )
+        if( m_pIncludes[i].m_pIncludedFile->m_FileLoadStatus != FileLoadStatus_Success )
             return false;
     }
 

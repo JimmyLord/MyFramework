@@ -41,7 +41,7 @@ void FontManager::Tick()
         FontDefinition* pFontDef = (FontDefinition*)pNode;
 
         // check if the actual font description file(*.fnt) file is done loading.
-        if( pFontDef->m_pFile && pFontDef->m_pFont == 0 && pFontDef->m_pFile->m_FileReady )
+        if( pFontDef->m_pFile && pFontDef->m_pFont == 0 && pFontDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
             // create the font description object.
             pFontDef->m_pFont = MyNew BMFont( pFontDef->m_pFile->m_pBuffer, pFontDef->m_pFile->m_FileLength );

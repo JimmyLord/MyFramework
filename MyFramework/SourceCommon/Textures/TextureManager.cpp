@@ -244,7 +244,7 @@ void TextureManager::Tick()
         else
         {
             // if the file is ready, create an opengl texture from it.
-            if( pTextureDef->m_pFile->m_FileReady )
+            if( pTextureDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
             {
                 //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile->m_FileReady\n" );
                 pTextureDef->m_TextureID = CreateTextureFromBuffer( pTextureDef );
@@ -257,7 +257,7 @@ void TextureManager::Tick()
                 }
             }
 
-            if( pTextureDef->m_pFile->m_LoadFailed )
+            if( pTextureDef->m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
             {
                 LOGError( LOGTag, "File load failed\n" );
                 SAFE_DELETE( pTextureDef );

@@ -10,6 +10,14 @@
 #ifndef __MyFileObject_H__
 #define __MyFileObject_H__
 
+enum FileLoadStatus
+{
+    FileLoadStatus_Loading,
+    FileLoadStatus_Success,
+    FileLoadStatus_Error_FileNotFound,
+    FileLoadStatus_Error_Other,
+};
+
 class MyFileObject : public CPPListNode, public RefCount
 {
     friend class FileManager;
@@ -18,8 +26,7 @@ public:
     char* m_FullPath;
     char* m_FilenameWithoutExtension;
     char* m_ExtensionWithDot; // will be "." if no extension
-    bool m_LoadFailed;
-    bool m_FileReady;
+    FileLoadStatus m_FileLoadStatus;
     unsigned int m_FileLength;
     char* m_pBuffer;
     int m_BytesRead;

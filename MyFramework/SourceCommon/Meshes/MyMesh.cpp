@@ -34,6 +34,8 @@ MyMesh::MyMesh()
     m_Position.SetIdentity();
 
     g_pMeshManager->AddMesh( this );
+
+    m_pAnimationControlFile = 0;
 }
 
 MyMesh::~MyMesh()
@@ -55,6 +57,8 @@ MyMesh::~MyMesh()
     {
         delete m_pAnimations.RemoveIndex( 0 );
     }
+
+    SAFE_RELEASE( m_pAnimationControlFile );
 }
 
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
@@ -109,7 +113,7 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
     m_MeshReady = false;
 
-    if( pFile->m_FileReady )
+    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
         LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
 
@@ -125,13 +129,28 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
 void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
 {
+    assert( pFile );
+
+    // free the old .mymesh file and store a pointer to the new one.
     pFile->AddRef();
     SAFE_RELEASE( m_pSourceFile );
     m_pSourceFile = pFile;
 
+    // free the old .myaniminfo file and store a pointer to the new one.
+    char animfilename[MAX_PATH];
+    sprintf_s( animfilename, MAX_PATH, "%s", pFile->m_FullPath );
+    int endoffilenameoffset = strlen(pFile->m_FullPath) - strlen(pFile->m_ExtensionWithDot);
+    sprintf_s( &animfilename[endoffilenameoffset], MAX_PATH - endoffilenameoffset, "%s", ".myaniminfo" );
+    MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
+    SAFE_RELEASE( m_pAnimationControlFile );
+    m_pAnimationControlFile = newfile;
+
     m_MeshReady = false;
 
-    if( pFile->m_FileReady )
+    // is the mesh ready and the anim file is loaded or failed to load.
+    if( pFile->m_FileLoadStatus == FileLoadStatus_Success &&
+        (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
+      )
     {
         LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer );
 
@@ -1210,9 +1229,25 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 indexbuffertype = GL_UNSIGNED_INT;
         }
 
-        Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass();
+        //int numboneinfluences = 0;
+        //if( m_pVertexBuffer && m_pVertexBuffer->m_pFormatDesc )
+        //    numboneinfluences = m_pVertexBuffer->m_pFormatDesc->num_bone_influences;
+
+        // always use 4 bone version.
+        // TODO: this might fail with 1-3 bones, but works with 0 since bone attribs and uniforms should default to 0.
+        Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
         pShader->ProgramPosition( matviewproj, &m_Position );
+        if( m_BoneFinalMatrices.Count() > 0 )
+        {
+            pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
+        }
+        else
+        {
+            MyMatrix identitymat;
+            identitymat.SetIdentity();
+            pShader->ProgramBoneTransforms( &identitymat, 1 );
+        }
 
         if( m_pIndexBuffer )
             MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
@@ -1255,15 +1290,6 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
                 if( m_BoneFinalMatrices.Count() > 0 )
                 {
-                    //int bone = 31;
-
-                    //MyMatrix invoffset = m_BoneOffsetMatrices[bone];
-                    //invoffset.Inverse();
-                    //m_BoneFinalMatrices[bone].SetIdentity();
-                    //m_BoneFinalMatrices[bone] = m_BoneOffsetMatrices[bone] * m_BoneFinalMatrices[bone];
-                    //m_BoneFinalMatrices[bone].Rotate( MyTime_GetSystemTime() * 50, 0, 1, 0 );
-                    //m_BoneFinalMatrices[bone] = invoffset * m_BoneFinalMatrices[bone];
-
                     pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
                 }
 

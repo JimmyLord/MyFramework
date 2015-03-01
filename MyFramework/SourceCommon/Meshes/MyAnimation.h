@@ -39,8 +39,6 @@ public:
     MyList<MyChannel*> m_pChannels;
 
 public:
-
-public:
     MyAnimation();
     virtual ~MyAnimation();
 

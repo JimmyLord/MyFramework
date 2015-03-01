@@ -60,7 +60,8 @@ public:
 
     void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
-    void DisableAttributeArray(GLint index);
+    void DisableAttributeArray(GLint index, Vector3 value);
+    void DisableAttributeArray(GLint index, Vector4 value);
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);
 };

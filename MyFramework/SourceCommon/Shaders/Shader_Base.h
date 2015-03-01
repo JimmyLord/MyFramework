@@ -18,7 +18,7 @@ class Shader_Base : public BaseShader
 
 public:
     GLint m_aHandle_Position;
-    GLint m_aHandle_UVCoord;
+    GLint m_aHandle_UVCoord; // TODO: make this an array.
     GLint m_aHandle_Normal;
     GLint m_aHandle_VertexColor;
     GLint m_aHandle_BoneIndex;
