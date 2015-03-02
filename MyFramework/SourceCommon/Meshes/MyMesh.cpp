@@ -35,6 +35,8 @@ MyMesh::MyMesh()
 
     g_pMeshManager->AddMesh( this );
 
+    m_pAnimations.AllocateObjects( MAX_ANIMATIONS );
+
     m_pAnimationControlFile = 0;
 }
 
@@ -51,6 +53,11 @@ MyMesh::~MyMesh()
     while( m_BoneNames.Count() )
     {
         delete[] m_BoneNames.RemoveIndex( 0 );
+    }
+
+    while( m_pAnimationTimelines.Count() )
+    {
+        delete m_pAnimationTimelines.RemoveIndex( 0 );
     }
 
     while( m_pAnimations.Count() )
@@ -138,9 +145,7 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
 
     // free the old .myaniminfo file and store a pointer to the new one.
     char animfilename[MAX_PATH];
-    sprintf_s( animfilename, MAX_PATH, "%s", pFile->m_FullPath );
-    int endoffilenameoffset = strlen(pFile->m_FullPath) - strlen(pFile->m_ExtensionWithDot);
-    sprintf_s( &animfilename[endoffilenameoffset], MAX_PATH - endoffilenameoffset, "%s", ".myaniminfo" );
+    pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
     MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
     SAFE_RELEASE( m_pAnimationControlFile );
     m_pAnimationControlFile = newfile;
@@ -153,6 +158,15 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
       )
     {
         LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer );
+        
+        if( m_pAnimationControlFile )
+        {
+            LoadAnimationControlFile( m_pAnimationControlFile->m_pBuffer );
+        }
+        else
+        {
+            LoadAnimationControlFile( 0 );
+        }
 
         if( m_pVertexBuffer && m_pIndexBuffer )
         {
@@ -1317,37 +1331,41 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     }
 }
 
-void MyMesh::RebuildAnimationMatrices(double time)
+void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double time)
 {
-    if( m_pAnimations.Count() == 0 )
+    if( animindex >= m_pAnimations.Count() )
         return;
 
-    float TicksPerSecond = m_pAnimations[0]->m_TicksPerSecond;
+    MyAnimation* pAnim = m_pAnimations[animindex];
+    int timelineindex = m_pAnimations[animindex]->m_TimelineIndex;
+    MyAnimationTimeline* pTimeline = m_pAnimationTimelines[timelineindex];
+
+    float TicksPerSecond = pTimeline->m_TicksPerSecond;
     double TimeInTicks = time * TicksPerSecond;
-    float AnimationTime = (float)fmod( TimeInTicks, (double)m_pAnimations[0]->m_Duration );
+    double StartTime = pAnim->m_StartTime;
+    double Duration = (double)pAnim->m_Duration;
+    float AnimationTime = (float)fmod( StartTime+TimeInTicks, Duration );
 
     MyMatrix matidentity;
     matidentity.SetIdentity();
-    RebuildNode( AnimationTime, 0, &matidentity );
+    RebuildNode( pTimeline, AnimationTime, 0, &matidentity );
 }
 
-void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTransform)
+void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned int nodeindex, MyMatrix* pParentTransform)
 {
     assert( nodeindex < m_pSkeletonNodeTree.Count() );
-
-    MyAnimation* pAnim = m_pAnimations[0];
 
     MySkeletonNode* pNode = &m_pSkeletonNodeTree[nodeindex];
 
     int boneindex = pNode->m_BoneIndex;
-    int channelindex = pAnim->FindChannelIndexForNode( nodeindex );
+    int channelindex = pTimeline->FindChannelIndexForNode( nodeindex );
 
     MyMatrix localtransform;
     if( channelindex != -1 )
     {
-        Vector3 translation = pAnim->GetInterpolatedTranslation( time, channelindex );
-        MyQuat rotation = pAnim->GetInterpolatedRotation( time, channelindex );
-        Vector3 scale = pAnim->GetInterpolatedScaling( time, channelindex );
+        Vector3 translation = pTimeline->GetInterpolatedTranslation( time, channelindex );
+        MyQuat rotation = pTimeline->GetInterpolatedRotation( time, channelindex );
+        Vector3 scale = pTimeline->GetInterpolatedScaling( time, channelindex );
 
         MyMatrix nodetransform = pNode->m_Transform;
 
@@ -1365,7 +1383,7 @@ void MyMesh::RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTr
 
     for( unsigned int cni=0; cni<pNode->m_pChildren.Count(); cni++)
     {
-        RebuildNode( time, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
+        RebuildNode( pTimeline, time, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
     }
 }
 

@@ -31,6 +31,15 @@ public:
 class MyAnimation
 {
 public:
+    int m_TimelineIndex;
+
+    float m_StartTime;
+    float m_Duration;
+};
+
+class MyAnimationTimeline
+{
+public:
     char* m_Name;
     float m_Duration;
     float m_TicksPerSecond;
@@ -39,8 +48,8 @@ public:
     MyList<MyChannel*> m_pChannels;
 
 public:
-    MyAnimation();
-    virtual ~MyAnimation();
+    MyAnimationTimeline();
+    virtual ~MyAnimationTimeline();
 
     void ImportFromJSON(cJSON* pAnimObj);
     int ImportChannelsFromBuffer(char* pBuffer);

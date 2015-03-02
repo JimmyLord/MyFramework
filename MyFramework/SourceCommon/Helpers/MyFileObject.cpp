@@ -120,6 +120,22 @@ void MyFileObject::OnDrag()
 }
 #endif //MYFW_USING_WX
 
+void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
+{
+    assert( buffer != 0 );
+    sprintf_s( buffer, buffersize, "%s", m_FullPath );
+    int endoffolderoffset = strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot);
+    sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
+}
+
+void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(char* newextension, char* buffer, int buffersize)
+{
+    assert( buffer != 0 );
+    sprintf_s( buffer, buffersize, "%s", m_FullPath );
+    int endoffilenameoffset = strlen(m_FullPath) - strlen(m_ExtensionWithDot);
+    sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
+}
+
 void MyFileObject::RequestFile(const char* filename)
 {
     assert( filename != 0 );

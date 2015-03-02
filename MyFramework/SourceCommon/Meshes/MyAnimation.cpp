@@ -10,21 +10,21 @@
 #include "CommonHeader.h"
 #include "MyAnimation.h"
 
-MyAnimation::MyAnimation()
+MyAnimationTimeline::MyAnimationTimeline()
 {
     m_Name = 0;
     m_Duration = 0;
     m_TicksPerSecond = 0;
 }
 
-MyAnimation::~MyAnimation()
+MyAnimationTimeline::~MyAnimationTimeline()
 {
     SAFE_DELETE_ARRAY( m_Name );
 
     SAFE_DELETE_ARRAY( m_pChannelMemoryAllocation );
 }
 
-void MyAnimation::ImportFromJSON(cJSON* pAnimObj)
+void MyAnimationTimeline::ImportFromJSON(cJSON* pAnimObj)
 {
     cJSON* name = cJSON_GetObjectItem( pAnimObj, "Name" );
     int namelen = strlen( name->valuestring );
@@ -39,7 +39,7 @@ void MyAnimation::ImportFromJSON(cJSON* pAnimObj)
     SetNumberOfChannels( numchannels );
 }
 
-int MyAnimation::ImportChannelsFromBuffer(char* pBuffer)
+int MyAnimationTimeline::ImportChannelsFromBuffer(char* pBuffer)
 {
     int byteoffset = 0;
 
@@ -51,7 +51,7 @@ int MyAnimation::ImportChannelsFromBuffer(char* pBuffer)
     return byteoffset;
 }
 
-void MyAnimation::SetNumberOfChannels(unsigned int numchannels)
+void MyAnimationTimeline::SetNumberOfChannels(unsigned int numchannels)
 {
     assert( m_pChannels.Length() == 0 );
 
@@ -66,7 +66,7 @@ void MyAnimation::SetNumberOfChannels(unsigned int numchannels)
     }
 }
 
-int MyAnimation::FindChannelIndexForNode(unsigned int nodeindex)
+int MyAnimationTimeline::FindChannelIndexForNode(unsigned int nodeindex)
 {
     unsigned int ci;
     for( ci=0; ci<m_pChannels.Count(); ci++ )
@@ -81,7 +81,7 @@ int MyAnimation::FindChannelIndexForNode(unsigned int nodeindex)
     return ci;
 }
 
-Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int channelindex)
+Vector3 MyAnimationTimeline::GetInterpolatedTranslation(float time, unsigned int channelindex)
 {
     MyChannel* pChannel = m_pChannels[channelindex];
 
@@ -111,7 +111,7 @@ Vector3 MyAnimation::GetInterpolatedTranslation(float time, unsigned int channel
     return result;
 }
 
-MyQuat MyAnimation::GetInterpolatedRotation(float time, unsigned int channelindex)
+MyQuat MyAnimationTimeline::GetInterpolatedRotation(float time, unsigned int channelindex)
 {
     MyChannel* pChannel = m_pChannels[channelindex];
 
@@ -144,7 +144,7 @@ MyQuat MyAnimation::GetInterpolatedRotation(float time, unsigned int channelinde
     return result;
 }
 
-Vector3 MyAnimation::GetInterpolatedScaling(float time, unsigned int channelindex)
+Vector3 MyAnimationTimeline::GetInterpolatedScaling(float time, unsigned int channelindex)
 {
     return Vector3( 1, 1, 1 );
 }

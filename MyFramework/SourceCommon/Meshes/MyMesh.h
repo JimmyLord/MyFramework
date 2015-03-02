@@ -36,6 +36,8 @@ struct MySkeletonNode
 
 class MyMesh : public CPPListNode, public RefCount
 {
+    static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
+
 protected:
     ShaderGroup* m_pShaderGroup;
 
@@ -48,9 +50,10 @@ protected:
     MyList<MyMatrix> m_BoneOffsetMatrices;
     MyList<MyMatrix> m_BoneFinalMatrices;
     MyList<MySkeletonNode> m_pSkeletonNodeTree;
+    MyList<MyAnimationTimeline*> m_pAnimationTimelines;
     MyList<MyAnimation*> m_pAnimations;
 
-    MyFileObject* m_pAnimationControlFile; // a .mymeshanim file that hold control info for the animation data.
+    MyFileObject* m_pAnimationControlFile; // a .myaniminfo file that hold control info for the animation data.
 
 public:
     MyFileObject* m_pSourceFile;
@@ -95,13 +98,17 @@ public:
     void SetPosition(float x, float y, float z);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
 
-    void RebuildAnimationMatrices(double time);
-    void RebuildNode(float time, unsigned int nodeindex, MyMatrix* pParentTransform);
+    void RebuildAnimationMatrices(unsigned int animindex, double time);
+    void RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned int nodeindex, MyMatrix* pParentTransform);
 
     int FindBoneIndexByName(char* name);
 
     void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
+    void LoadAnimationControlFile(char* buffer);
+#if MYFW_USING_WX
+    void SaveAnimationControlFile();
+#endif
 
     void RebuildIndices();
 

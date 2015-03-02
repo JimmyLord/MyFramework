@@ -77,20 +77,20 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
         LoadMyMesh_ReadNode( rootnode->child, 0 );
     }
 
-    // Read in the animations.
-    int totalanims = 0;
+    // Read in the animation timelines.
+    int totalanimtimelines = 0;
     cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
     if( animarray )
     {
-        totalanims = cJSON_GetArraySize( animarray );
-        if( totalanims > 0 )
+        totalanimtimelines = cJSON_GetArraySize( animarray );
+        if( totalanimtimelines > 0 )
         {
-            m_pAnimations.AllocateObjects( totalanims );
+            m_pAnimationTimelines.AllocateObjects( totalanimtimelines );
 
-            for( int ai=0; ai<totalanims; ai++ )
+            for( int ai=0; ai<totalanimtimelines; ai++ )
             {
-                MyAnimation* pAnim = MyNew MyAnimation;
-                m_pAnimations.Add( pAnim );
+                MyAnimationTimeline* pAnim = MyNew MyAnimationTimeline;
+                m_pAnimationTimelines.Add( pAnim );
 
                 cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
                 pAnim->ImportFromJSON( pAnimObj );
@@ -164,9 +164,9 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             }
 
             // read animation channels
-            for( int ai=0; ai<totalanims; ai++ )
+            for( int ai=0; ai<totalanimtimelines; ai++ )
             {
-                rawbyteoffset += m_pAnimations[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset] );
+                rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset] );
             }
         }
 
@@ -237,5 +237,88 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
             LoadMyMesh_ReadNode( childnode, &m_pSkeletonNodeTree[skelnodeindex] );
             childnode = childnode->next;
         }
+    }
+}
+
+#if MYFW_USING_WX
+void MyMesh::SaveAnimationControlFile()
+{
+    char filename[MAX_PATH];
+    m_pSourceFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", filename, MAX_PATH );
+
+    cJSON* root = cJSON_CreateObject();
+
+    cJSON* animarray = cJSON_CreateArray();
+    cJSON_AddItemToObject( root, "Anims", animarray );
+
+    for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
+    {
+        cJSON* anim = cJSON_CreateObject();
+
+        cJSON_AddItemToArray( animarray, anim );
+
+        cJSON_AddNumberToObject( anim, "TimelineIndex", m_pAnimations[i]->m_TimelineIndex );
+        cJSON_AddNumberToObject( anim, "StartTime", m_pAnimations[i]->m_StartTime );
+        cJSON_AddNumberToObject( anim, "Duration", m_pAnimations[i]->m_Duration );
+    }
+
+    // dump animarray to disk
+    char* jsonstr = cJSON_Print( root );
+    cJSON_Delete( root );
+
+    FILE* pFile;
+    fopen_s( &pFile, filename, "wb" );
+    fprintf( pFile, "%s", jsonstr );
+    fclose( pFile );
+
+    free( jsonstr );
+}
+#endif
+
+void MyMesh::LoadAnimationControlFile(char* buffer)
+{
+    // if the file doesn't exist, create a single animation for each timeline
+    if( buffer == 0 )
+    {
+        assert( m_pAnimationTimelines.Count() < MAX_ANIMATIONS );
+
+        for( unsigned int i=0; i<m_pAnimationTimelines.Count(); i++ )
+        {
+            MyAnimation* pAnim = MyNew MyAnimation;
+            
+            pAnim->m_TimelineIndex = i;
+            pAnim->m_StartTime = 0;
+            pAnim->m_Duration = m_pAnimationTimelines[i]->m_Duration;
+
+            m_pAnimations.Add( pAnim );
+        }
+
+        // only save if the user adds animations via the editor interface.
+        //SaveAnimationControlFile();
+    }
+    else
+    {
+        cJSON* root = cJSON_Parse( buffer );
+
+        if( root )
+        {
+            cJSON* animarray = cJSON_GetObjectItem( root, "Anims" );
+
+            int numanims = cJSON_GetArraySize( animarray );
+            for( int i=0; i<numanims; i++ )
+            {
+                cJSON* anim = cJSON_GetArrayItem( animarray, i );
+
+                MyAnimation* pAnim = MyNew MyAnimation;
+
+                cJSONExt_GetInt( anim, "TimelineIndex", &pAnim->m_TimelineIndex );
+                cJSONExt_GetFloat( anim, "StartTime", &pAnim->m_StartTime );
+                cJSONExt_GetFloat( anim, "Duration", &pAnim->m_Duration );
+
+                m_pAnimations.Add( pAnim );
+            }
+        }
+
+        cJSON_Delete( root );
     }
 }
