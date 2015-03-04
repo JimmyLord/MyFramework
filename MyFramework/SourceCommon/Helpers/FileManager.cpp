@@ -152,7 +152,7 @@ void FileManager::Tick()
             m_FilesLoaded.MoveTail( pFile );
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnDrag );
+            g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnDrag );
 #endif
         }
     }

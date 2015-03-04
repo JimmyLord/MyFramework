@@ -325,7 +325,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     m_pNotebook->SetPageText( 1, tempstr );
 }
 
-void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
+void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pDragFunction)
 {
     assert( pFile != 0 );
 
@@ -362,6 +362,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
         sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, pFile->m_FileLength );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pFile;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
         pData->m_pDragFunction = pDragFunction;
 
         m_pTree_Files->AppendItem( idcategory, tempstr, -1, -1, pData );
@@ -503,6 +504,16 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
         if( pData )
         {
             m_DrawCallIndexToDraw = (int)pData->m_pObject;
+        }
+    }
+
+    // if there's a callback for left clicks, call it. // used by MyFileObjects ATM.
+    {
+        wxTreeItemId id = event.GetItem();
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
+        if( pData && pData->m_pDragFunction )
+        {
+            (pData->m_pLeftClickFunction)(pData->m_pObject);
         }
     }
 }

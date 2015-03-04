@@ -10,6 +10,8 @@
 #ifndef __MyFileObject_H__
 #define __MyFileObject_H__
 
+typedef void (*PanelObjectListCallback)(void*);
+
 enum FileLoadStatus
 {
     FileLoadStatus_Loading,
@@ -55,8 +57,14 @@ protected:
 
 public:
 #if MYFW_USING_WX
+    static void StaticOnLeftClick(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnLeftClick(); }
+    void OnLeftClick();
     static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
     void OnDrag();
+
+    PanelObjectListCallback m_CustomLeftClickCallback;
+    void* m_CustomLeftClickObject;
+    void SetCustomLeftClickCallback(PanelObjectListCallback callback, void* object);
 #endif //MYFW_USING_WX
 };
 

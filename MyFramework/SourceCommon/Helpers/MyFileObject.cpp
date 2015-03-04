@@ -90,6 +90,8 @@ MyFileObject::MyFileObject()
 #else
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
 #endif
+
+    m_CustomLeftClickCallback = 0;
 }
 
 MyFileObject::~MyFileObject()
@@ -113,10 +115,39 @@ MyFileObject::~MyFileObject()
 }
 
 #if MYFW_USING_WX
+void MyFileObject::OnLeftClick()
+{
+    g_pPanelWatch->ClearAllVariables();
+
+    g_pPanelWatch->AddSpace( this->m_FullPath );
+
+    if( strcmp( m_ExtensionWithDot, ".mymesh" ) == 0 )
+    {
+        MyMesh* pMesh = g_pMeshManager->FindMeshBySourceFile( this );
+
+        pMesh->FillPropertiesWindow( false );
+    }
+
+    //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
+    //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );
+    //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, this, ComponentTransform::StaticOnValueChanged );
+
+    if( m_CustomLeftClickCallback )
+    {
+        m_CustomLeftClickCallback( m_CustomLeftClickObject );
+    }
+}
+
 void MyFileObject::OnDrag()
 {
     g_DragAndDropStruct.m_Type = DragAndDropType_FileObjectPointer;
     g_DragAndDropStruct.m_Value = this;
+}
+
+void MyFileObject::SetCustomLeftClickCallback(PanelObjectListCallback callback, void* object)
+{
+    m_CustomLeftClickObject = object;
+    m_CustomLeftClickCallback = callback;
 }
 #endif //MYFW_USING_WX
 

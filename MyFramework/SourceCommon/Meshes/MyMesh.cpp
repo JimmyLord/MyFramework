@@ -68,6 +68,18 @@ MyMesh::~MyMesh()
     SAFE_RELEASE( m_pAnimationControlFile );
 }
 
+#if MYFW_USING_WX
+void MyMesh::FillPropertiesWindow(bool clear)
+{
+    for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
+    {
+        g_pPanelWatch->AddPointerWithDescription( "Animname", 0, "Animation name" );
+        g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 100 );
+        g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 100 );
+    }
+}
+#endif
+
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
 {
     assert( m_pVertexBuffer == 0 );

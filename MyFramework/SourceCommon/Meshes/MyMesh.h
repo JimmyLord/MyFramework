@@ -108,6 +108,7 @@ public:
     void LoadAnimationControlFile(char* buffer);
 #if MYFW_USING_WX
     void SaveAnimationControlFile();
+    void FillPropertiesWindow(bool clear);
 #endif
 
     void RebuildIndices();
