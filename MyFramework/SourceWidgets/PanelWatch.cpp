@@ -15,7 +15,7 @@
 
 PanelWatch* g_pPanelWatch = 0;
 
-PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = 
+PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDING_NEW_WatchVariableType
 { // control    label                                          widths
   // height, font,wdt,pdg, style                   slider, editbox, colorpicker
   //          hgt     bot,
@@ -30,12 +30,17 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] =
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,        115, }, //PanelWatchType_ColorFloat,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_PointerWithDesc,
     {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      75,          0, }, //PanelWatchType_SpaceWithLabel,
+    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          0, }, //PanelWatchType_Button,
     {    -1,  -1,  -1, -1, -1,                         -1,      -1,         -1, }, //PanelWatchType_Unknown,
 };
 
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 : wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
+    m_NeedsRefresh = false;
+    m_RefreshCallbackObject = 0;
+    m_RefreshCallbackFunc = 0;
+
     m_AllowWindowToBeUpdated = true;
 
     m_pCommandStack = pCommandStack;
@@ -51,12 +56,14 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
         m_pVariables[i].m_Handle_TextCtrl = 0;
         m_pVariables[i].m_Handle_Slider = 0;
         m_pVariables[i].m_Handle_ColourPicker = 0;
+        m_pVariables[i].m_Handle_Button = 0;
         m_pVariables[i].m_Pointer = 0;
         m_pVariables[i].m_Range.Set( 0, 0 );
         m_pVariables[i].m_Description = 0;
         m_pVariables[i].m_Type = PanelWatchType_Unknown;
         m_pVariables[i].m_pCallbackObj = 0;
         m_pVariables[i].m_pOnDropCallbackFunc = 0;
+        m_pVariables[i].m_pOnButtonPressedCallbackFunc = 0;
         m_pVariables[i].m_pOnValueChangedCallBackFunc = 0;
         m_pVariables[i].m_SliderValueOnLeftMouseDown = 0;
         m_pVariables[i].m_SliderLeftMouseIsDown = 0;
@@ -84,6 +91,12 @@ PanelWatch::~PanelWatch()
     SAFE_DELETE( m_pTimer );
 }
 
+void PanelWatch::SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc)
+{
+    m_RefreshCallbackObject = pCallbackObj;
+    m_RefreshCallbackFunc = pCallbackFunc;
+}
+
 void PanelWatch::ClearAllVariables()
 {
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
@@ -96,11 +109,14 @@ void PanelWatch::ClearAllVariables()
             this->RemoveChild( m_pVariables[i].m_Handle_Slider );
         if( m_pVariables[i].m_Handle_ColourPicker != 0 )
             this->RemoveChild( m_pVariables[i].m_Handle_ColourPicker );
+        if( m_pVariables[i].m_Handle_Button != 0 )
+            this->RemoveChild( m_pVariables[i].m_Handle_Button );
 
         SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
         SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
         SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
         SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
+        SAFE_DELETE( m_pVariables[i].m_Handle_Button );
 
         m_pVariables[i].m_Pointer = 0;
         m_pVariables[i].m_Range.Set( 0, 0 );
@@ -108,12 +124,14 @@ void PanelWatch::ClearAllVariables()
         m_pVariables[i].m_Type = PanelWatchType_Unknown;
         m_pVariables[i].m_pCallbackObj = 0;
         m_pVariables[i].m_pOnDropCallbackFunc = 0;
+        m_pVariables[i].m_pOnButtonPressedCallbackFunc = 0;
+        m_pVariables[i].m_pOnValueChangedCallBackFunc = 0;
     }
 
     m_NumVariables = 0;
 }
 
-int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
+int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -125,6 +143,7 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
     m_pVariables[m_NumVariables].m_Type = type;
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
     m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = 0;
+    m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = 0;
     m_pVariables[m_NumVariables].m_pOnValueChangedCallBackFunc = pOnValueChangedCallBackFunc;
 
     if( addcontrols )
@@ -138,7 +157,7 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -150,6 +169,7 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
     m_pVariables[m_NumVariables].m_Type = type;
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
     m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = pOnDropCallBackFunc;
+    m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = pOnButtonPressedCallbackFunc;
     m_pVariables[m_NumVariables].m_pOnValueChangedCallBackFunc = pOnValueChangedCallBackFunc;
 
     AddControlsForVariable( name, m_NumVariables, -1, 0 );
@@ -163,44 +183,44 @@ int PanelWatch::AddVariableOfType(PanelWatch_Types type, const char* name, void*
 
 int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
+    return AddVariableOfTypeRange( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
 int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     int first;
-    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector2->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "y", &pVector2->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector2->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "y", &pVector2->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
 
     AddControlsForVariable( name, first+0, 0, "x" );
     AddControlsForVariable( name, first+1, 1, "y" );
@@ -211,9 +231,9 @@ int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float
 int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     int first;
-    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector3->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "y", &pVector3->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "z", &pVector3->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector3->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "y", &pVector3->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "z", &pVector3->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
 
     AddControlsForVariable( name, first+0, 0, "x" );
     AddControlsForVariable( name, first+1, 1, "y" );
@@ -225,10 +245,10 @@ int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float
 int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     int first;
-    first = AddVariableOfType( PanelWatchType_Float, "x", &pVector4->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "y", &pVector4->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "z", &pVector4->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
-    AddVariableOfType( PanelWatchType_Float, "w", &pVector4->w, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector4->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "y", &pVector4->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "z", &pVector4->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "w", &pVector4->w, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
 
     AddControlsForVariable( name, first+0, 0, "x" );
     AddControlsForVariable( name, first+1, 1, "y" );
@@ -242,10 +262,10 @@ int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float m
 {
     // TODO: maybe? change this to a color picker that supports alpha.
     int first;
-    first = AddVariableOfType( PanelWatchType_ColorFloat, name, pColorFloat, 0, 0, 0, 0 );
+    first = AddVariableOfTypeDesc( PanelWatchType_ColorFloat, name, pColorFloat, 0, 0, 0, 0, 0 );
 
     // add alpha as a float
-    AddVariableOfType( PanelWatchType_Float, "a", &pColorFloat->a, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "a", &pColorFloat->a, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
     AddControlsForVariable( name, first+1, 1, "a" );
 
     return first;
@@ -253,7 +273,7 @@ int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float m
 
 int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    return AddVariableOfType( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc );
+    return AddVariableOfTypeDesc( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc, 0 );
 }
 
 int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
@@ -267,6 +287,23 @@ int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbac
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
 
     AddControlsForVariable( name, m_NumVariables, -1, 0 );
+
+    m_NumVariables++;
+
+    return m_NumVariables-1;
+}
+
+int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc)
+{
+    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
+        return -1;
+
+    m_pVariables[m_NumVariables].m_Type = PanelWatchType_Button;
+    m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = pOnButtonPressedCallBackFunc;
+    m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
+
+    AddControlsForVariable( label, m_NumVariables, -1, 0 );
 
     m_NumVariables++;
 
@@ -349,6 +386,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
 
     // Text label
+    if( m_pVariables[variablenum].m_Type != PanelWatchType_Button )
     {
         m_pVariables[variablenum].m_Handle_StaticText = MyNew wxStaticText( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight), pInfo->labelstyle );
         m_pVariables[variablenum].m_Handle_StaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
@@ -399,7 +437,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
     // Edit box
     if( m_pVariables[variablenum].m_Type != PanelWatchType_ColorFloat &&
-        m_pVariables[variablenum].m_Type != PanelWatchType_SpaceWithLabel )
+        m_pVariables[variablenum].m_Type != PanelWatchType_SpaceWithLabel &&
+        g_PanelWatchControlInfo[type].editboxwidth != -1 )
     {
         wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
             wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
@@ -421,6 +460,20 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
             pTextCtrl->SetDropTarget( pDropTarget );            
         }
+    }
+
+    // Button
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_Button )
+    {
+        wxButton* pButton = MyNew wxButton( this, variablenum, name,
+            wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight) );
+
+        m_pVariables[variablenum].m_Handle_Button = pButton;
+
+        PosX += TextCtrlWidth;
+
+        // setup callback for when button is pressed.
+        pButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PanelWatch::OnButtonPressed), 0, this );
     }
 
     if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
@@ -473,6 +526,17 @@ wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def
     m_pCallbackFunc( m_pCallbackObj );
 
     return wxDragNone;
+}
+
+void PanelWatch::OnButtonPressed(wxCommandEvent& event)
+{
+    event.Skip();
+
+    int controlid = event.GetId();
+    if( m_pVariables[controlid].m_pOnButtonPressedCallbackFunc )
+    {
+        m_pVariables[controlid].m_pOnButtonPressedCallbackFunc( m_pVariables[controlid].m_pCallbackObj );
+    }
 }
 
 void PanelWatch::OnSetFocus(wxFocusEvent& event)
@@ -570,6 +634,13 @@ void PanelWatch::OnClickStaticText(wxMouseEvent& event)
 
 void PanelWatch::OnTimer(wxTimerEvent& event)
 {
+    // moved to gamecore::tick to make it more responsive.
+    //if( m_NeedsRefresh )
+    //{
+    //    m_RefreshCallbackFunc( m_RefreshCallbackObject );
+    //    m_NeedsRefresh = false;
+    //}
+
     UpdatePanel();
 }
 
@@ -669,6 +740,8 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
     case PanelWatchType_ColorFloat:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
+    case PanelWatchType_Button:
+        //ADDING_NEW_WatchVariableType
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
     default:

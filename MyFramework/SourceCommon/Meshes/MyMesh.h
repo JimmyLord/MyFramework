@@ -109,6 +109,12 @@ public:
 #if MYFW_USING_WX
     void SaveAnimationControlFile();
     void FillPropertiesWindow(bool clear);
+
+    static void StaticRefreshWatchWindow(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->RefreshWatchWindow(); }
+    void RefreshWatchWindow();
+
+    static void StaticOnAddAnimationPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnAddAnimationPressed(); }
+    void OnAddAnimationPressed();
 #endif
 
     void RebuildIndices();

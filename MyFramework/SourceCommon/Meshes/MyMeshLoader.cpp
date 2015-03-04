@@ -257,6 +257,7 @@ void MyMesh::SaveAnimationControlFile()
 
         cJSON_AddItemToArray( animarray, anim );
 
+        cJSON_AddStringToObject( anim, "Name", m_pAnimations[i]->m_Name );
         cJSON_AddNumberToObject( anim, "TimelineIndex", m_pAnimations[i]->m_TimelineIndex );
         cJSON_AddNumberToObject( anim, "StartTime", m_pAnimations[i]->m_StartTime );
         cJSON_AddNumberToObject( anim, "Duration", m_pAnimations[i]->m_Duration );
@@ -286,6 +287,7 @@ void MyMesh::LoadAnimationControlFile(char* buffer)
         {
             MyAnimation* pAnim = MyNew MyAnimation;
             
+            pAnim->SetName( m_pAnimationTimelines[0]->m_Name );
             pAnim->m_TimelineIndex = i;
             pAnim->m_StartTime = 0;
             pAnim->m_Duration = m_pAnimationTimelines[i]->m_Duration;
@@ -311,6 +313,9 @@ void MyMesh::LoadAnimationControlFile(char* buffer)
 
                 MyAnimation* pAnim = MyNew MyAnimation;
 
+                cJSON* obj = cJSON_GetObjectItem( anim, "Name" );
+                if( obj )
+                    pAnim->SetName( obj->valuestring );
                 cJSONExt_GetInt( anim, "TimelineIndex", &pAnim->m_TimelineIndex );
                 cJSONExt_GetFloat( anim, "StartTime", &pAnim->m_StartTime );
                 cJSONExt_GetFloat( anim, "Duration", &pAnim->m_Duration );

@@ -31,8 +31,6 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     m_pCallbackFunctionObject = 0;
     m_pOnTreeSelectionChangedFunction = 0;
 
-    m_PanelWatchNeedsUpdate = false;
-
     Update();
 
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
@@ -54,7 +52,7 @@ void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 
 void PanelObjectList::UpdatePanelWatchWithSelectedItems()
 {
-    m_PanelWatchNeedsUpdate = false;
+    g_pPanelWatch->SetRefreshCallback( this, PanelObjectList::StaticUpdatePanelWatchWithSelectedItems );
 
     // stop draws on watch panel
     g_pPanelWatch->Freeze();

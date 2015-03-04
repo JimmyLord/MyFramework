@@ -12,7 +12,7 @@
 
 class CommandStack;
 
-#define MAX_PanelWatch_VARIABLES        40
+#define MAX_PanelWatch_VARIABLES        400
 #define WXSlider_Float_Multiplier       10000.0f
 
 struct PanelWatchControlInfo
@@ -40,6 +40,10 @@ enum PanelWatch_Types
     PanelWatchType_ColorFloat,
     PanelWatchType_PointerWithDesc,
     PanelWatchType_SpaceWithLabel,
+    PanelWatchType_Button,
+
+    //ADDING_NEW_WatchVariableType
+
     PanelWatchType_Unknown,
     PanelWatchType_NumTypes,
 };
@@ -72,6 +76,7 @@ struct VariableProperties
     wxStaticText* m_Handle_StaticText;
     wxTextCtrl* m_Handle_TextCtrl;
     wxSlider* m_Handle_Slider;
+    wxButton* m_Handle_Button;
     wxColourPickerCtrl* m_Handle_ColourPicker;
 
     void* m_Pointer;
@@ -80,6 +85,7 @@ struct VariableProperties
     PanelWatch_Types m_Type;
     void* m_pCallbackObj;
     PanelWatchCallback m_pOnDropCallbackFunc;
+    PanelWatchCallback m_pOnButtonPressedCallbackFunc;
     PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
 
     Vector4Int m_Rect_XYWH;
@@ -92,6 +98,10 @@ class PanelWatch : public wxScrolledWindow
 {
 public:
     wxTimer* m_pTimer;
+
+    bool m_NeedsRefresh; // needed to avoid corruption if deleting controls while in that control's callback.
+    void* m_RefreshCallbackObject;
+    PanelWatchCallback m_RefreshCallbackFunc;
 
     bool m_AllowWindowToBeUpdated;
 
@@ -107,6 +117,7 @@ protected:
 public:
     void UpdatePanel(int controltoupdate = -1);
 
+    void OnButtonPressed(wxCommandEvent& event);
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
     void OnEditBoxKillFocus(wxFocusEvent& event);
@@ -128,10 +139,11 @@ public:
     PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack);
     ~PanelWatch();
 
+    void SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc);
     void ClearAllVariables();
 
-    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
-    int AddVariableOfType(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc);
+    int AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
+    int AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc);
 
     int AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
@@ -146,6 +158,7 @@ public:
     int AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc);
 };
 
 #endif // __PanelWatch_H__

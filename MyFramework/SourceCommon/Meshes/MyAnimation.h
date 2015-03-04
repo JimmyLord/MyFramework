@@ -30,11 +30,19 @@ public:
 
 class MyAnimation
 {
+    static const int MAX_ANIMATION_NAME_LEN = 32;
 public:
+    char m_Name[MAX_ANIMATION_NAME_LEN];
     int m_TimelineIndex;
 
     float m_StartTime;
     float m_Duration;
+
+public:
+    void SetName(char* name)
+    {
+        strcpy_s( m_Name, MAX_ANIMATION_NAME_LEN, name );
+    }
 };
 
 class MyAnimationTimeline

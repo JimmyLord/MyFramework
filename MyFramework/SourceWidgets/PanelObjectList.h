@@ -56,8 +56,8 @@ public:
     void* m_pCallbackFunctionObject;
     PanelObjectListCallback m_pOnTreeSelectionChangedFunction;
 
-    // Set up a bool, so panel watch can be updated in gamecore's tick. Was crashing if called from a wx callback.
-    bool m_PanelWatchNeedsUpdate;
+    // Function panel watch will call if it needs a refresh.
+    static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { ((PanelObjectList*)pObjectPtr)->UpdatePanelWatchWithSelectedItems(); }
     void UpdatePanelWatchWithSelectedItems();
 
 protected:

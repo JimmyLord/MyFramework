@@ -69,14 +69,45 @@ MyMesh::~MyMesh()
 }
 
 #if MYFW_USING_WX
+void MyMesh::RefreshWatchWindow()
+{
+    FillPropertiesWindow( true );
+}
+
 void MyMesh::FillPropertiesWindow(bool clear)
 {
+    g_pPanelWatch->SetRefreshCallback( this, MyMesh::StaticRefreshWatchWindow );
+
+    g_pPanelWatch->Freeze();
+
+    if( clear )
+        g_pPanelWatch->ClearAllVariables();
+
     for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
     {
-        g_pPanelWatch->AddPointerWithDescription( "Animname", 0, "Animation name" );
+        g_pPanelWatch->AddPointerWithDescription( "Animname", 0, m_pAnimations[i]->m_Name );
         g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 100 );
         g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 100 );
     }
+
+    g_pPanelWatch->AddButton( "Add Animation", this, MyMesh::StaticOnAddAnimationPressed );
+
+    g_pPanelWatch->Thaw();
+}
+
+void MyMesh::OnAddAnimationPressed()
+{
+    MyAnimation* pAnim = MyNew MyAnimation;
+
+    pAnim->SetName( "New" );
+    pAnim->m_TimelineIndex = 0;
+    pAnim->m_StartTime = 0;
+    pAnim->m_Duration = m_pAnimationTimelines[0]->m_Duration;
+
+    m_pAnimations.Add( pAnim );
+
+    g_pPanelWatch->m_NeedsRefresh = true;
+    //FillPropertiesWindow( true );
 }
 #endif
 

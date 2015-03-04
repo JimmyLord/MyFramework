@@ -165,11 +165,12 @@ double GameCore::Tick(double TimePassed)
     }
 
 #if MYFW_USING_WX
-    if( g_pPanelObjectList->m_PanelWatchNeedsUpdate )
+    if( g_pPanelWatch->m_NeedsRefresh )
     {
-        g_pPanelObjectList->UpdatePanelWatchWithSelectedItems();
+        g_pPanelWatch->m_RefreshCallbackFunc( g_pPanelWatch->m_RefreshCallbackObject );
+        g_pPanelWatch->m_NeedsRefresh = false;
     }
-#endif //MYFW_USING_WX
+#endif
 
     return TimePassed;
 }
