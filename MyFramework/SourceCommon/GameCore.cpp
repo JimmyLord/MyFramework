@@ -133,7 +133,7 @@ bool GameCore::IsReadyToRender()
 
 double GameCore::Tick(double TimePassed)
 {
-    m_TimePassedUnpausedLastFrame = TimePassed;
+    m_TimePassedUnpausedLastFrame = (float)TimePassed;
 
     m_TimeSinceGameStarted += (float)TimePassed;
 

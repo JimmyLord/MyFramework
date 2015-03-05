@@ -55,10 +55,10 @@ MyQuat MyQuat::Slerp(MyQuat start, MyQuat end, float perc)
     {
         // Standard case (slerp)
         float omega, sinom;
-        omega = std::acos( cosom ); // extract theta from dot product's cos theta
-        sinom = std::sin( omega );
-        sclp  = std::sin( (1.0f - perc) * omega ) / sinom;
-        sclq  = std::sin( perc * omega ) / sinom;
+        omega = acos( cosom ); // extract theta from dot product's cos theta
+        sinom = sin( omega );
+        sclp  = sin( (1.0f - perc) * omega ) / sinom;
+        sclq  = sin( perc * omega ) / sinom;
     }
     else
     {

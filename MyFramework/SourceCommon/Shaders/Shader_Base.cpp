@@ -469,7 +469,7 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 
     if( m_uTime != -1 )
     {
-        float time = MyTime_GetUnpausedTime();
+        float time = (float)MyTime_GetUnpausedTime();
         glUniform1f( m_uTime, time );
     }
 

@@ -91,7 +91,9 @@ MyFileObject::MyFileObject()
     m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
 #endif
 
+#if MYFW_USING_WX
     m_CustomLeftClickCallback = 0;
+#endif
 }
 
 MyFileObject::~MyFileObject()

@@ -875,7 +875,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     {
         for( int x = 0; x < vertcount.x; x++ )
         {
-            unsigned short index = y * vertcount.x + x;
+            unsigned short index = (unsigned short)(y * vertcount.x + x);
 
             pVerts[index].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
             pVerts[index].y = topleftpos.y;
@@ -960,7 +960,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
     m_pIndexBuffer->m_Dirty = true;
 
     // create 12 vertices of a icosahedron
-    float t = (1.0 + sqrt(5.0)) / 2.0;
+    float t = (1.0f + sqrt(5.0f)) / 2.0f;
 
     pVerts[ 0].pos.Set( -1,  t,  0 );
     pVerts[ 1].pos.Set(  1,  t,  0 );
