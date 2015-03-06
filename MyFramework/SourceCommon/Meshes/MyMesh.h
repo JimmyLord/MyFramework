@@ -115,6 +115,9 @@ public:
 
     static void StaticOnAddAnimationPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnAddAnimationPressed(); }
     void OnAddAnimationPressed();
+
+    static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed(); }
+    void OnSaveAnimationsPressed();
 #endif
 
     void RebuildIndices();
