@@ -107,6 +107,8 @@ public:
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(char* buffer);
 #if MYFW_USING_WX
+    int m_ControlID_AnimationName[MAX_ANIMATIONS];
+
     void SaveAnimationControlFile();
     void FillPropertiesWindow(bool clear);
 
@@ -118,6 +120,9 @@ public:
 
     static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed(); }
     void OnSaveAnimationsPressed();
+
+    static void StaticOnValueChanged(void* pObjectPtr, int id, bool finishedchanging) { ((MyMesh*)pObjectPtr)->OnValueChanged( id, finishedchanging ); }
+    void OnValueChanged(int id, bool finishedchanging);
 #endif
 
     void RebuildIndices();
@@ -127,6 +132,8 @@ public:
     Vertex_Base* GetVerts(bool markdirty);
     unsigned short* GetIndices(bool markdirty);
     unsigned int GetStride();
+
+    unsigned int GetAnimationCount() { return m_pAnimations.Count(); }
 };
 
 #endif //__MyMesh_H__

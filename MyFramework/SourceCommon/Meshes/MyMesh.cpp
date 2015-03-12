@@ -88,7 +88,7 @@ void MyMesh::FillPropertiesWindow(bool clear)
     for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
     {
         // TODO: replace AddPointerWithDescription with a panel watch control for char*s
-        g_pPanelWatch->AddPointerWithDescription( "Name", 0, m_pAnimations[i]->m_Name );
+        m_ControlID_AnimationName[i] = g_pPanelWatch->AddPointerWithDescription( "Name", 0, m_pAnimations[i]->m_Name, this, 0, MyMesh::StaticOnValueChanged );
         g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 100 );
         g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 100 );
     }
@@ -116,6 +116,25 @@ void MyMesh::OnAddAnimationPressed()
 void MyMesh::OnSaveAnimationsPressed()
 {
     SaveAnimationControlFile();
+}
+
+void MyMesh::OnValueChanged(int id, bool finishedchanging)
+{
+    if( id != -1 )
+    {
+        int animthatchanged = -1;
+        for( int i=0; i<MAX_ANIMATIONS; i++ )
+        {
+            if( id == m_ControlID_AnimationName[i] )
+                animthatchanged = i;                
+        }
+
+        if( animthatchanged )
+        {
+            wxString text = g_pPanelWatch->m_pVariables[id].m_Handle_TextCtrl->GetValue();
+            m_pAnimations[animthatchanged]->SetName( text );
+        }
+    }
 }
 #endif
 
@@ -1395,7 +1414,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double time)
     double TimeInTicks = time * TicksPerSecond;
     double StartTime = pAnim->m_StartTime;
     double Duration = (double)pAnim->m_Duration;
-    float AnimationTime = (float)fmod( StartTime+TimeInTicks, Duration );
+    float AnimationTime = StartTime + (float)fmod( TimeInTicks, Duration );
 
     MyMatrix matidentity;
     matidentity.SetIdentity();

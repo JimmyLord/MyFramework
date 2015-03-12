@@ -39,7 +39,7 @@ public:
     float m_Duration;
 
 public:
-    void SetName(char* name)
+    void SetName(const char* name)
     {
         strcpy_s( m_Name, MAX_ANIMATION_NAME_LEN, name );
     }
