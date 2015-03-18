@@ -284,6 +284,17 @@ void GameCore::OnTouch(int action, int id, float x, float y, float pressure, flo
     //LOGInfo( LOGTag, "GameCore: OnTouch (%d %d)(%f,%f)(%f %f)\n", action, id, x, y, pressure, size);
 }
 
+void GameCore::GenerateButtonHeldMessages()
+{
+    for( int i=0; i<GCBI_NumButtons; i++ )
+    {
+        if( m_ButtonsHeld[i] == true )
+        {
+            OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
+        }
+    }
+}
+
 void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
 {
     m_LastInputMethodUsed = InputMethod_Pad;

@@ -114,6 +114,7 @@ public:
     virtual void OnKey(GameCoreButtonActions action, int keycode, int unicodechar);
 
     // OnKeyDown and OnKeyUp are used by platform-specific code, games should override OnKeys();
+    void GenerateButtonHeldMessages();
     virtual void OnKeyDown(int keycode, int unicodechar);
     virtual void OnKeyUp(int keycode, int unicodechar);
 

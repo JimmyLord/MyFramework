@@ -74,8 +74,7 @@ void MyMatrix::CreateSRT(float scale, Vector3 rot, Vector3 pos)
 
 void MyMatrix::CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos)
 {
-    SetIdentity();
-    Scale( scale.x, scale.y, scale.z );
+    CreateScale( scale.x, scale.y, scale.z );
     Rotate( rot.z, 0, 0, 1 ); // roll
     Rotate( rot.x, 1, 0, 0 ); // pitch
     Rotate( rot.y, 0, 1, 0 ); // yaw

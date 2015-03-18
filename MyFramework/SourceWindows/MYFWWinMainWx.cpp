@@ -790,6 +790,8 @@ void MainGLCanvas::Draw()
                 g_pGameCore->OnKey( GCBA_Held, i, i );
         }
 
+        g_pGameCore->GenerateButtonHeldMessages();
+
         if( m_TickGameCore )
         {
             double currtime = MyTime_GetRunningTime();
