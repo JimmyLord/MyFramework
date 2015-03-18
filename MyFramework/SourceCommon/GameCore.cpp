@@ -42,7 +42,10 @@ GameCore::GameCore()
         m_ButtonsHeld[i] = false;
 
     for( int i=0; i<255; i++ )
+    {
         m_KeysHeld[i] = false;
+        m_KeyMappingToButtons[i] = GCBI_NumButtons;
+    }
 }
 
 GameCore::~GameCore()
@@ -299,28 +302,52 @@ void GameCore::OnKey(GameCoreButtonActions action, int keycode, int unicodechar)
 
 void GameCore::OnKeyDown(int keycode, int unicodechar)
 {
-    m_LastInputMethodUsed = InputMethod_Keyboard;
+    // if the key is mapped to a button, then call the button handler.
+    if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+    {
+        OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
+    }
+    else
+    {
+        m_LastInputMethodUsed = InputMethod_Keyboard;
 
-    if( keycode >= 0 && keycode < 255 )
-        m_KeysHeld[keycode] = true;
+        if( keycode >= 0 && keycode < 255 )
+            m_KeysHeld[keycode] = true;
 
-    OnKey( GCBA_Down, keycode, unicodechar );
+        OnKey( GCBA_Down, keycode, unicodechar );
+    }
 }
 
 void GameCore::OnKeyUp(int keycode, int unicodechar)
 {
-    m_LastInputMethodUsed = InputMethod_Keyboard;
+    // if the key is mapped to a button, then call the button handler.
+    if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+    {
+        OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
+    }
+    else
+    {
+        m_LastInputMethodUsed = InputMethod_Keyboard;
 
-    if( keycode >= 0 && keycode < 255 )
-        m_KeysHeld[keycode] = false;
+        if( keycode >= 0 && keycode < 255 )
+            m_KeysHeld[keycode] = false;
 
-    OnKey( GCBA_Up, keycode, unicodechar );
+        OnKey( GCBA_Up, keycode, unicodechar );
+    }
 }
 
 bool GameCore::IsKeyHeld(int keycode)
 {
-    if( keycode >= 0 && keycode < 255 )
-        return m_KeysHeld[keycode];
+    // if the key is mapped to a button, then the key isn't held.
+    if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons )
+    {
+        return false;
+    }
+    else
+    {
+        if( keycode >= 0 && keycode < 255 )
+            return m_KeysHeld[keycode];
+    }
 
     return false;
 }
