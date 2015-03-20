@@ -1401,27 +1401,48 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
     }
 }
 
-void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double time)
+void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc)
 {
     if( animindex >= m_pAnimations.Count() )
         return;
 
-    MyAnimation* pAnim = m_pAnimations[animindex];
-    int timelineindex = m_pAnimations[animindex]->m_TimelineIndex;
-    MyAnimationTimeline* pTimeline = m_pAnimationTimelines[timelineindex];
+    MyAnimationTimeline* pTimeline;
+    float AnimationTime;
 
-    float TicksPerSecond = pTimeline->m_TicksPerSecond;
-    double TimeInTicks = time * TicksPerSecond;
-    double StartTime = pAnim->m_StartTime;
-    double Duration = (double)pAnim->m_Duration;
-    float AnimationTime = StartTime + (float)fmod( TimeInTicks, Duration );
+    MyAnimationTimeline* pTimelineOld = 0;
+    float AnimationTimeOld = 0;
+
+    {
+        MyAnimation* pAnim = m_pAnimations[animindex];
+        int timelineindex = m_pAnimations[animindex]->m_TimelineIndex;
+        pTimeline = m_pAnimationTimelines[timelineindex];
+
+        float TicksPerSecond = pTimeline->m_TicksPerSecond;
+        double TimeInTicks = animtime * TicksPerSecond;
+        double StartTime = pAnim->m_StartTime;
+        double Duration = (double)pAnim->m_Duration;
+        AnimationTime = StartTime + (float)fmod( TimeInTicks, Duration );
+    }
+
+    if( oldanimindex && perc > 0 )
+    {
+        MyAnimation* pAnim = m_pAnimations[oldanimindex];
+        int timelineindex = m_pAnimations[oldanimindex]->m_TimelineIndex;
+        pTimelineOld = m_pAnimationTimelines[timelineindex];
+
+        float TicksPerSecond = pTimeline->m_TicksPerSecond;
+        double TimeInTicks = oldanimtime * TicksPerSecond;
+        double StartTime = pAnim->m_StartTime;
+        double Duration = (double)pAnim->m_Duration;
+        AnimationTimeOld = StartTime + (float)fmod( TimeInTicks, Duration );
+    }
 
     MyMatrix matidentity;
     matidentity.SetIdentity();
-    RebuildNode( pTimeline, AnimationTime, 0, &matidentity );
+    RebuildNode( pTimeline, AnimationTime, pTimelineOld, AnimationTimeOld, perc, 0, &matidentity );
 }
 
-void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned int nodeindex, MyMatrix* pParentTransform)
+void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform)
 {
     assert( nodeindex < m_pSkeletonNodeTree.Count() );
 
@@ -1433,9 +1454,20 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned in
     MyMatrix localtransform;
     if( channelindex != -1 )
     {
-        Vector3 translation = pTimeline->GetInterpolatedTranslation( time, channelindex );
-        MyQuat rotation = pTimeline->GetInterpolatedRotation( time, channelindex );
-        Vector3 scale = pTimeline->GetInterpolatedScaling( time, channelindex );
+        Vector3 translation = pTimeline->GetInterpolatedTranslation( animtime, channelindex );
+        MyQuat rotation = pTimeline->GetInterpolatedRotation( animtime, channelindex );
+        Vector3 scale = pTimeline->GetInterpolatedScaling( animtime, channelindex );
+
+        if( pOldTimeline )
+        {
+            Vector3 oldtranslation = pTimeline->GetInterpolatedTranslation( oldanimtime, channelindex );
+            MyQuat oldrotation = pTimeline->GetInterpolatedRotation( oldanimtime, channelindex );
+            Vector3 oldscale = pTimeline->GetInterpolatedScaling( oldanimtime, channelindex );
+
+            translation = translation + (oldtranslation - translation) * perc;
+            rotation = MyQuat::Lerp( rotation, oldrotation, perc ).GetNormalized();
+            //scale = scale;
+        }
 
         MyMatrix nodetransform = pNode->m_Transform;
 
@@ -1453,7 +1485,7 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned in
 
     for( unsigned int cni=0; cni<pNode->m_pChildren.Count(); cni++)
     {
-        RebuildNode( pTimeline, time, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
+        RebuildNode( pTimeline, animtime, pOldTimeline, oldanimtime, perc, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
     }
 }
 

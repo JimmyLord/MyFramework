@@ -98,8 +98,8 @@ public:
     void SetPosition(float x, float y, float z);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
 
-    void RebuildAnimationMatrices(unsigned int animindex, double time);
-    void RebuildNode(MyAnimationTimeline* pTimeline, float time, unsigned int nodeindex, MyMatrix* pParentTransform);
+    void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
+    void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);
 
     int FindBoneIndexByName(char* name);
 
