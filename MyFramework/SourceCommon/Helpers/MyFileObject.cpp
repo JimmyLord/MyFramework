@@ -140,6 +140,32 @@ void MyFileObject::OnLeftClick()
     }
 }
 
+void MyFileObject::OnRightClick()
+{
+ 	wxMenu menu;
+    menu.SetClientData( this );
+
+    menu.Append( 1000, "Open file" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void MyFileObject::OnPopupClick(wxEvent &evt)
+{
+    MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+    int id = evt.GetId();
+    if( id == 1000 )
+    {
+        char url[MAX_PATH];
+        char workingdir[MAX_PATH];
+        _getcwd( workingdir, MAX_PATH * sizeof(char) );
+        sprintf_s( url, MAX_PATH, "%s/%s", workingdir, pFileObject->m_FullPath );
+        ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
+    }
+}
+
 void MyFileObject::OnDrag()
 {
     g_DragAndDropStruct.m_Type = DragAndDropType_FileObjectPointer;

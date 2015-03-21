@@ -57,6 +57,7 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
     Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnDrawCallTabSelected) );
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnDrawCallTreeSelectionChanged) );
+    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelMemory::OnTreeContextMenuRequested) );
     Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelMemory::OnDragBegin) );
 
     m_DrawCallListDirty = false;
@@ -325,7 +326,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     m_pNotebook->SetPageText( 1, tempstr );
 }
 
-void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     assert( pFile != 0 );
 
@@ -363,6 +364,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pFile;
         pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
         pData->m_pDragFunction = pDragFunction;
 
         m_pTree_Files->AppendItem( idcategory, tempstr, -1, -1, pData );
@@ -513,8 +515,22 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData && pData->m_pDragFunction )
         {
-            (pData->m_pLeftClickFunction)(pData->m_pObject);
+            pData->m_pLeftClickFunction( pData->m_pObject );
         }
+    }
+}
+
+void PanelMemory::OnTreeContextMenuRequested(wxTreeEvent& event)
+{
+    // get the pointer to the tree affected.
+    wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+
+    // pass right click events through to the item.
+    wxTreeItemId id = event.GetItem();
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+    if( pData && pData->m_pRightClickFunction )
+    {
+        pData->m_pRightClickFunction( pData->m_pObject );
     }
 }
 
@@ -530,7 +546,7 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
     if( pData && pData->m_pDragFunction )
     {
-        (pData->m_pDragFunction)(pData->m_pObject);
+        pData->m_pDragFunction( pData->m_pObject );
     }
     else
     {
