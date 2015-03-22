@@ -43,7 +43,8 @@ public:
 
     GLint m_uTime;
 
-    GLint m_uHandle_CameraPos;
+    GLint m_uHandle_WSCameraPos;
+    GLint m_uHandle_LSCameraPos;
 
     GLint m_uHandle_LightPos[MAX_LIGHTS];
     GLint m_uHandle_LightDir[MAX_LIGHTS]; // for spotlights
@@ -75,8 +76,8 @@ public:
     void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
     void ProgramTint(ColorByte tint);
     void ProgramPointSize(float pointsize);
-    void ProgramCamera(Vector3* campos);
-    void ProgramLights(MyLight* lights, int numlights);
+    void ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix);
+    void ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix);
     void ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowviewprojmatrix, GLuint shadowtexid);
     void ProgramLightmap(GLuint texid);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);

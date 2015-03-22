@@ -50,7 +50,8 @@ void Shader_Base::Init_Shader_Base()
 
     m_uTime = -1;
 
-    m_uHandle_CameraPos = -1;
+    m_uHandle_WSCameraPos = -1;
+    m_uHandle_LSCameraPos = -1;
 
     for( int i=0; i<MAX_LIGHTS; i++ )
     {
@@ -96,7 +97,8 @@ bool Shader_Base::LoadAndCompile()
 
     m_uTime =                    GetUniformLocation( m_ProgramHandle, "u_Time" );
 
-    m_uHandle_CameraPos =        GetUniformLocation( m_ProgramHandle, "u_CameraPos" );
+    m_uHandle_WSCameraPos =        GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
+    m_uHandle_LSCameraPos =        GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
 
     for( int i=0; i<4; i++ )
     {
@@ -518,22 +520,31 @@ void Shader_Base::ProgramPointSize(float pointsize)
         glUniform1f( m_uHandle_PointSize, pointsize );
 }
 
-void Shader_Base::ProgramCamera(Vector3* campos)
+void Shader_Base::ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix)
 {
 #if USE_D3D
     assert( 0 );
 #else
-    if( m_uHandle_CameraPos != -1 )
+    if( m_uHandle_WSCameraPos != -1 )
     {
         assert( campos != 0 );
-        glUniform3f( m_uHandle_CameraPos, campos->x, campos->y, campos->z );
+        glUniform3f( m_uHandle_WSCameraPos, campos->x, campos->y, campos->z );
+    }
+
+    if( m_uHandle_LSCameraPos != -1 )
+    {
+        assert( campos != 0 );
+        assert( inverseworldmatrix != 0 );
+
+        Vector3 LScampos = *inverseworldmatrix * *campos;
+        glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
     }
 #endif
 
     return;
 }
 
-void Shader_Base::ProgramLights(MyLight* lights, int numlights)
+void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix)
 {
     if( numlights == 0 )
         return;
@@ -548,7 +559,11 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights)
     {
         if( m_uHandle_LightPos[i] != -1 )
         {
-            glUniform3f( m_uHandle_LightPos[i], lights[i].m_Position.x, lights[i].m_Position.y, lights[i].m_Position.z );
+            assert( inverseworldmatrix != 0 );
+
+            //Vector3 LSlightpos = *inverseworldmatrix * lights[i].m_Position;
+            Vector3 LSlightpos = lights[i].m_Position;
+            glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
         }
 
         if( m_uHandle_LightDir[i] != -1 )
@@ -563,7 +578,9 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights)
 
         if( m_uHandle_LightAttenuation[i] != -1 )
         {
-            glUniform3f( m_uHandle_LightAttenuation[i], lights[i].m_Attenuation.x, lights[i].m_Attenuation.y, lights[i].m_Attenuation.z );
+            Vector3 atten = lights[i].m_Attenuation;
+            //atten /= inverseworldmatrix->m11;
+            glUniform3f( m_uHandle_LightAttenuation[i], atten.x, atten.y, atten.z );
         }
     }
 #endif

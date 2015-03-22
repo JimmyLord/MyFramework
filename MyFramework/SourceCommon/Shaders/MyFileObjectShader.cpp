@@ -59,6 +59,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                     return;
                 }
 
+                assert( m_NumIncludes < MAX_INCLUDES );
                 m_pIncludes[m_NumIncludes].m_pIncludedFile = (MyFileObjectShader*)pIncludeFile;
                 m_pIncludes[m_NumIncludes].m_Include_StartIndex = i;
                 m_pIncludes[m_NumIncludes].m_Include_EndIndex = i + charsread;

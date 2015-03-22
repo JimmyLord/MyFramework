@@ -28,7 +28,7 @@ struct IncludeFileInfo
 
 class MyFileObjectShader : public MyFileObject
 {
-    static const int MAX_INCLUDES = 4;
+    static const int MAX_INCLUDES = 8;
 
 public:
     bool m_ScannedForIncludes;
