@@ -27,7 +27,7 @@ MyAnimationTimeline::~MyAnimationTimeline()
 void MyAnimationTimeline::ImportFromJSON(cJSON* pAnimObj)
 {
     cJSON* name = cJSON_GetObjectItem( pAnimObj, "Name" );
-    int namelen = strlen( name->valuestring );
+    int namelen = (int)strlen( name->valuestring );
     m_Name = MyNew char[namelen+1];
     strcpy_s( m_Name, namelen+1, name->valuestring );
 

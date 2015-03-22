@@ -58,7 +58,7 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             cJSON* bone = cJSON_GetArrayItem( bones, i );
             if( bone )
             {
-                int namelen = strlen( bone->valuestring );
+                int namelen = (int)strlen( bone->valuestring );
                 char* bonename = MyNew char[namelen+1];
                 strcpy_s( bonename, namelen+1, bone->valuestring );
 
@@ -101,7 +101,7 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
     cJSON_Delete( root );
 
     // find a line that starts with "#raw"
-    unsigned int bufferlen = strlen( buffer );
+    unsigned int bufferlen = (int)strlen( buffer );
     unsigned int firstrawbyteindex = 0;
     if( bufferlen > 5 )
     {
@@ -218,7 +218,7 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
     skelnode.m_BoneIndex = FindBoneIndexByName( name );
 
     // add the name.
-    int namelen = strlen(name);
+    int namelen = (int)strlen(name);
     skelnode.m_Name = MyNew char[namelen+1];
     strcpy_s( skelnode.m_Name, namelen+1, name );
 

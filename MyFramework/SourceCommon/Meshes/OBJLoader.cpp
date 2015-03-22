@@ -157,8 +157,8 @@ Vector3 ParseVertex(char* buffer, int index)
         }
     }
 
-    if( outvector.LengthSquared() == 0 )
-        int bp = 1;
+    //if( outvector.LengthSquared() == 0 )
+    //    int bp = 1;
 
     return outvector;
 }
@@ -178,7 +178,6 @@ FaceInfo ParseFaceInfo(char* buffer, int index)
 
     int lastnumber = -1;
 
-    int numattribs = 0;
     while( buffer[index] != '\r' && buffer[index] != '\n' && buffer[index] != 0 )
     {
         if( buffer[index] == ' ' || buffer[index] == '\t' )

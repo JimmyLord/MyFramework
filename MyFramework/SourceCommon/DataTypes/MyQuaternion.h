@@ -32,9 +32,9 @@ public:
     inline MyQuat Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; z /= len; w /= len; } return *this; }
     inline float Dot(const MyQuat &o) const { return x*o.x + y*o.y + z*o.z + w*o.w; }
     inline MyQuat GetConjugate() { return MyQuat( -x, -y, -z, w ); }
-    inline MyQuat Conjugate() { x *= -1; y *= -1; z *= -1; }
+    inline void Conjugate() { x *= -1; y *= -1; z *= -1; }
     inline MyQuat GetInverse() { return GetConjugate() * 1.0f/LengthSquared(); }
-    inline MyQuat Inverse() { Conjugate(); *this *= 1.0f/LengthSquared(); }
+    inline void Inverse() { Conjugate(); *this *= 1.0f/LengthSquared(); }
 
     inline bool operator ==(const MyQuat& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z) && fequal(this->w, o.w); }
     inline bool operator !=(const MyQuat& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z) || !fequal(this->w, o.w); }

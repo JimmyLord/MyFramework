@@ -44,7 +44,7 @@ public:
     ~MyFileObject();
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
-    void GenerateNewFullPathExtensionWithSameNameInSameFolder(char* newextension, char* buffer, int buffersize);
+    void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
 
 protected:
     void RequestFile(const char* filename);

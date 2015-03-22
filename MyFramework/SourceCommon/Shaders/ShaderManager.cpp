@@ -295,7 +295,11 @@ void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type,
     if( index != -1 )
     {
         MyEnableVertexAttribArray( index );
+#if MYFW_WINDOWS
         glVertexAttribIPointer( index, size, type, stride, pointer );
+#else
+        glVertexAttribPointer( index, size, type, GL_FALSE, stride, pointer );
+#endif
     }
     else
     {

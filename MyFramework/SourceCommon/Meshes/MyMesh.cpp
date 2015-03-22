@@ -1466,14 +1466,12 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnima
         {
             Vector3 oldtranslation = pTimeline->GetInterpolatedTranslation( oldanimtime, channelindex );
             MyQuat oldrotation = pTimeline->GetInterpolatedRotation( oldanimtime, channelindex );
-            Vector3 oldscale = pTimeline->GetInterpolatedScaling( oldanimtime, channelindex );
+            //Vector3 oldscale = pTimeline->GetInterpolatedScaling( oldanimtime, channelindex );
 
             translation = translation + (oldtranslation - translation) * perc;
             rotation = MyQuat::Lerp( rotation, oldrotation, perc ).GetNormalized();
             //scale = scale;
         }
-
-        MyMatrix nodetransform = pNode->m_Transform;
 
         localtransform.CreateSRT( scale, rotation, translation );
     }

@@ -81,7 +81,7 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     // if the file wasn't already loaded create a new one and load it up.
     pFile = 0;
     
-    int len = strlen( filename );
+    int len = (int)strlen( filename );
     if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
         pFile = MyNew MyFileObjectShader;
     else

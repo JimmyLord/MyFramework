@@ -98,9 +98,9 @@ BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numb
     }
 
     // find the first shader that supports the correct number of lights/bones or less.
-    for( unsigned int lc = numlights; lc >= 0; lc-- )
+    for( int lc = numlights; lc >= 0; lc-- )
     {
-        for( unsigned int bc = numbones; bc >= 0; bc-- )
+        for( int bc = numbones; bc >= 0; bc-- )
         {
             if( m_pShaderPasses[pass][lc][bc] != 0 )
                 return m_pShaderPasses[pass][lc][bc];

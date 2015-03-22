@@ -183,15 +183,15 @@ void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, ch
 {
     assert( buffer != 0 );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffolderoffset = strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot);
+    int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
 }
 
-void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(char* newextension, char* buffer, int buffersize)
+void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
 {
     assert( buffer != 0 );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffilenameoffset = strlen(m_FullPath) - strlen(m_ExtensionWithDot);
+    int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
 }
 

@@ -42,9 +42,9 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 #pragma warning (disable : 4996)
             char includefilename[MAX_PATH];
             strcpy( includefilename, m_FullPath );
-            int pathlen = strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot);
+            int pathlen = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
             includefilename[pathlen] = 0;
-            int bufferleft = MAX_PATH-1 - pathlen;
+            //int bufferleft = MAX_PATH-1 - pathlen;
             int charsread;
             int result = sscanf( &m_pBuffer[i], "#include \"%[^\"]\"%n", &includefilename[pathlen], &charsread );
 #pragma warning (default : 4996)
@@ -99,7 +99,6 @@ int MyFileObjectShader::GetShaderChunks(const char** pStrings, int* pLengths)
 {
     pStrings[0] = m_pBuffer;
 
-    unsigned int lengthtoendoffile = m_FileLength;
     unsigned int currentoffset = 0;
 
     int count = 0;
