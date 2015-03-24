@@ -1355,8 +1355,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 
                 MyMatrix invworld = m_Position;
-                if( invworld.Inverse() == false )
-                    LOGError( LOGTag, "Matrix inverse failed\n" );
+                //if( invworld.Inverse() == false )
+                //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
                 pShader->ProgramCamera( campos, &invworld );
                 checkGlError( "Drawing Mesh ProgramCamera()" );

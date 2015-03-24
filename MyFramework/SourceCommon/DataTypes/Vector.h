@@ -38,6 +38,9 @@ public:
     inline Vector2 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector2(x,y); len = 1.0f/len; return Vector2(x*len, y*len); }
     inline Vector2 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; } return *this; }
     inline float Dot(const Vector2 &o) const { return x*o.x + y*o.y; }
+    inline Vector2 Add(const Vector2& o) const { return Vector2(this->x + o.x, this->y + o.y); }
+    inline Vector2 Sub(const Vector2& o) const { return Vector2(this->x - o.x, this->y - o.y); }
+    inline Vector2 Scale(const float o) const { return Vector2(this->x * o, this->y * o); }
 
     inline bool operator ==(const Vector2& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y); }
     inline bool operator !=(const Vector2& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y); }
