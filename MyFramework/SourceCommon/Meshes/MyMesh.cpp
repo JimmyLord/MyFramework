@@ -1431,7 +1431,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
         double TimeInTicks = animtime * TicksPerSecond;
         double StartTime = pAnim->m_StartTime;
         double Duration = (double)pAnim->m_Duration;
-        AnimationTime = StartTime + (float)fmod( TimeInTicks, Duration );
+        AnimationTime = (float)(StartTime + (float)fmod( TimeInTicks, Duration ));
     }
 
     if( oldanimindex && perc > 0 )
@@ -1444,7 +1444,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
         double TimeInTicks = oldanimtime * TicksPerSecond;
         double StartTime = pAnim->m_StartTime;
         double Duration = (double)pAnim->m_Duration;
-        AnimationTimeOld = StartTime + (float)fmod( TimeInTicks, Duration );
+        AnimationTimeOld = (float)(StartTime + (float)fmod( TimeInTicks, Duration ));
     }
 
     MyMatrix matidentity;
