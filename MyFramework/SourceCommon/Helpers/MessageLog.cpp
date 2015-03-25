@@ -15,7 +15,7 @@ MessageLogCallbackFunction g_pMessageLogCallbackFunction = 0;
 
 void LOGInfo(const char* tag, const char* message, ...)
 {
-#define MAX_MESSAGE 1024
+#define MAX_MESSAGE 10024
     char szBuff[MAX_MESSAGE];
     va_list arg;
     va_start(arg, message);
@@ -33,7 +33,7 @@ void LOGInfo(const char* tag, const char* message, ...)
 
 void LOGError(const char* tag, const char* message, ...)
 {
-#define MAX_MESSAGE 1024
+#define MAX_MESSAGE 10024
     char szBuff[MAX_MESSAGE];
     va_list arg;
     va_start(arg, message);
@@ -60,7 +60,7 @@ void LOGError(const char* tag, const char* message, ...)
 void LOGInfo(const char* tag, const char* message, ...)
 {
     // TODO: watch for buffer overruns... NaCL doesn't have the _s version of vsnprintf
-#define MAX_MESSAGE 1024
+#define MAX_MESSAGE 10024
     char szBuff[MAX_MESSAGE];
     va_list arg;
     va_start(arg, message);
@@ -82,7 +82,7 @@ void LOGInfo(const char* tag, const char* message, ...)
 void LOGError(const char* tag, const char* message, ...)
 {
     // TODO: watch for buffer overruns... NaCL doesn't have the _s version of vsnprintf
-#define MAX_MESSAGE 1024
+#define MAX_MESSAGE 10024
     char szBuff[MAX_MESSAGE];
     va_list arg;
     va_start(arg, message);

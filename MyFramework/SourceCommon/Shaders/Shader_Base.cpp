@@ -160,6 +160,11 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     //g_pD3DContext->PSSetShaderResources( 0, 1, g_D3DTextures[texid-1].m_ResourceView.GetAddressOf() );
     //g_pD3DContext->PSSetSamplers( 0, 1, g_pD3DSampleStateLinearWrap.GetAddressOf() );
 #else
+
+#if MYFW_IOS
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
+
     MyBindBuffer( GL_ARRAY_BUFFER, vbo );
     MyBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
@@ -311,33 +316,33 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     }
     else if( vertformat == VertexFormat_Dynamic )
     {
-        InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_pos );
+        InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_pos );
         
         for( int i=0; i<pVertFormatDesc->num_uv_channels; i++ )
         {
             if( pVertFormatDesc->offset_uv[i] )
-                InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_uv[i] );
+                InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_uv[i] );
             else
                 DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
         }
 
         if( pVertFormatDesc->offset_normal )
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_normal );
+            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_normal );
         else
             DisableAttributeArray( m_aHandle_Normal, Vector3(0,1,0) );
 
         if( pVertFormatDesc->offset_color )
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_color );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_color );
         else
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
 
         if( pVertFormatDesc->offset_boneindex )
-            InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_INT,            pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneindex );
+            InitializeAttributeIArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_BYTE,            pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_boneindex );
         else
             DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
-    
+
         if( pVertFormatDesc->offset_boneweight )
-            InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)pVertFormatDesc->offset_boneweight );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_boneweight );
         else
             DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
     }
@@ -346,6 +351,11 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         assert( false );
     }
     // ADDING_NEW_VertexFormat
+
+#if MYFW_IOS
+#pragma GCC diagnostic default "-Winvalid-offsetof"
+#endif
+
 #endif //USE_D3D
 }
 
@@ -380,6 +390,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     checkGlError( "glUseProgram" );
 
     SetupAttributes( vbo, ibo, true );
+    checkGlError( "SetupAttributes" );
 
     ProgramBaseUniforms( viewprojmatrix, worldmatrix, texid, tint, speccolor, shininess );
 

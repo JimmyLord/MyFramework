@@ -81,6 +81,25 @@ GLint GetUniformLocation(GLuint programhandle, const char* name, ...)
     return handle;
 }
 
+void printShaderSource(GLuint shaderhandle)
+{
+    GLint bufLength = 0;
+    glGetShaderiv( shaderhandle, GL_SHADER_SOURCE_LENGTH, &bufLength );
+
+    if( bufLength )
+    {
+        char* buf = (char*)malloc( bufLength );
+        if( buf )
+        {
+            GLsizei lengthreturned;
+            glGetShaderSource( shaderhandle, bufLength, &lengthreturned, buf );
+            LOGError( LOGTag, "shader source:\n%s\n", buf );
+
+            free(buf);
+        }
+    }
+}
+
 GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* pLengths)
 {
     GLuint shaderid = glCreateShader(shaderType);
@@ -105,7 +124,9 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
                     LOGError( LOGTag, "Could not compile shader %d:\n%s\n", shaderType, buf );
 
                     assert( false );
-                    
+
+                    printShaderSource( shaderid );
+
                     free( buf );
                 }
             }
@@ -192,25 +213,6 @@ GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, c
     }
 
     return shaderid;
-}
-
-void printShaderSource(GLuint shaderhandle)
-{
-    GLint bufLength = 0;
-    glGetShaderiv( shaderhandle, GL_SHADER_SOURCE_LENGTH, &bufLength );
-
-    if( bufLength )
-    {
-        char* buf = (char*)malloc( bufLength );
-        if( buf )
-        {
-            GLsizei lengthreturned;
-            glGetShaderSource( shaderhandle, bufLength, &lengthreturned, buf );
-            LOGError( LOGTag, "shader source:\n%s\n", buf );
-
-            free(buf);
-        }
-    }
 }
 
 GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths)

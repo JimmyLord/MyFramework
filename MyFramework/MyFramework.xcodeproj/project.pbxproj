@@ -89,7 +89,6 @@
 		04E9EF891ABF401C00AD4B64 /* ParticleRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF081ABF401C00AD4B64 /* ParticleRenderer.h */; };
 		04E9EF8A1ABF401C00AD4B64 /* mtrand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF0A1ABF401C00AD4B64 /* mtrand.cpp */; };
 		04E9EF8B1ABF401C00AD4B64 /* mtrand.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF0B1ABF401C00AD4B64 /* mtrand.h */; };
-		04E9EF8C1ABF401C00AD4B64 /* mttest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF0D1ABF401C00AD4B64 /* mttest.cpp */; };
 		04E9EF8D1ABF401C00AD4B64 /* GLHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF101ABF401C00AD4B64 /* GLHelpers.cpp */; };
 		04E9EF8E1ABF401C00AD4B64 /* GLHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF111ABF401C00AD4B64 /* GLHelpers.h */; };
 		04E9EF8F1ABF401C00AD4B64 /* ListOfShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF121ABF401C00AD4B64 /* ListOfShaders.h */; };
@@ -234,9 +233,6 @@
 		04E9EF081ABF401C00AD4B64 /* ParticleRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleRenderer.h; sourceTree = "<group>"; };
 		04E9EF0A1ABF401C00AD4B64 /* mtrand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mtrand.cpp; sourceTree = "<group>"; };
 		04E9EF0B1ABF401C00AD4B64 /* mtrand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mtrand.h; sourceTree = "<group>"; };
-		04E9EF0C1ABF401C00AD4B64 /* mtreadme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mtreadme.txt; sourceTree = "<group>"; };
-		04E9EF0D1ABF401C00AD4B64 /* mttest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mttest.cpp; sourceTree = "<group>"; };
-		04E9EF0E1ABF401C00AD4B64 /* mttest.out */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mttest.out; sourceTree = "<group>"; };
 		04E9EF101ABF401C00AD4B64 /* GLHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLHelpers.cpp; sourceTree = "<group>"; };
 		04E9EF111ABF401C00AD4B64 /* GLHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLHelpers.h; sourceTree = "<group>"; };
 		04E9EF121ABF401C00AD4B64 /* ListOfShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListOfShaders.h; sourceTree = "<group>"; };
@@ -489,9 +485,6 @@
 			children = (
 				04E9EF0A1ABF401C00AD4B64 /* mtrand.cpp */,
 				04E9EF0B1ABF401C00AD4B64 /* mtrand.h */,
-				04E9EF0C1ABF401C00AD4B64 /* mtreadme.txt */,
-				04E9EF0D1ABF401C00AD4B64 /* mttest.cpp */,
-				04E9EF0E1ABF401C00AD4B64 /* mttest.out */,
 			);
 			path = Random;
 			sourceTree = "<group>";
@@ -771,7 +764,6 @@
 				04E9EF5E1ABF401C00AD4B64 /* MyMemory.cpp in Sources */,
 				04E9EF431ABF401C00AD4B64 /* MyMatrix.cpp in Sources */,
 				04E9EF6C1ABF401C00AD4B64 /* MeshManager.cpp in Sources */,
-				04E9EF8C1ABF401C00AD4B64 /* mttest.cpp in Sources */,
 				04E9EF9A1ABF401C00AD4B64 /* VertexFormats.cpp in Sources */,
 				04E9EFA81ABF401C00AD4B64 /* MySprite_XYZVertexColor.cpp in Sources */,
 				04E9EFB41ABF401C00AD4B64 /* TextureManager.cpp in Sources */,

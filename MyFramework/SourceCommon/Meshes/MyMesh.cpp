@@ -1360,7 +1360,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 
                 MyMatrix invworld = m_Transform;
-                bool didinverse = invworld.Inverse();
+                invworld.Inverse();
+                //bool didinverse = invworld.Inverse();
                 //if( didinverse == false )
                 //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
