@@ -39,13 +39,13 @@ void MyAnimationTimeline::ImportFromJSON(cJSON* pAnimObj)
     SetNumberOfChannels( numchannels );
 }
 
-int MyAnimationTimeline::ImportChannelsFromBuffer(char* pBuffer)
+int MyAnimationTimeline::ImportChannelsFromBuffer(char* pBuffer, float scale)
 {
     int byteoffset = 0;
 
     for( unsigned int ci=0; ci<m_pChannels.Count(); ci++ )
     {
-        byteoffset += m_pChannels[ci]->ImportFromBuffer( &pBuffer[byteoffset] );
+        byteoffset += m_pChannels[ci]->ImportFromBuffer( &pBuffer[byteoffset], scale );
     }
 
     return byteoffset;
@@ -151,7 +151,7 @@ Vector3 MyAnimationTimeline::GetInterpolatedScaling(float time, unsigned int cha
 
 //==================================
 
-int MyChannel::ImportFromBuffer(char* pBuffer)
+int MyChannel::ImportFromBuffer(char* pBuffer, float scale)
 {
     // channel id
     // num pos keys
@@ -181,6 +181,11 @@ int MyChannel::ImportFromBuffer(char* pBuffer)
         byteoffset += sizeof(float)*numkeys;
         m_TranslationValues.BlockFill( &pBuffer[byteoffset], sizeof(Vector3)*numkeys, numkeys );
         byteoffset += sizeof(Vector3)*numkeys;
+
+        for( unsigned int i=0; i<m_TranslationTimes.Count(); i++ )
+        {
+            m_TranslationValues[i] *= scale;
+        }
     }
 
     // rotation keys

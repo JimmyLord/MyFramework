@@ -10,7 +10,7 @@
 #include "CommonHeader.h"
 #include "MyMeshLoader.h"
 
-void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO)
+void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, float scale)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -137,6 +137,13 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
                 {
                     m_BoneOffsetMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );
                     rawbyteoffset += sizeof(MyMatrix)*totalbones;
+
+                    for( unsigned int i=0; i<m_BoneOffsetMatrices.Count(); i++ )
+                    {
+                        m_BoneOffsetMatrices[i].m41 *= scale;
+                        m_BoneOffsetMatrices[i].m42 *= scale;
+                        m_BoneOffsetMatrices[i].m43 *= scale;
+                    }
                 }
 
                 // initialize all the final bone matrices to identity.
@@ -152,6 +159,18 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
             rawbyteoffset += vertbuffersize;
 
+            // scale the verts if requested... should be done at export or not at all.
+            // assumes position is the first attribute... ugh. TODO: rip this out.
+            if( scale != 1.0f )
+            {
+                for( unsigned int i=0; i<totalverts; i++ )
+                {
+                    ((float*)(&(verts[pDesc->stride * i])))[0] *= scale;
+                    ((float*)(&(verts[pDesc->stride * i])))[1] *= scale;
+                    ((float*)(&(verts[pDesc->stride * i])))[2] *= scale;
+                }
+            }
+
             // read index buffer bytes
             memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
             rawbyteoffset += indexbuffersize;
@@ -161,12 +180,16 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
             {
                 m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
                 rawbyteoffset += sizeof(MyMatrix);
+
+                m_pSkeletonNodeTree[ni].m_Transform.m41 *= scale;
+                m_pSkeletonNodeTree[ni].m_Transform.m42 *= scale;
+                m_pSkeletonNodeTree[ni].m_Transform.m43 *= scale;
             }
 
             // read animation channels
             for( int ai=0; ai<totalanimtimelines; ai++ )
             {
-                rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset] );
+                rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
             }
         }
 

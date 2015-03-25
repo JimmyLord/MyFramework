@@ -31,7 +31,7 @@ MyMesh::MyMesh()
     m_SpecColor = ColorByte(255,255,255,255);
     m_Shininess = 200;
 
-    m_Position.SetIdentity();
+    m_Transform.SetIdentity();
 
     g_pMeshManager->AddMesh( this );
 
@@ -192,7 +192,7 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
     if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false );
+        LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false, 1.0f );
 
         if( m_pVertexBuffer && m_pIndexBuffer )
         {
@@ -227,7 +227,7 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
       )
     {
-        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer );
+        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, 0.02f );
         
         if( m_pAnimationControlFile )
         {
@@ -1262,7 +1262,12 @@ void MyMesh::SetTextureProperties(ColorByte tint, ColorByte speccolor, float shi
 
 void MyMesh::SetPosition(float x, float y, float z)
 {
-    m_Position.SetTranslation( x, y, z );
+    m_Transform.SetTranslation( x, y, z );
+}
+
+void MyMesh::SetTransform(MyMatrix& matrix)
+{
+    m_Transform = matrix;
 }
 
 void MyMesh::RebuildIndices()
@@ -1321,7 +1326,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         // TODO: this might fail with 1-3 bones, but works with 0 since bone attribs and uniforms should default to 0.
         Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
-        pShader->ProgramPosition( matviewproj, &m_Position );
+        pShader->ProgramPosition( matviewproj, &m_Transform );
         if( m_BoneFinalMatrices.Count() > 0 )
         {
             pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
@@ -1350,12 +1355,13 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         {
             if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Position, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
+                matviewproj, &m_Transform, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
             {
                 checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 
-                MyMatrix invworld = m_Position;
-                //if( invworld.Inverse() == false )
+                MyMatrix invworld = m_Transform;
+                bool didinverse = invworld.Inverse();
+                //if( didinverse == false )
                 //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
                 pShader->ProgramCamera( campos, &invworld );
@@ -1368,7 +1374,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     pShader->ProgramPointSize( (float)m_PointSize );
 
                 if( shadowlightwvp && shadowtexid != 0 )
-                    pShader->ProgramShadowLight( &m_Position, shadowlightwvp, shadowtexid );
+                    pShader->ProgramShadowLight( &m_Transform, shadowlightwvp, shadowtexid );
 
                 if( lightmaptexid != 0 )
                 {

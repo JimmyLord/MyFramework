@@ -69,7 +69,8 @@ public:
     ColorByte m_SpecColor;
     float m_Shininess;
 
-    MyMatrix m_Position;
+protected:
+    MyMatrix m_Transform;
 
 public:
     MyMesh();
@@ -96,6 +97,7 @@ public:
     void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
+    void SetTransform(MyMatrix& matrix);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
 
     void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
@@ -103,7 +105,7 @@ public:
 
     int FindBoneIndexByName(char* name);
 
-    void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO);
+    void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, float scale);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(char* buffer);
 #if MYFW_USING_WX

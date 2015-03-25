@@ -210,7 +210,7 @@ FaceInfo ParseFaceInfo(char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices)
+void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -220,7 +220,7 @@ void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefini
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, ppVBO, ppIBO, removeduplicatevertices );
+    LoadBasicOBJ( buffer, ppVBO, ppIBO, removeduplicatevertices, scale );
 
     delete[] buffer;
 }
@@ -242,7 +242,7 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices)
+void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale)
 {
     assert( ppVBO );
     assert( ppIBO );
@@ -430,9 +430,9 @@ foundduplicate_skiptonextvert:
                 int attroffset = vertindices[v] * numcomponents;
 
                 int vertposindex = Faces[f].attributes[v][0] - 1;
-                verts[attroffset] = VertexPositions[vertposindex].x; attroffset++;
-                verts[attroffset] = VertexPositions[vertposindex].y; attroffset++;
-                verts[attroffset] = VertexPositions[vertposindex].z; attroffset++;
+                verts[attroffset] = VertexPositions[vertposindex].x * scale; attroffset++;
+                verts[attroffset] = VertexPositions[vertposindex].y * scale; attroffset++;
+                verts[attroffset] = VertexPositions[vertposindex].z * scale; attroffset++;
 
                 int vertuvindex = Faces[f].attributes[v][1] - 1;
                 if( vertuvindex != -1 )
