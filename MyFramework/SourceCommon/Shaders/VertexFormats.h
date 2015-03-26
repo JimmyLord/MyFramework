@@ -122,7 +122,7 @@ struct Vertex_XYZUVNorm_1Bones
     Vector3 pos;
     Vector2 uv;
     Vector3 normal;
-    unsigned int boneindex[1];
+    unsigned char boneindex[1];
     float weight[1];
 };
 
@@ -131,7 +131,7 @@ struct Vertex_XYZUVNorm_2Bones
     Vector3 pos;
     Vector2 uv;
     Vector3 normal;
-    unsigned int boneindex[2];
+    unsigned char boneindex[2];
     float weight[2];
 };
 
@@ -140,7 +140,7 @@ struct Vertex_XYZUVNorm_3Bones
     Vector3 pos;
     Vector2 uv;
     Vector3 normal;
-    unsigned int boneindex[3];
+    unsigned char boneindex[3];
     float weight[3];
 };
 
@@ -149,7 +149,7 @@ struct Vertex_XYZUVNorm_4Bones
     Vector3 pos;
     Vector2 uv;
     Vector3 normal;
-    unsigned int boneindex[4];
+    unsigned char boneindex[4];
     float weight[4];
 };
 
@@ -187,7 +187,7 @@ struct Vertex_XYZUVNorm_RGBA_1Bones
     Vector2 uv;
     Vector3 normal;
     ColorByte color;
-    unsigned int boneindex[1];
+    unsigned char boneindex[1];
     float weight[1];
 };
 
@@ -197,7 +197,7 @@ struct Vertex_XYZUVNorm_RGBA_2Bones
     Vector2 uv;
     Vector3 normal;
     ColorByte color;
-    unsigned int boneindex[2];
+    unsigned char boneindex[2];
     float weight[2];
 };
 
@@ -207,7 +207,7 @@ struct Vertex_XYZUVNorm_RGBA_3Bones
     Vector2 uv;
     Vector3 normal;
     ColorByte color;
-    unsigned int boneindex[3];
+    unsigned char boneindex[3];
     float weight[3];
 };
 
@@ -217,7 +217,7 @@ struct Vertex_XYZUVNorm_RGBA_4Bones
     Vector2 uv;
     Vector3 normal;
     ColorByte color;
-    unsigned int boneindex[4];
+    unsigned char boneindex[4];
     float weight[4];
 };
 

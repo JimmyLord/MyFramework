@@ -292,19 +292,16 @@ void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, 
 
 void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
-    if( index != -1 )
-    {
-        MyEnableVertexAttribArray( index );
-#if MYFW_WINDOWS
-        glVertexAttribIPointer( index, size, type, stride, pointer );
-#else
-        glVertexAttribPointer( index, size, type, GL_FALSE, stride, pointer );
-#endif
-    }
-    else
-    {
-        //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
-    }
+    assert( false ); // no availabe with es 2.0, so avoid it for now.
+    //if( index != -1 )
+    //{
+    //    MyEnableVertexAttribArray( index );
+    //    glVertexAttribIPointer( index, size, type, stride, pointer );
+    //}
+    //else
+    //{
+    //    //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
+    //}
 }
 
 void BaseShader::DisableAttributeArray(GLint index, Vector3 value)
