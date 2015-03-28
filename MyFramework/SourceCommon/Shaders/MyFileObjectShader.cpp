@@ -56,7 +56,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                 {
                     LOGError( LOGTag, "MyFileObjectShader: Including a non-shader file\n" );
                     g_pFileManager->FreeFile( pIncludeFile );
-                    return;
+                    continue;
                 }
 
                 assert( m_NumIncludes < MAX_INCLUDES );
