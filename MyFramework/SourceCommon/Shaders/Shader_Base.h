@@ -30,7 +30,7 @@ public:
 
     GLint m_uHandle_PointSize;
 
-    GLint m_uHandle_ShadowLightWVP;
+    GLint m_uHandle_ShadowLightWVPT; // in 0 to 1 space(texture/uv? space), not -1 to 1
     GLint m_uHandle_ShadowTexture;
 
     GLint m_uHandle_TextureColor;
@@ -78,7 +78,7 @@ public:
     void ProgramPointSize(float pointsize);
     void ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix);
     void ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix);
-    void ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowviewprojmatrix, GLuint shadowtexid);
+    void ProgramShadowLight(MyMatrix* shadowwvp, GLuint shadowtexid);
     void ProgramLightmap(GLuint texid);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
 };

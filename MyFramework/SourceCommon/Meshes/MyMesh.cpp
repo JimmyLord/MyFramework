@@ -1275,7 +1275,7 @@ void MyMesh::RebuildIndices()
     m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightwvp, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
 {
     if( m_MeshReady == false )
     {
@@ -1374,8 +1374,12 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 if( m_PrimitiveType == GL_POINTS )
                     pShader->ProgramPointSize( (float)m_PointSize );
 
-                if( shadowlightwvp && shadowtexid != 0 )
-                    pShader->ProgramShadowLight( &m_Transform, shadowlightwvp, shadowtexid );
+                if( shadowlightVP && shadowtexid != 0 )
+                {
+                    MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
+                    MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * m_Transform;
+                    pShader->ProgramShadowLight( &shadowWVPT, shadowtexid );
+                }
 
                 if( lightmaptexid != 0 )
                 {

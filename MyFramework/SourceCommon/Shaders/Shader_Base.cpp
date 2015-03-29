@@ -37,7 +37,7 @@ void Shader_Base::Init_Shader_Base()
 
     m_uHandle_PointSize = -1;
 
-    m_uHandle_ShadowLightWVP = -1;
+    m_uHandle_ShadowLightWVPT = -1;
     m_uHandle_ShadowTexture = -1;
 
     m_uHandle_TextureColor = -1;
@@ -84,8 +84,8 @@ bool Shader_Base::LoadAndCompile()
 
     m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
 
-    m_uHandle_ShadowLightWVP = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVP" );
-    m_uHandle_ShadowTexture =  GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
+    m_uHandle_ShadowLightWVPT = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVPT" );
+    m_uHandle_ShadowTexture =   GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
 
     m_uHandle_TextureColor =     GetUniformLocation( m_ProgramHandle, "u_TextureColor" );
     m_uHandle_TextureLightmap =  GetUniformLocation( m_ProgramHandle, "u_TextureLightmap" );
@@ -599,13 +599,11 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* invers
     return;
 }
 
-void Shader_Base::ProgramShadowLight(MyMatrix* worldmatrix, MyMatrix* shadowviewprojmatrix, GLuint shadowtexid)
+void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, GLuint shadowtexid)
 {
-    if( m_uHandle_ShadowLightWVP != -1 )
+    if( m_uHandle_ShadowLightWVPT != -1 )
     {
-        MyMatrix temp = *shadowviewprojmatrix * *worldmatrix;
-
-        glUniformMatrix4fv( m_uHandle_ShadowLightWVP, 1, false, (GLfloat*)&temp.m11 );
+        glUniformMatrix4fv( m_uHandle_ShadowLightWVPT, 1, false, (GLfloat*)&shadowwvp->m11 );
     }
 
     if( m_uHandle_ShadowTexture != -1 )
