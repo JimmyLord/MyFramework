@@ -135,12 +135,12 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     return pTextureDef;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, bool needdepth, bool depthreadable)
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
 {
     LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBODef = MyNew FBODefinition();
-    pFBODef->Setup( width, height, minfilter, magfilter, needcolor, needdepth, depthreadable );
+    pFBODef->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
 
     m_UninitializedFBOs.AddTail( pFBODef );
 
