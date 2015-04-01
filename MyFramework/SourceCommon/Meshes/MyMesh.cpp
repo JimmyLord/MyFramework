@@ -1279,13 +1279,16 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 {
     if( m_MeshReady == false )
     {
-        if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
+        if( m_pSourceFile != 0 )
         {
-            CreateFromOBJFile( m_pSourceFile );
-        }
-        if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
-        {
-            CreateFromMyMeshFile( m_pSourceFile );
+            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
+            {
+                CreateFromOBJFile( m_pSourceFile );
+            }
+            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
+            {
+                CreateFromMyMeshFile( m_pSourceFile );
+            }
         }
         return;
     }

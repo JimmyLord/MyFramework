@@ -51,6 +51,10 @@ public:
     BaseShader* GlobalPass(int numlights = 0, int numbones = 0);
     BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0, int numbones = 0);
 
+    void OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype);
+
+    void DisableShadowCasting_AndDoItBadly_WillBeReplaced();
+
 public:
 #if MYFW_USING_WX
     static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }

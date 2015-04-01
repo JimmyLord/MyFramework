@@ -23,9 +23,9 @@ class MySprite : public RefCount
 {
 protected:
     bool m_SpriteIsStatic;
+    ShaderGroup* m_pShaderGroup;
 
 public:
-    ShaderGroup* m_pShaderGroup;
     TextureDefinition* m_pTexture;
     int m_TextureID;
 

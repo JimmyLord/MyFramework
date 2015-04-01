@@ -570,11 +570,13 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* invers
     {
         if( m_uHandle_LightPos[i] != -1 )
         {
-            assert( inverseworldmatrix != 0 );
+            //assert( inverseworldmatrix != 0 );
 
             //Vector3 LSlightpos = *inverseworldmatrix * lights[i].m_Position;
-            Vector3 LSlightpos = lights[i].m_Position;
-            glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
+            //glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
+
+            Vector3 WSlightpos = lights[i].m_Position;
+            glUniform3f( m_uHandle_LightPos[i], WSlightpos.x, WSlightpos.y, WSlightpos.z );
         }
 
         if( m_uHandle_LightDir[i] != -1 )

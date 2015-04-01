@@ -22,14 +22,13 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 ShaderGroup::ShaderGroup(MyFileObject* pFile, char* name)
 : m_Name(name)
 {
-    assert( name != 0 );
-
     Initialize();
 
     SetFileForAllPasses( pFile );
     g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
+    assert( name != 0 );
     g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
 #endif
 }
@@ -44,6 +43,32 @@ void ShaderGroup::Initialize()
             {
                 m_pShaderPasses[p][lc][bc] = MyNew Shader_Base( (ShaderPassTypes)p );
             }
+        }
+    }
+}
+
+void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype)
+{
+    int p = originalpasstype;
+
+    for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
+    {
+        for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+        {
+            m_pShaderPasses[p][lc][bc]->m_PassType = newpasstype;
+        }
+    }
+}
+
+void ShaderGroup::DisableShadowCasting_AndDoItBadly_WillBeReplaced()
+{
+    int p = ShaderPass_ShadowCastRGBA;
+
+    for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
+    {
+        for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+        {
+            SAFE_DELETE( m_pShaderPasses[p][lc][bc] );
         }
     }
 }
