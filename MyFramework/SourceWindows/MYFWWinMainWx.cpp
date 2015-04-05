@@ -134,7 +134,7 @@ void MainFrame::AddPanes()
     m_AUIManager.AddPane( g_pPanelObjectList, wxAuiPaneInfo().Name("PanelObjectList").Left().Caption("Objects").Layer(1) );
 }
 
-void MainFrame::UpdateAUIManagerAndLoadPerspective()
+bool MainFrame::UpdateAUIManagerAndLoadPerspective()
 {
     // tell the manager to "commit" all the changes just made
     m_AUIManager.Update();
@@ -152,7 +152,11 @@ void MainFrame::UpdateAUIManagerAndLoadPerspective()
         m_SavedPerspectiveString = wxString( string );
         m_AUIManager.LoadPerspective( m_SavedPerspectiveString );
         delete[] string;
+
+        return true;
     }
+
+    return false;
 }
 
 void MainFrame::OnMove(wxMoveEvent& event)

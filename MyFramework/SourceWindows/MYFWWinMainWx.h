@@ -90,7 +90,7 @@ public:
 
     virtual void InitFrame();
     virtual void AddPanes();
-    void UpdateAUIManagerAndLoadPerspective();
+    virtual bool UpdateAUIManagerAndLoadPerspective(); // returns true if valid window layout was set.
     virtual void OnPostInit() {}
     virtual void OnClose() {}
     
