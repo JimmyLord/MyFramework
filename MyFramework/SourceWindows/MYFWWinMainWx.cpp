@@ -119,7 +119,7 @@ void MainFrame::AddPanes()
     m_pGLCanvas->SetSize( 600, 600 );
 
     // Create the undo/redo command stack
-    if( m_pCommandStack == 0 ) // created in GameMainFrame?
+    if( m_pCommandStack == 0 ) // created in EngineMainFrame?
         m_pCommandStack = MyNew CommandStack;
 
     // create all the panels we need
