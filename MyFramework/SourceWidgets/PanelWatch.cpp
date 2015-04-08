@@ -432,9 +432,9 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         pSlider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         pSlider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
-        pSlider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        pSlider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
-        pSlider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+        //pSlider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+        //pSlider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        //pSlider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
     }
 
     // Edit box
@@ -453,8 +453,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         pTextCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnEditBoxKillFocus), 0, this );
 
-        pTextCtrl->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        pTextCtrl->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        pTextCtrl->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+        pTextCtrl->Connect( wxEVT_RIGHT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
         pTextCtrl->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
 
         if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
@@ -603,7 +603,8 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
 void PanelWatch::OnMouseUp(wxMouseEvent& event)
 {
     //LOGInfo( LOGTag, "OnMouseUp:\n" );
-    event.Skip();
+
+    bool showrightclickmenu = true;
 
     int controlid = event.GetId();
 
@@ -614,8 +615,15 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
         double newvalue, oldvalue;
         bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        SetControlValueFromDouble( controlid, newvalue, m_pVariables[controlid].m_ValueOnLeftMouseDown, true );
+        if( isblank == false && newvalue != m_pVariables[controlid].m_ValueOnLeftMouseDown )
+        {
+            SetControlValueFromDouble( controlid, newvalue, m_pVariables[controlid].m_ValueOnLeftMouseDown, true );
+            showrightclickmenu = false;
+        }
     }
+
+    if( showrightclickmenu )
+        event.Skip();
 }
 
 void PanelWatch::OnMouseMove(wxMouseEvent& event)
@@ -628,16 +636,26 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
     {
         wxPoint pos = event.GetPosition();
         wxPoint lastpos = m_pVariables[controlid].m_LastMousePosition;
+        wxPoint startpos = m_pVariables[controlid].m_StartMousePosition;
 
-        if( m_pVariables[controlid].m_Handle_TextCtrl )
+        if( pos.x != startpos.x )
         {
-            double newvalue, oldvalue;
-            bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+            if( m_pVariables[controlid].m_Handle_TextCtrl )
+            {
+                //wxRect rect = m_pVariables[controlid].m_Handle_TextCtrl->GetClientRect();
 
-            int diff = pos.x - lastpos.x;
-            newvalue += 0.2f * diff;
+                m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
 
-            SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+                double newvalue, oldvalue;
+                bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+
+                int diff = pos.x - lastpos.x;
+                newvalue += 0.2f * diff;
+
+                //LOGInfo( LOGTag, "moved %d %d\n", pos.x, lastpos.x );
+
+                SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+            }
         }
 
         m_pVariables[controlid].m_LastMousePosition = pos;

@@ -90,6 +90,7 @@ struct VariableProperties
 
     Vector4Int m_Rect_XYWH;
 
+    // using with right mouse now, used by text controls to change numbers.
     double m_ValueOnLeftMouseDown;
     wxPoint m_StartMousePosition;
     wxPoint m_LastMousePosition;
