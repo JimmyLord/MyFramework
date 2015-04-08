@@ -90,8 +90,10 @@ struct VariableProperties
 
     Vector4Int m_Rect_XYWH;
 
-    int m_SliderValueOnLeftMouseDown;
-    bool m_SliderLeftMouseIsDown;
+    double m_ValueOnLeftMouseDown;
+    wxPoint m_StartMousePosition;
+    wxPoint m_LastMousePosition;
+    bool m_LeftMouseIsDown;
 };
 
 class PanelWatch : public wxScrolledWindow
@@ -141,6 +143,9 @@ public:
 
     void SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc);
     void ClearAllVariables();
+
+    bool GetTextCtrlValueAsDouble(int controlid, double* valuenew, double* valueold); // returns true if blank
+    void SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging);
 
     int AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
     int AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc);

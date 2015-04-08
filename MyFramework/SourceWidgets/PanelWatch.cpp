@@ -19,13 +19,13 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
 { // control    label                                          widths
   // height, font,wdt,pdg, style                   slider, editbox, colorpicker
   //          hgt     bot,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Int,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_UnsignedInt,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Char,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Bool,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Float,
-    {    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Double,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_Double,
   //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          0, }, //PanelWatchType_Vector3,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,        115, }, //PanelWatchType_ColorFloat,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          0, }, //PanelWatchType_PointerWithDesc,
@@ -65,8 +65,10 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
         m_pVariables[i].m_pOnDropCallbackFunc = 0;
         m_pVariables[i].m_pOnButtonPressedCallbackFunc = 0;
         m_pVariables[i].m_pOnValueChangedCallBackFunc = 0;
-        m_pVariables[i].m_SliderValueOnLeftMouseDown = 0;
-        m_pVariables[i].m_SliderLeftMouseIsDown = 0;
+        m_pVariables[i].m_ValueOnLeftMouseDown = 0;
+        m_pVariables[i].m_LeftMouseIsDown = 0;
+        m_pVariables[i].m_StartMousePosition = wxPoint(0,0);
+        m_pVariables[i].m_LastMousePosition = wxPoint(0,0);
     }
 
     m_pTimer = MyNew wxTimer( this, wxID_ANY );
@@ -352,7 +354,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
     if( component >= 0 )
     {
-        LabelWidth = 5;
+        LabelWidth = 10;
         SliderWidth = 30;
         TextCtrlWidth = 45;
 
@@ -417,22 +419,22 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             sliderfloatmultiplier = WXSlider_Float_Multiplier;
         }
 
-        m_pVariables[variablenum].m_Handle_Slider = MyNew wxSlider( this, variablenum, 0,
+        wxSlider* pSlider = MyNew wxSlider( this, variablenum, 0,
             m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier, // min
             m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier, // max
             wxPoint(PosX, PosY), wxSize(SliderWidth, SliderHeight) );
 
-        //m_pVariables[variablenum].m_Handle_Slider->set
+        m_pVariables[variablenum].m_Handle_Slider = pSlider;
 
         PosX += SliderWidth;
 
         // if control gets focus, stop updates.
-        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        pSlider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+        pSlider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
-        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
-        m_pVariables[variablenum].m_Handle_Slider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+        pSlider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+        pSlider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        pSlider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
     }
 
     // Edit box
@@ -450,6 +452,10 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         // if control gets focus, stop updates.
         pTextCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
         pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnEditBoxKillFocus), 0, this );
+
+        pTextCtrl->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+        pTextCtrl->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+        pTextCtrl->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
 
         if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         {
@@ -569,12 +575,28 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
-    if( m_pVariables[controlid].m_Handle_Slider )
-    {
-        int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-        m_pVariables[controlid].m_SliderLeftMouseIsDown = true;
-        m_pVariables[controlid].m_SliderValueOnLeftMouseDown = value;
+    wxPoint pos = event.GetPosition();
+
+    if( pVar->m_Handle_Slider )
+    {
+        int value = pVar->m_Handle_Slider->GetValue();
+
+        pVar->m_LeftMouseIsDown = true;
+        pVar->m_ValueOnLeftMouseDown = value;
+        pVar->m_StartMousePosition = pos;
+        pVar->m_LastMousePosition = pos;
+    }
+    if( pVar->m_Handle_TextCtrl )
+    {
+        double newvalue, oldvalue;
+        bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+
+        pVar->m_LeftMouseIsDown = true;
+        pVar->m_ValueOnLeftMouseDown = newvalue;
+        pVar->m_StartMousePosition = pos;
+        pVar->m_LastMousePosition = pos;
     }
 }
 
@@ -584,16 +606,15 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
-    if( m_pVariables[controlid].m_Handle_Slider )
+
+    if( m_pVariables[controlid].m_Handle_TextCtrl )
     {
-        int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
+        m_pVariables[controlid].m_LeftMouseIsDown = false;
 
-        //wxEventType eventtype = event.GetEventType();
-        //LOGInfo( LOGTag, "OnMouseUp: type:%d value:%d\n", eventtype, value );
+        double newvalue, oldvalue;
+        bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        m_pVariables[controlid].m_SliderLeftMouseIsDown = false;
-
-        OnSliderChanged( controlid, value, true );
+        SetControlValueFromDouble( controlid, newvalue, m_pVariables[controlid].m_ValueOnLeftMouseDown, true );
     }
 }
 
@@ -603,21 +624,23 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
 
     event.Skip();
 
-    if( m_pVariables[controlid].m_SliderLeftMouseIsDown )
+    if( m_pVariables[controlid].m_LeftMouseIsDown )
     {
         wxPoint pos = event.GetPosition();
+        wxPoint lastpos = m_pVariables[controlid].m_LastMousePosition;
 
-        wxRect rect = m_pVariables[controlid].m_Handle_Slider->GetClientRect();
-        int min = m_pVariables[controlid].m_Handle_Slider->GetMin();
-        int max = m_pVariables[controlid].m_Handle_Slider->GetMax();
-        if( pos.x > rect.x + rect.width + 20 )
+        if( m_pVariables[controlid].m_Handle_TextCtrl )
         {
-            m_pVariables[controlid].m_Handle_Slider->SetMax( max + 1000 );
+            double newvalue, oldvalue;
+            bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+
+            int diff = pos.x - lastpos.x;
+            newvalue += 0.2f * diff;
+
+            SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
         }
-        if( pos.x < rect.x - 20 )
-        {
-            m_pVariables[controlid].m_Handle_Slider->SetMin( min - 1000 );
-        }
+
+        m_pVariables[controlid].m_LastMousePosition = pos;
     }
 }
 
@@ -653,81 +676,82 @@ void PanelWatch::OnTextCtrlEnter(wxCommandEvent& event)
         m_pVariables[controlid+1].m_Handle_Slider->Navigate();
 }
 
-void PanelWatch::OnTextCtrlChanged(int controlid)
+// returns true if blank
+bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, double* valueold)
 {
-    //LOGInfo( LOGTag, "OnTextCtrlChanged start %f\n", *(float*)m_pVariables[controlid].m_Pointer );
     wxString wxstr = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
 
     bool isblank = false;
     if( wxstr == "" )
+    {
         isblank = true;
+        return isblank;
+    }
 
     // TODO: evaluate wxstr as math op, not just a simple atoi or atof.
 
-    double valueold = 0;
-    double valuenew = 0;
     //double valueint;
     switch( m_pVariables[controlid].m_Type )
     {
     case PanelWatchType_Int:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(int*)m_pVariables[controlid].m_Pointer;
-            valuenew = wxAtoi( wxstr );
+            *valueold = *(int*)m_pVariables[controlid].m_Pointer;
+            *valuenew = wxAtoi( wxstr );
             //*((int*)m_pVariables[controlid].m_Pointer) = valueint;
         }
         break;
 
     case PanelWatchType_UnsignedInt:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(unsigned int*)m_pVariables[controlid].m_Pointer;
-            valuenew = wxAtoi( wxstr );
+            *valueold = *(unsigned int*)m_pVariables[controlid].m_Pointer;
+            *valuenew = wxAtoi( wxstr );
             //*((unsigned int*)m_pVariables[controlid].m_Pointer) = valueint;
         }
         break;
 
     case PanelWatchType_Char:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(char*)m_pVariables[controlid].m_Pointer;
-            valuenew = wxAtoi( wxstr );
+            *valueold = *(char*)m_pVariables[controlid].m_Pointer;
+            *valuenew = wxAtoi( wxstr );
             //*((char*)m_pVariables[controlid].m_Pointer) = (char)valueint;
         }
         break;
 
     case PanelWatchType_UnsignedChar:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(unsigned char*)m_pVariables[controlid].m_Pointer;
-            valuenew = wxAtoi( wxstr );
+            *valueold = *(unsigned char*)m_pVariables[controlid].m_Pointer;
+            *valuenew = wxAtoi( wxstr );
             //*((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valueint;
         }
         break;
 
     case PanelWatchType_Bool:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(bool*)m_pVariables[controlid].m_Pointer;
-            valuenew = wxAtoi( wxstr );
+            *valueold = *(bool*)m_pVariables[controlid].m_Pointer;
+            *valuenew = wxAtoi( wxstr );
             //*((bool*)m_pVariables[controlid].m_Pointer) = valueint > 0 ? true : false;
         }
         break;
 
     case PanelWatchType_Float:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(float*)m_pVariables[controlid].m_Pointer;
-            wxstr.ToDouble( &valuenew );
+            *valueold = *(float*)m_pVariables[controlid].m_Pointer;
+            wxstr.ToDouble( valuenew );
             //*((float*)m_pVariables[controlid].m_Pointer) = (float)valuedouble;
         }
         break;
 
     case PanelWatchType_Double:
-        if( isblank == false )
+        //if( isblank == false )
         {
-            valueold = *(double*)m_pVariables[controlid].m_Pointer;
-            wxstr.ToDouble( &valuenew );
+            *valueold = *(double*)m_pVariables[controlid].m_Pointer;
+            wxstr.ToDouble( valuenew );
             //*((double*)m_pVariables[controlid].m_Pointer) = valuedouble;
         }
         break;
@@ -747,6 +771,81 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
     default:
         break;
     }
+
+    return false;//isblank;
+}
+
+void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging)
+{
+    switch( m_pVariables[controlid].m_Type )
+    {
+    case PanelWatchType_Int:
+        *((int*)m_pVariables[controlid].m_Pointer) = valuenew;
+        break;
+
+    case PanelWatchType_UnsignedInt:
+        *((unsigned int*)m_pVariables[controlid].m_Pointer) = valuenew;
+        break;
+
+    case PanelWatchType_Char:
+        *((char*)m_pVariables[controlid].m_Pointer) = (char)valuenew;
+        break;
+
+    case PanelWatchType_UnsignedChar:
+        *((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valuenew;
+        break;
+
+    case PanelWatchType_Bool:
+        *((bool*)m_pVariables[controlid].m_Pointer) = valuenew > 0 ? true : false;
+        break;
+
+    case PanelWatchType_Float:
+        *((float*)m_pVariables[controlid].m_Pointer) = valuenew;
+        break;
+
+    case PanelWatchType_Double:
+        *((double*)m_pVariables[controlid].m_Pointer) = valuenew;
+        break;
+
+    //case PanelWatchType_Vector3:
+    //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+    //    break;
+    }
+
+    {
+        if( finishedchanging )
+        {
+            if( valueold != valuenew )
+            {
+                // add the command to the undo stack and value was already changed.
+                m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
+                    valuenew - valueold,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_pOnValueChangedCallBackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+    
+                // call the parent object to say it's value changed... finished changing.
+                if( m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+                    m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+            }
+        }
+        else
+        {
+            // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
+            if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallBackFunc )
+                m_pVariables[controlid].m_pOnValueChangedCallBackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false );
+        }
+    }
+
+    UpdatePanel( controlid );
+}
+
+void PanelWatch::OnTextCtrlChanged(int controlid)
+{
+    double valueold = 0;
+    double valuenew = 0;
+    GetTextCtrlValueAsDouble( controlid, &valuenew, &valueold ); //bool isblank = 
+
+    //LOGInfo( LOGTag, "OnTextCtrlChanged start %f\n", *(float*)m_pVariables[controlid].m_Pointer );
 
     if( m_pVariables[controlid].m_Handle_Slider )
     {
@@ -800,7 +899,7 @@ void PanelWatch::OnSliderChanged(wxScrollEvent& event)
 {
     int controlid = event.GetId();
 
-    if( m_pVariables[controlid].m_SliderLeftMouseIsDown == false )
+    if( m_pVariables[controlid].m_LeftMouseIsDown == false )
         return;
 
     int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
@@ -856,7 +955,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
         if( addundocommand )
         {
             double valuenew = value;
-            double valueold = m_pVariables[controlid].m_SliderValueOnLeftMouseDown;
+            double valueold = m_pVariables[controlid].m_ValueOnLeftMouseDown;
 
             if( m_pVariables[controlid].m_Type == PanelWatchType_Float ||
                 m_pVariables[controlid].m_Type == PanelWatchType_Double ) //||
