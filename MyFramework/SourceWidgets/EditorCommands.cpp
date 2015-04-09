@@ -34,6 +34,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
     switch( m_Type )
     {
     case PanelWatchType_Int:
+    case PanelWatchType_Enum:
         *(int*)m_Pointer += m_Difference;
         break;
 
@@ -84,6 +85,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     switch( m_Type )
     {
     case PanelWatchType_Int:
+    case PanelWatchType_Enum:
         *(int*)m_Pointer -= m_Difference;
         break;
 

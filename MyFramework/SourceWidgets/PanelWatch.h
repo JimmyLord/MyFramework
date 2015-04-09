@@ -25,6 +25,7 @@ struct PanelWatchControlInfo
     int sliderwidth;
     int editboxwidth;
     int colorpickerwidth;
+    int choiceboxwidth;
 };
 
 enum PanelWatch_Types
@@ -39,6 +40,7 @@ enum PanelWatch_Types
     //PanelWatchType_Vector3,
     PanelWatchType_ColorFloat,
     PanelWatchType_PointerWithDesc,
+    PanelWatchType_Enum,
     PanelWatchType_SpaceWithLabel,
     PanelWatchType_Button,
 
@@ -78,15 +80,18 @@ struct VariableProperties
     wxSlider* m_Handle_Slider;
     wxButton* m_Handle_Button;
     wxColourPickerCtrl* m_Handle_ColourPicker;
+    wxChoice* m_Handle_ChoiceBox;
 
     void* m_Pointer;
     Vector2 m_Range;
     const char* m_Description;
+    int m_NumEnumTypes;
+    wxString* m_pEnumStrings;
     PanelWatch_Types m_Type;
     void* m_pCallbackObj;
     PanelWatchCallback m_pOnDropCallbackFunc;
     PanelWatchCallback m_pOnButtonPressedCallbackFunc;
-    PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
+    PanelWatchCallbackWithID m_pOnValueChangedCallbackFunc;
 
     Vector4Int m_Rect_XYWH;
 
@@ -121,6 +126,7 @@ public:
     void UpdatePanel(int controltoupdate = -1);
 
     void OnButtonPressed(wxCommandEvent& event);
+    void OnChoiceBoxChanged(wxCommandEvent& event);
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
     void OnEditBoxKillFocus(wxFocusEvent& event);
@@ -150,6 +156,7 @@ public:
 
     int AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
     int AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc);
+    int AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, float min, float max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols);
 
     int AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
@@ -163,6 +170,7 @@ public:
     int AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallback pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc);
 };
