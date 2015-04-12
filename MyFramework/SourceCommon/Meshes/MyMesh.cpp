@@ -118,20 +118,20 @@ void MyMesh::OnSaveAnimationsPressed()
     SaveAnimationControlFile();
 }
 
-void MyMesh::OnValueChanged(int id, bool finishedchanging)
+void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
 {
-    if( id != -1 )
+    if( controlid != -1 )
     {
         int animthatchanged = -1;
         for( int i=0; i<MAX_ANIMATIONS; i++ )
         {
-            if( id == m_ControlID_AnimationName[i] )
+            if( controlid == m_ControlID_AnimationName[i] )
                 animthatchanged = i;                
         }
 
         if( animthatchanged )
         {
-            wxString text = g_pPanelWatch->m_pVariables[id].m_Handle_TextCtrl->GetValue();
+            wxString text = g_pPanelWatch->m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
             m_pAnimations[animthatchanged]->SetName( text );
         }
     }

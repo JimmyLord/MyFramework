@@ -633,7 +633,7 @@ void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
         // add the command to the undo stack and change the value at the same time.
         m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
             valuenew - valueold,
-            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
             m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
     }
 }
@@ -933,7 +933,7 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
                 // add the command to the undo stack and value was already changed.
                 m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
                     m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
     
                 // call the parent object to say it's value changed... finished changing.
@@ -999,7 +999,7 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
                 // add the command to the undo stack and change the value at the same time.
                 m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
                     m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
             }
         }
@@ -1084,7 +1084,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
                 // add the command to the undo stack and value was already changed.
                 m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
                     m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
     
                 // call the parent object to say it's value changed... finished changing.
@@ -1114,7 +1114,7 @@ void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
     // add the command to the undo stack and change the value at the same time.
     m_pCommandStack->Do( MyNew EditorCommand_PanelWatchColorChanged(
         asfloats,
-        m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer,
+        m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
         m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
 }
 

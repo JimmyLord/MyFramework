@@ -29,12 +29,13 @@ protected:
     double m_Difference;
     PanelWatch_Types m_Type;
     void* m_Pointer;
+    int m_ControlID;
 
     PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
     void* m_pCallbackObj;
 
 public:
-    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
+    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchNumberValueChanged();
 
     virtual void Do();
@@ -51,12 +52,13 @@ protected:
     ColorFloat m_OldColor;
     PanelWatch_Types m_Type;
     void* m_Pointer;
+    int m_ControlID;
 
     PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
     void* m_pCallbackObj;
 
 public:
-    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
+    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchColorChanged();
 
     virtual void Do();
