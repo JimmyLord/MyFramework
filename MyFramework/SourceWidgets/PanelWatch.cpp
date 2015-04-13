@@ -620,6 +620,8 @@ void PanelWatch::OnButtonPressed(wxCommandEvent& event)
 
 void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
 {
+    //LOGInfo( LOGTag, "OnChoiceBoxChanged\n" );
+
     event.Skip();
 
     int controlid = event.GetId();

@@ -223,6 +223,7 @@ void BufferDefinition::ResetVAOs()
 void BufferDefinition::FreeBufferedData()
 {
     SAFE_DELETE_ARRAY( m_pData );
+    m_DataSize = 0;
 }
 
 void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)

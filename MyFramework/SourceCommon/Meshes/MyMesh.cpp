@@ -1013,7 +1013,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
        4,  9,  5,    2,  4, 11,    6,  2, 10,    8,  6,  7,    9,  8,  1,  // 5 adjacent faces
     };
 
-    for( int i=0; i<80; i++ )
+    for( int i=0; i<60; i++ )
         pIndices[i] = indexlist[i];
 
     m_MeshReady = true;

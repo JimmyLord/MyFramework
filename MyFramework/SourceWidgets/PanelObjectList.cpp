@@ -82,6 +82,7 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     }
 
     // resume draws on watch panel
+    g_pPanelWatch->UpdatePanel();
     g_pPanelWatch->Thaw();
 }
 
