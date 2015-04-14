@@ -69,6 +69,9 @@ public:
     // get values from matrix
     Vector3 GetTranslation() { return Vector3( m41, m42, m43 ); }
     Vector3 GetEulerAngles();
+    Vector3 GetUp();
+    Vector3 GetRight();
+    Vector3 GetAt();
 
     void Transpose()
     {

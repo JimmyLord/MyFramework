@@ -357,3 +357,18 @@ Vector3 MyMatrix::GetEulerAngles()
         return Vector3( x, y, z );
     }
 }
+
+Vector3 MyMatrix::GetUp()
+{
+    return Vector3( m21, m22, m23 );
+}
+
+Vector3 MyMatrix::GetRight()
+{
+    return Vector3( m11, m12, m13 );
+}
+
+Vector3 MyMatrix::GetAt()
+{
+    return Vector3( m31, m32, m33 );
+}
