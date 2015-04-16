@@ -11,7 +11,7 @@
 
 double MyTime_GetSystemTime(bool realtime)
 {
-#if MYFW_IOS
+#if MYFW_IOS || MYFW_OSX
     return CFAbsoluteTimeGetCurrent();
 #elif MYFW_ANDROID || MYFW_BLACKBERRY //|| MYFW_EMSCRIPTEN
     timespec time;

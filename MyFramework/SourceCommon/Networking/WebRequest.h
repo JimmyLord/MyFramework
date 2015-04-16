@@ -18,7 +18,7 @@
 #ifndef __WebRequest_H__
 #define __WebRequest_H__
 
-#if MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_EMSCRIPTEN
+#if MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
 //#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

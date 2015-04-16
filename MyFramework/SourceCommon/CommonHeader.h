@@ -254,6 +254,23 @@ typedef unsigned long   u_long;
 #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #define glGenVertexArrays glGenVertexArraysAPPLE
 #define glIsVertexArray glIsVertexArrayAPPLE
+#define USE_LOADWAVESFROMFILESYSTEM 1
+#define USE_OPENAL 1
+#include <pthread.h>
+#include <time.h>
+#include <CoreFoundation/CFDate.h>
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#include <OpenGL/gl.h>
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#include "../SourceIOS/TextureLoader.h"
+//#include "../SourceWindows/TextureLoader.h"
+#include "Sound/SoundPlayerOpenAL.h"
+#include "../SourceIOS/SavedData.h"
+//#include "../SourceWindows/SavedData.h"
+#include "Networking/WebRequest.h"
+//#include "../SourceIOS/GameCenter.h"
 #endif
 
 #if MYFW_WP8
@@ -293,16 +310,18 @@ typedef unsigned long   u_long;
 #include <netdb.h> // for gethostbyname()
 #include <errno.h>
 #include <fcntl.h>
-#include <cstdio> // for "close" on IOS at least.#define WSAEISCONN EISCONN
+#include <cstdio> // for "close" on IOS... at least.
+#include <unistd.h> // for "close" on OSX... at least.
+#define WSAEISCONN EISCONN
 #define WSAEINPROGRESS EINPROGRESS
 #define WSAEWOULDBLOCK EWOULDBLOCK
 #define WSAEALREADY EALREADY
 #define WSAEINVAL EINVAL
 #define WSAEISCONN EISCONN
-#if MYFW_EMSCRIPTEN
-//#define INADDR_NONE -1
-#include <unistd.h>
-#endif
+	#if MYFW_EMSCRIPTEN
+	//#define INADDR_NONE -1
+	#include <unistd.h>
+	#endif
 #else
 #define close closesocket
 typedef int socklen_t;

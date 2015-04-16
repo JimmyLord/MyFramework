@@ -216,6 +216,8 @@ MySaveFileObject* CreatePlatformSpecificSaveFile()
     pSaveFile = MyNew MySaveFileObject_FILE();
 #elif MYFW_IOS
     pSaveFile = MyNew MySaveFileObject_FILE();
+#elif MYFW_OSX
+    pSaveFile = MyNew MySaveFileObject_FILE();
 #elif MYFW_EMSCRIPTEN
     LOGError( LOGTag, "Save file not implemented\n" );
 #endif
@@ -323,7 +325,7 @@ void MySaveFileObject_FILE::Tick()
     }
 }
 
-#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS
+#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX
 MyFileObject* RequestFile(const char* filename)
 {
     return g_pFileManager->RequestFile( filename );

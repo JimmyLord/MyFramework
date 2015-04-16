@@ -30,7 +30,7 @@ extern MessageLogCallbackFunction g_pMessageLogCallbackFunction;
 #if MYFW_WINDOWS || (MYFW_WP8 && _DEBUG)
 void LOGInfo(const char* tag, const char* message, ...);
 void LOGError(const char* tag, const char* message, ...);
-#elif _DEBUG && (MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_EMSCRIPTEN)
+#elif _DEBUG && (MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN)
 void LOGInfo(const char* tag, const char* message, ...);
 void LOGError(const char* tag, const char* message, ...);
 #else

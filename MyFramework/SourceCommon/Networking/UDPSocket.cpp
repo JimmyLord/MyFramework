@@ -89,7 +89,7 @@ void UDPSocket::Create(unsigned short port)
         m_SocketHandle = 0;
         return;
     }
-#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS
+#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS || MYFW_OSX
     if( fcntl( m_SocketHandle, F_SETFL, O_NONBLOCK ) )
     {
         LOGInfo( LOGTag, "non blocking call failed\n" );

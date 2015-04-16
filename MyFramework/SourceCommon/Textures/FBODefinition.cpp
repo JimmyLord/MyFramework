@@ -156,7 +156,7 @@ bool FBODefinition::Create()
     // create a depth renderbuffer.
     if( m_DepthBufferID != 0 )
     {
-#if !MYFW_IOS
+#if !MYFW_OPENGLES2
         GLint depthformat = GL_DEPTH_COMPONENT32;
         if( m_DepthBits == 24 )
             depthformat = GL_DEPTH_COMPONENT24;

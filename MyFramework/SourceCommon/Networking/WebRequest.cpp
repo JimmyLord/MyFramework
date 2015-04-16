@@ -52,6 +52,8 @@ static int WSAGetLastError() { return errno; }
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (BADA)\r\n\r\n"
 #elif MYFW_IOS
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (IOS)\r\n\r\n"
+#elif MYFW_OSX
+#define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (OSX)\r\n\r\n"
 #elif MYFW_WP8
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (WP8)\r\n\r\n"
 #elif MYFW_EMSCRIPTEN
@@ -272,7 +274,7 @@ void WebRequestObject::CreateSocket()
 #if MYFW_WINDOWS || MYFW_WP8
     unsigned long i=1;
     int nonblockerr = ioctlsocket( m_Sock, FIONBIO, &i ); // set non-blocking
-#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS || MYFW_EMSCRIPTEN
+#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
     int nonblockerr = fcntl( m_Sock, F_SETFL, O_NONBLOCK );
 #elif SYSTEM_LINUX
     int nonblockerr = fcntl( m_Sock, F_SETFL, O_NONBLOCK );

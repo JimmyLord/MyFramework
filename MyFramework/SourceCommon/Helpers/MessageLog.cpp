@@ -49,7 +49,7 @@ void LOGError(const char* tag, const char* message, ...)
     }
 }
 
-#elif MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_EMSCRIPTEN
+#elif MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
 
 #if MYFW_NACL
 #include "../../SourceNaCL/MainInstance.h"

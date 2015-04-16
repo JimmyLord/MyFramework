@@ -18,10 +18,12 @@
 #ifndef __SoundPlayer_H__
 #define __SoundPlayer_H__
 
-#if MYFW_IOS
+#if MYFW_IOS || MYFW_OSX
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include <OpenAL/oalStaticBufferExtension.h>
+	#if MYFW_IOS
+	#include <OpenAL/oalStaticBufferExtension.h>
+	#endif //MYFW_IOS
 #define USE_ALUT    0
 #elif MYFW_WINDOWS
 #include <al.h>

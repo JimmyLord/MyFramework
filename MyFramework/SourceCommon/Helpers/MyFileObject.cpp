@@ -34,12 +34,12 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     sprintf_s( fullpath, MAX_PATH, "app/native/%s", filename );
 
     filehandle = fopen( fullpath, "rb" );
-#elif MYFW_IOS
+#elif MYFW_IOS || MYFW_OSX
     const char* fullpath = filename;
     
     filehandle = IOS_fopen( fullpath );
 #else
-    char* fullpath = filename;
+    const char* fullpath = filename;
 
     filehandle = fopen( fullpath, "rb" );
 #endif
