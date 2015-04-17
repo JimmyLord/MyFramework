@@ -666,8 +666,6 @@ int MYFWWinMain(int width, int height)
 
     KillGLWindow();
 
-    ValidateAllocations( true );
-
     WSACleanup();
 
     return msg.wParam;
