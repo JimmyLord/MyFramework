@@ -14,15 +14,34 @@
 
 #define MEMORY_ShowDebugInfo   0
 
+class AllocationList
+{
+public:
+    CPPListHead m_Allocations;
+
+    AllocationList()
+    {
+        int bp = 1;
+    }
+
+    ~AllocationList()
+    {
+        ValidateAllocations( true );
+    }
+};
+
 CPPListHead StaticallyAllocatedRam;
-CPPListHead AllocatedRam;
+AllocationList* g_pAllocationList = 0;
+//CPPListHead AllocatedRam;
 int TotalAllocatedRam = 0;
+int AllocatedRamCount = 0;
 
 void ValidateAllocations(bool AssertOnAnyAllocation)
 {
 #if MYFW_WINDOWS && _DEBUG
+    LOGInfo( LOGTag, "Start dumping unfreed memory allocations.\n" );
     CPPListNode* pNode;
-    for( pNode = AllocatedRam.HeadNode.Next; pNode->Next; pNode = pNode->Next )
+    for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )
     {
         MemObject* obj = (MemObject*)pNode;
         assert( obj->m_size < 200000 );
@@ -31,10 +50,11 @@ void ValidateAllocations(bool AssertOnAnyAllocation)
         assert( obj->Next != NULL );
         assert( obj->Prev != NULL );
 
-        LOGInfo( LOGTag, "%s(%d): %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_size );
+        LOGInfo( LOGTag, "%s(%d)(%d): %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
         if( AssertOnAnyAllocation )
             assert( false );
     }
+    LOGInfo( LOGTag, "End dumping unfreed memory allocations.\n" );
 #endif
 }
 
@@ -44,7 +64,7 @@ int GetMemoryUsageCount()
 
 #if MYFW_WINDOWS && _DEBUG
     CPPListNode* pNode;
-    for( pNode = AllocatedRam.HeadNode.Next; pNode->Next; pNode = pNode->Next )
+    for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )
     {
         MemObject* obj = (MemObject*)pNode;
         count += obj->m_size;
@@ -65,9 +85,11 @@ void MarkAllExistingAllocationsAsStatic()
 
     // Used again in wxWidgets build, event tables (BEGIN_EVENT_TABLE...END_EVENT_TABLE) are statically allocated
 
+    return;
+
     CPPListNode* pNode;
 
-    for( pNode = AllocatedRam.HeadNode.Next; pNode && pNode->Next; )
+    for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode && pNode->Next; )
     {
         CPPListNode* pNodeToMove = pNode;
         pNode = pNode->GetNext();
@@ -92,6 +114,14 @@ void operator delete[](void* m, char* file, unsigned long line)
 
 void* operator new(size_t size, char* file, unsigned long line)
 {
+    if( g_pAllocationList == 0 )
+    {
+        g_pAllocationList = (AllocationList*)1;
+        g_pAllocationList = new AllocationList;
+    }
+    if( g_pAllocationList == (AllocationList*)1 )
+        g_pAllocationList = 0;
+
     assert( file != 0 );
     //if( file == 0 && size == 380 )
     //    int bp = 1;
@@ -101,14 +131,16 @@ void* operator new(size_t size, char* file, unsigned long line)
     mo->m_type = newtype_reg;
     mo->m_file = file;
     mo->m_line = line;
-    if( AllocatedRam.HeadNode.Next == 0 )
+    mo->m_allocationcount = AllocatedRamCount;
+    if( g_pAllocationList == 0 )
     {
+        assert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
     }
     else
-        AllocatedRam.AddHead(mo);
+        g_pAllocationList->m_Allocations.AddHead(mo);
 
     if( mo->m_file == 0 )
     {
@@ -121,24 +153,35 @@ void* operator new(size_t size, char* file, unsigned long line)
 #endif
 
     TotalAllocatedRam += (int)size;
+    AllocatedRamCount++;
     return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
 }
 
 void* operator new[](size_t size, char* file, unsigned long line)
 {
+    if( g_pAllocationList == 0 )
+    {
+        g_pAllocationList = (AllocationList*)1;
+        g_pAllocationList = new AllocationList;
+    }
+    if( g_pAllocationList == (AllocationList*)1 )
+        g_pAllocationList = 0;
+
     MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
     mo->m_size = size;
     mo->m_type = newtype_array;
     mo->m_file = file;
     mo->m_line = line;
-    if( AllocatedRam.HeadNode.Next == 0 )
+    mo->m_allocationcount = AllocatedRamCount;
+    if( g_pAllocationList == 0 )
     {
+        assert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
     }
     else
-        AllocatedRam.AddHead(mo);
+        g_pAllocationList->m_Allocations.AddHead(mo);
 
     if( mo->m_file == 0 )
     {
@@ -151,11 +194,20 @@ void* operator new[](size_t size, char* file, unsigned long line)
 #endif
 
     TotalAllocatedRam += (int)size;
+    AllocatedRamCount++;
     return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
 }
 
 void* operator new(size_t size)
 {
+    if( g_pAllocationList == 0 )
+    {
+        g_pAllocationList = (AllocationList*)1;
+        g_pAllocationList = new AllocationList;
+    }
+    if( g_pAllocationList == (AllocationList*)1 )
+        g_pAllocationList = 0;
+
     //if( size == 16 )
     //    int bp = 1;
 
@@ -164,14 +216,16 @@ void* operator new(size_t size)
     mo->m_type = newtype_reg;
     mo->m_file = 0;
     mo->m_line = 0;
-    if( AllocatedRam.HeadNode.Next == 0 )
+    mo->m_allocationcount = AllocatedRamCount;
+    if( g_pAllocationList == 0 )
     {
+        assert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
     }
     else
-        AllocatedRam.AddHead(mo);
+        g_pAllocationList->m_Allocations.AddHead( mo );
 
     if( mo->m_file == 0 )
     {
@@ -184,6 +238,7 @@ void* operator new(size_t size)
 #endif
 
     TotalAllocatedRam += (int)size;
+    AllocatedRamCount++;
     return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
 }
 
@@ -197,7 +252,9 @@ void operator delete(void* m)
     assert( mo->m_type == newtype_reg );
     //if( mo->m_type == newtype_reg )
     {
-        if( mo->Next == 0 )
+        if( mo->m_allocationcount == 0 )
+            LOGInfo( LOGTag, "deleting allocation list...\n" );
+        else if( mo->Next == 0 )
             LOGInfo( LOGTag, "deleting object that wasn't added to list...\n" );
         else
             mo->Remove();
@@ -208,25 +265,42 @@ void operator delete(void* m)
 #endif
 
     //memset(mo, 0, sizeof(mo));
+    
+    int thisallocationcount = mo->m_allocationcount;
+
     TotalAllocatedRam -= (int)size;
     free(mo);
+
+    // will only work if the first allocation is also the last one freed... likely a static allocation.
+    if( thisallocationcount == 1 )
+        delete g_pAllocationList;
 }
 
 void* operator new[](size_t size)
 {
+    if( g_pAllocationList == 0 )
+    {
+        g_pAllocationList = (AllocationList*)1;
+        g_pAllocationList = new AllocationList;
+    }
+    if( g_pAllocationList == (AllocationList*)1 )
+        g_pAllocationList = 0;
+
     MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
     mo->m_size = size;
     mo->m_type = newtype_array;
     mo->m_file = 0;
     mo->m_line = 0;
-    if( AllocatedRam.HeadNode.Next == 0 )
+    mo->m_allocationcount = AllocatedRamCount;
+    if( g_pAllocationList == 0 )
     {
+        assert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
     }
     else
-        AllocatedRam.AddHead(mo);
+        g_pAllocationList->m_Allocations.AddHead(mo);
 
     if( mo->m_file == 0 )
     {
@@ -239,6 +313,7 @@ void* operator new[](size_t size)
 #endif
 
     TotalAllocatedRam += (int)size;
+    AllocatedRamCount++;
     return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
 }
 
@@ -252,7 +327,9 @@ void operator delete[](void* m)
     assert( mo->m_type == newtype_array );
     //if( mo->m_type == newtype_array )
     {
-        if( mo->Next == 0 )
+        if( mo->m_allocationcount == 0 )
+            LOGInfo( LOGTag, "deleting allocation list...\n" );
+        else if( mo->Next == 0 )
             LOGInfo( LOGTag, "deleting object that wasn't added to list...\n" );
         else
             mo->Remove();
@@ -262,8 +339,14 @@ void operator delete[](void* m)
     LOGInfo( LOGTag, "FREE ARRAY: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, m, mo->m_file, mo->m_line );
 #endif
 
+    int thisallocationcount = mo->m_allocationcount;
+
     TotalAllocatedRam -= (int)size;
     free(mo);
+
+    // will only work if the first allocation is also the last one freed... likely a static allocation.
+    if( thisallocationcount == 1 )
+        delete g_pAllocationList;
 }
 
 #endif //MYFW_WINDOWS

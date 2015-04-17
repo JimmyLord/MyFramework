@@ -295,7 +295,7 @@ void MyMesh::SaveAnimationControlFile()
     fprintf( pFile, "%s", jsonstr );
     fclose( pFile );
 
-    free( jsonstr );
+    cJSONExt_free( jsonstr );
 }
 #endif
 

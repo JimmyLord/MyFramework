@@ -33,19 +33,22 @@ public:
     unsigned long m_line;
     char* m_file;
     int m_type;
+    int m_allocationcount;
 
     MemObject() :
         m_size(0),
         m_line(0),
         m_file(0),
-        m_type(0)
+        m_type(0),
+        m_allocationcount(0)
     {
     }
 };
 
 extern CPPListHead StaticallyAllocatedRam;
-extern CPPListHead AllocatedRam;
+//extern CPPListHead AllocatedRam;
 extern int TotalAllocatedRam;
+extern int AllocatedRamCount;
 
 void ValidateAllocations(bool AssertOnAnyAllocation);
 int GetMemoryUsageCount();

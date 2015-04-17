@@ -24,6 +24,15 @@ GLViewTypes g_CurrentGLViewType;
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
+    m_MenuBar = 0;
+    m_File = 0;
+    m_Edit = 0;
+    m_View = 0;
+    m_Aspect = 0;
+
+    m_pGLCanvas = 0;
+    m_pCommandStack = 0;
+
     m_WindowX = 0;
     m_WindowY = 0;
     m_ClientWidth = 0;
@@ -332,7 +341,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wxEntryCleanup();
 
     //_CrtDumpMemoryLeaks();
-    ValidateAllocations( true );
+    //ValidateAllocations( true );
 
     return ret;
 }
@@ -345,6 +354,10 @@ MainApp* g_pMainApp = 0;
 
 bool MainApp::OnInit()
 {
+#if _DEBUG && MYFW_WINDOWS
+    OverrideJSONMallocFree();
+#endif
+
     g_pMainApp = this;
 
     m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );

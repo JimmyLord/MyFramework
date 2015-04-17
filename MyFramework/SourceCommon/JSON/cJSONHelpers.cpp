@@ -9,6 +9,36 @@
 
 #include "CommonHeader.h"
 
+static bool OverrodeJSONMemoryAllocation = false;
+
+void* MyJSONMalloc(size_t sz)
+{
+    return MyNew unsigned char[sz];
+}
+
+void MyJSONFree(void* ptr)
+{
+    delete[] ptr;
+}
+
+void cJSONExt_free(void* ptr)
+{
+    if( OverrodeJSONMemoryAllocation )
+        delete[] ptr;
+    else
+        free( ptr );
+}
+
+void OverrideJSONMallocFree()
+{
+    OverrodeJSONMemoryAllocation = true;
+
+    cJSON_Hooks hooks;
+    hooks.malloc_fn = MyJSONMalloc;
+    hooks.free_fn = MyJSONFree;
+    cJSON_InitHooks( &hooks );
+}
+
 unsigned int cJSONExt_GetDirectChildCount(cJSON* object)
 {
     unsigned int count = 0;

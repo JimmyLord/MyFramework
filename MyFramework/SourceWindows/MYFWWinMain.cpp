@@ -536,6 +536,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int MYFWWinMain(int width, int height)
 {
+#if _DEBUG && MYFW_WINDOWS
+    OverrideJSONMallocFree();
+#endif
+
     g_EscapeButtonWillQuit = false;
     g_CloseProgramRequested = false;
 

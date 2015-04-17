@@ -10,6 +10,9 @@
 #ifndef __cJSON_Helpers_H__
 #define __cJSON_Helpers_H__
 
+void OverrideJSONMallocFree();
+void cJSONExt_free(void* ptr);
+
 unsigned int cJSONExt_GetDirectChildCount(cJSON* object);
 
 void cJSONExt_AddIntArrayToObject(cJSON* object, const char* name, int* vars, int numinarray);
