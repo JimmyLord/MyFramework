@@ -513,7 +513,7 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
     {
         wxTreeItemId id = event.GetItem();
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
-        if( pData && pData->m_pDragFunction )
+        if( pData && pData->m_pLeftClickFunction )
         {
             pData->m_pLeftClickFunction( pData->m_pObject );
         }
