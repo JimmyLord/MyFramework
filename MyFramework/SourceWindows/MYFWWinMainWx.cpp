@@ -381,11 +381,10 @@ bool MainApp::OnInit()
         return 0;
     }
 
-    // Create and initialize our Game object.
-    WinMain_CreateGameCore();
-
     wxSize size = m_pMainFrame->m_pGLCanvas->GetSize();
 
+    // Create and initialize our Game object.
+    WinMain_CreateGameCore();
     g_pGameCore->OnSurfaceCreated();
     g_pGameCore->OnSurfaceChanged( 0, 0, size.x, size.y );
     g_pGameCore->OneTimeInit();
@@ -442,7 +441,7 @@ BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
     EVT_IDLE(MainGLCanvas::Idle)
 END_EVENT_TABLE()
 
-int m_GLContextRefCount = 0;
+int g_GLContextRefCount = 0;
 wxGLContext* m_GLContext = 0;
 
 MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool tickgamecore)
@@ -454,7 +453,7 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     m_GLCanvasID = ID;
     m_TickGameCore = tickgamecore;
 
-    m_GLContextRefCount++;
+    g_GLContextRefCount++;
 
     m_MouseCaptured_ButtonsHeld = 0;
     m_MouseDown = false;
@@ -474,8 +473,8 @@ MainGLCanvas::~MainGLCanvas()
 {
     SAFE_DELETE( g_pGameCore );
 
-    m_GLContextRefCount--;
-    if( m_GLContextRefCount )
+    g_GLContextRefCount--;
+    if( g_GLContextRefCount == 0 )
         delete m_GLContext;
 }
 

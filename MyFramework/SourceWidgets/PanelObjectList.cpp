@@ -62,7 +62,10 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     wxArrayTreeItemIds selecteditems;
     unsigned int numselected = m_pTree_Objects->GetSelections( selecteditems );
 
-    m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
+    if( m_pOnTreeSelectionChangedFunction )
+    {
+        m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
+    }
 
 	// TODO: if multiple selected, show common properties.
     if( numselected > 0 )

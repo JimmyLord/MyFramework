@@ -14,6 +14,22 @@
 
 #define MEMORY_ShowDebugInfo   0
 
+class DummyClassToForceAStaticOperatorNew
+{
+public:
+    int* m_DummyInt;
+public:
+    DummyClassToForceAStaticOperatorNew()
+    {
+        m_DummyInt = new int;
+    }
+    ~DummyClassToForceAStaticOperatorNew()
+    {
+        delete m_DummyInt;
+    }
+};
+DummyClassToForceAStaticOperatorNew DummyInstanceOfAClassToForceAStaticOperatorNew;
+
 class AllocationList
 {
 public:
@@ -78,14 +94,14 @@ int GetMemoryUsageCount()
 
 void MarkAllExistingAllocationsAsStatic()
 {
+    return;
+
     // not ideal, but called from game code's WinMain.cpp ATM
     // If any code(in this case the bullet profiler clock btQuickProf.cpp) allocated memory in a static class instance,
     //    this will remove it from the allocation list that ValidateAllocations() checks on shutdown.
     // Turned off bullet profiling instead(#define BT_NO_PROFILE 1 in btQuickProf.cpp), but situation still possible
 
     // Used again in wxWidgets build, event tables (BEGIN_EVENT_TABLE...END_EVENT_TABLE) are statically allocated
-
-    return;
 
     CPPListNode* pNode;
 
