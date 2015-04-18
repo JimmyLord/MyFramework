@@ -13,16 +13,19 @@ static bool OverrodeJSONMemoryAllocation = false;
 
 void* MyJSONMalloc(size_t sz)
 {
+    // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
     return MyNew unsigned char[sz];
 }
 
 void MyJSONFree(void* ptr)
 {
+    // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
     delete[] ptr;
 }
 
 void cJSONExt_free(void* ptr)
 {
+    // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
     if( OverrodeJSONMemoryAllocation )
         delete[] ptr;
     else

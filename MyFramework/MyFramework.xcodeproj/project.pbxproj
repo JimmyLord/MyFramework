@@ -7,6 +7,130 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0423AB581AE2FD8D00C1AE29 /* ParticleRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF071ABF401C00AD4B64 /* ParticleRenderer.cpp */; };
+		0423AB591AE2FD8D00C1AE29 /* WaveLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF221ABF401C00AD4B64 /* WaveLoader.cpp */; };
+		0423AB5A1AE2FD8D00C1AE29 /* Shader_Base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF151ABF401C00AD4B64 /* Shader_Base.cpp */; };
+		0423AB5B1AE2FD8D00C1AE29 /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEBE1ABF401C00AD4B64 /* Plane.cpp */; };
+		0423AB5C1AE2FD8D00C1AE29 /* OpenGLWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EECE1ABF401C00AD4B64 /* OpenGLWrapper.cpp */; };
+		0423AB5D1AE2FD8D00C1AE29 /* MessageLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EED51ABF401C00AD4B64 /* MessageLog.cpp */; };
+		0423AB5E1AE2FD8D00C1AE29 /* SpriteSheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF331ABF401C00AD4B64 /* SpriteSheet.cpp */; };
+		0423AB5F1AE2FD8D00C1AE29 /* BMFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEC31ABF401C00AD4B64 /* BMFont.cpp */; };
+		0423AB601AE2FD8D00C1AE29 /* GameService_MyServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEF61ABF401C00AD4B64 /* GameService_MyServer.cpp */; };
+		0423AB611AE2FD8D00C1AE29 /* SavedData.mm in Sources */ = {isa = PBXBuildFile; fileRef = BF27901A1520D36A007587B7 /* SavedData.mm */; };
+		0423AB621AE2FD8D00C1AE29 /* LightManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEE71ABF401C00AD4B64 /* LightManager.cpp */; };
+		0423AB631AE2FD8D00C1AE29 /* SpriteSheet_XYZVertexColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF351ABF401C00AD4B64 /* SpriteSheet_XYZVertexColor.cpp */; };
+		0423AB641AE2FD8D00C1AE29 /* MyFileObjectShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF131ABF401C00AD4B64 /* MyFileObjectShader.cpp */; };
+		0423AB651AE2FD8D00C1AE29 /* VertexFormatManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF1B1ABF401C00AD4B64 /* VertexFormatManager.cpp */; };
+		0423AB661AE2FD8D00C1AE29 /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEC01ABF401C00AD4B64 /* Vector.cpp */; };
+		0423AB671AE2FD8D00C1AE29 /* MyFileObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EED71ABF401C00AD4B64 /* MyFileObject.cpp */; };
+		0423AB681AE2FD8D00C1AE29 /* StunClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEFE1ABF401C00AD4B64 /* StunClient.cpp */; };
+		0423AB691AE2FD8D00C1AE29 /* AnimationKeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF271ABF401C00AD4B64 /* AnimationKeys.cpp */; };
+		0423AB6A1AE2FD8D00C1AE29 /* cJSONHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEE21ABF401C00AD4B64 /* cJSONHelpers.cpp */; };
+		0423AB6B1AE2FD8D00C1AE29 /* MyTweener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEDD1ABF401C00AD4B64 /* MyTweener.cpp */; };
+		0423AB6C1AE2FD8D00C1AE29 /* MyAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEEB1ABF401C00AD4B64 /* MyAnimation.cpp */; };
+		0423AB6D1AE2FD8D00C1AE29 /* GameServiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEFA1ABF401C00AD4B64 /* GameServiceManager.cpp */; };
+		0423AB6E1AE2FD8D00C1AE29 /* MyLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEED1ABF401C00AD4B64 /* MyLight.cpp */; };
+		0423AB6F1AE2FD8D00C1AE29 /* WebRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF041ABF401C00AD4B64 /* WebRequest.cpp */; };
+		0423AB701AE2FD8D00C1AE29 /* MyMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEBA1ABF401C00AD4B64 /* MyMatrix.cpp */; };
+		0423AB711AE2FD8D00C1AE29 /* AnimatedSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF251ABF401C00AD4B64 /* AnimatedSprite.cpp */; };
+		0423AB721AE2FD8D00C1AE29 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEC71ABF401C00AD4B64 /* GameCore.cpp */; };
+		0423AB731AE2FD8D00C1AE29 /* TextureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71EAEE151BA314009F0CD9 /* TextureLoader.cpp */; };
+		0423AB741AE2FD8D00C1AE29 /* FBODefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF381ABF401C00AD4B64 /* FBODefinition.cpp */; };
+		0423AB751AE2FD8D00C1AE29 /* ColorStructs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB51ABF401C00AD4B64 /* ColorStructs.cpp */; };
+		0423AB761AE2FD8D00C1AE29 /* MyMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEEF1ABF401C00AD4B64 /* MyMesh.cpp */; };
+		0423AB771AE2FD8D00C1AE29 /* mtrand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF0A1ABF401C00AD4B64 /* mtrand.cpp */; };
+		0423AB781AE2FD8D00C1AE29 /* SoundPlayerOpenAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF201ABF401C00AD4B64 /* SoundPlayerOpenAL.cpp */; };
+		0423AB791AE2FD8D00C1AE29 /* MySprite9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF2B1ABF401C00AD4B64 /* MySprite9.cpp */; };
+		0423AB7A1AE2FD8D00C1AE29 /* VertexFormats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF1D1ABF401C00AD4B64 /* VertexFormats.cpp */; };
+		0423AB7B1AE2FD8D00C1AE29 /* MeshManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEE91ABF401C00AD4B64 /* MeshManager.cpp */; };
+		0423AB7C1AE2FD8D00C1AE29 /* BufferManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEE51ABF401C00AD4B64 /* BufferManager.cpp */; };
+		0423AB7D1AE2FD8D00C1AE29 /* TextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF3A1ABF401C00AD4B64 /* TextureManager.cpp */; };
+		0423AB7E1AE2FD8D00C1AE29 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEC51ABF401C00AD4B64 /* FontManager.cpp */; };
+		0423AB7F1AE2FD8D00C1AE29 /* OBJLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEF31ABF401C00AD4B64 /* OBJLoader.cpp */; };
+		0423AB801AE2FD8D00C1AE29 /* MySprite_XYZVertexColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF2D1ABF401C00AD4B64 /* MySprite_XYZVertexColor.cpp */; };
+		0423AB811AE2FD8D00C1AE29 /* FileManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EED31ABF401C00AD4B64 /* FileManager.cpp */; };
+		0423AB821AE2FD8D00C1AE29 /* GLHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF101ABF401C00AD4B64 /* GLHelpers.cpp */; };
+		0423AB831AE2FD8D00C1AE29 /* UDPSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF001ABF401C00AD4B64 /* UDPSocket.cpp */; };
+		0423AB841AE2FD8D00C1AE29 /* MyMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEF11ABF401C00AD4B64 /* MyMeshLoader.cpp */; };
+		0423AB851AE2FD8D00C1AE29 /* MyQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEBC1ABF401C00AD4B64 /* MyQuaternion.cpp */; };
+		0423AB861AE2FD8D00C1AE29 /* MySprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF291ABF401C00AD4B64 /* MySprite.cpp */; };
+		0423AB871AE2FD8D00C1AE29 /* MyMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EED91ABF401C00AD4B64 /* MyMemory.cpp */; };
+		0423AB881AE2FD8D00C1AE29 /* ShaderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF171ABF401C00AD4B64 /* ShaderGroup.cpp */; };
+		0423AB891AE2FD8D00C1AE29 /* cJSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A18667CE1645923100C623C7 /* cJSON.cpp */; };
+		0423AB8A1AE2FD8D00C1AE29 /* URLEncode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF021ABF401C00AD4B64 /* URLEncode.cpp */; };
+		0423AB8B1AE2FD8D00C1AE29 /* ExternalTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EED11ABF401C00AD4B64 /* ExternalTools.cpp */; };
+		0423AB8C1AE2FD8D00C1AE29 /* MyTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEDB1ABF401C00AD4B64 /* MyTime.cpp */; };
+		0423AB8D1AE2FD8D00C1AE29 /* LeaderboardStorageScoreLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEFC1ABF401C00AD4B64 /* LeaderboardStorageScoreLoop.cpp */; };
+		0423AB8E1AE2FD8D00C1AE29 /* CommonHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */; };
+		0423AB8F1AE2FD8D00C1AE29 /* SpriteBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF2F1ABF401C00AD4B64 /* SpriteBatch.cpp */; };
+		0423AB901AE2FD8D00C1AE29 /* ShaderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF191ABF401C00AD4B64 /* ShaderManager.cpp */; };
+		0423AB911AE2FD8D00C1AE29 /* SpriteBatch_XYZVertexColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EF311ABF401C00AD4B64 /* SpriteBatch_XYZVertexColor.cpp */; };
+		0423AB921AE2FD8D00C1AE29 /* GameService_ScoreLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEF81ABF401C00AD4B64 /* GameService_ScoreLoop.cpp */; };
+		0423AB931AE2FD8D00C1AE29 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AF0187197971FE002DBAE0 /* lodepng.cpp */; };
+		0423AB961AE2FD8D00C1AE29 /* SpriteBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF301ABF401C00AD4B64 /* SpriteBatch.h */; };
+		0423AB971AE2FD8D00C1AE29 /* SpriteBatch_XYZVertexColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF321ABF401C00AD4B64 /* SpriteBatch_XYZVertexColor.h */; };
+		0423AB981AE2FD8D00C1AE29 /* GLHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF111ABF401C00AD4B64 /* GLHelpers.h */; };
+		0423AB991AE2FD8D00C1AE29 /* SpriteSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF341ABF401C00AD4B64 /* SpriteSheet.h */; };
+		0423AB9A1AE2FD8D00C1AE29 /* MyMeshLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEF21ABF401C00AD4B64 /* MyMeshLoader.h */; };
+		0423AB9B1AE2FD8D00C1AE29 /* MyQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEBD1ABF401C00AD4B64 /* MyQuaternion.h */; };
+		0423AB9C1AE2FD8D00C1AE29 /* GameService_MyServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEF71ABF401C00AD4B64 /* GameService_MyServer.h */; };
+		0423AB9D1AE2FD8D00C1AE29 /* MyActivePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB81ABF401C00AD4B64 /* MyActivePool.h */; };
+		0423AB9E1AE2FD8D00C1AE29 /* lodepng.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AF0188197971FE002DBAE0 /* lodepng.h */; };
+		0423AB9F1AE2FD8D00C1AE29 /* Utility.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEE01ABF401C00AD4B64 /* Utility.h */; };
+		0423ABA01AE2FD8D00C1AE29 /* FBODefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF391ABF401C00AD4B64 /* FBODefinition.h */; };
+		0423ABA11AE2FD8D00C1AE29 /* MyMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEF01ABF401C00AD4B64 /* MyMesh.h */; };
+		0423ABA21AE2FD8D00C1AE29 /* MySprite9.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF2C1ABF401C00AD4B64 /* MySprite9.h */; };
+		0423ABA31AE2FD8D00C1AE29 /* ShaderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF1A1ABF401C00AD4B64 /* ShaderManager.h */; };
+		0423ABA41AE2FD8D00C1AE29 /* AnimationKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF281ABF401C00AD4B64 /* AnimationKeys.h */; };
+		0423ABA51AE2FD8D00C1AE29 /* MyTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEDC1ABF401C00AD4B64 /* MyTime.h */; };
+		0423ABA61AE2FD8D00C1AE29 /* MyMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEDA1ABF401C00AD4B64 /* MyMemory.h */; };
+		0423ABA71AE2FD8D00C1AE29 /* WebRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF051ABF401C00AD4B64 /* WebRequest.h */; };
+		0423ABA81AE2FD8D00C1AE29 /* ColorStructs.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB61ABF401C00AD4B64 /* ColorStructs.h */; };
+		0423ABA91AE2FD8D00C1AE29 /* MyLight.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEEE1ABF401C00AD4B64 /* MyLight.h */; };
+		0423ABAA1AE2FD8D00C1AE29 /* BMFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC41ABF401C00AD4B64 /* BMFont.h */; };
+		0423ABAB1AE2FD8D00C1AE29 /* OpenGLWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EECF1ABF401C00AD4B64 /* OpenGLWrapper.h */; };
+		0423ABAC1AE2FD8D00C1AE29 /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC11ABF401C00AD4B64 /* Vector.h */; };
+		0423ABAD1AE2FD8D00C1AE29 /* ListOfShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF121ABF401C00AD4B64 /* ListOfShaders.h */; };
+		0423ABAE1AE2FD8D00C1AE29 /* MyMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEBB1ABF401C00AD4B64 /* MyMatrix.h */; };
+		0423ABAF1AE2FD8D00C1AE29 /* AnimatedSprite.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF261ABF401C00AD4B64 /* AnimatedSprite.h */; };
+		0423ABB01AE2FD8D00C1AE29 /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC61ABF401C00AD4B64 /* FontManager.h */; };
+		0423ABB11AE2FD8D00C1AE29 /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEBF1ABF401C00AD4B64 /* Plane.h */; };
+		0423ABB21AE2FD8D00C1AE29 /* RefCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEDF1ABF401C00AD4B64 /* RefCount.h */; };
+		0423ABB31AE2FD8D00C1AE29 /* CPPList.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB71ABF401C00AD4B64 /* CPPList.h */; };
+		0423ABB41AE2FD8D00C1AE29 /* UDPSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF011ABF401C00AD4B64 /* UDPSocket.h */; };
+		0423ABB51AE2FD8D00C1AE29 /* WaveLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF231ABF401C00AD4B64 /* WaveLoader.h */; };
+		0423ABB61AE2FD8D00C1AE29 /* MyTweener.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEDE1ABF401C00AD4B64 /* MyTweener.h */; };
+		0423ABB71AE2FD8D00C1AE29 /* MySprite.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF2A1ABF401C00AD4B64 /* MySprite.h */; };
+		0423ABB81AE2FD8D00C1AE29 /* OBJLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEF41ABF401C00AD4B64 /* OBJLoader.h */; };
+		0423ABB91AE2FD8D00C1AE29 /* TextureManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF3B1ABF401C00AD4B64 /* TextureManager.h */; };
+		0423ABBA1AE2FD8D00C1AE29 /* ShaderGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF181ABF401C00AD4B64 /* ShaderGroup.h */; };
+		0423ABBB1AE2FD8D00C1AE29 /* cJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = BF71EAF8151BA456009F0CD9 /* cJSON.h */; };
+		0423ABBC1AE2FD8D00C1AE29 /* MyFileObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EED81ABF401C00AD4B64 /* MyFileObject.h */; };
+		0423ABBD1AE2FD8D00C1AE29 /* MyAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEEC1ABF401C00AD4B64 /* MyAnimation.h */; };
+		0423ABBE1AE2FD8D00C1AE29 /* LightManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEE81ABF401C00AD4B64 /* LightManager.h */; };
+		0423ABBF1AE2FD8D00C1AE29 /* MyList.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB91ABF401C00AD4B64 /* MyList.h */; };
+		0423ABC01AE2FD8D00C1AE29 /* GameService_ScoreLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEF91ABF401C00AD4B64 /* GameService_ScoreLoop.h */; };
+		0423ABC11AE2FD8D00C1AE29 /* mtrand.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF0B1ABF401C00AD4B64 /* mtrand.h */; };
+		0423ABC21AE2FD8D00C1AE29 /* MessageLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EED61ABF401C00AD4B64 /* MessageLog.h */; };
+		0423ABC31AE2FD8D00C1AE29 /* GameServiceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEFB1ABF401C00AD4B64 /* GameServiceManager.h */; };
+		0423ABC41AE2FD8D00C1AE29 /* VertexFormats.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF1E1ABF401C00AD4B64 /* VertexFormats.h */; };
+		0423ABC51AE2FD8D00C1AE29 /* SpriteSheet_XYZVertexColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF361ABF401C00AD4B64 /* SpriteSheet_XYZVertexColor.h */; };
+		0423ABC61AE2FD8D00C1AE29 /* MySprite_XYZVertexColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF2E1ABF401C00AD4B64 /* MySprite_XYZVertexColor.h */; };
+		0423ABC71AE2FD8D00C1AE29 /* glext.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EECA1ABF401C00AD4B64 /* glext.h */; };
+		0423ABC81AE2FD8D00C1AE29 /* cJSONHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEE31ABF401C00AD4B64 /* cJSONHelpers.h */; };
+		0423ABC91AE2FD8D00C1AE29 /* BufferManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEE61ABF401C00AD4B64 /* BufferManager.h */; };
+		0423ABCA1AE2FD8D00C1AE29 /* SoundPlayerOpenAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF211ABF401C00AD4B64 /* SoundPlayerOpenAL.h */; };
+		0423ABCB1AE2FD8D00C1AE29 /* LeaderboardStorageScoreLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEFD1ABF401C00AD4B64 /* LeaderboardStorageScoreLoop.h */; };
+		0423ABCC1AE2FD8D00C1AE29 /* ExternalTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EED21ABF401C00AD4B64 /* ExternalTools.h */; };
+		0423ABCD1AE2FD8D00C1AE29 /* StunClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEFF1ABF401C00AD4B64 /* StunClient.h */; };
+		0423ABCE1AE2FD8D00C1AE29 /* ParticleRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF081ABF401C00AD4B64 /* ParticleRenderer.h */; };
+		0423ABCF1AE2FD8D00C1AE29 /* URLEncode.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF031ABF401C00AD4B64 /* URLEncode.h */; };
+		0423ABD01AE2FD8D00C1AE29 /* MeshManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEEA1ABF401C00AD4B64 /* MeshManager.h */; };
+		0423ABD11AE2FD8D00C1AE29 /* VertexFormatManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF1C1ABF401C00AD4B64 /* VertexFormatManager.h */; };
+		0423ABD21AE2FD8D00C1AE29 /* Shader_Base.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF161ABF401C00AD4B64 /* Shader_Base.h */; };
+		0423ABD31AE2FD8D00C1AE29 /* FileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EED41ABF401C00AD4B64 /* FileManager.h */; };
+		0423ABD41AE2FD8D00C1AE29 /* MyFileObjectShader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF141ABF401C00AD4B64 /* MyFileObjectShader.h */; };
+		0423ABD51AE2FD8D00C1AE29 /* GameCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC81ABF401C00AD4B64 /* GameCore.h */; };
 		044C64251ADED39000BABD53 /* CommonHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */; };
 		044C64261ADED39700BABD53 /* ColorStructs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB51ABF401C00AD4B64 /* ColorStructs.cpp */; };
 		044C64271ADED39700BABD53 /* ColorStructs.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB61ABF401C00AD4B64 /* ColorStructs.h */; };
@@ -275,7 +399,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		044C640E1ADED37A00BABD53 /* libMyFramework-wx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-wx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0423ABD91AE2FD8D00C1AE29 /* libMyFramework-wx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-wx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		044C640E1ADED37A00BABD53 /* libMyFramework-OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-OSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		04AF0187197971FE002DBAE0 /* lodepng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lodepng.cpp; sourceTree = "<group>"; };
 		04AF0188197971FE002DBAE0 /* lodepng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lodepng.h; sourceTree = "<group>"; };
 		04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPManagerIOS.h; sourceTree = "<group>"; };
@@ -422,6 +547,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0423AB941AE2FD8D00C1AE29 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		044C640B1ADED37A00BABD53 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -706,7 +838,8 @@
 			isa = PBXGroup;
 			children = (
 				BF71E9C5151BA15B009F0CD9 /* libMyFramework-iOS.a */,
-				044C640E1ADED37A00BABD53 /* libMyFramework-wx.a */,
+				044C640E1ADED37A00BABD53 /* libMyFramework-OSX.a */,
+				0423ABD91AE2FD8D00C1AE29 /* libMyFramework-wx.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -757,6 +890,77 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		0423AB951AE2FD8D00C1AE29 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0423AB961AE2FD8D00C1AE29 /* SpriteBatch.h in Headers */,
+				0423AB971AE2FD8D00C1AE29 /* SpriteBatch_XYZVertexColor.h in Headers */,
+				0423AB981AE2FD8D00C1AE29 /* GLHelpers.h in Headers */,
+				0423AB991AE2FD8D00C1AE29 /* SpriteSheet.h in Headers */,
+				0423AB9A1AE2FD8D00C1AE29 /* MyMeshLoader.h in Headers */,
+				0423AB9B1AE2FD8D00C1AE29 /* MyQuaternion.h in Headers */,
+				0423AB9C1AE2FD8D00C1AE29 /* GameService_MyServer.h in Headers */,
+				0423AB9D1AE2FD8D00C1AE29 /* MyActivePool.h in Headers */,
+				0423AB9E1AE2FD8D00C1AE29 /* lodepng.h in Headers */,
+				0423AB9F1AE2FD8D00C1AE29 /* Utility.h in Headers */,
+				0423ABA01AE2FD8D00C1AE29 /* FBODefinition.h in Headers */,
+				0423ABA11AE2FD8D00C1AE29 /* MyMesh.h in Headers */,
+				0423ABA21AE2FD8D00C1AE29 /* MySprite9.h in Headers */,
+				0423ABA31AE2FD8D00C1AE29 /* ShaderManager.h in Headers */,
+				0423ABA41AE2FD8D00C1AE29 /* AnimationKeys.h in Headers */,
+				0423ABA51AE2FD8D00C1AE29 /* MyTime.h in Headers */,
+				0423ABA61AE2FD8D00C1AE29 /* MyMemory.h in Headers */,
+				0423ABA71AE2FD8D00C1AE29 /* WebRequest.h in Headers */,
+				0423ABA81AE2FD8D00C1AE29 /* ColorStructs.h in Headers */,
+				0423ABA91AE2FD8D00C1AE29 /* MyLight.h in Headers */,
+				0423ABAA1AE2FD8D00C1AE29 /* BMFont.h in Headers */,
+				0423ABAB1AE2FD8D00C1AE29 /* OpenGLWrapper.h in Headers */,
+				0423ABAC1AE2FD8D00C1AE29 /* Vector.h in Headers */,
+				0423ABAD1AE2FD8D00C1AE29 /* ListOfShaders.h in Headers */,
+				0423ABAE1AE2FD8D00C1AE29 /* MyMatrix.h in Headers */,
+				0423ABAF1AE2FD8D00C1AE29 /* AnimatedSprite.h in Headers */,
+				0423ABB01AE2FD8D00C1AE29 /* FontManager.h in Headers */,
+				0423ABB11AE2FD8D00C1AE29 /* Plane.h in Headers */,
+				0423ABB21AE2FD8D00C1AE29 /* RefCount.h in Headers */,
+				0423ABB31AE2FD8D00C1AE29 /* CPPList.h in Headers */,
+				0423ABB41AE2FD8D00C1AE29 /* UDPSocket.h in Headers */,
+				0423ABB51AE2FD8D00C1AE29 /* WaveLoader.h in Headers */,
+				0423ABB61AE2FD8D00C1AE29 /* MyTweener.h in Headers */,
+				0423ABB71AE2FD8D00C1AE29 /* MySprite.h in Headers */,
+				0423ABB81AE2FD8D00C1AE29 /* OBJLoader.h in Headers */,
+				0423ABB91AE2FD8D00C1AE29 /* TextureManager.h in Headers */,
+				0423ABBA1AE2FD8D00C1AE29 /* ShaderGroup.h in Headers */,
+				0423ABBB1AE2FD8D00C1AE29 /* cJSON.h in Headers */,
+				0423ABBC1AE2FD8D00C1AE29 /* MyFileObject.h in Headers */,
+				0423ABBD1AE2FD8D00C1AE29 /* MyAnimation.h in Headers */,
+				0423ABBE1AE2FD8D00C1AE29 /* LightManager.h in Headers */,
+				0423ABBF1AE2FD8D00C1AE29 /* MyList.h in Headers */,
+				0423ABC01AE2FD8D00C1AE29 /* GameService_ScoreLoop.h in Headers */,
+				0423ABC11AE2FD8D00C1AE29 /* mtrand.h in Headers */,
+				0423ABC21AE2FD8D00C1AE29 /* MessageLog.h in Headers */,
+				0423ABC31AE2FD8D00C1AE29 /* GameServiceManager.h in Headers */,
+				0423ABC41AE2FD8D00C1AE29 /* VertexFormats.h in Headers */,
+				0423ABC51AE2FD8D00C1AE29 /* SpriteSheet_XYZVertexColor.h in Headers */,
+				0423ABC61AE2FD8D00C1AE29 /* MySprite_XYZVertexColor.h in Headers */,
+				0423ABC71AE2FD8D00C1AE29 /* glext.h in Headers */,
+				0423ABC81AE2FD8D00C1AE29 /* cJSONHelpers.h in Headers */,
+				0423ABC91AE2FD8D00C1AE29 /* BufferManager.h in Headers */,
+				0423ABCA1AE2FD8D00C1AE29 /* SoundPlayerOpenAL.h in Headers */,
+				0423ABCB1AE2FD8D00C1AE29 /* LeaderboardStorageScoreLoop.h in Headers */,
+				0423ABCC1AE2FD8D00C1AE29 /* ExternalTools.h in Headers */,
+				0423ABCD1AE2FD8D00C1AE29 /* StunClient.h in Headers */,
+				0423ABCE1AE2FD8D00C1AE29 /* ParticleRenderer.h in Headers */,
+				0423ABCF1AE2FD8D00C1AE29 /* URLEncode.h in Headers */,
+				0423ABD01AE2FD8D00C1AE29 /* MeshManager.h in Headers */,
+				0423ABD11AE2FD8D00C1AE29 /* VertexFormatManager.h in Headers */,
+				0423ABD21AE2FD8D00C1AE29 /* Shader_Base.h in Headers */,
+				0423ABD31AE2FD8D00C1AE29 /* FileManager.h in Headers */,
+				0423ABD41AE2FD8D00C1AE29 /* MyFileObjectShader.h in Headers */,
+				0423ABD51AE2FD8D00C1AE29 /* GameCore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		044C640C1ADED37A00BABD53 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -910,9 +1114,26 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		044C640D1ADED37A00BABD53 /* MyFramework-wx */ = {
+		0423AB561AE2FD8D00C1AE29 /* MyFramework-wx */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 044C641F1ADED37A00BABD53 /* Build configuration list for PBXNativeTarget "MyFramework-wx" */;
+			buildConfigurationList = 0423ABD61AE2FD8D00C1AE29 /* Build configuration list for PBXNativeTarget "MyFramework-wx" */;
+			buildPhases = (
+				0423AB571AE2FD8D00C1AE29 /* Sources */,
+				0423AB941AE2FD8D00C1AE29 /* Frameworks */,
+				0423AB951AE2FD8D00C1AE29 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MyFramework-wx";
+			productName = "MyFramework-wx";
+			productReference = 0423ABD91AE2FD8D00C1AE29 /* libMyFramework-wx.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		044C640D1ADED37A00BABD53 /* MyFramework-OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 044C641F1ADED37A00BABD53 /* Build configuration list for PBXNativeTarget "MyFramework-OSX" */;
 			buildPhases = (
 				044C640A1ADED37A00BABD53 /* Sources */,
 				044C640B1ADED37A00BABD53 /* Frameworks */,
@@ -922,9 +1143,9 @@
 			);
 			dependencies = (
 			);
-			name = "MyFramework-wx";
+			name = "MyFramework-OSX";
 			productName = "MyFramework-wx";
-			productReference = 044C640E1ADED37A00BABD53 /* libMyFramework-wx.a */;
+			productReference = 044C640E1ADED37A00BABD53 /* libMyFramework-OSX.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		BF71E9C4151BA15B009F0CD9 /* MyFramework-iOS */ = {
@@ -950,7 +1171,7 @@
 		BF71E9BC151BA15A009F0CD9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0630;
 				TargetAttributes = {
 					044C640D1ADED37A00BABD53 = {
 						CreatedOnToolsVersion = 6.2;
@@ -970,12 +1191,80 @@
 			projectRoot = "";
 			targets = (
 				BF71E9C4151BA15B009F0CD9 /* MyFramework-iOS */,
-				044C640D1ADED37A00BABD53 /* MyFramework-wx */,
+				044C640D1ADED37A00BABD53 /* MyFramework-OSX */,
+				0423AB561AE2FD8D00C1AE29 /* MyFramework-wx */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0423AB571AE2FD8D00C1AE29 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0423AB581AE2FD8D00C1AE29 /* ParticleRenderer.cpp in Sources */,
+				0423AB591AE2FD8D00C1AE29 /* WaveLoader.cpp in Sources */,
+				0423AB5A1AE2FD8D00C1AE29 /* Shader_Base.cpp in Sources */,
+				0423AB5B1AE2FD8D00C1AE29 /* Plane.cpp in Sources */,
+				0423AB5C1AE2FD8D00C1AE29 /* OpenGLWrapper.cpp in Sources */,
+				0423AB5D1AE2FD8D00C1AE29 /* MessageLog.cpp in Sources */,
+				0423AB5E1AE2FD8D00C1AE29 /* SpriteSheet.cpp in Sources */,
+				0423AB5F1AE2FD8D00C1AE29 /* BMFont.cpp in Sources */,
+				0423AB601AE2FD8D00C1AE29 /* GameService_MyServer.cpp in Sources */,
+				0423AB611AE2FD8D00C1AE29 /* SavedData.mm in Sources */,
+				0423AB621AE2FD8D00C1AE29 /* LightManager.cpp in Sources */,
+				0423AB631AE2FD8D00C1AE29 /* SpriteSheet_XYZVertexColor.cpp in Sources */,
+				0423AB641AE2FD8D00C1AE29 /* MyFileObjectShader.cpp in Sources */,
+				0423AB651AE2FD8D00C1AE29 /* VertexFormatManager.cpp in Sources */,
+				0423AB661AE2FD8D00C1AE29 /* Vector.cpp in Sources */,
+				0423AB671AE2FD8D00C1AE29 /* MyFileObject.cpp in Sources */,
+				0423AB681AE2FD8D00C1AE29 /* StunClient.cpp in Sources */,
+				0423AB691AE2FD8D00C1AE29 /* AnimationKeys.cpp in Sources */,
+				0423AB6A1AE2FD8D00C1AE29 /* cJSONHelpers.cpp in Sources */,
+				0423AB6B1AE2FD8D00C1AE29 /* MyTweener.cpp in Sources */,
+				0423AB6C1AE2FD8D00C1AE29 /* MyAnimation.cpp in Sources */,
+				0423AB6D1AE2FD8D00C1AE29 /* GameServiceManager.cpp in Sources */,
+				0423AB6E1AE2FD8D00C1AE29 /* MyLight.cpp in Sources */,
+				0423AB6F1AE2FD8D00C1AE29 /* WebRequest.cpp in Sources */,
+				0423AB701AE2FD8D00C1AE29 /* MyMatrix.cpp in Sources */,
+				0423AB711AE2FD8D00C1AE29 /* AnimatedSprite.cpp in Sources */,
+				0423AB721AE2FD8D00C1AE29 /* GameCore.cpp in Sources */,
+				0423AB731AE2FD8D00C1AE29 /* TextureLoader.cpp in Sources */,
+				0423AB741AE2FD8D00C1AE29 /* FBODefinition.cpp in Sources */,
+				0423AB751AE2FD8D00C1AE29 /* ColorStructs.cpp in Sources */,
+				0423AB761AE2FD8D00C1AE29 /* MyMesh.cpp in Sources */,
+				0423AB771AE2FD8D00C1AE29 /* mtrand.cpp in Sources */,
+				0423AB781AE2FD8D00C1AE29 /* SoundPlayerOpenAL.cpp in Sources */,
+				0423AB791AE2FD8D00C1AE29 /* MySprite9.cpp in Sources */,
+				0423AB7A1AE2FD8D00C1AE29 /* VertexFormats.cpp in Sources */,
+				0423AB7B1AE2FD8D00C1AE29 /* MeshManager.cpp in Sources */,
+				0423AB7C1AE2FD8D00C1AE29 /* BufferManager.cpp in Sources */,
+				0423AB7D1AE2FD8D00C1AE29 /* TextureManager.cpp in Sources */,
+				0423AB7E1AE2FD8D00C1AE29 /* FontManager.cpp in Sources */,
+				0423AB7F1AE2FD8D00C1AE29 /* OBJLoader.cpp in Sources */,
+				0423AB801AE2FD8D00C1AE29 /* MySprite_XYZVertexColor.cpp in Sources */,
+				0423AB811AE2FD8D00C1AE29 /* FileManager.cpp in Sources */,
+				0423AB821AE2FD8D00C1AE29 /* GLHelpers.cpp in Sources */,
+				0423AB831AE2FD8D00C1AE29 /* UDPSocket.cpp in Sources */,
+				0423AB841AE2FD8D00C1AE29 /* MyMeshLoader.cpp in Sources */,
+				0423AB851AE2FD8D00C1AE29 /* MyQuaternion.cpp in Sources */,
+				0423AB861AE2FD8D00C1AE29 /* MySprite.cpp in Sources */,
+				0423AB871AE2FD8D00C1AE29 /* MyMemory.cpp in Sources */,
+				0423AB881AE2FD8D00C1AE29 /* ShaderGroup.cpp in Sources */,
+				0423AB891AE2FD8D00C1AE29 /* cJSON.cpp in Sources */,
+				0423AB8A1AE2FD8D00C1AE29 /* URLEncode.cpp in Sources */,
+				0423AB8B1AE2FD8D00C1AE29 /* ExternalTools.cpp in Sources */,
+				0423AB8C1AE2FD8D00C1AE29 /* MyTime.cpp in Sources */,
+				0423AB8D1AE2FD8D00C1AE29 /* LeaderboardStorageScoreLoop.cpp in Sources */,
+				0423AB8E1AE2FD8D00C1AE29 /* CommonHeader.cpp in Sources */,
+				0423AB8F1AE2FD8D00C1AE29 /* SpriteBatch.cpp in Sources */,
+				0423AB901AE2FD8D00C1AE29 /* ShaderManager.cpp in Sources */,
+				0423AB911AE2FD8D00C1AE29 /* SpriteBatch_XYZVertexColor.cpp in Sources */,
+				0423AB921AE2FD8D00C1AE29 /* GameService_ScoreLoop.cpp in Sources */,
+				0423AB931AE2FD8D00C1AE29 /* lodepng.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		044C640A1ADED37A00BABD53 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1119,6 +1408,57 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		0423ABD71AE2FD8D00C1AE29 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"MYFW_OSX=1",
+					"MYFW_USING_WX=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "MyFramework-wx";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0423ABD81AE2FD8D00C1AE29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"MYFW_OSX=1",
+					"MYFW_USING_WX=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "MyFramework-wx";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		044C64201ADED37A00BABD53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1127,6 +1467,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"MYFW_OSX=1",
@@ -1149,6 +1490,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1181,6 +1523,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_DEBUG=1",
@@ -1214,6 +1557,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1273,13 +1617,23 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		044C641F1ADED37A00BABD53 /* Build configuration list for PBXNativeTarget "MyFramework-wx" */ = {
+		0423ABD61AE2FD8D00C1AE29 /* Build configuration list for PBXNativeTarget "MyFramework-wx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0423ABD71AE2FD8D00C1AE29 /* Debug */,
+				0423ABD81AE2FD8D00C1AE29 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		044C641F1ADED37A00BABD53 /* Build configuration list for PBXNativeTarget "MyFramework-OSX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				044C64201ADED37A00BABD53 /* Debug */,
 				044C64211ADED37A00BABD53 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BF71E9BF151BA15A009F0CD9 /* Build configuration list for PBXProject "MyFramework" */ = {
 			isa = XCConfigurationList;
