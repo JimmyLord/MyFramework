@@ -12,6 +12,10 @@
 
 class CommandStack;
 
+#include "wx/stattext.h"
+#include "wx/slider.h"
+#include "wx/choice.h"
+
 #define MAX_PanelWatch_VARIABLES        400
 #define WXSlider_Float_Multiplier       10000.0f
 

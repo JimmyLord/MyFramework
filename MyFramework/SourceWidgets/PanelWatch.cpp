@@ -396,7 +396,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         PosY = m_pVariables[variablenum-1].m_Rect_XYWH.y;
     }
 
-    int WindowWidth = 300;
+    //int WindowWidth = 300;
 
     int LabelHeight = g_PanelWatchControlInfo[type].height;
     int TextCtrlHeight = 20;
@@ -686,7 +686,8 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
     if( pVar->m_Handle_TextCtrl )
     {
         double newvalue, oldvalue;
-        bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+        //bool isblank =
+        GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
         pVar->m_LeftMouseIsDown = true;
         pVar->m_ValueOnLeftMouseDown = newvalue;
@@ -742,7 +743,7 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
                 m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
 
                 double newvalue, oldvalue;
-                bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+                //bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 int diff = pos.x - lastpos.x;
                 newvalue += 0.2f * diff;
@@ -925,6 +926,14 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     //case PanelWatchType_Vector3:
     //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
     //    break;
+
+    case PanelWatchType_ColorFloat:
+    case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_Button:
+    case PanelWatchType_SpaceWithLabel:
+    case PanelWatchType_Unknown:
+    case PanelWatchType_NumTypes:
+        break;
     }
 
     {
@@ -1061,6 +1070,14 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     //case PanelWatchType_Vector3:
     //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
     //    break;
+
+    case PanelWatchType_ColorFloat:
+    case PanelWatchType_PointerWithDesc:
+    case PanelWatchType_Button:
+    case PanelWatchType_SpaceWithLabel:
+    case PanelWatchType_Unknown:
+    case PanelWatchType_NumTypes:
+        break;
     }
 
     {
@@ -1131,7 +1148,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             continue;
 
         char tempstring[50] = "not set";
-        int slidervalue;
+        int slidervalue = 0;
         switch( m_pVariables[i].m_Type )
         {
         case PanelWatchType_Int:
@@ -1222,6 +1239,9 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             }
             break;
 
+        case PanelWatchType_Button:
+        case PanelWatchType_SpaceWithLabel:
+        case PanelWatchType_NumTypes:
         case PanelWatchType_Unknown: // space?
             continue;
         }

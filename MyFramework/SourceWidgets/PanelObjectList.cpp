@@ -17,7 +17,8 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
 {
     m_pTree_Objects = MyNew wxTreeCtrl( this, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
         wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
-    wxTreeItemId idroot = m_pTree_Objects->AddRoot( "Objects" );
+    //wxTreeItemId idroot =
+    m_pTree_Objects->AddRoot( "Objects" );
 
     // setup a sizer to resize the tree
     wxBoxSizer* sizer = MyNew wxBoxSizer( wxHORIZONTAL );
@@ -60,7 +61,7 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     //LOGInfo( LOGTag, "PanelObjectList::OnTreeSelectionChanged\n" );
 
     wxArrayTreeItemIds selecteditems;
-    unsigned int numselected = m_pTree_Objects->GetSelections( selecteditems );
+    unsigned int numselected = (unsigned int)m_pTree_Objects->GetSelections( selecteditems );
 
     if( m_pOnTreeSelectionChangedFunction )
     {
@@ -153,9 +154,11 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+#if MYFW_WINDOWS
     wxCustomDataObject dataobject;
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+#endif
 }
 
 PanelObjectListDropTarget::PanelObjectListDropTarget()
@@ -266,7 +269,7 @@ void PanelObjectList::UpdateRootNodeObjectCount()
     {
         // update root node object count.
         sprintf_s( tempstr, 100, "Objects(%d)",
-            m_pTree_Objects->GetChildrenCount( idroot, true ) - m_pTree_Objects->GetChildrenCount( idroot, false ) );
+            (int)m_pTree_Objects->GetChildrenCount( idroot, true ) - (int)m_pTree_Objects->GetChildrenCount( idroot, false ) );
         m_pTree_Objects->SetItemText( idroot, tempstr );
     }
 }
@@ -285,7 +288,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
     assert( pObject != 0 );
 
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-    int count = m_pTree_Objects->GetChildrenCount( idroot, false );
+    //int count = (int)m_pTree_Objects->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -337,7 +340,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
 
     // get the root count before adding the item for check below.
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-    int count = m_pTree_Objects->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_Objects->GetChildrenCount( idroot, false );
 
     // insert the Object under it's parent node
     {
@@ -387,7 +390,7 @@ void PanelObjectList::RemoveObject(void* pObject)
     if( id.IsOk() )
     {
         // delete item and up to one parent... should be fully recursive up the chain(ignoring root) but it's not for now.
-        wxTreeItemId parentid = m_pTree_Objects->GetItemParent( id );
+        //wxTreeItemId parentid = m_pTree_Objects->GetItemParent( id );
 
         m_pTree_Objects->Delete( id );
 

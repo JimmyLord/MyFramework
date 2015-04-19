@@ -9,6 +9,8 @@
 
 #include "CommonHeader.h"
 
+#include "wx/menu.h"
+
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 
 #if MYFW_WINDOWS
@@ -154,6 +156,7 @@ void MyFileObject::OnRightClick()
 
 void MyFileObject::OnPopupClick(wxEvent &evt)
 {
+#if MYFW_WINDOWS
     MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
     int id = evt.GetId();
     if( id == 1000 )
@@ -164,6 +167,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
         sprintf_s( url, MAX_PATH, "%s/%s", workingdir, pFileObject->m_FullPath );
         ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
     }
+#endif
 }
 
 void MyFileObject::OnDrag()

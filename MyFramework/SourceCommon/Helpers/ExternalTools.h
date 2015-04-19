@@ -11,9 +11,12 @@
 #define __ExternalTools_H__
 
 #ifdef MYFW_ANDROID
+
 #define MYKEYCODE_BACKSPACE     67  //KEYCODE_DEL
 #define MYKEYCODE_ENTER         66
+
 #elif MYFW_WINDOWS
+
 #define MYKEYCODE_BACKSPACE     8
 #define MYKEYCODE_ENTER         13
 #define MYKEYCODE_ESC           27
@@ -39,13 +42,44 @@
 #endif
 
 #elif MYFW_BLACKBERRY
+
 //#include <sys/keycodes.h>
 #define MYKEYCODE_BACKSPACE     61448 //KEYCODE_BACKSPACE  //KEYCODE_DEL
 #define MYKEYCODE_ENTER         61453 //KEYCODE_RETURN
+
 #elif MYFW_NACL || MYFW_EMSCRIPTEN
+
 #define MYKEYCODE_BACKSPACE     8  //KEYCODE_DEL
 #define MYKEYCODE_ENTER         13
+
+#elif MYFW_OSX
+
+#define MYKEYCODE_BACKSPACE     8
+#define MYKEYCODE_ENTER         13
+#define MYKEYCODE_ESC           27
+#define MYKEYCODE_LEFT          37
+#define MYKEYCODE_UP            38
+#define MYKEYCODE_RIGHT         39
+#define MYKEYCODE_DOWN          40
+
+#if MYFW_USING_WX
+#define MYKEYCODE_LSHIFT        306
+#define MYKEYCODE_RSHIFT        306
+#define MYKEYCODE_LCTRL         308
+#define MYKEYCODE_RCTRL         308
+#define MYKEYCODE_LALT          307
+#define MYKEYCODE_RALT          307
 #else
+#define MYKEYCODE_LSHIFT        16
+#define MYKEYCODE_RSHIFT        16
+#define MYKEYCODE_LCTRL         17
+#define MYKEYCODE_RCTRL         17
+#define MYKEYCODE_LALT          0
+#define MYKEYCODE_RALT          0
+#endif
+
+#else
+
 #define MYKEYCODE_BACKSPACE     0
 #define MYKEYCODE_ENTER         0
 #define MYKEYCODE_ESC           0
@@ -53,6 +87,7 @@
 #define MYKEYCODE_UP            0
 #define MYKEYCODE_RIGHT         0
 #define MYKEYCODE_DOWN          0
+
 #endif
 
 #if MYFW_WP8

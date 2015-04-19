@@ -151,11 +151,15 @@ bool MainFrame::UpdateAUIManagerAndLoadPerspective()
     m_DefaultPerspectiveString = m_AUIManager.SavePerspective();
     
     FILE* file = 0;
+#if MYFW_WINDOWS
     fopen_s( &file, "Layout.ini", "rb" );
+#else
+    file = fopen( "Layout.ini", "rb" );
+#endif
     if( file )
     {
         char* string = MyNew char[10000];
-        int len = fread( string, 1, 10000, file );
+        size_t len = fread( string, 1, 10000, file );
         string[len] = 0;
         fclose( file );
         m_SavedPerspectiveString = wxString( string );
@@ -234,7 +238,11 @@ void MainFrame::OnMenu(wxCommandEvent& event)
             m_SavedPerspectiveString = m_AUIManager.SavePerspective();
 
             FILE* file = 0;
-            fopen_s( &file, "Layout.ini", "wb" );
+#if MYFW_WINDOWS
+      	    fopen_s( &file, "Layout.ini", "wb" );
+#else
+        	file = fopen( "Layout.ini", "wb" );
+#endif
             if( file )
             {
                 fprintf( file, m_SavedPerspectiveString );
@@ -275,7 +283,7 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 
 void MainFrame::OnKeyPressed(wxKeyEvent& event)
 {
-    int keycode = event.m_keyCode;
+    int keycode = (int)event.m_keyCode;
 
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
@@ -304,7 +312,7 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
 
 void MainFrame::OnKeyReleased(wxKeyEvent& event)
 {
-    int keycode = event.m_keyCode;
+    int keycode = (int)event.m_keyCode;
 
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
@@ -331,6 +339,7 @@ void MainFrame::ResizeViewport()
 
 IMPLEMENT_APP_NO_MAIN( MainApp );
 
+#if MYFW_WINDOWS
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     MarkAllExistingAllocationsAsStatic();
@@ -345,6 +354,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     return ret;
 }
+#endif
 
 MainApp::~MainApp()
 {
@@ -370,9 +380,12 @@ bool MainApp::OnInit()
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
     m_pMainFrame->m_pGLCanvas->MakeContextCurrent();
 
+#if MYFW_WINDOWS
     OpenGL_InitExtensions();
+#endif
 
     // Initialize sockets
+#if MYFW_WINDOWS
     WSAData wsaData;
     int code = WSAStartup(MAKEWORD(1, 1), &wsaData);
     if( code != 0 )
@@ -380,6 +393,7 @@ bool MainApp::OnInit()
         LOGError( LOGTag, "WSAStartup error:%d\n",code );
         return 0;
     }
+#endif
 
     wxSize size = m_pMainFrame->m_pGLCanvas->GetSize();
 

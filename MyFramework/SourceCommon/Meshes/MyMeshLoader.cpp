@@ -291,7 +291,11 @@ void MyMesh::SaveAnimationControlFile()
     cJSON_Delete( root );
 
     FILE* pFile;
+#if MYFW_WINDOWS
     fopen_s( &pFile, filename, "wb" );
+#else
+    pFile = fopen( filename, "wb" );
+#endif
     fprintf( pFile, "%s", jsonstr );
     fclose( pFile );
 

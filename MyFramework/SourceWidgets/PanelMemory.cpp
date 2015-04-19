@@ -156,7 +156,7 @@ void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, 
     char tempstr[100];
 
     wxTreeItemId idroot = m_pTree_Buffers->GetRootItem();
-    int count = m_pTree_Buffers->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_Buffers->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -179,7 +179,7 @@ void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, 
         idcategory = m_pTree_Buffers->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_Buffers->GetChildrenCount( idcategory );
+    int categorycount = (int)m_pTree_Buffers->GetChildrenCount( idcategory );
 
     // insert the buffer into it's category
     {
@@ -201,7 +201,8 @@ void PanelMemory::UpdateBuffer(BufferDefinition* pBufferDef)
 {
     wxTreeItemId idroot = m_pTree_Buffers->GetRootItem();
 
-    wxTreeItemId id = FindObject( m_pTree_Buffers, pBufferDef, idroot );
+    //wxTreeItemId id =
+    FindObject( m_pTree_Buffers, pBufferDef, idroot );
 
     //m_pTree_Buffers->
 }
@@ -237,7 +238,7 @@ void PanelMemory::UpdateRootNodeBufferCount()
     m_pTree_Buffers->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Buffers(%d)",
-        m_pTree_Buffers->GetChildrenCount( idroot, true ) - m_pTree_Buffers->GetChildrenCount( idroot, false ) );
+        (int)m_pTree_Buffers->GetChildrenCount( idroot, true ) - (int)m_pTree_Buffers->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 0, tempstr );
 }
 
@@ -248,7 +249,7 @@ void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* categor
     char tempstr[100];
 
     wxTreeItemId idroot = m_pTree_Textures->GetRootItem();
-    int count = m_pTree_Textures->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_Textures->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -271,7 +272,7 @@ void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* categor
         idcategory = m_pTree_Textures->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_Textures->GetChildrenCount( idcategory );
+    int categorycount = (int)m_pTree_Textures->GetChildrenCount( idcategory );
 
     // insert the Texture into it's category
     {
@@ -322,7 +323,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     //    0 );//g_pTextureManager->CalculateTotalMemoryUsedByTextures() );
     //m_pTree_Textures->SetItemText( idroot, tempstr );
     sprintf_s( tempstr, 100, "Textures(%d)",
-        m_pTree_Textures->GetChildrenCount( idroot, true ) - m_pTree_Textures->GetChildrenCount( idroot, false ) );
+        (int)m_pTree_Textures->GetChildrenCount( idroot, true ) - (int)m_pTree_Textures->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 1, tempstr );
 }
 
@@ -333,7 +334,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
     char tempstr[100];
 
     wxTreeItemId idroot = m_pTree_Files->GetRootItem();
-    int count = m_pTree_Files->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_Files->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -356,7 +357,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
         idcategory = m_pTree_Files->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_Files->GetChildrenCount( idcategory );
+    int categorycount = (int)m_pTree_Files->GetChildrenCount( idcategory );
 
     // insert the File into it's category
     {
@@ -408,7 +409,7 @@ void PanelMemory::UpdateRootNodeFileCount()
     m_pTree_Files->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Files(%d)",
-        m_pTree_Files->GetChildrenCount( idroot, true ) - m_pTree_Files->GetChildrenCount( idroot, false ) );
+        (int)m_pTree_Files->GetChildrenCount( idroot, true ) - (int)m_pTree_Files->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 2, tempstr );
 }
 
@@ -417,7 +418,7 @@ void PanelMemory::AddDrawCall(int index, const char* category, const char* desc)
     char tempstr[100];
 
     wxTreeItemId idroot = m_pTree_DrawCalls->GetRootItem();
-    int count = m_pTree_DrawCalls->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_DrawCalls->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -440,13 +441,13 @@ void PanelMemory::AddDrawCall(int index, const char* category, const char* desc)
         idcategory = m_pTree_DrawCalls->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_DrawCalls->GetChildrenCount( idcategory );
+    int categorycount = (int)m_pTree_DrawCalls->GetChildrenCount( idcategory );
 
     // insert the DrawCall into it's category
     {
         sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, 1 );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
-        pData->m_pObject = (void*)index;
+        pData->m_pObject = (void*)(long)index; //TODO: fix?
 
         m_pTree_DrawCalls->AppendItem( idcategory, tempstr, -1, -1, pData );
 
@@ -462,7 +463,7 @@ void PanelMemory::RemoveDrawCall(int index)
 {
     wxTreeItemId idroot = m_pTree_DrawCalls->GetRootItem();
 
-    wxTreeItemId id = FindObject( m_pTree_DrawCalls, (void*)index, idroot );
+    wxTreeItemId id = FindObject( m_pTree_DrawCalls, (void*)(long)index, idroot );
 
     if( id.IsOk() )
     {
@@ -505,7 +506,8 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData )
         {
-            m_DrawCallIndexToDraw = (int)pData->m_pObject;
+            // TODO: fix this, issues with storing ints in 64 bit void pointers.
+            m_DrawCallIndexToDraw = (int)(long)pData->m_pObject;
         }
     }
 
@@ -554,9 +556,11 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+#if MYFW_WINDOWS
     wxCustomDataObject dataobject;
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+#endif
 }
 
 void PanelMemory::UpdateRootNodeDrawCallCount()
@@ -570,7 +574,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
     //m_pTree_DrawCalls->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Draws(%d)",
-        m_pTree_DrawCalls->GetChildrenCount( idroot, true ) - m_pTree_DrawCalls->GetChildrenCount( idroot, false ) );
+        (int)m_pTree_DrawCalls->GetChildrenCount( idroot, true ) - (int)m_pTree_DrawCalls->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 3, tempstr );
 }
 
@@ -581,7 +585,7 @@ void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category
     char tempstr[100];
 
     wxTreeItemId idroot = m_pTree_ShaderGroups->GetRootItem();
-    int count = m_pTree_ShaderGroups->GetChildrenCount( idroot, false );
+    int count = (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, false );
 
     // see if the category exists
     wxTreeItemId idcategory;
@@ -604,7 +608,7 @@ void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category
         idcategory = m_pTree_ShaderGroups->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = m_pTree_ShaderGroups->GetChildrenCount( idcategory );
+    int categorycount = (int)m_pTree_ShaderGroups->GetChildrenCount( idcategory );
 
     // insert the ShaderGroup into it's category
     {
@@ -654,6 +658,6 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
     m_pTree_ShaderGroups->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Shaders(%d)",
-        m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
+        (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( 2, tempstr );
 }
