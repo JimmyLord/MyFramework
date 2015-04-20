@@ -267,12 +267,12 @@
 		04936D511AE3EA1300344903 /* PanelObjectList.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D451AE3EA1300344903 /* PanelObjectList.h */; };
 		04936D521AE3EA1300344903 /* PanelWatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D461AE3EA1300344903 /* PanelWatch.cpp */; };
 		04936D531AE3EA1300344903 /* PanelWatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D471AE3EA1300344903 /* PanelWatch.h */; };
-		04936EAD1AE3EF9700344903 /* MYFWWinMainWx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D5A1AE3EF9600344903 /* MYFWWinMainWx.cpp */; };
-		04936EAE1AE3EF9700344903 /* MYFWWinMainWx.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D5B1AE3EF9600344903 /* MYFWWinMainWx.h */; };
 		04AF0189197971FE002DBAE0 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AF0187197971FE002DBAE0 /* lodepng.cpp */; };
 		04AF018A197971FE002DBAE0 /* lodepng.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AF0188197971FE002DBAE0 /* lodepng.h */; };
 		04B1100C19E34120004BB5B3 /* IAPManagerIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */; };
 		04B1100D19E34120004BB5B3 /* IAPManagerIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04B1100B19E34120004BB5B3 /* IAPManagerIOS.mm */; };
+		04B962E61AE40709009C76A7 /* MYFWWinMainWx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D5A1AE3EF9600344903 /* MYFWWinMainWx.cpp */; };
+		04B962E71AE40709009C76A7 /* MYFWWinMainWx.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D5B1AE3EF9600344903 /* MYFWWinMainWx.h */; };
 		04E9EF3C1ABF401C00AD4B64 /* CommonHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */; };
 		04E9EF3D1ABF401C00AD4B64 /* CommonHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEB31ABF401C00AD4B64 /* CommonHeader.h */; };
 		04E9EF3E1ABF401C00AD4B64 /* ColorStructs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB51ABF401C00AD4B64 /* ColorStructs.cpp */; };
@@ -1750,6 +1750,7 @@
 				04936D491AE3EA1300344903 /* CommandStack.h in Headers */,
 				0423ABA31AE2FD8D00C1AE29 /* ShaderManager.h in Headers */,
 				0423ABA41AE2FD8D00C1AE29 /* AnimationKeys.h in Headers */,
+				04B962E71AE40709009C76A7 /* MYFWWinMainWx.h in Headers */,
 				0423ABA51AE2FD8D00C1AE29 /* MyTime.h in Headers */,
 				0423ABA61AE2FD8D00C1AE29 /* MyMemory.h in Headers */,
 				0423ABA71AE2FD8D00C1AE29 /* WebRequest.h in Headers */,
@@ -1787,7 +1788,6 @@
 				0423ABC51AE2FD8D00C1AE29 /* SpriteSheet_XYZVertexColor.h in Headers */,
 				0423ABC61AE2FD8D00C1AE29 /* MySprite_XYZVertexColor.h in Headers */,
 				0423ABC71AE2FD8D00C1AE29 /* glext.h in Headers */,
-				04936EAE1AE3EF9700344903 /* MYFWWinMainWx.h in Headers */,
 				0423ABC81AE2FD8D00C1AE29 /* cJSONHelpers.h in Headers */,
 				0423ABC91AE2FD8D00C1AE29 /* BufferManager.h in Headers */,
 				0423ABCA1AE2FD8D00C1AE29 /* SoundPlayerOpenAL.h in Headers */,
@@ -2053,6 +2053,7 @@
 				0423AB591AE2FD8D00C1AE29 /* WaveLoader.cpp in Sources */,
 				0423AB5A1AE2FD8D00C1AE29 /* Shader_Base.cpp in Sources */,
 				0423AB5B1AE2FD8D00C1AE29 /* Plane.cpp in Sources */,
+				04B962E61AE40709009C76A7 /* MYFWWinMainWx.cpp in Sources */,
 				0423AB5C1AE2FD8D00C1AE29 /* OpenGLWrapper.cpp in Sources */,
 				04936D4C1AE3EA1300344903 /* EditorCommands.cpp in Sources */,
 				0423AB5D1AE2FD8D00C1AE29 /* MessageLog.cpp in Sources */,
@@ -2090,7 +2091,6 @@
 				0423AB7A1AE2FD8D00C1AE29 /* VertexFormats.cpp in Sources */,
 				0423AB7B1AE2FD8D00C1AE29 /* MeshManager.cpp in Sources */,
 				0423AB7C1AE2FD8D00C1AE29 /* BufferManager.cpp in Sources */,
-				04936EAD1AE3EF9700344903 /* MYFWWinMainWx.cpp in Sources */,
 				0423AB7D1AE2FD8D00C1AE29 /* TextureManager.cpp in Sources */,
 				04936D4E1AE3EA1300344903 /* PanelMemory.cpp in Sources */,
 				0423AB7E1AE2FD8D00C1AE29 /* FontManager.cpp in Sources */,
@@ -2265,8 +2265,6 @@
 		0423ABD71AE2FD8D00C1AE29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -2278,6 +2276,7 @@
 					__WXOSX_COCOA__,
 					"$(inherited)",
 				);
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				LIBRARY_SEARCH_PATHS = (
@@ -2289,7 +2288,7 @@
 					"$(PROJECT_DIR)/SourceWindows/SDL_mixer-1.2.12/lib/x64",
 					"$(PROJECT_DIR)/SourceWindows/SDL_mixer-1.2.12/lib/x86",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
@@ -2300,8 +2299,6 @@
 		0423ABD81AE2FD8D00C1AE29 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -2316,6 +2313,7 @@
 					__WXOSX_COCOA__,
 					"$(inherited)",
 				);
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				LIBRARY_SEARCH_PATHS = (
@@ -2327,7 +2325,7 @@
 					"$(PROJECT_DIR)/SourceWindows/SDL_mixer-1.2.12/lib/x64",
 					"$(PROJECT_DIR)/SourceWindows/SDL_mixer-1.2.12/lib/x86",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
@@ -2338,8 +2336,6 @@
 		044C64201ADED37A00BABD53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -2351,7 +2347,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2361,8 +2357,6 @@
 		044C64211ADED37A00BABD53 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -2377,7 +2371,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

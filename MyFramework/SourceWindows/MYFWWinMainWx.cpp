@@ -22,7 +22,7 @@ unsigned int g_GLCanvasIDActive = 0;
 GLViewTypes g_CurrentGLViewType;
 
 MainFrame::MainFrame(wxWindow* parent)
-: wxFrame( parent, -1, _("wxWindow Title"), wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
+: wxFrame( parent, -1, "wxWindow Title", wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE, "MainFrame" )
 {
     m_MenuBar = 0;
     m_File = 0;
@@ -337,9 +337,9 @@ void MainFrame::ResizeViewport()
     m_pGLCanvas->ResizeViewport();
 }
 
+#if MYFW_WINDOWS
 IMPLEMENT_APP_NO_MAIN( MainApp );
 
-#if MYFW_WINDOWS
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     MarkAllExistingAllocationsAsStatic();
@@ -354,13 +354,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     return ret;
 }
+#else
+IMPLEMENT_APP( MainApp );
 #endif
+
+MainApp* g_pMainApp = 0;
 
 MainApp::~MainApp()
 {
 }
-
-MainApp* g_pMainApp = 0;
 
 bool MainApp::OnInit()
 {
@@ -619,7 +621,7 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    int keycode = event.m_keyCode;
+    int keycode = (int)event.m_keyCode;
 
     //if( keycode == '1' )
     //{
@@ -664,7 +666,7 @@ void MainGLCanvas::KeyReleased(wxKeyEvent& event)
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    int keycode = event.m_keyCode;
+    int keycode = (int)event.m_keyCode;
     
     if( keycode == 8 )
         keycode = MYKEYCODE_BACKSPACE;
