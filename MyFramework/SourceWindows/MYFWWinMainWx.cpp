@@ -22,7 +22,7 @@ unsigned int g_GLCanvasIDActive = 0;
 GLViewTypes g_CurrentGLViewType;
 
 MainFrame::MainFrame(wxWindow* parent)
-: wxFrame( parent, -1, "wxWindow Title", wxPoint( 0, 0 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE, "MainFrame" )
+: wxFrame( parent, -1, "wxWindow Title", wxPoint( -1, -1 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
     m_MenuBar = 0;
     m_File = 0;
@@ -33,8 +33,8 @@ MainFrame::MainFrame(wxWindow* parent)
     m_pGLCanvas = 0;
     m_pCommandStack = 0;
 
-    m_WindowX = 0;
-    m_WindowY = 0;
+    m_WindowX = -1;
+    m_WindowY = -1;
     m_ClientWidth = 0;
     m_ClientHeight = 0;
     m_Maximized = false;
@@ -245,7 +245,7 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 #endif
             if( file )
             {
-                fprintf( file, m_SavedPerspectiveString );
+                fprintf( file, "%s", (const char*)m_SavedPerspectiveString );
                 fclose( file );
             }
         }

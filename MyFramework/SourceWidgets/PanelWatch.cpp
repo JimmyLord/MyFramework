@@ -743,7 +743,8 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
                 m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
 
                 double newvalue, oldvalue;
-                //bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+                //bool isblank =
+                GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 int diff = pos.x - lastpos.x;
                 newvalue += 0.2f * diff;
