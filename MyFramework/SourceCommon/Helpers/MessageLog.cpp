@@ -77,6 +77,11 @@ void LOGInfo(const char* tag, const char* message, ...)
 #else
     fprintf( stdout, "%s", szBuff );
 #endif
+
+    if( g_pMessageLogCallbackFunction != 0 )
+    {
+        g_pMessageLogCallbackFunction( 0, tag, szBuff );
+    }
 }
 
 void LOGError(const char* tag, const char* message, ...)
@@ -97,6 +102,11 @@ void LOGError(const char* tag, const char* message, ...)
 #else
     fprintf( stderr, "%s", szBuff );
 #endif
+
+    if( g_pMessageLogCallbackFunction != 0 )
+    {
+        g_pMessageLogCallbackFunction( 1, tag, szBuff );
+    }
 }
 
 #endif //_DEBUG
