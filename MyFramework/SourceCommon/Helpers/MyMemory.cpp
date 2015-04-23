@@ -66,7 +66,7 @@ void ValidateAllocations(bool AssertOnAnyAllocation)
         assert( obj->Next != NULL );
         assert( obj->Prev != NULL );
 
-        LOGInfo( LOGTag, "%s(%d)(%d): %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
+        LOGInfo( LOGTag, "%s(%d):(%d) %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
         if( AssertOnAnyAllocation )
             assert( false );
     }

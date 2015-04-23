@@ -175,6 +175,11 @@ void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, 
 
     // insert the buffer into it's category
     {
+#if MYFW_WINDOWS
+        if( category == 0 || category[0] == 0 || desc == 0 || desc[0] == 0 )
+            __debugbreak();
+#endif
+
         sprintf_s( tempstr, 100, "%s %d - size(%d) - num(%d)", desc, categorycount, pBufferDef->m_DataSize, pBufferDef->m_NumBuffersToUse );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pBufferDef;
@@ -548,8 +553,9 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
-#if MYFW_WINDOWS // TODO: fix on OSX and seems to be broken on windows now too.
+#if MYFW_WINDOWS // TODO: fix on OSX
     wxCustomDataObject dataobject;
+    dataobject.SetFormat( *g_pPanelWatchDataFormat );
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 #endif

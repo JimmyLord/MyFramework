@@ -59,7 +59,7 @@ void MySprite::Create(const char* category, float spritew, float spriteh, float 
 
 void MySprite::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
 {
-    CreateSubsection( 0, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
+    CreateSubsection( "MySprite", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
 }
 
 void MySprite::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts)
@@ -368,18 +368,30 @@ void MySprite::FlipX()
 void MySprite::SetShader(ShaderGroup* pShaderGroup)
 {
     m_pShaderGroup = pShaderGroup;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pShaderGroup = pShaderGroup;
     m_pTexture = pTexture;
+    m_pShaderGroup = pShaderGroup;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, int texid)
 {
-    m_pShaderGroup = pShaderGroup;
     m_TextureID = texid;
+    m_pShaderGroup = pShaderGroup;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 bool MySprite::Setup(MyMatrix* matviewproj)

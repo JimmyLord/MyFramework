@@ -63,6 +63,7 @@ extern PanelWatch* g_pPanelWatch;
 typedef void (*PanelWatchCallback)(void*);
 typedef void (*PanelWatchCallbackWithID)(void* pObjectPtr, int controlid, bool finishedchanging);
 
+extern wxDataFormat* g_pPanelWatchDataFormat;
 class PanelWatchDropTarget : public wxDropTarget
 {
 public:
@@ -73,6 +74,7 @@ public:
 public:
     PanelWatchDropTarget();
 
+    //virtual wxDragResult OnDragEnter(wxCoord x, wxCoord y, wxDragResult defResult);
     virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
     virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
 };

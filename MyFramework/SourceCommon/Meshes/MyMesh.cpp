@@ -1249,8 +1249,12 @@ void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
 
 void MyMesh::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pShaderGroup = pShaderGroup;
     m_pTexture = pTexture;
+    m_pShaderGroup = pShaderGroup;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 void MyMesh::SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess)
