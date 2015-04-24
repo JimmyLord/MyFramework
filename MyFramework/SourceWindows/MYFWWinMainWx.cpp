@@ -296,18 +296,7 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    // hack for entity/component editor, control-space is the same as pressing 'p'
-    if( g_pGameCore && keycode == ' ' )
-    {
-        g_pGameCore->OnKeyDown( 'P', 'P' );
-    }
-    else
-    {
-        g_pGameCore->OnKeyDown( keycode, keycode );
-    }
-
-    //if( keycode < 512 )
-    //    m_KeysDown[keycode] = true;
+    g_pGameCore->OnKeyDown( keycode, keycode );
 }
 
 void MainFrame::OnKeyReleased(wxKeyEvent& event)
@@ -413,31 +402,7 @@ bool MainApp::OnInit()
 
 int MainApp::FilterEvent(wxEvent& event)
 {
-    //return wxApp::FilterEvent( event );
-    int ret = wxApp::FilterEvent( event );
-
-    if( ret == 1 )
-        return 1;
-
-    if( event.GetEventType() == wxEVT_KEY_DOWN )
-    {
-        if( ((wxKeyEvent&)event).GetModifiers() & (wxMOD_CONTROL|wxMOD_ALT) )
-        {
-            m_pMainFrame->OnKeyPressed( (wxKeyEvent&)event );
-            return 1;
-        }
-    }
- 
-    if( event.GetEventType() == wxEVT_KEY_UP )
-    {
-        if( ((wxKeyEvent&)event).GetModifiers() & (wxMOD_CONTROL|wxMOD_ALT) )
-        {
-            m_pMainFrame->OnKeyReleased( (wxKeyEvent&)event );
-            return 1;
-        }
-    }
-
-    return -1;
+    return wxApp::FilterEvent( event );
 }
 
 BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)

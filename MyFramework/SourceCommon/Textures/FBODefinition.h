@@ -44,7 +44,8 @@ public:
     FBODefinition();
     virtual ~FBODefinition();
 
-    void Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
+    // returns true if a new texture needs to be created.
+    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
 
     void Bind();
     void Unbind();

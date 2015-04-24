@@ -39,33 +39,60 @@ FBODefinition::~FBODefinition()
     Invalidate( true );
 }
 
-void FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
+// returns true if a new texture needs to be created.
+bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
 {
     assert( width <= 4096 );
     assert( height <= 4096 );
 
-    m_Width = width;
-    m_Height = height;
-    m_MinFilter = minfilter;
-    m_MagFilter = magfilter;
-
-    m_TextureWidth = 0;
-    m_TextureHeight = 0;
+    unsigned int NewTextureWidth = 0;
+    unsigned int NewTextureHeight = 0;
 
     // loop from 64 to 4096 and find appropriate size.
     for( unsigned int pow=6; pow<12; pow++ )
     {
         unsigned int powsize = (unsigned int)(1 << pow);
 
-        if( powsize >= width && m_TextureWidth == 0 )
-            m_TextureWidth = powsize;
-        if( powsize >= height && m_TextureHeight == 0 )
-            m_TextureHeight = powsize;
+        if( powsize >= width && NewTextureWidth == 0 )
+            NewTextureWidth = powsize;
+        if( powsize >= height && NewTextureHeight == 0 )
+            NewTextureHeight = powsize;
     }
+
+    bool newtextureneeded = false;
+    bool newfilteroptions = false;
+
+    if( m_TextureWidth != NewTextureWidth || m_TextureHeight != NewTextureHeight )
+        newtextureneeded = true;
+
+    if( m_NeedColorTexture != needcolor || m_DepthBits != depthbits || m_DepthIsTexture != depthreadable )
+        newtextureneeded = true;
+
+    if( newtextureneeded == false && (m_MinFilter != minfilter || m_MagFilter != magfilter) )
+        newfilteroptions = true;
+
+    m_TextureWidth = NewTextureWidth;
+    m_TextureHeight = NewTextureHeight;
+
+    m_Width = width;
+    m_Height = height;
+    m_MinFilter = minfilter;
+    m_MagFilter = magfilter;
 
     m_NeedColorTexture = needcolor;
     m_DepthBits = depthbits;
     m_DepthIsTexture = depthreadable;
+
+    // if filter options changed, reset them on the texture
+    if( newfilteroptions == true )
+    {
+        glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
+        glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+
+    return newtextureneeded;
 }
 
 bool FBODefinition::Create()
@@ -139,18 +166,15 @@ bool FBODefinition::Create()
     // create the texture
     if( m_ColorTextureID != 0 )
     {
-        if( m_ColorTextureID != 0 )
-        {
-            glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
-            //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
-            glBindTexture( GL_TEXTURE_2D, 0 );
-            checkGlError( "glBindTexture" );
-        }
+        glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
+        //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
+        glBindTexture( GL_TEXTURE_2D, 0 );
+        checkGlError( "glBindTexture" );
     }
 
     // create a depth renderbuffer.

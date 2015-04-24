@@ -139,12 +139,32 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
 {
     LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
-    FBODefinition* pFBODef = MyNew FBODefinition();
-    pFBODef->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
+    FBODefinition* pFBO = MyNew FBODefinition();
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
 
-    m_UninitializedFBOs.AddTail( pFBODef );
+    if( newtexneeded )
+        m_UninitializedFBOs.AddTail( pFBO );
 
-    return pFBODef;
+    return pFBO;
+}
+
+// return true if new texture was needed.
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
+{
+    //assert( width > 0 && height > 0 );
+    if( width <= 0 || height <= 0 )
+        return false;
+    //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
+
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
+
+    if( newtexneeded )
+    {
+        LOGInfo( LOGTag, "ReSetupFBO - Creating new FBO textures %dx%d\n", width, height );
+        InvalidateFBO( pFBO );
+    }
+
+    return newtexneeded;
 }
 
 void TextureManager::InvalidateFBO(FBODefinition* pFBO)
