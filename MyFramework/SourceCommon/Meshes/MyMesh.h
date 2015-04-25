@@ -98,7 +98,7 @@ public:
     void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
     void SetPosition(float x, float y, float z);
     void SetTransform(MyMatrix& matrix);
-    void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride);
+    void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 
     void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
     void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);

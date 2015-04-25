@@ -1279,7 +1279,7 @@ void MyMesh::RebuildIndices()
     m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, int shadowtexid, int lightmaptexid, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     if( m_MeshReady == false )
     {
@@ -1362,7 +1362,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         {
             if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Transform, m_pTexture ? m_pTexture->m_TextureID : 0, m_Tint, m_SpecColor, m_Shininess ) )
+                matviewproj, &m_Transform, m_pTexture, m_Tint, m_SpecColor, m_Shininess ) )
             {
                 checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 
@@ -1381,16 +1381,16 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 if( m_PrimitiveType == GL_POINTS )
                     pShader->ProgramPointSize( (float)m_PointSize );
 
-                if( shadowlightVP && shadowtexid != 0 )
+                if( shadowlightVP && pShadowTex != 0 )
                 {
                     MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
                     MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * m_Transform;
-                    pShader->ProgramShadowLight( &shadowWVPT, shadowtexid );
+                    pShader->ProgramShadowLight( &shadowWVPT, pShadowTex );
                 }
 
-                if( lightmaptexid != 0 )
+                if( pLightmapTex != 0 )
                 {
-                    pShader->ProgramLightmap( lightmaptexid );
+                    pShader->ProgramLightmap( pLightmapTex );
                     checkGlError( "Drawing Mesh ProgramLightmap()" );
                 }
 

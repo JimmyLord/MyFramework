@@ -22,8 +22,7 @@ MySprite9::MySprite9()
 : m_Tint(255, 255, 255, 255)
 {
     m_pShaderGroup = 0;
-    //m_pTexture = 0;
-    m_TextureID = 0;
+    m_pTexture = 0;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -46,16 +45,10 @@ void MySprite9::SetShader(ShaderGroup* pShaderGroup)
     m_pShaderGroup = pShaderGroup;
 }
 
-//void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
-//{
-//    m_pShaderGroup = pShaderGroup;
-//    m_pTexture = pTexture;
-//}
-
-void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, int texid)
+void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
     m_pShaderGroup = pShaderGroup;
-    m_TextureID = texid;
+    m_pTexture = pTexture;
 }
 
 MyMatrix MySprite9::GetPosition()
@@ -187,17 +180,12 @@ void MySprite9::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    int texid = m_TextureID; //GetTextureID();
-
-    if( texid == 0 )
-        return;
-
     Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
     if( pShader )
     {
         if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
-                matviewproj, &m_Position, texid, m_Tint ) )
+                matviewproj, &m_Position, m_pTexture, m_Tint ) )
         {
 #if USE_D3D
             g_pD3DContext->DrawIndexed( 6, 0, 0 );

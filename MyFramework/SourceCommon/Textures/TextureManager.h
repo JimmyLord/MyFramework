@@ -18,8 +18,11 @@ extern TextureManager* g_pTextureManager;
 
 class TextureDefinition : public CPPListNode, public RefCount
 {
+    friend class TextureManager;
+
 protected:
     bool m_FreeFileFromRamWhenTextureCreated;
+    bool m_ManagedByTextureManager;
 
 public:
     bool m_FullyLoaded;

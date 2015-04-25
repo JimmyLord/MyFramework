@@ -27,7 +27,6 @@ protected:
 
 public:
     TextureDefinition* m_pTexture;
-    int m_TextureID;
 
     // store up the current size and texcoords, if these change we need to rebuild sprite
     Vector2 m_SpriteSize;
@@ -51,7 +50,6 @@ public:
 
     virtual void SetShader(ShaderGroup* pShaderGroup);
     virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
-    virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, int texid);
 
     virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false);
     virtual void Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false);
@@ -75,7 +73,7 @@ public:
 
     Vertex_Base* GetVerts(bool markdirty);
 
-    int GetTextureID();
+    TextureDefinition* GetTexture();
     ShaderGroup* GetShader() { return m_pShaderGroup; }
     ColorByte GetTint() { return m_Tint; }
 };

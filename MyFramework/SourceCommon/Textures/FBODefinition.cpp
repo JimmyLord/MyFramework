@@ -14,8 +14,8 @@ FBODefinition::FBODefinition()
     m_FullyLoaded = false;
     m_FailedToInit = false;
 
-    m_ColorTextureID = 0;
-    m_DepthBufferID = 0;
+    m_pColorTexture = 0;
+    m_pDepthTexture = 0;
     m_FrameBufferID = 0;
 
     m_Width = 0;
@@ -86,7 +86,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
     // if filter options changed, reset them on the texture
     if( newfilteroptions == true )
     {
-        glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
+        glBindTexture( GL_TEXTURE_2D, m_pColorTexture->m_TextureID );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
         glBindTexture( GL_TEXTURE_2D, 0 );
@@ -143,30 +143,42 @@ bool FBODefinition::Create()
 
     if( m_NeedColorTexture )
     {
-        glGenTextures( 1, &m_ColorTextureID );
+        m_pColorTexture = MyNew TextureDefinition();
+        glGenTextures( 1, &m_pColorTexture->m_TextureID );
+        m_pColorTexture->m_MinFilter = m_MinFilter;
+        m_pColorTexture->m_MagFilter = m_MagFilter;
+        m_pColorTexture->m_WrapS = GL_CLAMP_TO_EDGE;
+        m_pColorTexture->m_WrapT = GL_CLAMP_TO_EDGE;
+        m_pColorTexture->m_Width = m_Width;
+        m_pColorTexture->m_Height = m_Height;
     }
     checkGlError( "glGenTextures" );
 
     if( m_DepthBits != 0 )
     {
+        m_pDepthTexture = MyNew TextureDefinition();
+
         assert( m_DepthBits == 16 || m_DepthBits == 24 || m_DepthBits == 32 );
 
         if( m_DepthIsTexture )
         {
-            glGenTextures( 1, &m_DepthBufferID );
+            glGenTextures( 1, &m_pDepthTexture->m_TextureID );
             checkGlError( "glGenTextures" );
         }
         else
         {
-            glGenRenderbuffers( 1, &m_DepthBufferID );
+            glGenRenderbuffers( 1, &m_pDepthTexture->m_TextureID );
             checkGlError( "glGenRenderbuffers" );
         }
+
+        m_pDepthTexture->m_Width = m_Width;
+        m_pDepthTexture->m_Height = m_Height;
     }
 
     // create the texture
-    if( m_ColorTextureID != 0 )
+    if( m_pColorTexture->m_TextureID != 0 )
     {
-        glBindTexture( GL_TEXTURE_2D, m_ColorTextureID );
+        glBindTexture( GL_TEXTURE_2D, m_pColorTexture->m_TextureID );
         //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -178,7 +190,7 @@ bool FBODefinition::Create()
     }
 
     // create a depth renderbuffer.
-    if( m_DepthBufferID != 0 )
+    if( m_pDepthTexture->m_TextureID != 0 )
     {
 #if !MYFW_OPENGLES2
         GLint depthformat = GL_DEPTH_COMPONENT32;
@@ -192,7 +204,7 @@ bool FBODefinition::Create()
 
         if( m_DepthIsTexture )
         {
-            glBindTexture( GL_TEXTURE_2D, m_DepthBufferID );
+            glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->m_TextureID );
             checkGlError( "glBindTexture" );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
@@ -208,7 +220,7 @@ bool FBODefinition::Create()
         }
         else
         {
-            glBindRenderbuffer( GL_RENDERBUFFER, m_DepthBufferID );
+            glBindRenderbuffer( GL_RENDERBUFFER, m_pDepthTexture->m_TextureID );
             glRenderbufferStorage( GL_RENDERBUFFER, depthformat, m_TextureWidth, m_TextureHeight );
             checkGlError( "glRenderbufferStorageEXT" );
         }
@@ -219,19 +231,19 @@ bool FBODefinition::Create()
         glBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID );
 
         // attach color texture
-        if( m_ColorTextureID != 0 )
-            glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTextureID, 0 );
+        if( m_pColorTexture->m_TextureID != 0 )
+            glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->m_TextureID, 0 );
 
         // attach depth renderbuffer
-        if( m_DepthBufferID != 0 )
+        if( m_pDepthTexture->m_TextureID != 0 )
         {
             if( m_DepthIsTexture )
             {
-                glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthBufferID, 0 );
+                glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->m_TextureID, 0 );
             }
             else
             {
-               glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthBufferID );
+               glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_pDepthTexture->m_TextureID );
             }
         }
 
@@ -276,21 +288,24 @@ void FBODefinition::Invalidate(bool cleanglallocs)
 #if !USE_D3D
     if( cleanglallocs )
     {
-        if( m_ColorTextureID != 0 )
-            glDeleteTextures( 1, &m_ColorTextureID );
-        if( m_DepthBufferID != 0 )
+        if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+            glDeleteTextures( 1, &m_pColorTexture->m_TextureID );
+        if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
         {
             if( m_DepthIsTexture )
-                glDeleteTextures( 1, &m_DepthBufferID );
+                glDeleteTextures( 1, &m_pDepthTexture->m_TextureID );
             else
-                glDeleteRenderbuffers( 1, &m_DepthBufferID );
+                glDeleteRenderbuffers( 1, &m_pDepthTexture->m_TextureID );
         }
         if( m_FrameBufferID != 0 )
             glDeleteFramebuffers( 1, &m_FrameBufferID );
+
+        SAFE_RELEASE( m_pColorTexture );
+        SAFE_RELEASE( m_pDepthTexture );
     }
 
-    m_ColorTextureID = 0;
-    m_DepthBufferID = 0;
+    m_pColorTexture = 0;
+    m_pDepthTexture = 0;
     m_FrameBufferID = 0;
 #endif
 }

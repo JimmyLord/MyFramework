@@ -20,8 +20,8 @@ public:
     bool m_FullyLoaded;
     bool m_FailedToInit;
 
-    GLuint m_ColorTextureID; // might not exist depending on setup.
-    GLuint m_DepthBufferID; // could be renderbuffer or texture depending on setup.
+    TextureDefinition* m_pColorTexture;
+    TextureDefinition* m_pDepthTexture;
     GLuint m_FrameBufferID;
 
     unsigned int m_Width; // size requested, mainly used by glViewport call.

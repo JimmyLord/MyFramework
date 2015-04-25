@@ -17,7 +17,6 @@ MySprite::MySprite()
 
     m_pShaderGroup = 0;
     m_pTexture = 0;
-    m_TextureID = 0;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -384,19 +383,12 @@ void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition*
         m_pVertexBuffer->ResetVAOs();
 }
 
-void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, int texid)
-{
-    m_TextureID = texid;
-    m_pShaderGroup = pShaderGroup;
-
-    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
-}
-
 bool MySprite::Setup(MyMatrix* matviewproj)
 {
-    assert( m_pShaderGroup );
+    if( m_pShaderGroup == 0 )
+        return false;
+
+    assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
@@ -404,8 +396,7 @@ bool MySprite::Setup(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    int texid = GetTextureID();
-    assert( texid );
+    TextureDefinition* pTexture = GetTexture();
 
     Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
     if( pShader == 0 )
@@ -413,12 +404,13 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     return pShader->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, &m_Position, texid, m_Tint );
+        matviewproj, &m_Position, pTexture, m_Tint );
 }
 
 void MySprite::DrawNoSetup()
 {
-    assert( m_pShaderGroup );
+    if( m_pShaderGroup == 0 )
+        return;
 #if USE_D3D
     g_pD3DContext->DrawIndexed( 6, 0, 0 );
     //g_pD3DContext->Draw( 6, 0 );
@@ -429,10 +421,14 @@ void MySprite::DrawNoSetup()
 
 void MySprite::DeactivateShader()
 {
-    assert( m_pShaderGroup );
-    assert( m_pShaderGroup->GlobalPass() );
+    if( m_pShaderGroup == 0 )
+        return;
 
-    m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+    Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+    if( pShader == 0 )
+        return;
+
+    pShader->DeactivateShader( m_pVertexBuffer );
 }
 
 void MySprite::Draw(MyMatrix* matviewproj)
@@ -442,62 +438,24 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
-//    m_pIndexBuffer->m_Dirty = true;
-
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    int texid = GetTextureID();
-
-    //if( texid == 0 )
-    //    return;
-
-    //Shader_Font* pShader = (Shader_Font*)m_pShaderGroup->GlobalPass();
-    //if( pShader )
-    //{
-    //    if( pShader->ActivateAndProgramShader( matviewproj, &m_Position, m_pVertexBuffer->m_CurrentBufferID, m_pIndexBuffer->m_CurrentBufferID, GL_UNSIGNED_SHORT, texid, m_Tint ) )
+    TextureDefinition* pTexture = GetTexture();
 
     Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
-    if( pShader )
+    if( pShader == 0 )
+        return;
+
+    if( pShader->ActivateAndProgramShader(
+        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+        matviewproj, &m_Position, pTexture, m_Tint ) )
     {
-        if( pShader->ActivateAndProgramShader(
-                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Position, texid, m_Tint ) )
-        {
-            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
-            //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
-            //LOGInfo( LOGTag, "Rendering: indices(%d %d %d %d %d %d)\n",
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[0],
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[1],
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[2],
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[3],
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[4],
-            //    ((unsigned short*)m_pIndexBuffer->m_pData)[5] );
-            //LOGInfo( LOGTag, "Rendering: verts1(%0.2f %0.2f %0.2f %0.2f)\n",
-            //    ((float*)m_pVertexBuffer->m_pData)[0],
-            //    ((float*)m_pVertexBuffer->m_pData)[1],
-            //    ((float*)m_pVertexBuffer->m_pData)[2],
-            //    ((float*)m_pVertexBuffer->m_pData)[3] );
-            //LOGInfo( LOGTag, "Rendering: verts2(%0.2f %0.2f %0.2f %0.2f)\n",
-            //    ((float*)m_pVertexBuffer->m_pData)[4],
-            //    ((float*)m_pVertexBuffer->m_pData)[5],
-            //    ((float*)m_pVertexBuffer->m_pData)[6],
-            //    ((float*)m_pVertexBuffer->m_pData)[7] );
-            //LOGInfo( LOGTag, "Rendering: verts3(%0.2f %0.2f %0.2f %0.2f)\n",
-            //    ((float*)m_pVertexBuffer->m_pData)[8],
-            //    ((float*)m_pVertexBuffer->m_pData)[9],
-            //    ((float*)m_pVertexBuffer->m_pData)[10],
-            //    ((float*)m_pVertexBuffer->m_pData)[11] );
-            //LOGInfo( LOGTag, "Rendering: verts4(%0.2f %0.2f %0.2f %0.2f)\n",
-            //    ((float*)m_pVertexBuffer->m_pData)[12],
-            //    ((float*)m_pVertexBuffer->m_pData)[13],
-            //    ((float*)m_pVertexBuffer->m_pData)[14],
-            //    ((float*)m_pVertexBuffer->m_pData)[15] );
-            pShader->DeactivateShader( m_pVertexBuffer );
-        }
+        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+        pShader->DeactivateShader( m_pVertexBuffer );
     }
 }
 
@@ -511,10 +469,7 @@ Vertex_Base* MySprite::GetVerts(bool markdirty)
     return (Vertex_Base*)m_pVertexBuffer->m_pData;
 }
 
-int MySprite::GetTextureID()
+TextureDefinition* MySprite::GetTexture()
 {
-    if( m_pTexture != 0 )
-        return m_pTexture->m_TextureID;
-
-    return m_TextureID;
+    return m_pTexture;
 }

@@ -252,7 +252,7 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
 #if USE_INDEXED_TRIANGLES
     if( ((Shader_Base*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, 0, m_pTexture->m_TextureID ) )
+        matviewproj, 0, m_pTexture ) )
     {
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
         m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );

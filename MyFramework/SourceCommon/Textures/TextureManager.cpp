@@ -17,6 +17,8 @@ TextureManager* g_pTextureManager = 0;
 TextureDefinition::TextureDefinition(bool freeonceloaded)
 : m_FreeFileFromRamWhenTextureCreated(freeonceloaded)
 {
+    m_ManagedByTextureManager = false;
+
     m_FullyLoaded = false;
 
     m_Filename[0] = 0;
@@ -37,14 +39,24 @@ TextureDefinition::TextureDefinition(bool freeonceloaded)
 
 TextureDefinition::~TextureDefinition()
 {
-    this->Remove();
+    if( m_ManagedByTextureManager )
+    {
+        this->Remove();
+    }
 
-    g_pFileManager->FreeFile( m_pFile );
+    if( m_pFile )
+    {
+        g_pFileManager->FreeFile( m_pFile );
+    }
+
     Invalidate( true );
 
 #if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveTexture( this );
+    if( m_ManagedByTextureManager )
+    {
+        if( g_pPanelMemory )
+            g_pPanelMemory->RemoveTexture( this );
+    }
 #endif
 }
 
@@ -106,6 +118,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     }
 
     TextureDefinition* pTextureDef = MyNew TextureDefinition();
+    pTextureDef->m_ManagedByTextureManager = true;
     strcpy_s( pTextureDef->m_Filename, MAX_PATH, texturefilename );
     pTextureDef->m_MinFilter = minfilter;
     pTextureDef->m_MagFilter = magfilter;

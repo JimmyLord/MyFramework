@@ -181,9 +181,9 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    int texid = GetTextureID();
+    TextureDefinition* pTexture = GetTexture();
 
-    if( texid == 0 )
+    if( pTexture == 0 )
         return;
 
     Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
@@ -192,7 +192,7 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
     {
         if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Position, texid ) )
+                matviewproj, &m_Position, pTexture ) )
         {
 #if USE_D3D
             g_pD3DContext->DrawIndexed( 6, 0, 0 );

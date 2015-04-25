@@ -41,6 +41,9 @@ void Shader_Base::Init_Shader_Base()
     m_uHandle_ShadowTexture = -1;
 
     m_uHandle_TextureColor = -1;
+    m_uHandle_TextureColorWidth = -1;
+    m_uHandle_TextureColorHeight = -1;
+    m_uHandle_TextureDepth = -1;
     m_uHandle_TextureLightmap = -1;
     m_uHandle_TextureTintColor = -1;
     m_uHandle_TextureSpecColor = -1;
@@ -87,11 +90,14 @@ bool Shader_Base::LoadAndCompile()
     m_uHandle_ShadowLightWVPT = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVPT" );
     m_uHandle_ShadowTexture =   GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
 
-    m_uHandle_TextureColor =     GetUniformLocation( m_ProgramHandle, "u_TextureColor" );
-    m_uHandle_TextureLightmap =  GetUniformLocation( m_ProgramHandle, "u_TextureLightmap" );
-    m_uHandle_TextureTintColor = GetUniformLocation( m_ProgramHandle, "u_TextureTintColor" );
-    m_uHandle_TextureSpecColor = GetUniformLocation( m_ProgramHandle, "u_TextureSpecColor" );
-    m_uHandle_Shininess =        GetUniformLocation( m_ProgramHandle, "u_Shininess" );
+    m_uHandle_TextureColor =        GetUniformLocation( m_ProgramHandle, "u_TextureColor" );
+    m_uHandle_TextureColorWidth =   GetUniformLocation( m_ProgramHandle, "u_TextureColorWidth" );
+    m_uHandle_TextureColorHeight =  GetUniformLocation( m_ProgramHandle, "u_TextureColorHeight" );
+    m_uHandle_TextureDepth =        GetUniformLocation( m_ProgramHandle, "u_TextureDepth" );
+    m_uHandle_TextureLightmap =     GetUniformLocation( m_ProgramHandle, "u_TextureLightmap" );
+    m_uHandle_TextureTintColor =    GetUniformLocation( m_ProgramHandle, "u_TextureTintColor" );
+    m_uHandle_TextureSpecColor =    GetUniformLocation( m_ProgramHandle, "u_TextureSpecColor" );
+    m_uHandle_Shininess =           GetUniformLocation( m_ProgramHandle, "u_Shininess" );
 
     m_uHandle_BoneTransforms =   GetUniformLocation( m_ProgramHandle, "u_BoneTransforms" );
 
@@ -374,7 +380,7 @@ bool Shader_Base::DoVAORequirementsMatch(Shader_Base* pShader)
     return false;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess)
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess)
 {
     if( m_Initialized == false )
     {
@@ -392,7 +398,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     SetupAttributes( vbo, ibo, true );
     checkGlError( "SetupAttributes" );
 
-    ProgramBaseUniforms( viewprojmatrix, worldmatrix, texid, tint, speccolor, shininess );
+    ProgramBaseUniforms( viewprojmatrix, worldmatrix, pTexture, tint, speccolor, shininess );
 
     return true;
 }
@@ -450,7 +456,7 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
     }
 }
 
-void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess)
+void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess)
 {
 #if USE_D3D
     assert( 0 );
@@ -464,12 +470,22 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 #else
     ProgramPosition( viewprojmatrix, worldmatrix );
 
-    if( m_uHandle_TextureColor != -1 )
+    if( m_uHandle_TextureColor != -1 && pTexture != 0 )
     {
         MyActiveTexture( GL_TEXTURE0 + 0 );
-        glBindTexture( GL_TEXTURE_2D, texid );
+        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
 
         glUniform1i( m_uHandle_TextureColor, 0 );
+
+        if( m_uHandle_TextureColorWidth != -1 )
+        {
+            glUniform1f( m_uHandle_TextureColorWidth, pTexture->m_Width );
+        }
+
+        if( m_uHandle_TextureColorHeight != -1 )
+        {
+            glUniform1f( m_uHandle_TextureColorHeight, pTexture->m_Height );
+        }
     }
 
     ProgramTint( tint );
@@ -601,7 +617,7 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* invers
     return;
 }
 
-void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, GLuint shadowtexid)
+void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pShadowTex)
 {
     if( m_uHandle_ShadowLightWVPT != -1 )
     {
@@ -611,20 +627,31 @@ void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, GLuint shadowtexid)
     if( m_uHandle_ShadowTexture != -1 )
     {
         MyActiveTexture( GL_TEXTURE0 + 1 );
-        glBindTexture( GL_TEXTURE_2D, shadowtexid );
+        glBindTexture( GL_TEXTURE_2D, pShadowTex->m_TextureID );
 
         glUniform1i( m_uHandle_ShadowTexture, 1 );
     }
 }
 
-void Shader_Base::ProgramLightmap(GLuint texid)
+void Shader_Base::ProgramLightmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureLightmap != -1 )
     {
         MyActiveTexture( GL_TEXTURE0 + 2 );
-        glBindTexture( GL_TEXTURE_2D, texid );
+        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
 
         glUniform1i( m_uHandle_TextureLightmap, 2 );
+    }
+}
+
+void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
+{
+    if( m_uHandle_TextureDepth != -1 && pTexture != 0 )
+    {
+        MyActiveTexture( GL_TEXTURE0 + 3 );
+        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
+
+        glUniform1i( m_uHandle_TextureDepth, 3 );
     }
 }
 

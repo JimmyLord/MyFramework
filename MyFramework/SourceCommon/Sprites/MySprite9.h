@@ -26,8 +26,7 @@ class MySprite9
 {
 protected:
     ShaderGroup* m_pShaderGroup;
-    //TextureDefinition* m_pTexture;
-    int m_TextureID;
+    TextureDefinition* m_pTexture;
 
     //Vector2 m_SpriteSize;
 
@@ -47,8 +46,7 @@ public:
     void Create(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4);
 
     virtual void SetShader(ShaderGroup* pShaderGroup);
-    //virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
-    virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, int texid);
+    virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
 
     //virtual void Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags);
     //virtual void CreateSubsection(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx = 0, float epx = 1, float spy = 0, float epy = 1);

@@ -34,6 +34,9 @@ public:
     GLint m_uHandle_ShadowTexture;
 
     GLint m_uHandle_TextureColor;
+    GLint m_uHandle_TextureColorWidth;
+    GLint m_uHandle_TextureColorHeight;
+    GLint m_uHandle_TextureDepth;
     GLint m_uHandle_TextureLightmap;
     GLint m_uHandle_TextureTintColor;
     GLint m_uHandle_TextureSpecColor;
@@ -68,18 +71,19 @@ public:
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);
 
-    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint = ColorByte::White(), ColorByte speccolor = ColorByte::White(), float shininess = 0);
+    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint = ColorByte::White(), ColorByte speccolor = ColorByte::White(), float shininess = 0);
     bool ActivateAndProgramShader();
 
     void SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable);
-    void ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, GLuint texid, ColorByte tint, ColorByte speccolor, float shininess);
+    void ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess);
     void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
     void ProgramTint(ColorByte tint);
     void ProgramPointSize(float pointsize);
     void ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix);
     void ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix);
-    void ProgramShadowLight(MyMatrix* shadowwvp, GLuint shadowtexid);
-    void ProgramLightmap(GLuint texid);
+    void ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pShadowTex);
+    void ProgramLightmap(TextureDefinition* pTexture);
+    void ProgramDepthmap(TextureDefinition* pTexture);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
 };
 
