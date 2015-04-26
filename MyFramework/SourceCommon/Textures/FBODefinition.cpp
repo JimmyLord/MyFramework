@@ -176,7 +176,7 @@ bool FBODefinition::Create()
     }
 
     // create the texture
-    if( m_pColorTexture->m_TextureID != 0 )
+    if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
     {
         glBindTexture( GL_TEXTURE_2D, m_pColorTexture->m_TextureID );
         //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
@@ -190,7 +190,7 @@ bool FBODefinition::Create()
     }
 
     // create a depth renderbuffer.
-    if( m_pDepthTexture->m_TextureID != 0 )
+    if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
     {
 #if !MYFW_OPENGLES2
         GLint depthformat = GL_DEPTH_COMPONENT32;
@@ -231,11 +231,11 @@ bool FBODefinition::Create()
         glBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID );
 
         // attach color texture
-        if( m_pColorTexture->m_TextureID != 0 )
+        if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
             glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->m_TextureID, 0 );
 
         // attach depth renderbuffer
-        if( m_pDepthTexture->m_TextureID != 0 )
+        if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
         {
             if( m_DepthIsTexture )
             {

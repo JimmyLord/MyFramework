@@ -10,6 +10,9 @@
 #include "CommonHeader.h"
 #include "OBJLoader.h"
 
+// This code is assuming a list of faces longer than 3 is a triangle fan and turning into a list of tris.
+// TODO: obj's can have concave face lists... so this is a step better, but still broken.
+
 struct FaceInfo
 {
     int attributes[4][3];
@@ -163,8 +166,12 @@ Vector3 ParseVertex(char* buffer, int index)
     return outvector;
 }
 
-FaceInfo ParseFaceInfo(char* buffer, int index)
+int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 {
+    // divide the face into a bunch of triangles... assumes face is defined as triangle fan, which it isn't.
+
+    int trianglecount = 0;
+
     assert( buffer[index] == 'f' );
 
     // jump to the first number
@@ -182,15 +189,29 @@ FaceInfo ParseFaceInfo(char* buffer, int index)
     {
         if( buffer[index] == ' ' || buffer[index] == '\t' )
         {
+            assert( numverts < 3 );
+
             faceinfo.attributes[numverts][numattrs] = lastnumber;
             lastnumber = 0; // invalid index
 
             numattrs = 0;
             numverts++;
+            if( numverts == 3 ) // if we filled a triangle, create a new one.
+            {
+                faces[trianglecount] = faceinfo;
+                trianglecount++;
+
+                for( int i=0; i<3; i++ )
+                    faceinfo.attributes[1][i] = faceinfo.attributes[2][i];
+                numverts--;
+            }
             index = FindIndexOfFirstNonSpaceOrTab( buffer, index );
         }
         else if( buffer[index] == '/' )
         {
+            assert( numverts < 3 );
+            assert( numattrs < 3 );
+
             faceinfo.attributes[numverts][numattrs] = lastnumber;
             lastnumber = 0; // invalid index
 
@@ -204,9 +225,15 @@ FaceInfo ParseFaceInfo(char* buffer, int index)
     }
 
     // store the last number, before the '\n' and '\r'
-    faceinfo.attributes[numverts][numattrs] = lastnumber;
+    if( numverts == 3 )
+    {
+        faceinfo.attributes[numverts][numattrs] = lastnumber;
 
-    return faceinfo;
+        faces[trianglecount] = faceinfo;
+        trianglecount++;
+    }
+
+    return trianglecount;
 }
 
 #if _DEBUG
@@ -263,7 +290,26 @@ void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppI
                 else if( buffer[index+1] == 't' )   vertuvcount++;
                 else if( buffer[index+1] == 'n' )   vertnormalcount++;
             }
-            else if( buffer[index] == 'f' )         facecount++;
+            else if( buffer[index] == 'f' )
+            {
+                // count the number of verices, I'll assume the list produces a convex shape.
+                // so, numfaces is 2 less than the number of verts.
+                int numvertsinface = -1;
+                while( buffer[index] != '\r' && buffer[index] != '\n' )
+                {
+                    // skip all non-whitespace.
+                    while( buffer[index] != '\t' && buffer[index] != ' ' && buffer[index] != '\r' && buffer[index] != '\n' )
+                        index++;
+
+                    numvertsinface++;
+
+                    // skip all whitespace.
+                    while( buffer[index] == '\t' || buffer[index] == ' ' )
+                        index++;
+                }
+
+                facecount += numvertsinface-2;
+            }
 
             index = FindIndexOfFirstNonWhitespaceOfNextLine( buffer, index );
         }
@@ -296,8 +342,7 @@ void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppI
 
             if( buffer[index] == 'f' )
             {
-                Faces[facecount] = ParseFaceInfo( buffer, index );
-                facecount++;
+                facecount += ParseFaceInfo( &Faces[facecount], buffer, index );
             }
 
             index = FindIndexOfFirstNonWhitespaceOfNextLine( buffer, index );
@@ -458,6 +503,7 @@ foundduplicate_skiptonextvert:
             }
             else if( numvertsinface == 4 )
             {
+                assert( false ); // should reach this code anymore, faces are broken up into triangles in ParseFaceInfo();
                 SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
