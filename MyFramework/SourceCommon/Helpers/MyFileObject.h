@@ -21,6 +21,9 @@ enum FileLoadStatus
 };
 
 class MyFileObject : public CPPListNode, public RefCount
+#if MYFW_USING_WX
+, public wxEvtHandler
+#endif
 {
     friend class FileManager;
 

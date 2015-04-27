@@ -17,28 +17,32 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 {
     wxTreeItemId idroot;
 
-    // create a notebook with 5 pages(buffers/textures/files)
+    // create a notebook with 6 pages(buffers/textures/files)
     m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxSize(2000,2000) );
 
-    m_pTree_Buffers = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
-    idroot = m_pTree_Buffers->AddRoot( "Buffers" );
-    m_pNotebook->AddPage( m_pTree_Buffers, "Buffers" );
+    m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    idroot = m_pTree_Materials->AddRoot( "Materials" );
+    m_pNotebook->AddPage( m_pTree_Materials, "Mat" );    
 
     m_pTree_Textures = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
     idroot = m_pTree_Textures->AddRoot( "Textures" );
-    m_pNotebook->AddPage( m_pTree_Textures, "Textures" );
+    m_pNotebook->AddPage( m_pTree_Textures, "Tex" );
+
+    m_pTree_ShaderGroups = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
+    m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
 
     m_pTree_Files = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
     idroot = m_pTree_Files->AddRoot( "Files" );
     m_pNotebook->AddPage( m_pTree_Files, "Files" );
 
+    m_pTree_Buffers = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    idroot = m_pTree_Buffers->AddRoot( "Buffers" );
+    m_pNotebook->AddPage( m_pTree_Buffers, "Buffers" );
+
     m_pTree_DrawCalls = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
     idroot = m_pTree_DrawCalls->AddRoot( "Draws" );
     m_pNotebook->AddPage( m_pTree_DrawCalls, "Draws" );
-
-    m_pTree_ShaderGroups = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
-    idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
-    m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
 
     // setup a sizer to resize the notebook
     wxBoxSizer* sizer = MyNew wxBoxSizer( wxHORIZONTAL );
@@ -60,6 +64,7 @@ PanelMemory::~PanelMemory()
 {
     SAFE_DELETE( m_pTree_Buffers );
     SAFE_DELETE( m_pTree_Textures );
+    SAFE_DELETE( m_pTree_Materials )
     SAFE_DELETE( m_pTree_Files );
     SAFE_DELETE( m_pTree_DrawCalls );
     SAFE_DELETE( m_pTree_ShaderGroups );
@@ -234,9 +239,9 @@ void PanelMemory::UpdateRootNodeBufferCount()
     sprintf_s( tempstr, 100, "Buffers - size(%d)", g_pBufferManager->CalculateTotalMemoryUsedByBuffers() );
     m_pTree_Buffers->SetItemText( idroot, tempstr );
 
-    sprintf_s( tempstr, 100, "Buffers(%d)",
+    sprintf_s( tempstr, 100, "Buffs(%d)",
         (int)m_pTree_Buffers->GetChildrenCount( idroot, true ) - (int)m_pTree_Buffers->GetChildrenCount( idroot, false ) );
-    m_pNotebook->SetPageText( 0, tempstr );
+    m_pNotebook->SetPageText( PanelMemoryPage_Buffers, tempstr );
 }
 
 void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
@@ -319,9 +324,110 @@ void PanelMemory::UpdateRootNodeTextureCount()
     //    m_pTree_Textures->GetChildrenCount( idroot, true ) - m_pTree_Textures->GetChildrenCount( idroot, false ),
     //    0 );//g_pTextureManager->CalculateTotalMemoryUsedByTextures() );
     //m_pTree_Textures->SetItemText( idroot, tempstr );
-    sprintf_s( tempstr, 100, "Textures(%d)",
+    sprintf_s( tempstr, 100, "Tex(%d)",
         (int)m_pTree_Textures->GetChildrenCount( idroot, true ) - (int)m_pTree_Textures->GetChildrenCount( idroot, false ) );
-    m_pNotebook->SetPageText( 1, tempstr );
+    m_pNotebook->SetPageText( PanelMemoryPage_Textures, tempstr );
+}
+
+void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+{
+    assert( pMaterial != 0 );
+
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+    int count = (int)m_pTree_Materials->GetChildrenCount( idroot, false );
+
+    // see if the category exists
+    wxTreeItemId idcategory;
+    {
+        wxTreeItemIdValue cookie;
+        idcategory = m_pTree_Materials->GetFirstChild( idroot, cookie );
+        while( idcategory.IsOk() )
+        {
+            wxString catstr = m_pTree_Materials->GetItemText( idcategory );
+            if( catstr == category )
+                break;
+
+            idcategory = m_pTree_Materials->GetNextChild( idroot, cookie );
+        }
+    }
+    
+    // insert the category if necessary
+    if( idcategory.IsOk() == false )
+    {
+        idcategory = m_pTree_Materials->AppendItem( idroot, category, -1, -1, 0 );
+    }
+
+    int categorycount = (int)m_pTree_Materials->GetChildrenCount( idcategory );
+
+    // insert the Material into it's category
+    {
+        sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pMaterial;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_Materials->AppendItem( idcategory, tempstr, -1, -1, pData );
+
+        // if inserting the first item, then expand the tree.
+        if( count == 0 )
+            m_pTree_Materials->Expand( idroot );
+    }
+
+    UpdateRootNodeMaterialCount();
+}
+
+void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
+{
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_Materials, pMaterial, idroot );
+
+    if( id.IsOk() )
+    {
+        // delete item and up to one parent... should be fully recursive up the chain(ignoring root) but it's not for now.
+        wxTreeItemId parentid = m_pTree_Materials->GetItemParent( id );
+
+        m_pTree_Materials->Delete( id );
+
+        if( m_pTree_Materials->GetChildrenCount( parentid ) == 0 )
+            m_pTree_Materials->Delete( parentid );
+
+        UpdateRootNodeMaterialCount();
+    }
+}
+
+void PanelMemory::SetMatrialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+{
+    assert( pObject != 0 );
+
+    TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+    pData->m_pObject = pObject;
+    pData->m_pLeftClickFunction = pLeftClickFunction;
+    pData->m_pRightClickFunction = pRightClickFunction;
+    pData->m_pDragFunction = pDragFunction;
+
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+    m_pTree_Materials->SetItemData( idroot, pData );
+}
+
+void PanelMemory::UpdateRootNodeMaterialCount()
+{
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+
+    // update root node memory usage count.
+    //sprintf_s( tempstr, 100, "Materials(%d) - size(%d)",
+    //    m_pTree_Materials->GetChildrenCount( idroot, true ) - m_pTree_Materials->GetChildrenCount( idroot, false ),
+    //    0 );//g_pMaterialManager->CalculateTotalMemoryUsedByMaterials() );
+    //m_pTree_Materials->SetItemText( idroot, tempstr );
+    sprintf_s( tempstr, 100, "Mat(%d)",
+        (int)m_pTree_Materials->GetChildrenCount( idroot, true ) - (int)m_pTree_Materials->GetChildrenCount( idroot, false ) );
+    m_pNotebook->SetPageText( PanelMemoryPage_Materials, tempstr );
 }
 
 void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
@@ -407,7 +513,7 @@ void PanelMemory::UpdateRootNodeFileCount()
 
     sprintf_s( tempstr, 100, "Files(%d)",
         (int)m_pTree_Files->GetChildrenCount( idroot, true ) - (int)m_pTree_Files->GetChildrenCount( idroot, false ) );
-    m_pNotebook->SetPageText( 2, tempstr );
+    m_pNotebook->SetPageText( PanelMemoryPage_Files, tempstr );
 }
 
 void PanelMemory::AddDrawCall(int index, const char* category, const char* desc)
@@ -573,7 +679,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
 
     sprintf_s( tempstr, 100, "Draws(%d)",
         (int)m_pTree_DrawCalls->GetChildrenCount( idroot, true ) - (int)m_pTree_DrawCalls->GetChildrenCount( idroot, false ) );
-    m_pNotebook->SetPageText( 3, tempstr );
+    m_pNotebook->SetPageText( PanelMemoryPage_DrawCalls, tempstr );
 }
 
 void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
@@ -657,5 +763,5 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
 
     sprintf_s( tempstr, 100, "Shaders(%d)",
         (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
-    m_pNotebook->SetPageText( 2, tempstr );
+    m_pNotebook->SetPageText( PanelMemoryPage_ShaderGroups, tempstr );
 }

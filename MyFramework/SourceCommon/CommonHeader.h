@@ -383,6 +383,7 @@ typedef int socklen_t;
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"
 #include "Textures/TextureManager.h"
+#include "Textures/MaterialManager.h"
 #include "Textures/FBODefinition.h"
 #include "Networking/StunClient.h"
 #include "Networking/GameServiceManager.h"

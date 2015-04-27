@@ -64,6 +64,7 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pGameServiceManager );
     SAFE_DELETE( g_pFileManager );
     SAFE_DELETE( g_pVertexFormatManager );
+    SAFE_DELETE( g_pMaterialManager );
 
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
@@ -80,6 +81,8 @@ void GameCore::InitializeManagers()
         g_pFileManager = MyNew FileManager;
     if( g_pTextureManager == 0 )
         g_pTextureManager = MyNew TextureManager;
+    if( g_pMaterialManager == 0 )
+        g_pMaterialManager = MyNew MaterialManager;
     if( g_pBufferManager == 0 )
         g_pBufferManager = MyNew BufferManager;
     if( g_pMeshManager == 0 )
@@ -145,6 +148,7 @@ double GameCore::Tick(double TimePassed)
 
     g_pFileManager->Tick();
     g_pTextureManager->Tick();
+    g_pMaterialManager->Tick();
     g_pBufferManager->Tick();
     g_FontManager.Tick();
 #if MYFW_BLACKBERRY10

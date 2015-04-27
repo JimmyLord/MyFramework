@@ -540,6 +540,9 @@
     <ClCompile Include="SourceCommon\Shaders\VertexFormatManager.cpp">
       <Filter>Source\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Textures\MaterialManager.cpp">
+      <Filter>Source\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1159,6 +1162,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Shaders\VertexFormatManager.h">
       <Filter>Source\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Textures\MaterialManager.h">
+      <Filter>Source\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

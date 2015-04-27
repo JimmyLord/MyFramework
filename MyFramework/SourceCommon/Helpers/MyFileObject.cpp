@@ -146,7 +146,7 @@ void MyFileObject::OnRightClick()
 {
  	wxMenu menu;
     menu.SetClientData( this );
-
+    
     menu.Append( 1000, "Open file" );
  	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
 
