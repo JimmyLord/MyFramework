@@ -17,6 +17,11 @@ CommandStack::CommandStack()
 
 CommandStack::~CommandStack()
 {
+    ClearStacks();
+}
+
+void CommandStack::ClearStacks()
+{
     for( unsigned int i=0; i<m_UndoStack.size(); i++ )
         delete( m_UndoStack[i] );
 

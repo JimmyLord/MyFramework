@@ -22,6 +22,8 @@ public:
     CommandStack();
     virtual ~CommandStack();
 
+    virtual void ClearStacks();
+
     virtual void Undo(unsigned int levels);
     virtual void Redo(unsigned int levels);
 

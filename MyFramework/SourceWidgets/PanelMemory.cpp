@@ -400,7 +400,7 @@ void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
     }
 }
 
-void PanelMemory::SetMatrialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     assert( pObject != 0 );
 

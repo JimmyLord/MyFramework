@@ -17,6 +17,7 @@ enum DragAndDropTypes
     DragAndDropType_GameObjectPointer,
     DragAndDropType_ComponentPointer,
     DragAndDropType_ShaderGroupPointer,
+    DragAndDropType_MaterialDefinitionPointer,
     DragAndDropType_FileObjectPointer,
     DragAndDropType_TextureDefinitionPointer,
 };

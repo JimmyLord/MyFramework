@@ -21,7 +21,7 @@ class MaterialDefinition : public CPPListNode, public RefCount
 
     static const int MAX_MATERIAL_NAME_LEN = 32;
 
-protected:
+public: // for now.
     bool m_UnsavedChanges;
 
     char m_Name[MAX_MATERIAL_NAME_LEN];
@@ -29,15 +29,27 @@ protected:
 
     ShaderGroup* m_pShaderGroup;
     TextureDefinition* m_pTextureColor;
+    ColorByte m_Tint;
+    ColorByte m_SpecColor;
+    float m_Shininess;
 
 public:
     bool m_FullyLoaded;
 
 public:
     MaterialDefinition();
+    MaterialDefinition(ShaderGroup* pShader);
+    MaterialDefinition(ShaderGroup* pShader, ColorByte tint);
+    void Init();
+
     virtual ~MaterialDefinition();
 
     void ImportFromFile();
+
+    const char* GetName() { return m_Name; }
+
+    void SetShader(ShaderGroup* pShader);
+    void SetTextureColor(TextureDefinition* pTexture);
 
 public:
 #if MYFW_USING_WX
@@ -48,6 +60,11 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
+    static void StaticOnDropShader(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(); }
+    void OnDropShader();
+    static void StaticOnDropTexture(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(); }
+    void OnDropTexture();
+
     void SaveMaterial();
 #endif //MYFW_USING_WX
 };
@@ -57,7 +74,7 @@ class MaterialManager
 : public wxEvtHandler
 #endif
 {
-protected:
+public:
     CPPListHead m_Materials;
     CPPListHead m_MaterialsStillLoading;
 
@@ -74,8 +91,10 @@ public:
     void SaveAllMaterials(bool saveunchanged = false);
 #endif
 
-    MaterialDefinition* CreateMaterial(const char* filename, ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);
+    MaterialDefinition* CreateMaterial(const char* name);
+    MaterialDefinition* CreateMaterial(MyFileObject* pFile);
     MaterialDefinition* FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);
+    MaterialDefinition* FindMaterialByFilename(const char* filename);
 
 public:
 #if MYFW_USING_WX

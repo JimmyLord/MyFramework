@@ -23,11 +23,9 @@ class MySprite : public RefCount
 {
 protected:
     bool m_SpriteIsStatic;
-    ShaderGroup* m_pShaderGroup;
+    MaterialDefinition* m_pMaterial;
 
 public:
-    TextureDefinition* m_pTexture;
-
     // store up the current size and texcoords, if these change we need to rebuild sprite
     Vector2 m_SpriteSize;
     Vector2 m_SpriteUVStart;
@@ -40,7 +38,6 @@ public:
 
     MyMatrix m_Position;
     MyMatrix* m_pParentMatrix;
-
     ColorByte m_Tint;
 
 public:
@@ -48,8 +45,7 @@ public:
     MySprite(MySprite* pSprite, const char* category);
     virtual ~MySprite();
 
-    virtual void SetShader(ShaderGroup* pShaderGroup);
-    virtual void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
+    virtual void SetMaterial(MaterialDefinition* pMaterial);
 
     virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false);
     virtual void Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false);
@@ -74,7 +70,7 @@ public:
     Vertex_Base* GetVerts(bool markdirty);
 
     TextureDefinition* GetTexture();
-    ShaderGroup* GetShader() { return m_pShaderGroup; }
+    MaterialDefinition* GetMaterial() { return m_pMaterial; }
     ColorByte GetTint() { return m_Tint; }
 };
 

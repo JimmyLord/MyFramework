@@ -54,6 +54,7 @@ GameCore::~GameCore()
 
     g_FontManager.FreeAllFonts();
 
+    SAFE_DELETE( g_pMaterialManager );
     SAFE_DELETE( g_pTextureManager );
     SAFE_DELETE( g_pBufferManager );
     SAFE_DELETE( g_pMeshManager );
@@ -62,9 +63,9 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pShaderGroupManager );
     SAFE_DELETE( m_pSoundPlayer );
     SAFE_DELETE( g_pGameServiceManager );
-    SAFE_DELETE( g_pFileManager );
     SAFE_DELETE( g_pVertexFormatManager );
-    SAFE_DELETE( g_pMaterialManager );
+
+    SAFE_DELETE( g_pFileManager ); // will assert if all files aren't free, so delete last.
 
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );

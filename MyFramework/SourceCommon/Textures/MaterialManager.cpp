@@ -16,6 +16,31 @@ MaterialManager* g_pMaterialManager = 0;
 
 MaterialDefinition::MaterialDefinition()
 {
+    Init();
+}
+
+MaterialDefinition::MaterialDefinition(ShaderGroup* pShader)
+{
+    Init();
+
+    m_pShaderGroup = pShader;
+    if( m_pShaderGroup )
+        m_pShaderGroup->AddRef();
+}
+
+MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte tint)
+{
+    Init();
+
+    m_pShaderGroup = pShader;
+    if( m_pShaderGroup )
+        m_pShaderGroup->AddRef();
+
+    m_Tint = tint;
+}
+
+void MaterialDefinition::Init()
+{
     m_FullyLoaded = false;
 
     m_UnsavedChanges = false;
@@ -25,16 +50,31 @@ MaterialDefinition::MaterialDefinition()
 
     m_pShaderGroup = 0;
     m_pTextureColor = 0;
+    m_Tint = ColorByte(255,255,255,255);
+    m_SpecColor = ColorByte(255,255,255,255);
+    m_Shininess = 200;
 }
+
 
 MaterialDefinition::~MaterialDefinition()
 {
-    SAFE_RELEASE( m_pTextureColor );
+    // not all materials are in the MaterialManagers list.
+    if( Prev )
+        this->Remove();
+
+#if MYFW_USING_WX
+    g_pPanelMemory->RemoveMaterial( this );
+#endif
 
     if( m_pFile )
     {
         g_pFileManager->FreeFile( m_pFile );
     }
+
+    SAFE_RELEASE( m_pTextureColor );
+    if( m_pFile != 0 )
+        int bp = 1;
+    SAFE_RELEASE( m_pShaderGroup );
 }
 
 void MaterialDefinition::ImportFromFile()
@@ -45,40 +85,85 @@ void MaterialDefinition::ImportFromFile()
     if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
         return;
 
-    cJSON* jsonobj = cJSON_Parse( m_pFile->m_pBuffer );
+    cJSON* root = cJSON_Parse( m_pFile->m_pBuffer );
 
-    cJSON* shaderstringobj = cJSON_GetObjectItem( jsonobj, "Shader" );
-    if( shaderstringobj )
+    cJSON* material = cJSON_GetObjectItem( root, "Material" );
+    if( material )
     {
-        ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByName( shaderstringobj->valuestring );
-        assert( pShaderGroup ); // fix
-        if( pShaderGroup )
+        cJSONExt_GetString( material, "Name", m_Name, MAX_MATERIAL_NAME_LEN );
+
+        cJSON* shaderstringobj = cJSON_GetObjectItem( material, "Shader" );
+        if( shaderstringobj )
         {
-            pShaderGroup->AddRef();
-            SAFE_RELEASE( m_pShaderGroup );
-            m_pShaderGroup = pShaderGroup;
+            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByName( shaderstringobj->valuestring );
+            assert( pShaderGroup ); // fix
+
+            SetShader( pShaderGroup );
         }
+
+        cJSON* texcolorstringobj = cJSON_GetObjectItem( material, "TexColor" );
+        if( texcolorstringobj )
+        {
+            TextureDefinition* pTexture = g_pTextureManager->FindTexture( texcolorstringobj->valuestring );
+            assert( pTexture ); // fix
+            if( pTexture )
+            {
+                pTexture->AddRef();
+                SAFE_RELEASE( m_pTextureColor );
+                m_pTextureColor = pTexture;
+            }
+        }
+
+        cJSONExt_GetUnsignedCharArray( material, "Tint", &m_Tint.r, 4 );
+        cJSONExt_GetUnsignedCharArray( material, "SpecColor", &m_SpecColor.r, 4 );
+        cJSONExt_GetFloat( material, "Shininess", &m_Shininess );
+
+        m_FullyLoaded = true;
     }
 
-    cJSON* texcolorstringobj = cJSON_GetObjectItem( jsonobj, "TexColor" );
-    if( texcolorstringobj )
-    {
-        TextureDefinition* pTexture = g_pTextureManager->FindTexture( texcolorstringobj->valuestring );
-        assert( pTexture ); // fix
-        if( pTexture )
-        {
-            pTexture->AddRef();
-            SAFE_RELEASE( m_pTextureColor );
-            m_pTextureColor = pTexture;
-        }
-    }
+    cJSON_Delete( root );
+}
 
-    m_FullyLoaded = true;
+void MaterialDefinition::SetShader(ShaderGroup* pShader)
+{
+    if( pShader )
+        pShader->AddRef();
+    SAFE_RELEASE( m_pShaderGroup );
+    m_pShaderGroup = pShader;
+}
+
+void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
+{
+    if( pTexture )
+        pTexture->AddRef();
+    SAFE_RELEASE( m_pTextureColor );
+    m_pTextureColor = pTexture;
 }
 
 #if MYFW_USING_WX
 void MaterialDefinition::OnLeftClick()
 {
+    g_pPanelWatch->ClearAllVariables();
+
+    g_pPanelWatch->AddSpace( this->m_Name );
+
+    const char* desc = "no shader";
+    if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
+        desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+    g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+
+    desc = "no color texture";
+    if( m_pTextureColor )
+        desc = m_pTextureColor->m_Filename;
+    g_pPanelWatch->AddPointerWithDescription( "Tex Color", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
+
+    //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
+    //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );
+    //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, this, ComponentTransform::StaticOnValueChanged );
+    //ColorByte m_Tint;
+    //ColorByte m_SpecColor;
+
+    g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
 }
 
 void MaterialDefinition::OnRightClick()
@@ -87,8 +172,8 @@ void MaterialDefinition::OnRightClick()
 
 void MaterialDefinition::OnDrag()
 {
-    //g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
-    //g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
+    g_DragAndDropStruct.m_Value = this;
 }
 
 void MaterialDefinition::SaveMaterial()
@@ -100,7 +185,9 @@ void MaterialDefinition::SaveMaterial()
 #else
     getcwd( workingdir, MAX_PATH * sizeof(char) );
 #endif
-    sprintf_s( filename, MAX_PATH, "%s%s%s", workingdir, m_Name, ".mymaterial" );
+    sprintf_s( filename, MAX_PATH, "%s/Data/Materials/", workingdir );
+    CreateDirectoryA( filename, 0 );
+    sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, m_Name );
 
     cJSON* root = cJSON_CreateObject();
 
@@ -113,6 +200,10 @@ void MaterialDefinition::SaveMaterial()
     if( m_pTextureColor )
         cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
 
+    cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
+    cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
+    cJSON_AddNumberToObject( material, "Shininess", m_Shininess );
+
     // dump animarray to disk
     char* jsonstr = cJSON_Print( root );
     cJSON_Delete( root );
@@ -123,16 +214,73 @@ void MaterialDefinition::SaveMaterial()
 #else
     pFile = fopen( filename, "wb" );
 #endif
-    fprintf( pFile, "%s", jsonstr );
-    fclose( pFile );
+    if( pFile )
+    {
+        fprintf( pFile, "%s", jsonstr );
+        fclose( pFile );
+    }
 
     cJSONExt_free( jsonstr );
+
+    if( m_pFile == 0 )
+    {
+        sprintf_s( filename, MAX_PATH, "Data/Materials/%s.mymaterial", m_Name );
+        m_pFile = g_pFileManager->RequestFile( filename );
+    }
+}
+
+void MaterialDefinition::OnDropShader()
+{
+    if( g_DragAndDropStruct.m_Type == DragAndDropType_ShaderGroupPointer )
+    {
+        ShaderGroup* pShaderGroup = (ShaderGroup*)g_DragAndDropStruct.m_Value;
+        assert( pShaderGroup );
+        //assert( m_pMesh );
+
+        SetShader( pShaderGroup );
+
+        // update the panel so new Shader name shows up.
+        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+    }
+}
+
+void MaterialDefinition::OnDropTexture()
+{
+    if( g_DragAndDropStruct.m_Type == DragAndDropType_FileObjectPointer )
+    {
+        MyFileObject* pFile = (MyFileObject*)g_DragAndDropStruct.m_Value;
+        assert( pFile );
+        //assert( m_pMesh );
+
+        size_t len = strlen( pFile->m_FullPath );
+        const char* filenameext = &pFile->m_FullPath[len-4];
+
+        if( strcmp( filenameext, ".png" ) == 0 )
+        {
+            TextureDefinition* pOldTexture = m_pTextureColor;
+            m_pTextureColor = g_pTextureManager->FindTexture( pFile->m_FullPath );
+            SAFE_RELEASE( pOldTexture );
+        }
+
+        // update the panel so new Shader name shows up.
+        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
+    }
+
+    if( g_DragAndDropStruct.m_Type == DragAndDropType_TextureDefinitionPointer )
+    {
+        TextureDefinition* pOldTexture = m_pTextureColor;
+        m_pTextureColor = (TextureDefinition*)g_DragAndDropStruct.m_Value;
+        SAFE_RELEASE( pOldTexture );
+
+        // update the panel so new Shader name shows up.
+        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
+    }
 }
 #endif //MYFW_USING_WX
 
 MaterialManager::MaterialManager()
 {
-    g_pPanelMemory->SetMatrialPanelCallbacks(this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag);
+    g_pPanelMemory->SetMaterialPanelCallbacks(this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag);
 }
 
 MaterialManager::~MaterialManager()
@@ -150,6 +298,10 @@ void MaterialManager::Tick()
         if( pMaterial->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
             pMaterial->ImportFromFile();
+
+#if MYFW_USING_WX
+            g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+#endif
         }
 
         if( pMaterial->m_FullyLoaded )
@@ -196,7 +348,7 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->m_UnsavedChanges || saveunchanged )
+        //if( pMaterial->m_UnsavedChanges || saveunchanged )
         {
             pMaterial->SaveMaterial();
         }
@@ -204,19 +356,33 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
 }
 #endif
 
-MaterialDefinition* MaterialManager::CreateMaterial(const char* filename, ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor)
+MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 {
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
     
+    pMaterial->m_FullyLoaded = true;
     pMaterial->m_UnsavedChanges = true;
-    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, filename );
-    pMaterial->m_pShaderGroup = m_pShaderGroup;
-    pMaterial->m_pTextureColor = pTextureColor;
+    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
 #endif
+
+    return 0;
+}
+
+MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
+{
+    assert( pFile );
+
+    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    m_MaterialsStillLoading.AddTail( pMaterial );
+    
+    pMaterial->m_FullyLoaded = false;
+    pMaterial->m_UnsavedChanges = false;
+    pMaterial->m_pFile = pFile;
+    pMaterial->m_pFile->AddRef();
 
     return 0;
 }
@@ -248,6 +414,27 @@ MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, T
     return 0;
 }
 
+MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* filename)
+{
+    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
+
+        if( strcmp( pMaterial->m_pFile->m_FullPath, filename ) == 0 )
+            return pMaterial;
+    }
+
+    for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
+
+        if( pMaterial->m_pFile->m_FullPath == filename )
+            return pMaterial;
+    }
+
+    return 0;
+}
+
 #if MYFW_USING_WX
 void MaterialManager::OnLeftClick()
 {
@@ -271,7 +458,7 @@ void MaterialManager::OnPopupClick(wxEvent &evt)
     int id = evt.GetId();
     if( id == 1000 )
     {
-        g_pMaterialManager->CreateMaterial( "new mat", 0, 0 );
+        g_pMaterialManager->CreateMaterial( "new" );
     }
 #endif
 }

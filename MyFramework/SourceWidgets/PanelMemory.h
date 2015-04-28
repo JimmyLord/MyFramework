@@ -66,7 +66,7 @@ public:
 
     void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveMaterial(MaterialDefinition* pMaterial);
-    void SetMatrialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
 
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);

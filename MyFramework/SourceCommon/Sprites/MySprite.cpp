@@ -15,8 +15,7 @@ MySprite::MySprite()
 {
     m_SpriteIsStatic = false;
 
-    m_pShaderGroup = 0;
-    m_pTexture = 0;
+    m_pMaterial = 0;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -48,6 +47,8 @@ MySprite::~MySprite()
 {
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
+
+    SAFE_RELEASE( m_pMaterial );
     //SAFE_RELEASE( m_pVAO );
 }
 
@@ -364,19 +365,11 @@ void MySprite::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite::SetShader(ShaderGroup* pShaderGroup)
+void MySprite::SetMaterial(MaterialDefinition* pMaterial)
 {
-    m_pShaderGroup = pShaderGroup;
-
-    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
-}
-
-void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
-{
-    m_pTexture = pTexture;
-    m_pShaderGroup = pShaderGroup;
+    pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
 
     // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
     if( m_pVertexBuffer )
@@ -385,7 +378,7 @@ void MySprite::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition*
 
 bool MySprite::Setup(MyMatrix* matviewproj)
 {
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 )
         return false;
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
@@ -398,7 +391,7 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     TextureDefinition* pTexture = GetTexture();
 
-    Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
     if( pShader == 0 )
         return false;
 
@@ -409,8 +402,9 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
 void MySprite::DrawNoSetup()
 {
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 )
         return;
+
 #if USE_D3D
     g_pD3DContext->DrawIndexed( 6, 0, 0 );
     //g_pD3DContext->Draw( 6, 0 );
@@ -421,10 +415,10 @@ void MySprite::DrawNoSetup()
 
 void MySprite::DeactivateShader()
 {
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 )
         return;
 
-    Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -433,7 +427,7 @@ void MySprite::DeactivateShader()
 
 void MySprite::Draw(MyMatrix* matviewproj)
 {
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 )
         return;
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
@@ -446,7 +440,7 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
     TextureDefinition* pTexture = GetTexture();
 
-    Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -471,5 +465,5 @@ Vertex_Base* MySprite::GetVerts(bool markdirty)
 
 TextureDefinition* MySprite::GetTexture()
 {
-    return m_pTexture;
+    return m_pMaterial->m_pTextureColor;
 }

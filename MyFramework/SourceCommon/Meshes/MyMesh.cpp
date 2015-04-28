@@ -15,21 +15,16 @@ MyMesh::MyMesh()
     m_pSourceFile = 0;
     m_MeshReady = false;
 
+    m_pMaterial = 0;
+
     m_VertexFormat = -1;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
 
-    m_pShaderGroup = 0;
-
     m_NumVertsToDraw = 0;
     m_NumIndicesToDraw = 0;
     m_PrimitiveType = GL_TRIANGLES;
-
-    m_pTexture = 0;
-    m_Tint = ColorByte(255,255,255,255);
-    m_SpecColor = ColorByte(255,255,255,255);
-    m_Shininess = 200;
 
     m_Transform.SetIdentity();
 
@@ -46,6 +41,8 @@ MyMesh::~MyMesh()
         this->Remove();
 
     SAFE_RELEASE( m_pSourceFile );
+
+    SAFE_RELEASE( m_pMaterial );
 
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
@@ -1235,33 +1232,19 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
 void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color)
 {
     CreateCylinder( thickness, 4, 0, length, 0, 1, 0, 1, 0, 1, 0, 1 );
-    m_Tint = color;
+    // TODOMaterials
+    LOGError( LOGTag, "TransformGizmo color wasn't set properly... need to make a material for it\n" );
 }
 
-void MyMesh::SetShaderGroup(ShaderGroup* pShaderGroup)
+void MyMesh::SetMaterial(MaterialDefinition* pMaterial)
 {
-    m_pShaderGroup = pShaderGroup;
+    pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
 
-    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
+    // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
     if( m_pVertexBuffer )
         m_pVertexBuffer->ResetVAOs();
-}
-
-void MyMesh::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
-{
-    m_pTexture = pTexture;
-    m_pShaderGroup = pShaderGroup;
-
-    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
-}
-
-void MyMesh::SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess)
-{
-    m_Tint = tint;
-    m_SpecColor = speccolor;
-    m_Shininess = shininess;
 }
 
 void MyMesh::SetPosition(float x, float y, float z)
@@ -1297,7 +1280,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         return;
     }
 
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 )
         return;
 
     if( m_NumIndicesToDraw == 0 )
@@ -1357,12 +1340,15 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         if( m_pVertexBuffer && m_pVertexBuffer->m_pFormatDesc )
             numboneinfluences = m_pVertexBuffer->m_pFormatDesc->num_bone_influences;
 
-        Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
+        if( m_pMaterial->m_pShaderGroup == 0 )
+            return;
+
+        Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
         if( pShader )
         {
             if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Transform, m_pTexture, m_Tint, m_SpecColor, m_Shininess ) )
+                matviewproj, &m_Transform, m_pMaterial->m_pTextureColor, m_pMaterial->m_Tint, m_pMaterial->m_SpecColor, m_pMaterial->m_Shininess ) )
             {
                 checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 

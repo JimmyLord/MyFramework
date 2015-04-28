@@ -10,12 +10,11 @@
 #ifndef __MyMesh_H__
 #define __MyMesh_H__
 
-class Shader_Base;
+class MaterialDefinition;
 class TextureDefinition;
 class BufferDefinition;
 class VAODefinition;
 class MyLight;
-class ShaderGroup;
 
 struct MySkeletonNode
 {
@@ -39,7 +38,7 @@ class MyMesh : public CPPListNode, public RefCount
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
 
 protected:
-    ShaderGroup* m_pShaderGroup;
+    MaterialDefinition* m_pMaterial;
 
     int m_VertexFormat;
     
@@ -64,11 +63,6 @@ public:
     int m_PrimitiveType;
     int m_PointSize;
 
-    TextureDefinition* m_pTexture;
-    ColorByte m_Tint;
-    ColorByte m_SpecColor;
-    float m_Shininess;
-
 protected:
     MyMatrix m_Transform;
 
@@ -92,10 +86,8 @@ public:
     void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
 
-    ShaderGroup* GetShaderGroup() { return m_pShaderGroup; }
-    void SetShaderGroup(ShaderGroup* pShaderGroup);
-    void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
-    void SetTextureProperties(ColorByte tint, ColorByte speccolor, float shininess);
+    MaterialDefinition* GetMaterial() { return m_pMaterial; }
+    void SetMaterial(MaterialDefinition* pMaterial);
     void SetPosition(float x, float y, float z);
     void SetTransform(MyMatrix& matrix);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
