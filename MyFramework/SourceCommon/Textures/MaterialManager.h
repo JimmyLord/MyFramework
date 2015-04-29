@@ -47,6 +47,7 @@ public:
     void ImportFromFile();
 
     const char* GetName() { return m_Name; }
+    void SetName(const char* name);
 
     void SetShader(ShaderGroup* pShader);
     void SetTextureColor(TextureDefinition* pTexture);
@@ -64,6 +65,9 @@ public:
     void OnDropShader();
     static void StaticOnDropTexture(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(); }
     void OnDropTexture();
+
+    static void StaticOnLabelEdit(void* pObjectPtr, wxString newlabel) { ((MaterialDefinition*)pObjectPtr)->OnLabelEdit( newlabel ); }
+    void OnLabelEdit(wxString newlabel);
 
     void SaveMaterial();
 #endif //MYFW_USING_WX

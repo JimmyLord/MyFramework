@@ -20,7 +20,8 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
     // create a notebook with 6 pages(buffers/textures/files)
     m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxSize(2000,2000) );
 
-    m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
+        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
     idroot = m_pTree_Materials->AddRoot( "Materials" );
     m_pNotebook->AddPage( m_pTree_Materials, "Mat" );    
 
@@ -53,6 +54,8 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
     Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnDrawCallTabSelected) );
     Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnDrawCallTreeSelectionChanged) );
+    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeBeginLabelEdit) );
+    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeEndLabelEdit) );
     Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelMemory::OnTreeContextMenuRequested) );
     Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelMemory::OnDragBegin) );
 
@@ -363,7 +366,7 @@ void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* categor
 
     // insert the Material into it's category
     {
-        sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
+        sprintf_s( tempstr, 100, "%s", desc );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pMaterial;
         pData->m_pLeftClickFunction = pLeftClickFunction;
@@ -764,4 +767,81 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
     sprintf_s( tempstr, 100, "Shaders(%d)",
         (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( PanelMemoryPage_ShaderGroups, tempstr );
+}
+
+void PanelMemory::SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction)
+{
+    wxTreeItemId idroot = pTree->GetRootItem();
+    wxTreeItemId id = FindObject( pTree, pObject, idroot );
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+    pData->m_pLabelEditFunction = pLabelEditFunction;
+}
+
+void PanelMemory::OnTreeBeginLabelEdit(wxTreeEvent& event)
+{
+    wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+    wxTreeItemId id = event.GetItem();
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+
+    // don't allow edits if there's no callback.
+    if( pData == 0 || pData->m_pLabelEditFunction == 0 )
+    {
+        // cancel the edit
+        event.Veto();
+    }
+}
+
+void PanelMemory::OnTreeEndLabelEdit(wxTreeEvent& event)
+{
+    wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+    wxTreeItemId id = event.GetItem();
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+
+    if( pData && pData->m_pLabelEditFunction )
+    {
+        //// end the edit to commit the new name
+        //m_pTree_Objects->EndEditLabel( id );
+
+        wxString newlabel = event.GetLabel();
+
+        if( event.IsEditCancelled() == false )
+        {
+            // manually set the item to the new name, so the callback func can query for the name.
+            //    the edit process seems to happen later
+            RenameObject( pTree, pData->m_pObject, newlabel );
+
+            // Call the callback and let game code handle the new name
+            pData->m_pLabelEditFunction( pData->m_pObject, newlabel );
+        }
+    }
+}
+
+wxString PanelMemory::GetObjectName(wxTreeCtrl* pTree, void* pObject)
+{
+    wxTreeItemId idroot = pTree->GetRootItem();
+
+    wxTreeItemId id = FindObject( pTree, pObject, idroot );
+
+    if( id.IsOk() )
+    {
+        return pTree->GetItemText( id );
+    }
+
+    return "";
+}
+
+void PanelMemory::RenameObject(wxTreeCtrl* pTree, void* pObject, const char* desc)
+{
+    wxTreeItemId idroot = pTree->GetRootItem();
+
+    wxTreeItemId id = FindObject( pTree, pObject, idroot );
+
+    if( id.IsOk() )
+    {
+        pTree->SetItemText( id, desc );
+    }
+
+    //UpdateRootNodeObjectCount();
 }

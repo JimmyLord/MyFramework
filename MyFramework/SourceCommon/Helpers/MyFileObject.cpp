@@ -9,7 +9,9 @@
 
 #include "CommonHeader.h"
 
+#if MYFW_USING_WX
 #include "wx/menu.h"
+#endif
 
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 
@@ -207,6 +209,15 @@ void MyFileObject::RequestFile(const char* filename)
 
     LOGInfo( LOGTag, "RequestFile %s\n", filename );
 
+    ParseName( filename );
+}
+
+void MyFileObject::ParseName(const char* filename)
+{
+    SAFE_DELETE_ARRAY( m_FullPath );
+    SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
+    SAFE_DELETE_ARRAY( m_ExtensionWithDot );
+
     int len = (int)strlen( filename );
     assert( len > 0 );
     if( len <= 0 )
@@ -256,6 +267,22 @@ void MyFileObject::RequestFile(const char* filename)
             i--;
         }
     }
+}
+
+void MyFileObject::Rename(const char* newnamewithoutextension)
+{
+    char newfullpath[MAX_PATH];
+
+    int fullpathlen = strlen( m_FullPath );
+    int nameextlen = strlen( m_FilenameWithoutExtension ) + strlen( m_ExtensionWithDot );
+    int pathlen = fullpathlen - nameextlen;
+
+    sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );
+    sprintf_s( &newfullpath[pathlen], MAX_PATH-pathlen, "%s%s", newnamewithoutextension, m_ExtensionWithDot );
+
+    rename( m_FullPath, newfullpath );
+
+    ParseName( newfullpath );
 }
 
 void MyFileObject::Tick()

@@ -122,7 +122,7 @@ void PanelObjectList::OnTreeEndLabelEdit(wxTreeEvent& event)
             RenameObject( pData->m_pObject, newlabel );
 
             // Call the callback and let game code handle the new name
-            pData->m_pLabelEditFunction( pData->m_pObject );
+            pData->m_pLabelEditFunction( pData->m_pObject, newlabel );
         }
     }
 }
@@ -373,7 +373,7 @@ void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCall
     pData->m_pDropFunction = pDropFunction;
 }
 
-void PanelObjectList::SetLabelEditFunction(void* pObject, PanelObjectListCallback pLabelEditFunction)
+void PanelObjectList::SetLabelEditFunction(void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );

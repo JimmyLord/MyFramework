@@ -15,6 +15,7 @@ class PanelObjectList;
 extern PanelObjectList* g_pPanelObjectList;
 
 typedef void (*PanelObjectListCallback)(void*);
+typedef void (*PanelObjectListLabelEditCallback)(void*, wxString);
 
 class TreeItemDataGenericObjectInfo : public wxTreeItemData
 {
@@ -23,17 +24,17 @@ public:
     {
         m_pLeftClickFunction = 0;
         m_pRightClickFunction = 0;
-        m_pLabelEditFunction = 0;
         m_pDragFunction = 0;
         m_pDropFunction = 0;
+        m_pLabelEditFunction = 0;
     }
 
     void* m_pObject;
     PanelObjectListCallback m_pLeftClickFunction;
     PanelObjectListCallback m_pRightClickFunction;
-    PanelObjectListCallback m_pLabelEditFunction;
     PanelObjectListCallback m_pDragFunction;
     PanelObjectListCallback m_pDropFunction;
+    PanelObjectListLabelEditCallback m_pLabelEditFunction;
 }; 
 
 class PanelObjectListDropTarget : public wxDropTarget
@@ -84,7 +85,7 @@ public:
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc);
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc);
     void SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallback pDropFunction);
-    void SetLabelEditFunction(void* pObject, PanelObjectListCallback pLabelEditFunction);
+    void SetLabelEditFunction(void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction);
     void RemoveObject(void* pObject);
     void* GetObject(wxTreeItemId id);
 

@@ -77,6 +77,12 @@ public:
 
     void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveShaderGroup(ShaderGroup* pShaderGroup);
+
+    void SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction);
+    void OnTreeBeginLabelEdit(wxTreeEvent& event);
+    void OnTreeEndLabelEdit(wxTreeEvent& event);
+    wxString GetObjectName(wxTreeCtrl* pTree, void* pObject);
+    void RenameObject(wxTreeCtrl* pTree, void* pObject, const char* desc);
 };
 
 #endif // __PanelMemory_H__

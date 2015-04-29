@@ -124,6 +124,31 @@ void MaterialDefinition::ImportFromFile()
     cJSON_Delete( root );
 }
 
+void MaterialDefinition::SetName(const char* name)
+{
+    assert( name );
+
+    if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
+        return;
+
+    size_t len = strlen( name );
+    
+    strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, name );
+
+    if( m_pFile )
+    {
+        m_pFile->Rename( name );
+        // TODO: rename the file on disk.
+    }
+
+#if MYFW_USING_WX
+    if( g_pPanelMemory )
+    {
+        g_pPanelMemory->RenameObject( g_pPanelMemory->m_pTree_Materials, this, m_Name );
+    }
+#endif //MYFW_USING_WX
+}
+
 void MaterialDefinition::SetShader(ShaderGroup* pShader)
 {
     if( pShader )
@@ -174,6 +199,15 @@ void MaterialDefinition::OnDrag()
 {
     g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
     g_DragAndDropStruct.m_Value = this;
+}
+
+void MaterialDefinition::OnLabelEdit(wxString newlabel)
+{
+    size_t len = newlabel.length();
+    if( len > 0 )
+    {
+        SetName( newlabel );
+    }
 }
 
 void MaterialDefinition::SaveMaterial()
@@ -280,7 +314,9 @@ void MaterialDefinition::OnDropTexture()
 
 MaterialManager::MaterialManager()
 {
+#if MYFW_USING_WX
     g_pPanelMemory->SetMaterialPanelCallbacks(this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag);
+#endif
 }
 
 MaterialManager::~MaterialManager()
@@ -301,6 +337,7 @@ void MaterialManager::Tick()
 
 #if MYFW_USING_WX
             g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+            g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
         }
 
@@ -338,6 +375,7 @@ void MaterialManager::LoadMaterial(const char* filename)
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, this, MaterialDefinition::StaticOnLabelEdit );
 #endif
 }
 
@@ -367,6 +405,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, this, MaterialDefinition::StaticOnLabelEdit );
 #endif
 
     return 0;

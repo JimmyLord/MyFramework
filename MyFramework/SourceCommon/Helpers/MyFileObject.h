@@ -49,8 +49,11 @@ public:
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
 
+    void Rename(const char* newnamewithoutextension);
+
 protected:
     void RequestFile(const char* filename);
+    void ParseName(const char* filename);
 
     void Tick();
     void FakeFileLoad(char* buffer, int length);
