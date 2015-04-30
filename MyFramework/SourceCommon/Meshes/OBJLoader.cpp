@@ -185,27 +185,36 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 
     int lastnumber = -1;
 
-    while( buffer[index] != '\r' && buffer[index] != '\n' && buffer[index] != 0 )
+    while( 1 )
     {
-        if( buffer[index] == ' ' || buffer[index] == '\t' )
+        if( buffer[index] == ' ' || buffer[index] == '\t' || buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == 0 )
         {
             assert( numverts < 3 );
 
-            faceinfo.attributes[numverts][numattrs] = lastnumber;
-            lastnumber = 0; // invalid index
-
-            numattrs = 0;
-            numverts++;
-            if( numverts == 3 ) // if we filled a triangle, create a new one.
+            if( lastnumber > 0 )
             {
-                faces[trianglecount] = faceinfo;
-                trianglecount++;
+                faceinfo.attributes[numverts][numattrs] = lastnumber;
+                numverts++;
 
-                for( int i=0; i<3; i++ )
-                    faceinfo.attributes[1][i] = faceinfo.attributes[2][i];
-                numverts--;
+                if( numverts == 3 ) // if we filled a triangle, create a new one.
+                {
+                    faces[trianglecount] = faceinfo;
+                    trianglecount++;
+
+                    // assuming a triangle fan, so copy vert2 into vert1, vert0 stays the same, then read a new vert2
+                    for( int i=0; i<3; i++ )
+                        faceinfo.attributes[1][i] = faceinfo.attributes[2][i];
+                    numverts--;
+                }
+    
+                index = FindIndexOfFirstNonSpaceOrTab( buffer, index );
             }
-            index = FindIndexOfFirstNonSpaceOrTab( buffer, index );
+
+            lastnumber = -1; // invalid index
+            numattrs = 0;
+
+            if( buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == 0 )
+                break;
         }
         else if( buffer[index] == '/' )
         {
@@ -222,15 +231,6 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
         {
             lastnumber = ReadIntAndMoveOn( buffer, &index );
         }
-    }
-
-    // store the last number, before the '\n' and '\r'
-    if( numverts == 3 )
-    {
-        faceinfo.attributes[numverts][numattrs] = lastnumber;
-
-        faces[trianglecount] = faceinfo;
-        trianglecount++;
     }
 
     return trianglecount;

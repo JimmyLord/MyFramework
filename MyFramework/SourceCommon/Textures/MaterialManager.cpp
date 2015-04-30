@@ -263,7 +263,7 @@ void MaterialDefinition::SaveMaterial()
     }
 }
 
-void MaterialDefinition::OnDropShader()
+void MaterialDefinition::OnDropShader(wxCoord x, wxCoord y)
 {
     if( g_DragAndDropStruct.m_Type == DragAndDropType_ShaderGroupPointer )
     {
@@ -278,7 +278,7 @@ void MaterialDefinition::OnDropShader()
     }
 }
 
-void MaterialDefinition::OnDropTexture()
+void MaterialDefinition::OnDropTexture(wxCoord x, wxCoord y)
 {
     if( g_DragAndDropStruct.m_Type == DragAndDropType_FileObjectPointer )
     {
@@ -375,7 +375,7 @@ void MaterialManager::LoadMaterial(const char* filename)
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, this, MaterialDefinition::StaticOnLabelEdit );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 }
 
@@ -405,7 +405,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, this, MaterialDefinition::StaticOnLabelEdit );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 
     return 0;

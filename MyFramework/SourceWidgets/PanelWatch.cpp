@@ -177,7 +177,7 @@ int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, 
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
+int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
 {
     assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -329,7 +329,7 @@ int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float m
     return first;
 }
 
-int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallback pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeDesc( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc, 0 );
 }
@@ -614,7 +614,7 @@ wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def
     assert( m_pCallbackObj && m_pCallbackFunc );
 
     g_DragAndDropStruct.m_ID = m_ControlIndex;
-    m_pCallbackFunc( m_pCallbackObj );
+    m_pCallbackFunc( m_pCallbackObj, x, y );
 
     return wxDragNone;
 }

@@ -61,10 +61,10 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
-    static void StaticOnDropShader(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(); }
-    void OnDropShader();
-    static void StaticOnDropTexture(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(); }
-    void OnDropTexture();
+    static void StaticOnDropShader(void* pObjectPtr, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(x, y); }
+    void OnDropShader(wxCoord x, wxCoord y);
+    static void StaticOnDropTexture(void* pObjectPtr, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(x, y); }
+    void OnDropTexture(wxCoord x, wxCoord y);
 
     static void StaticOnLabelEdit(void* pObjectPtr, wxString newlabel) { ((MaterialDefinition*)pObjectPtr)->OnLabelEdit( newlabel ); }
     void OnLabelEdit(wxString newlabel);

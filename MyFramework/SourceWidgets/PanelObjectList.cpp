@@ -180,7 +180,7 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         if( pData && pData->m_pDropFunction )
         {
-            pData->m_pDropFunction( pData->m_pObject );
+            pData->m_pDropFunction( pData->m_pObject, x, y );
         }
     }
 
@@ -364,7 +364,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
     return newid;
 }
 
-void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallback pDropFunction)
+void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
