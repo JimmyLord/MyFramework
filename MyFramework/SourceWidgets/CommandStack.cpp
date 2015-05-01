@@ -22,11 +22,17 @@ CommandStack::~CommandStack()
 
 void CommandStack::ClearStacks()
 {
-    for( unsigned int i=0; i<m_UndoStack.size(); i++ )
-        delete( m_UndoStack[i] );
+    while( m_UndoStack.empty() == false )
+    {
+        delete m_UndoStack.back();
+        m_UndoStack.pop_back();
+    }
 
-    for( unsigned int i=0; i<m_RedoStack.size(); i++ )
-        delete( m_RedoStack[i] );
+    while( m_RedoStack.empty() == false )
+    {
+        delete m_RedoStack.back();
+        m_RedoStack.pop_back();
+    }
 }
 
 void CommandStack::Undo(unsigned int levels)

@@ -35,7 +35,6 @@ class ShaderGroup : public CPPListNode, public RefCount
 protected:
     const char* m_Name; // managed externally.
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
-    unsigned int m_MaxLightsShaderCanUse;
 
 protected:
     void Initialize();
