@@ -9,10 +9,6 @@
 
 #include "CommonHeader.h"
 
-#if MYFW_USING_WX
-#include "wx/menu.h"
-#endif
-
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 
 #if MYFW_WINDOWS

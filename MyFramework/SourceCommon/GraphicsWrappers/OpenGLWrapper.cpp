@@ -19,8 +19,8 @@
 
 GLStats g_GLStats;
 
-static GLuint currentglbuffers[2] = { 0, 0 };
-static GLenum currentgltextureunit = -1;
+static GLuint g_CurrentGLBuffers[2] = { 0, 0 };
+static GLenum g_CurrentGLActiveTextureUnit = -1;
 
 GLStats::GLStats()
 {
@@ -57,10 +57,11 @@ void MyBindBuffer(GLenum target, GLuint buffer)
 {
     assert( target >= GL_ARRAY_BUFFER && target <= GL_ELEMENT_ARRAY_BUFFER );
 
-    if( currentglbuffers[target - GL_ARRAY_BUFFER] == buffer )
-        return;
+    // TODO: forget storing this for now... VAOs are messing the the values and breaking things, will need to rethink it.
+    //if( g_CurrentGLBuffers[target - GL_ARRAY_BUFFER] == buffer )
+    //    return;
 
-    currentglbuffers[target - GL_ARRAY_BUFFER] = buffer;
+    //g_CurrentGLBuffers[target - GL_ARRAY_BUFFER] = buffer;
     glBindBuffer( target, buffer );
 }
 
@@ -70,8 +71,9 @@ void MyDeleteBuffers(GLsizei num, GLuint* buffers)
 
     for( int i=0; i<num; i++ )
     {
-        if( currentglbuffers[0] == buffers[i] ) currentglbuffers[0] = 0;
-        if( currentglbuffers[1] == buffers[i] ) currentglbuffers[1] = 0;
+        // TODO: fix along with MyBindBuffer
+        //if( g_CurrentGLBuffers[0] == buffers[i] ) g_CurrentGLBuffers[0] = 0;
+        //if( g_CurrentGLBuffers[1] == buffers[i] ) g_CurrentGLBuffers[1] = 0;
 
         glDeleteBuffers( 1, &buffers[i] );
     }
@@ -79,10 +81,10 @@ void MyDeleteBuffers(GLsizei num, GLuint* buffers)
 
 void MyActiveTexture(GLenum texture)
 {
-    if( currentgltextureunit == texture )
+    if( g_CurrentGLActiveTextureUnit == texture )
         return;
 
-    currentgltextureunit = texture;
+    g_CurrentGLActiveTextureUnit = texture;
     glActiveTexture( texture );
 }
 

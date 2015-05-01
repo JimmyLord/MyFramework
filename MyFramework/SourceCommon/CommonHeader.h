@@ -122,6 +122,7 @@
 #include "wx/treectrl.h"
 #include "wx/clrpicker.h"
 #include "wx/dnd.h"
+#include "wx/menu.h"
 #pragma warning (default : 4996)
 #include <vector>
 #endif
