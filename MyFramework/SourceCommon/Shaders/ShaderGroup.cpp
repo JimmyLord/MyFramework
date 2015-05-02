@@ -185,3 +185,20 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByName(const char* name)
 
     return 0;
 }
+
+ShaderGroup* ShaderGroupManager::FindShaderGroupByFile(MyFileObject* pFile)
+{
+    assert( pFile );
+
+    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
+
+        if( pShaderGroup->GetShader( ShaderPass_Main, 0, 0 )->m_pFile == pFile )
+        {
+            return pShaderGroup;
+        }
+    }
+
+    return 0;
+}

@@ -69,6 +69,7 @@ public:
 public:
     void AddShaderGroup(ShaderGroup* pShaderGroup);
     ShaderGroup* FindShaderGroupByName(const char* name);
+    ShaderGroup* FindShaderGroupByFile(MyFileObject* pFile);
 };
 
 #endif //__ShaderGroup_H__

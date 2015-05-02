@@ -45,6 +45,7 @@ public:
     MySprite(MySprite* pSprite, const char* category);
     virtual ~MySprite();
 
+    virtual MaterialDefinition* GetMaterial() { return m_pMaterial; }
     virtual void SetMaterial(MaterialDefinition* pMaterial);
 
     virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false);
@@ -70,7 +71,6 @@ public:
     Vertex_Base* GetVerts(bool markdirty);
 
     TextureDefinition* GetTexture();
-    MaterialDefinition* GetMaterial() { return m_pMaterial; }
     ColorByte GetTint() { return m_Tint; }
 };
 
