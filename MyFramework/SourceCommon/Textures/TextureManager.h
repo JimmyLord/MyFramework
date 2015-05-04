@@ -72,7 +72,7 @@ public:
 
     void Tick();
     
-    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
+    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable, bool onlyfreeonshutdown = false);
     bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
     void InvalidateFBO(FBODefinition* pFBO);
 
@@ -80,7 +80,7 @@ public:
     GLuint CreateTextureFromBuffer(TextureDefinition* texturedef);
     TextureDefinition* FindTexture(const char* texturefilename);
 
-    void FreeAllTextures();
+    void FreeAllTextures(bool shuttingdown);
     void InvalidateAllTextures(bool cleanglallocs);
 
     void SetMaxTexturesToLoadInOneTick(int max) { m_MaxTexturesToLoadInOneTick = max; }

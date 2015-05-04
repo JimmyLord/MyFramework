@@ -13,6 +13,7 @@ FBODefinition::FBODefinition()
 {
     m_FullyLoaded = false;
     m_FailedToInit = false;
+    m_OnlyFreeOnShutdown = false;
 
     m_pColorTexture = 0;
     m_pDepthTexture = 0;

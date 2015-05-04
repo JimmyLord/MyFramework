@@ -57,17 +57,18 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
 {
     VertexFormat_Dynamic_Desc* pDesc = FindDynamicVertexFormat( numuvs, normals, tangents, bitangents, color, boneinfluences );
 
-    if( pDesc == 0 )
-    {
-        if( m_pDynamicVertexFormatDesc.Count() >= MAX_DYNAMIC_VERTEX_FORMATS )
-        {
-            assert( false );
-            return 0; // pretty much guananteeing a crash on the other end!
-        }
+    // If we found a vertex format that matches, use it.
+    if( pDesc )
+        return pDesc;
 
-        pDesc = MyNew VertexFormat_Dynamic_Desc;
-        memset( pDesc, 0, sizeof( VertexFormat_Dynamic_Desc ) );
+    if( m_pDynamicVertexFormatDesc.Count() >= MAX_DYNAMIC_VERTEX_FORMATS )
+    {
+        assert( false );
+        return 0; // pretty much guananteeing a crash on the other end!
     }
+
+    pDesc = MyNew VertexFormat_Dynamic_Desc;
+    memset( pDesc, 0, sizeof( VertexFormat_Dynamic_Desc ) );
 
     m_pDynamicVertexFormatDesc.Add( pDesc );
 

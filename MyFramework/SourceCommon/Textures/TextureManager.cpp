@@ -85,7 +85,7 @@ TextureManager::TextureManager()
 
 TextureManager::~TextureManager()
 {
-    FreeAllTextures();
+    FreeAllTextures( true );
 }
 
 TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, int minfilter, int magfilter, int wraps, int wrapt)
@@ -148,15 +148,18 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     return pTextureDef;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
 {
     LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBO = MyNew FBODefinition();
     bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
+    pFBO->m_OnlyFreeOnShutdown = onlyfreeonshutdown;
 
     if( newtexneeded )
+    {
         m_UninitializedFBOs.AddTail( pFBO );
+    }
 
     return pFBO;
 }
@@ -183,7 +186,8 @@ bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int 
 void TextureManager::InvalidateFBO(FBODefinition* pFBO)
 {
     pFBO->Invalidate( true );
-    m_UninitializedFBOs.MoveTail( pFBO );
+    if( pFBO->Prev )
+        m_UninitializedFBOs.MoveTail( pFBO );
 }
 
 void TextureManager::Tick()
@@ -341,26 +345,48 @@ TextureDefinition* TextureManager::FindTexture(const char* texturefilename)
     return 0;
 }
 
-void TextureManager::FreeAllTextures()
+void TextureManager::FreeAllTextures(bool shuttingdown)
 {
-    while( CPPListNode* pNode = m_LoadedTextures.GetHead() )
+    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; )
     {
-        ((TextureDefinition*)pNode)->Release();
+        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
+        pNode = pNode->GetNext();
+
+        assert( pTextureDef->GetRefCount() == 1 );
+        pTextureDef->Release();
     }
 
-    while( CPPListNode* pNode = m_TexturesStillLoading.GetHead() )
+    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; )
     {
-        ((TextureDefinition*)pNode)->Release();
+        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
+        pNode = pNode->GetNext();
+
+        assert( pTextureDef->GetRefCount() == 1 );
+        pTextureDef->Release();
     }
 
-    while( CPPListNode* pNode = m_InitializedFBOs.GetHead() )
+    for( CPPListNode* pNode = m_InitializedFBOs.GetHead(); pNode; )
     {
-        ((TextureDefinition*)pNode)->Release();
+        FBODefinition* pFBODef = (FBODefinition*)pNode;
+        pNode = pNode->GetNext();
+
+        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
+        {
+            assert( pFBODef->GetRefCount() == 1 );
+            pFBODef->Release();
+        }
     }
 
-    while( CPPListNode* pNode = m_UninitializedFBOs.GetHead() )
+    for( CPPListNode* pNode = m_UninitializedFBOs.GetHead(); pNode; )
     {
-        ((TextureDefinition*)pNode)->Release();
+        FBODefinition* pFBODef = (FBODefinition*)pNode;
+        pNode = pNode->GetNext();
+
+        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
+        {
+            assert( pFBODef->GetRefCount() == 1 );
+            pFBODef->Release();
+        }
     }
 }
 

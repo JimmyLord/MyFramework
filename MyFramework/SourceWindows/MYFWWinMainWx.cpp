@@ -30,6 +30,9 @@ MainFrame::MainFrame(wxWindow* parent)
     m_View = 0;
     m_Aspect = 0;
 
+    for( int i=0; i<GLView_NumTypes; i++ )
+        m_AspectMenuItems[i] = 0;
+
     m_pGLCanvas = 0;
     m_pCommandStack = 0;
 
@@ -80,10 +83,10 @@ void MainFrame::InitFrame()
         m_View->Append( myID_ResetPerspective, wxT("&Reset window layout") );
 
         m_Aspect = MyNew wxMenu;
-        m_Aspect->Append( myID_GLViewType_Fill, wxT("&Fill\tAlt-1") );
-        m_Aspect->Append( myID_GLViewType_Tall, wxT("&Tall\tAlt-2") );
-        m_Aspect->Append( myID_GLViewType_Square, wxT("&Square\tAlt-3") );
-        m_Aspect->Append( myID_GLViewType_Wide, wxT("&Wide\tAlt-4") );
+        m_AspectMenuItems[GLView_Full] = m_Aspect->AppendCheckItem( myID_GLViewType_Fill, wxT("&Fill\tAlt-1") );
+        m_AspectMenuItems[GLView_Tall] = m_Aspect->AppendCheckItem( myID_GLViewType_Tall, wxT("&Tall\tAlt-2") );
+        m_AspectMenuItems[GLView_Square] = m_Aspect->AppendCheckItem( myID_GLViewType_Square, wxT("&Square\tAlt-3") );
+        m_AspectMenuItems[GLView_Wide] = m_Aspect->AppendCheckItem( myID_GLViewType_Wide, wxT("&Wide\tAlt-4") );
 
         m_MenuBar = MyNew wxMenuBar;
         m_MenuBar->Append( m_File, wxT("&File") );
@@ -115,6 +118,8 @@ void MainFrame::InitFrame()
         Connect( myID_GLViewType_Square, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         Connect( myID_GLViewType_Wide, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
     }
+
+    UpdateMenuItemStates();
 
     // notify wxAUI which frame to use
     m_AUIManager.SetManagedWindow( this );
@@ -262,21 +267,25 @@ void MainFrame::OnMenu(wxCommandEvent& event)
     case myID_GLViewType_Fill:
         g_CurrentGLViewType = GLView_Full;
         m_pGLCanvas->ResizeViewport();
+        UpdateMenuItemStates();
         break;
 
     case myID_GLViewType_Tall:
         g_CurrentGLViewType = GLView_Tall;
         m_pGLCanvas->ResizeViewport();
+        UpdateMenuItemStates();
         break;
 
     case myID_GLViewType_Square:
         g_CurrentGLViewType = GLView_Square;
         m_pGLCanvas->ResizeViewport();
+        UpdateMenuItemStates();
         break;
 
     case myID_GLViewType_Wide:
         g_CurrentGLViewType = GLView_Wide;
         m_pGLCanvas->ResizeViewport();
+        UpdateMenuItemStates();
         break;
     }
 }
@@ -324,6 +333,18 @@ void MainFrame::OnKeyReleased(wxKeyEvent& event)
 void MainFrame::ResizeViewport()
 {
     m_pGLCanvas->ResizeViewport();
+}
+
+void MainFrame::UpdateMenuItemStates()
+{
+    for( int i=0; i<GLView_NumTypes; i++ )
+    {
+        if( m_AspectMenuItems[i] )
+            m_AspectMenuItems[i]->Check( false );
+    }
+
+    if( m_AspectMenuItems[g_CurrentGLViewType] )
+        m_AspectMenuItems[g_CurrentGLViewType]->Check( true );
 }
 
 #if MYFW_WINDOWS

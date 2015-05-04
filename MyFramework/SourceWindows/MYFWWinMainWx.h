@@ -23,6 +23,7 @@ enum GLViewTypes
     GLView_Tall,
     GLView_Square,
     GLView_Wide,
+    GLView_NumTypes,
 };
 
 enum MenuIDs
@@ -70,6 +71,8 @@ public:
     wxMenu* m_View;
     wxMenu* m_Aspect;
 
+    wxMenuItem* m_AspectMenuItems[GLView_NumTypes];
+
     wxAuiManager m_AUIManager;
     MainGLCanvas* m_pGLCanvas;
 
@@ -104,6 +107,8 @@ public:
     void OnKeyReleased(wxKeyEvent& event);
 
     virtual void ResizeViewport();
+
+    virtual void UpdateMenuItemStates();
 };
 
 extern int m_GLContextRefCount;

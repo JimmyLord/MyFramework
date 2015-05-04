@@ -19,6 +19,7 @@ protected:
 public:
     bool m_FullyLoaded;
     bool m_FailedToInit;
+    bool m_OnlyFreeOnShutdown;
 
     TextureDefinition* m_pColorTexture;
     TextureDefinition* m_pDepthTexture;
