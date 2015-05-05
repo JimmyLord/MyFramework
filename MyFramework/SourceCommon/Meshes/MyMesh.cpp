@@ -19,6 +19,8 @@ MyMesh::MyMesh()
 
     m_VertexFormat = -1;
 
+    m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
+
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
 
@@ -224,7 +226,7 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
       )
     {
-        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, 0.02f );
+        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, m_InitialScale );
         
         if( m_pAnimationControlFile )
         {

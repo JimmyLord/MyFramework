@@ -23,6 +23,9 @@ void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition
 
     cJSON* root = cJSON_Parse( buffer );
 
+    cJSONExt_GetFloat( root, "InitialScale", &m_InitialScale );
+    scale = m_InitialScale;
+
     cJSONExt_GetUnsignedInt( root, "TotalVerts", &totalverts );
     cJSONExt_GetUnsignedInt( root, "TotalIndices", &totalindices );
     cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );

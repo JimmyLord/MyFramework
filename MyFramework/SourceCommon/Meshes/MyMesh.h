@@ -42,6 +42,8 @@ protected:
 
     int m_VertexFormat;
     
+    float m_InitialScale;
+
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
 

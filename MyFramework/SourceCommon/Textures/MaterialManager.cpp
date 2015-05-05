@@ -469,7 +469,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* filename
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->m_pFile->m_FullPath == filename )
+        if( pMaterial->m_pFile && pMaterial->m_pFile->m_FullPath == filename )
             return pMaterial;
     }
 
