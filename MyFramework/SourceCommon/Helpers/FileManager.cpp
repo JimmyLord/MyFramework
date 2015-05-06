@@ -198,6 +198,27 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
     return numfilesupdated;
 }
 
+#if MYFW_USING_WX
+bool FileManager::DoesFileExist(const char* filename)
+{
+#if MYFW_WINDOWS
+    WIN32_FIND_DATAA data;
+    memset( &data, 0, sizeof( data ) );
+
+    void GetFileData(const char* path, WIN32_FIND_DATAA* data); // in MyFileObject.cpp
+
+    GetFileData( filename, &data );
+
+    if( data.dwFileAttributes != 0 )
+        return true;
+#else
+    return true;
+#endif
+
+    return false;
+}
+#endif
+
 MySaveFileObject* CreatePlatformSpecificSaveFile()
 {
     MySaveFileObject* pSaveFile = 0;

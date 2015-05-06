@@ -213,11 +213,20 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
     m_pSourceFile = pFile;
 
     // free the old .myaniminfo file and store a pointer to the new one.
+    SAFE_RELEASE( m_pAnimationControlFile );
     char animfilename[MAX_PATH];
     pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
+#if MYFW_USING_WX
+    // only try to open the file if it exists, only in editor builds since file i/o isn't neccessarily synchronous otherwise.
+    if( g_pFileManager->DoesFileExist( animfilename ) )
+    {
+        MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
+        m_pAnimationControlFile = newfile;
+    }
+#else
     MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
-    SAFE_RELEASE( m_pAnimationControlFile );
     m_pAnimationControlFile = newfile;
+#endif
 
     m_MeshReady = false;
 
@@ -226,6 +235,12 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
       )
     {
+        if( m_pAnimationControlFile && m_pAnimationControlFile->m_FileLoadStatus == FileLoadStatus_Error_FileNotFound )
+        {
+            g_pFileManager->FreeFile( m_pAnimationControlFile );
+            m_pAnimationControlFile = 0;
+        }
+
         LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, m_InitialScale );
         
         if( m_pAnimationControlFile )
