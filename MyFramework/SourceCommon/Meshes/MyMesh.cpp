@@ -10,16 +10,11 @@
 #include "CommonHeader.h"
 #include "MyMesh.h"
 
-MyMesh::MyMesh()
+MySubmesh::MySubmesh()
 {
-    m_pSourceFile = 0;
-    m_MeshReady = false;
-
     m_pMaterial = 0;
 
     m_VertexFormat = -1;
-
-    m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -27,6 +22,23 @@ MyMesh::MyMesh()
     m_NumVertsToDraw = 0;
     m_NumIndicesToDraw = 0;
     m_PrimitiveType = GL_TRIANGLES;
+    m_PointSize = 1;
+}
+
+MySubmesh::~MySubmesh()
+{
+    SAFE_RELEASE( m_pMaterial );
+
+    SAFE_RELEASE( m_pVertexBuffer );
+    SAFE_RELEASE( m_pIndexBuffer );
+}
+
+MyMesh::MyMesh()
+{
+    m_pSourceFile = 0;
+    m_MeshReady = false;
+
+    m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
 
     m_Transform.SetIdentity();
 
@@ -44,11 +56,6 @@ MyMesh::~MyMesh()
 
     SAFE_RELEASE( m_pSourceFile );
 
-    SAFE_RELEASE( m_pMaterial );
-
-    SAFE_RELEASE( m_pVertexBuffer );
-    SAFE_RELEASE( m_pIndexBuffer );
-
     while( m_BoneNames.Count() )
     {
         delete[] m_BoneNames.RemoveIndex( 0 );
@@ -65,6 +72,13 @@ MyMesh::~MyMesh()
     }
 
     SAFE_RELEASE( m_pAnimationControlFile );
+
+    while( m_SubmeshList.Count() )
+    {
+        delete m_SubmeshList.RemoveIndex( 0 );
+    }
+
+    m_SubmeshList.FreeAllInList();
 }
 
 #if MYFW_USING_WX
@@ -137,10 +151,21 @@ void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
 }
 #endif
 
+void MyMesh::CreateSubmeshes(int numsubmeshes)
+{
+    assert( m_SubmeshList.Length() == 0 );
+    m_SubmeshList.AllocateObjects( numsubmeshes );
+    for( int i=0; i<numsubmeshes; i++ )
+        m_SubmeshList.Add( MyNew MySubmesh() );
+}
+
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
+    assert( m_SubmeshList.Length() == 0 );
+
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     GLenum usage;
     int numbuffers;
@@ -156,26 +181,26 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
         numbuffers = 1;
     }
 
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
         //m_NumVerts = numverts;
-        m_NumVertsToDraw = numverts;
-        m_VertexFormat = vertexformat;
+        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+        m_SubmeshList[0]->m_VertexFormat = vertexformat;
 
-        if( m_VertexFormat == VertexFormat_XYZUV_RGBA )
+        if( m_SubmeshList[0]->m_VertexFormat == VertexFormat_XYZUV_RGBA )
         {
             Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
-            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, usage, false, numbuffers, VertexFormat_XYZUV_RGBA, "MyMesh", "Verts" );
+            m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, usage, false, numbuffers, VertexFormat_XYZUV_RGBA, "MyMesh", "Verts" );
         }
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         //m_NumIndices = numindices;
-        m_NumIndicesToDraw = numindices;
+        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, 2, "MyMesh", "Verts" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, 2, "MyMesh", "Verts" );
     }
 
     //m_pVAO = g_pBufferManager->CreateVAO();
@@ -191,12 +216,13 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
     if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        LoadBasicOBJ( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, false, 1.0f );
+        LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f );
 
-        if( m_pVertexBuffer && m_pIndexBuffer )
+        // TODO: fix if obj loader ever supports submeshes.
+        if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
         {
-            m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-            m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+            //m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+            m_SubmeshList[0]->m_NumIndicesToDraw = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
 
             m_MeshReady = true;
         }
@@ -241,7 +267,7 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
             m_pAnimationControlFile = 0;
         }
 
-        LoadMyMesh( pFile->m_pBuffer, &m_pVertexBuffer, &m_pIndexBuffer, m_InitialScale );
+        LoadMyMesh( pFile->m_pBuffer, &m_SubmeshList, m_InitialScale );
         
         if( m_pAnimationControlFile )
         {
@@ -251,42 +277,37 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         {
             LoadAnimationControlFile( 0 );
         }
-
-        if( m_pVertexBuffer && m_pIndexBuffer )
-        {
-            m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-            m_NumIndicesToDraw = m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
-
-            m_MeshReady = true;
-        }
     }
 }
 
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList.Count() == 1 );
+
+    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned short numverts = 24;
     unsigned int numindices = 36;
-    m_NumVertsToDraw = numverts;
-    m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        m_VertexFormat = VertexFormat_XYZUVNorm;
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[24];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Box", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Box", "Verts" );
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Box", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Box", "Indices" );
     }
 
-    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 
     if( pVerts && pIndices )
     {
@@ -396,32 +417,35 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
 
 void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList.Count() == 1 );
+
+    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned short numverts = 24;
     unsigned int numindices = 36;
-    m_NumVertsToDraw = numverts;
-    m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        m_VertexFormat = VertexFormat_XYZUV_RGBA;
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
         Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[24];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, "MyMesh_BoxXYZUVRGBA", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, "MyMesh_BoxXYZUVRGBA", "Verts" );
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
     }
 
-    m_pVertexBuffer->m_Dirty = true;
-    m_pIndexBuffer->m_Dirty = true;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
 
-    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
+    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 
     if( pVerts && pIndices )
     {
@@ -536,9 +560,11 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
 
 void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR)
 {
-    m_pVertexBuffer->m_Dirty = true;
+    assert( m_SubmeshList.Count() == 1 );
 
-    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+
+    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
 
     int side;
 
@@ -589,8 +615,11 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
 
 void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList.Count() == 1 );
+
+    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     float uperc, vperc;
 
@@ -603,24 +632,24 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     unsigned int numindices = numtris*3;
     //m_NumVerts = numverts;
     //m_NumIndices = numtris*3;
-    m_NumVertsToDraw = numverts;
-    m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        m_VertexFormat = VertexFormat_XYZUVNorm;
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Cylinder", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Cylinder", "Verts" );
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[numtris*3];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Cylinder", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Cylinder", "Indices" );
     }
 
-    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 
     GLushort vertnum = 0;
 
@@ -871,45 +900,51 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     if( createtriangles == false )
         numindices = numverts;
 
-    m_NumVertsToDraw = (unsigned short)numverts;
-    m_NumIndicesToDraw = numindices;
-
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList.Length() == 0 )
     {
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+        CreateSubmeshes( 1 );
+    }
+    assert( m_SubmeshList.Count() == 1 );
+
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    if( m_pIndexBuffer == 0 )//&& createtriangles )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )//&& createtriangles )
     {
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
 
     // delete the old buffers, if we want a plane with more.
-    if( sizeof(Vertex_XYZUV)*numverts > m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
     {
-        m_pVertexBuffer->FreeBufferedData();
-        m_VertexFormat = VertexFormat_XYZUV;
+        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
     }
 
-    if( sizeof(unsigned short)*numindices > m_pIndexBuffer->m_DataSize )
+    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
     {
-        m_pIndexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
     }
 
-    m_pIndexBuffer->m_BytesPerIndex = 2;
+    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
 
-    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     unsigned short* pIndices = 0;
     //if( createtriangles )
     {
-        pIndices = (unsigned short*)m_pIndexBuffer->m_pData;
-        m_pIndexBuffer->m_Dirty = true;
+        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
     }
 
     for( int y = 0; y < vertcount.y; y++ )
@@ -955,6 +990,9 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
 void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 {
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList.Count() == 1 );
+
     // from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
 
     int numverts = 12;
@@ -962,43 +1000,49 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
     unsigned int numindices = numtris * 3;
     int bytesperindex = sizeof(unsigned char);
 
-    m_NumVertsToDraw = (unsigned short)numverts;
-    m_NumIndicesToDraw = numindices;
-
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList.Length() == 0 )
     {
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+        CreateSubmeshes( 1 );
+    }
+    assert( m_SubmeshList.Count() == 1 );
+
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
 
     // delete the old buffers, if we want an icosphere with more.
-    if( sizeof(Vertex_XYZUV)*numverts > m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
     {
-        m_pVertexBuffer->FreeBufferedData();
-        m_VertexFormat = VertexFormat_XYZUV;
+        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Icosphere", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Icosphere", "Verts" );
     }
 
-    if( bytesperindex*numindices > m_pIndexBuffer->m_DataSize )
+    if( bytesperindex*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
     {
-        m_pIndexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_pIndexBuffer->InitializeBuffer( pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
     }
 
-    m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
+    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
 
-    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     unsigned char* pIndices = 0;
-    pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
-    m_pIndexBuffer->m_Dirty = true;
+    pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
 
     // create 12 vertices of a icosahedron
     float t = (1.0f + sqrt(5.0f)) / 2.0f;
@@ -1182,31 +1226,34 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {
-    assert( m_pVertexBuffer == 0 );
-    assert( m_pIndexBuffer == 0 );
+    CreateSubmeshes( 1 );
+    assert( m_SubmeshList.Count() == 1 );
+
+    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned char numverts = (unsigned char)((halfnumbars*2+1) * 2 * 2);
     unsigned int numindices = (halfnumbars*2+1) * 2 * 2; // halfnumbars*2+1centerline * 2axis * 2indicesperline.
-    m_NumVertsToDraw = numverts; // not optimizing reuse of corner verts.
-    m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts; // not optimizing reuse of corner verts.
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        m_VertexFormat = VertexFormat_XYZ;
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZ;
         Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
     }
 
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
     }
 
-    m_PrimitiveType = GL_LINES;
+    m_SubmeshList[0]->m_PrimitiveType = GL_LINES;
 
-    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_pVertexBuffer->m_pData;
-    unsigned char* pIndices = (unsigned char*)m_pIndexBuffer->m_pData;
+    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 
     unsigned char vertnum = 0;
     int indexnum = 0;
@@ -1253,15 +1300,26 @@ void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, Color
     LOGError( LOGTag, "TransformGizmo color wasn't set properly... need to make a material for it\n" );
 }
 
+MaterialDefinition* MyMesh::GetMaterial()
+{
+    return m_SubmeshList[0]->m_pMaterial;
+}
+
 void MyMesh::SetMaterial(MaterialDefinition* pMaterial)
 {
-    pMaterial->AddRef();
-    SAFE_RELEASE( m_pMaterial );
-    m_pMaterial = pMaterial;
+    if( m_SubmeshList.Count() == 0 )
+        return;
 
-    // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
+    for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
+    {
+        pMaterial->AddRef();
+        SAFE_RELEASE( m_SubmeshList[i]->m_pMaterial );
+        m_SubmeshList[i]->m_pMaterial = pMaterial;
+
+        // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
+        if( m_SubmeshList[i]->m_pVertexBuffer )
+            m_SubmeshList[i]->m_pVertexBuffer->ResetVAOs();
+    }
 }
 
 void MyMesh::SetPosition(float x, float y, float z)
@@ -1276,7 +1334,8 @@ void MyMesh::SetTransform(MyMatrix& matrix)
 
 void MyMesh::RebuildIndices()
 {
-    m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
+    for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
+        m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
 }
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
@@ -1297,130 +1356,142 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         return;
     }
 
-    if( m_pMaterial == 0 )
-        return;
-
-    if( m_NumIndicesToDraw == 0 )
-        return;
-
-    assert( m_pVertexBuffer );
-
-    if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, m_NumVertsToDraw*g_VertexFormatSizes[m_VertexFormat] );
-    if( m_pIndexBuffer && m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_NumIndicesToDraw*m_pIndexBuffer->m_BytesPerIndex );
-    assert( ( m_pIndexBuffer == 0 || m_pIndexBuffer->m_Dirty == false ) && m_pVertexBuffer->m_Dirty == false );
-
-    checkGlError( "Drawing Mesh Rebuild()" );
-
-    if( pShaderOverride )
+    for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        int indexbuffertype = GL_UNSIGNED_BYTE;
-        if( m_pIndexBuffer != 0 )
-        {
-            int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
-            if( bytesperindex == 2 )
-                indexbuffertype = GL_UNSIGNED_SHORT;
-            else if( bytesperindex == 4 )
-                indexbuffertype = GL_UNSIGNED_INT;
-        }
+        BufferDefinition* pVertexBuffer = m_SubmeshList[meshindex]->m_pVertexBuffer;
+        BufferDefinition* pIndexBuffer = m_SubmeshList[meshindex]->m_pIndexBuffer;
+        MaterialDefinition* pMaterial = m_SubmeshList[meshindex]->m_pMaterial;
+        int NumVertsToDraw = m_SubmeshList[meshindex]->m_NumVertsToDraw;
+        int NumIndicesToDraw = m_SubmeshList[meshindex]->m_NumIndicesToDraw;
+        int VertexFormat = m_SubmeshList[meshindex]->m_VertexFormat;
+        int PrimitiveType = m_SubmeshList[meshindex]->m_PrimitiveType;
+        int PointSize = m_SubmeshList[meshindex]->m_PointSize;        
 
-        //int numboneinfluences = 0;
-        //if( m_pVertexBuffer && m_pVertexBuffer->m_pFormatDesc )
-        //    numboneinfluences = m_pVertexBuffer->m_pFormatDesc->num_bone_influences;
-
-        // always use 4 bone version.
-        // TODO: this might fail with 1-3 bones, but works with 0 since bone attribs and uniforms should default to 0.
-        Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
-        pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
-        pShader->ProgramPosition( matviewproj, &m_Transform );
-        if( m_BoneFinalMatrices.Count() > 0 )
-        {
-            pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
-        }
-        else
-        {
-            MyMatrix identitymat;
-            identitymat.SetIdentity();
-            pShader->ProgramBoneTransforms( &identitymat, 1 );
-        }
-
-        if( m_pIndexBuffer )
-            MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
-        else
-            MyDrawArrays( m_PrimitiveType, 0, m_NumIndicesToDraw );
-        //pShader->DeactivateShader( m_pVertexBuffer ); // disable attributes
-    }
-    else
-    {
-        int numboneinfluences = 0;
-        if( m_pVertexBuffer && m_pVertexBuffer->m_pFormatDesc )
-            numboneinfluences = m_pVertexBuffer->m_pFormatDesc->num_bone_influences;
-
-        if( m_pMaterial->m_pShaderGroup == 0 )
+        if( pMaterial == 0 )
             return;
 
-        Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
-        if( pShader )
+        if( NumIndicesToDraw == 0 )
+            return;
+
+        assert( pVertexBuffer );
+
+        if( pVertexBuffer->m_Dirty )
+            pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
+        if( pIndexBuffer && pIndexBuffer->m_Dirty )
+            pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
+        assert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
+
+        checkGlError( "Drawing Mesh Rebuild()" );
+
+        if( pShaderOverride )
         {
-            if( pShader->ActivateAndProgramShader(
-                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Transform, m_pMaterial->m_pTextureColor, m_pMaterial->m_Tint, m_pMaterial->m_SpecColor, m_pMaterial->m_Shininess ) )
+            int indexbuffertype = GL_UNSIGNED_BYTE;
+            if( pIndexBuffer != 0 )
             {
-                checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
+                int bytesperindex = pIndexBuffer->m_BytesPerIndex;
+                if( bytesperindex == 2 )
+                    indexbuffertype = GL_UNSIGNED_SHORT;
+                else if( bytesperindex == 4 )
+                    indexbuffertype = GL_UNSIGNED_INT;
+            }
 
-                MyMatrix invworld = m_Transform;
-                invworld.Inverse();
-                //bool didinverse = invworld.Inverse();
-                //if( didinverse == false )
-                //    LOGError( LOGTag, "Matrix inverse failed\n" );
+            //int numboneinfluences = 0;
+            //if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
+            //    numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
 
-                pShader->ProgramCamera( campos, &invworld );
-                checkGlError( "Drawing Mesh ProgramCamera()" );
+            // always use 4 bone version.
+            // TODO: this might fail with 1-3 bones, but works with 0 since bone attribs and uniforms should default to 0.
+            Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
+            pShader->SetupAttributes( pVertexBuffer, pIndexBuffer, false );
+            pShader->ProgramPosition( matviewproj, &m_Transform );
+            if( m_BoneFinalMatrices.Count() > 0 )
+            {
+                pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
+            }
+            else
+            {
+                MyMatrix identitymat;
+                identitymat.SetIdentity();
+                pShader->ProgramBoneTransforms( &identitymat, 1 );
+            }
 
-                pShader->ProgramLights( lights, numlights, &invworld );
-                checkGlError( "Drawing Mesh ProgramCamera()" );
+            if( pIndexBuffer )
+                MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+            else
+                MyDrawArrays( PrimitiveType, 0, NumIndicesToDraw );
+            //pShader->DeactivateShader( pVertexBuffer ); // disable attributes
+        }
+        else
+        {
+            int numboneinfluences = 0;
+            if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
+                numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
 
-                if( m_PrimitiveType == GL_POINTS )
-                    pShader->ProgramPointSize( (float)m_PointSize );
+            if( pMaterial->m_pShaderGroup == 0 )
+                return;
 
-                if( shadowlightVP && pShadowTex != 0 )
+            Shader_Base* pShader = (Shader_Base*)pMaterial->m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
+            if( pShader )
+            {
+                if( pShader->ActivateAndProgramShader(
+                    pVertexBuffer, pIndexBuffer, GL_UNSIGNED_SHORT,
+                    matviewproj, &m_Transform, pMaterial->m_pTextureColor, pMaterial->m_Tint, pMaterial->m_SpecColor, pMaterial->m_Shininess ) )
                 {
-                    MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
-                    MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * m_Transform;
-                    pShader->ProgramShadowLight( &shadowWVPT, pShadowTex );
+                    checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
+
+                    MyMatrix invworld = m_Transform;
+                    invworld.Inverse();
+                    //bool didinverse = invworld.Inverse();
+                    //if( didinverse == false )
+                    //    LOGError( LOGTag, "Matrix inverse failed\n" );
+
+                    pShader->ProgramCamera( campos, &invworld );
+                    checkGlError( "Drawing Mesh ProgramCamera()" );
+
+                    pShader->ProgramLights( lights, numlights, &invworld );
+                    checkGlError( "Drawing Mesh ProgramCamera()" );
+
+                    if( PrimitiveType == GL_POINTS )
+                        pShader->ProgramPointSize( (float)PointSize );
+
+                    if( shadowlightVP && pShadowTex != 0 )
+                    {
+                        MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
+                        MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * m_Transform;
+                        pShader->ProgramShadowLight( &shadowWVPT, pShadowTex );
+                    }
+
+                    if( pLightmapTex != 0 )
+                    {
+                        pShader->ProgramLightmap( pLightmapTex );
+                        checkGlError( "Drawing Mesh ProgramLightmap()" );
+                    }
+
+                    if( m_BoneFinalMatrices.Count() > 0 )
+                    {
+                        pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
+                    }
+
+                    int indexbuffertype = GL_UNSIGNED_BYTE;
+                    if( pIndexBuffer != 0 )
+                    {
+                        int bytesperindex = pIndexBuffer->m_BytesPerIndex;
+                        if( bytesperindex == 2 )
+                            indexbuffertype = GL_UNSIGNED_SHORT;
+                        else if( bytesperindex == 4 )
+                            indexbuffertype = GL_UNSIGNED_INT;
+                    }
+
+                    if( pIndexBuffer )
+                        MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+                    else
+                        MyDrawArrays( PrimitiveType, 0, NumIndicesToDraw );
+
+                    checkGlError( "Drawing Mesh MyDrawElements()" );
+
+                    pShader->DeactivateShader( pVertexBuffer );
+                    checkGlError( "Drawing Mesh DeactivateShader()" );
                 }
-
-                if( pLightmapTex != 0 )
-                {
-                    pShader->ProgramLightmap( pLightmapTex );
-                    checkGlError( "Drawing Mesh ProgramLightmap()" );
-                }
-
-                if( m_BoneFinalMatrices.Count() > 0 )
-                {
-                    pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
-                }
-
-                int indexbuffertype = GL_UNSIGNED_BYTE;
-                if( m_pIndexBuffer != 0 )
-                {
-                    int bytesperindex = m_pIndexBuffer->m_BytesPerIndex;
-                    if( bytesperindex == 2 )
-                        indexbuffertype = GL_UNSIGNED_SHORT;
-                    else if( bytesperindex == 4 )
-                        indexbuffertype = GL_UNSIGNED_INT;
-                }
-
-                if( m_pIndexBuffer )
-                    MyDrawElements( m_PrimitiveType, m_NumIndicesToDraw, indexbuffertype, 0 );
-                else
-                    MyDrawArrays( m_PrimitiveType, 0, m_NumIndicesToDraw );
-
-                checkGlError( "Drawing Mesh MyDrawElements()" );
-
-                pShader->DeactivateShader( m_pVertexBuffer );
-                checkGlError( "Drawing Mesh DeactivateShader()" );
             }
         }
     }
@@ -1514,37 +1585,37 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnima
 
 unsigned short MyMesh::GetNumVerts()
 {
-    if( m_pVertexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
         return 0;
 
-    return (unsigned short)(m_pVertexBuffer->m_DataSize / g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat]);
+    return (unsigned short)(m_SubmeshList[0]->m_pVertexBuffer->m_DataSize / g_VertexFormatSizes[m_SubmeshList[0]->m_pVertexBuffer->m_VertexFormat]);
 }
 
 unsigned int MyMesh::GetNumIndices()
 {
-    if( m_pIndexBuffer == 0 )
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
         return 0;
 
-    return m_pIndexBuffer->m_DataSize / m_pIndexBuffer->m_BytesPerIndex;
+    return m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
 }
 
 Vertex_Base* MyMesh::GetVerts(bool markdirty)
 {
     if( markdirty )
-        m_pVertexBuffer->m_Dirty = true;
+        m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
-    return (Vertex_Base*)m_pVertexBuffer->m_pData;
+    return (Vertex_Base*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
 }
 
 unsigned short* MyMesh::GetIndices(bool markdirty)
 {
     if( markdirty )
-        m_pIndexBuffer->m_Dirty = true;
+        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
 
-    return (unsigned short*)m_pIndexBuffer->m_pData;
+    return (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 }
 
 unsigned int MyMesh::GetStride()
 {
-    return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
+    return g_VertexFormatSizes[m_SubmeshList[0]->m_pVertexBuffer->m_VertexFormat];
 }

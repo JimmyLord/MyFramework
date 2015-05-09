@@ -180,7 +180,7 @@ void MaterialDefinition::OnLeftClick()
     desc = "no color texture";
     if( m_pTextureColor )
         desc = m_pTextureColor->m_Filename;
-    g_pPanelWatch->AddPointerWithDescription( "Tex Color", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
+    g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
 
     //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
     //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );

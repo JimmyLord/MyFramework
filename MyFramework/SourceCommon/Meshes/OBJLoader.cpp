@@ -237,17 +237,16 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale)
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
 {
-    assert( ppVBO );
-    assert( ppIBO );
+    assert( pSubmeshList );
 
     assert( false ); // don't use this function, file i/o should be done through a RequestFile call.
 
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, ppVBO, ppIBO, removeduplicatevertices, scale );
+    LoadBasicOBJ( buffer, pSubmeshList, removeduplicatevertices, scale );
 
     delete[] buffer;
 }
@@ -269,8 +268,18 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale)
+void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
 {
+    assert( pSubmeshList );
+    assert( pSubmeshList->Length() == 0 );
+
+    pSubmeshList->AllocateObjects( 1 );
+    pSubmeshList->Add( MyNew MySubmesh() );
+
+    // TODO: fix this ugliness from adding submeshes... or relegate obj loading to MeshTool.
+    BufferDefinition** ppVBO = &(*pSubmeshList)[0]->m_pVertexBuffer;
+    BufferDefinition** ppIBO = &(*pSubmeshList)[0]->m_pIndexBuffer;
+
     assert( ppVBO );
     assert( ppIBO );
 

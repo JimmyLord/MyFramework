@@ -33,19 +33,31 @@ struct MySkeletonNode
     ~MySkeletonNode() { delete[] m_Name; }
 };
 
+class MySubmesh
+{
+public:
+    MaterialDefinition* m_pMaterial;
+
+    int m_VertexFormat;
+
+    BufferDefinition* m_pVertexBuffer;
+    BufferDefinition* m_pIndexBuffer;
+
+    unsigned short m_NumVertsToDraw;
+    unsigned int m_NumIndicesToDraw;
+    int m_PrimitiveType;
+    int m_PointSize;
+
+    MySubmesh();
+    virtual ~MySubmesh();
+};
+
 class MyMesh : public CPPListNode, public RefCount
 {
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
 
 protected:
-    MaterialDefinition* m_pMaterial;
-
-    int m_VertexFormat;
-    
     float m_InitialScale;
-
-    BufferDefinition* m_pVertexBuffer;
-    BufferDefinition* m_pIndexBuffer;
 
     MyList<char*> m_BoneNames;
     MyList<MyMatrix> m_BoneOffsetMatrices;
@@ -57,13 +69,10 @@ protected:
     MyFileObject* m_pAnimationControlFile; // a .myaniminfo file that hold control info for the animation data.
 
 public:
+    MyList<MySubmesh*> m_SubmeshList;
+
     MyFileObject* m_pSourceFile;
     bool m_MeshReady;
-
-    unsigned short m_NumVertsToDraw;
-    unsigned int m_NumIndicesToDraw;
-    int m_PrimitiveType;
-    int m_PointSize;
 
 protected:
     MyMatrix m_Transform;
@@ -72,6 +81,7 @@ public:
     MyMesh();
     virtual ~MyMesh();
 
+    void CreateSubmeshes(int numsubmeshes);
     void CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic = false);
 
     void CreateFromOBJFile(MyFileObject* pFile);
@@ -88,7 +98,7 @@ public:
     void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
 
-    virtual MaterialDefinition* GetMaterial() { return m_pMaterial; }
+    virtual MaterialDefinition* GetMaterial();
     virtual void SetMaterial(MaterialDefinition* pMaterial);
     void SetPosition(float x, float y, float z);
     void SetTransform(MyMatrix& matrix);
@@ -99,7 +109,7 @@ public:
 
     int FindBoneIndexByName(char* name);
 
-    void LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, float scale);
+    void LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(char* buffer);
 #if MYFW_USING_WX

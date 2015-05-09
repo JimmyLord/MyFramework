@@ -10,210 +10,246 @@
 #include "CommonHeader.h"
 #include "MyMeshLoader.h"
 
-void MyMesh::LoadMyMesh(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, float scale)
+void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
-    assert( ppVBO );
-    assert( ppIBO );
+    assert( pSubmeshList );
+    assert( pSubmeshList->Length() == 0 );
 
     // get the number of verts/indices/bones.
     unsigned int totalverts = 0;
     unsigned int totalindices = 0;
     unsigned int totalbones = 0;
     unsigned int totalnodes = 0;
+    unsigned int totalanimtimelines = 0;
 
     cJSON* root = cJSON_Parse( buffer );
 
     cJSONExt_GetFloat( root, "InitialScale", &m_InitialScale );
     scale = m_InitialScale;
 
-    cJSONExt_GetUnsignedInt( root, "TotalVerts", &totalverts );
-    cJSONExt_GetUnsignedInt( root, "TotalIndices", &totalindices );
-    cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
-    cJSONExt_GetUnsignedInt( root, "TotalNodes", &totalnodes );
-
-    unsigned int numuvchannels = 0;
-    bool hasnormals = false;
-    bool hastangents = false;
-    bool hasbitangents = false;
-    bool hascolor = false;
-    unsigned int mostbonesinfluences = 0;
-
-    cJSONExt_GetUnsignedInt( root, "VF-uv", &numuvchannels );
-    cJSONExt_GetBool( root, "VF-normal", &hasnormals );
-    cJSONExt_GetBool( root, "VF-tangent", &hastangents );
-    cJSONExt_GetBool( root, "VF-bitangent", &hasbitangents );
-    cJSONExt_GetBool( root, "VF-color", &hascolor );
-    cJSONExt_GetUnsignedInt( root, "VF-mostweights", &mostbonesinfluences );
-
-    VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
-
-    // Read in bone info.
-    if( totalbones )
-    {
-        m_BoneNames.AllocateObjects( totalbones );
-        m_BoneOffsetMatrices.AllocateObjects( totalbones );
-        m_BoneFinalMatrices.AllocateObjects( totalbones );
-
-        cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
-        assert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
-        for( unsigned int i=0; i<totalbones; i++ )
-        {
-            cJSON* bone = cJSON_GetArrayItem( bones, i );
-            if( bone )
-            {
-                int namelen = (int)strlen( bone->valuestring );
-                char* bonename = MyNew char[namelen+1];
-                strcpy_s( bonename, namelen+1, bone->valuestring );
-
-                m_BoneNames.Add( bonename );
-            }
-        }
-    }
-
-    // Read in skeleton's node tree.
-    if( totalnodes > 0 )
-    {
-        m_pSkeletonNodeTree.AllocateObjects( totalnodes );
-
-        cJSON* rootnode = cJSON_GetObjectItem( root, "Nodes" );
-
-        LoadMyMesh_ReadNode( rootnode->child, 0 );
-    }
-
-    // Read in the animation timelines.
-    int totalanimtimelines = 0;
-    cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
-    if( animarray )
-    {
-        totalanimtimelines = cJSON_GetArraySize( animarray );
-        if( totalanimtimelines > 0 )
-        {
-            m_pAnimationTimelines.AllocateObjects( totalanimtimelines );
-
-            for( int ai=0; ai<totalanimtimelines; ai++ )
-            {
-                MyAnimationTimeline* pAnim = MyNew MyAnimationTimeline;
-                m_pAnimationTimelines.Add( pAnim );
-
-                cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
-                pAnim->ImportFromJSON( pAnimObj );
-            }
-        }
-    }
-
-    cJSON_Delete( root );
-
-    // find a line that starts with "#raw"
+    // find a line that starts with "#raw" and store it's index.
     unsigned int bufferlen = (int)strlen( buffer );
-    unsigned int firstrawbyteindex = 0;
+    unsigned int rawbyteoffset = 0;
     if( bufferlen > 5 )
     {
         for( unsigned int i=0; i<bufferlen; i++ )
         {
             if( i > 1 && strncmp( &buffer[i], "\n#RAW", 5 ) == 0 )
             {
-                firstrawbyteindex = i+6;
+                rawbyteoffset = i+6;
             }
         }
     }
 
-    if( firstrawbyteindex != 0 )
     {
-        int bytesperindex = 4;
-        if( totalverts <= 256 )
-            bytesperindex = 1;
-        else if( totalverts <= 256*256 )
-            bytesperindex = 2;
+        cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
+        cJSONExt_GetUnsignedInt( root, "TotalNodes", &totalnodes );
 
-        unsigned int vertbuffersize = totalverts * pDesc->stride;
-        unsigned int indexbuffersize = totalindices * bytesperindex;
-        unsigned char* verts = MyNew unsigned char[vertbuffersize];
-        unsigned char* indices = MyNew unsigned char[indexbuffersize];
-
-        unsigned int rawbyteoffset = firstrawbyteindex;
-
-        // read the raw data:
+        // Read in bone info.
+        if( totalbones )
         {
-            // read bone matrices
-            {
-                if( totalbones > 0 )
-                {
-                    m_BoneOffsetMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );
-                    rawbyteoffset += sizeof(MyMatrix)*totalbones;
+            m_BoneNames.AllocateObjects( totalbones );
+            m_BoneOffsetMatrices.AllocateObjects( totalbones );
+            m_BoneFinalMatrices.AllocateObjects( totalbones );
 
-                    for( unsigned int i=0; i<m_BoneOffsetMatrices.Count(); i++ )
+            cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
+            assert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
+            for( unsigned int i=0; i<totalbones; i++ )
+            {
+                cJSON* bone = cJSON_GetArrayItem( bones, i );
+                if( bone )
+                {
+                    int namelen = (int)strlen( bone->valuestring );
+                    char* bonename = MyNew char[namelen+1];
+                    strcpy_s( bonename, namelen+1, bone->valuestring );
+
+                    m_BoneNames.Add( bonename );
+                }
+            }
+        }
+
+        // Read in skeleton's node tree.
+        if( totalnodes > 0 )
+        {
+            m_pSkeletonNodeTree.AllocateObjects( totalnodes );
+
+            cJSON* rootnode = cJSON_GetObjectItem( root, "Nodes" );
+
+            LoadMyMesh_ReadNode( rootnode->child, 0 );
+        }
+
+        // Read in the animation timelines.
+        cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
+        if( animarray )
+        {
+            totalanimtimelines = cJSON_GetArraySize( animarray );
+            if( totalanimtimelines > 0 )
+            {
+                m_pAnimationTimelines.AllocateObjects( totalanimtimelines );
+
+                for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
+                {
+                    MyAnimationTimeline* pAnim = MyNew MyAnimationTimeline;
+                    m_pAnimationTimelines.Add( pAnim );
+
+                    cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
+                    pAnim->ImportFromJSON( pAnimObj );
+                }
+            }
+        }
+    }
+
+    cJSON* mesharray = cJSON_GetObjectItem( root, "Meshes" );
+    cJSON* mesh;
+    if( mesharray )
+        mesh = mesharray->child;
+
+    int nummeshes = cJSON_GetArraySize( mesharray );
+    pSubmeshList->AllocateObjects( nummeshes );
+    for( int i=0; i<nummeshes; i++ )
+        pSubmeshList->Add( MyNew MySubmesh() );
+
+    int meshcount = 0;
+    while( mesh )
+    {
+        BufferDefinition** ppVBO = &(*pSubmeshList)[meshcount]->m_pVertexBuffer;
+        BufferDefinition** ppIBO = &(*pSubmeshList)[meshcount]->m_pIndexBuffer;
+
+        assert( ppVBO );
+        assert( ppIBO );
+
+        cJSONExt_GetUnsignedInt( mesh, "TotalVerts", &totalverts );
+        cJSONExt_GetUnsignedInt( mesh, "TotalIndices", &totalindices );
+
+        unsigned int numuvchannels = 0;
+        bool hasnormals = false;
+        bool hastangents = false;
+        bool hasbitangents = false;
+        bool hascolor = false;
+        unsigned int mostbonesinfluences = 0;
+
+        cJSONExt_GetUnsignedInt( mesh, "VF-uv", &numuvchannels );
+        cJSONExt_GetBool( mesh, "VF-normal", &hasnormals );
+        cJSONExt_GetBool( mesh, "VF-tangent", &hastangents );
+        cJSONExt_GetBool( mesh, "VF-bitangent", &hasbitangents );
+        cJSONExt_GetBool( mesh, "VF-color", &hascolor );
+        cJSONExt_GetUnsignedInt( mesh, "VF-mostweights", &mostbonesinfluences );
+
+        VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
+
+        // read this mesh's raw bytes, verts/indices/etc.
+        if( rawbyteoffset != 0 )
+        {
+            int bytesperindex = 4;
+            if( totalverts <= 256 )
+                bytesperindex = 1;
+            else if( totalverts <= 256*256 )
+                bytesperindex = 2;
+
+            unsigned int vertbuffersize = totalverts * pDesc->stride;
+            unsigned int indexbuffersize = totalindices * bytesperindex;
+            unsigned char* verts = MyNew unsigned char[vertbuffersize];
+            unsigned char* indices = MyNew unsigned char[indexbuffersize];
+
+            // read the raw data:
+            {
+                // read vert buffer bytes //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
+                memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
+                rawbyteoffset += vertbuffersize;
+
+                // scale the verts if requested... should be done at export or not at all.
+                // assumes position is the first attribute... ugh. TODO: rip this out.
+                if( scale != 1.0f )
+                {
+                    for( unsigned int i=0; i<totalverts; i++ )
                     {
-                        m_BoneOffsetMatrices[i].m41 *= scale;
-                        m_BoneOffsetMatrices[i].m42 *= scale;
-                        m_BoneOffsetMatrices[i].m43 *= scale;
+                        ((float*)(&(verts[pDesc->stride * i])))[0] *= scale;
+                        ((float*)(&(verts[pDesc->stride * i])))[1] *= scale;
+                        ((float*)(&(verts[pDesc->stride * i])))[2] *= scale;
                     }
                 }
 
-                // initialize all the final bone matrices to identity.
-                MyMatrix matidentity;
-                matidentity.SetIdentity();
-                for( unsigned int i=0; i<totalbones; i++ )
-                {
-                    m_BoneFinalMatrices.Add( matidentity );
-                }
+                // read index buffer bytes
+                memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
+                rawbyteoffset += indexbuffersize;
             }
 
-            // read vert buffer bytes //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
-            memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
-            rawbyteoffset += vertbuffersize;
-
-            // scale the verts if requested... should be done at export or not at all.
-            // assumes position is the first attribute... ugh. TODO: rip this out.
-            if( scale != 1.0f )
+            // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
+            if( *ppVBO == 0 )
             {
-                for( unsigned int i=0; i<totalverts; i++ )
-                {
-                    ((float*)(&(verts[pDesc->stride * i])))[0] *= scale;
-                    ((float*)(&(verts[pDesc->stride * i])))[1] *= scale;
-                    ((float*)(&(verts[pDesc->stride * i])))[2] *= scale;
-                }
+                *ppVBO = g_pBufferManager->CreateBuffer();
             }
 
-            // read index buffer bytes
-            memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
-            rawbyteoffset += indexbuffersize;
-
-            // Read in the node transforms
-            for( unsigned int ni=0; ni<totalnodes; ni++ )
+            if( *ppIBO == 0 )
             {
-                m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
-                rawbyteoffset += sizeof(MyMatrix);
-
-                m_pSkeletonNodeTree[ni].m_Transform.m41 *= scale;
-                m_pSkeletonNodeTree[ni].m_Transform.m42 *= scale;
-                m_pSkeletonNodeTree[ni].m_Transform.m43 *= scale;
+                *ppIBO = g_pBufferManager->CreateBuffer();
             }
 
-            // read animation channels
-            for( int ai=0; ai<totalanimtimelines; ai++ )
-            {
-                rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
-            }
+            // The buffer will delete the allocated arrays of verts/indices
+            (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
+            (*ppIBO)->InitializeBuffer( indices, indexbuffersize, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
+
+            //delete[] verts;
+            //delete[] indices;
+
+            assert( pSubmeshList->Count() > 0 );
+            (*pSubmeshList)[meshcount]->m_VertexFormat = (*ppVBO)->m_VertexFormat;
+            (*pSubmeshList)[meshcount]->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
+
+            m_MeshReady = true;
         }
 
-        // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
-        if( *ppVBO == 0 )
-        {
-            *ppVBO = g_pBufferManager->CreateBuffer();
-        }
-
-        if( *ppIBO == 0 )
-        {
-            *ppIBO = g_pBufferManager->CreateBuffer();
-        }
-
-        // The buffer will delete the allocated arrays of verts/indices
-        (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
-        (*ppIBO)->InitializeBuffer( indices, indexbuffersize, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
-
-        //delete[] verts;
-        //delete[] indices;
+        // get the next mesh from the cJSON array.
+        mesh = mesh->next;
+        meshcount++;
     }
+
+    // read in the rest of the raw data.
+    if( rawbyteoffset != 0 )
+    {
+        // read bone offset matrices
+        {
+            if( totalbones > 0 )
+            {
+                m_BoneOffsetMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );
+                rawbyteoffset += sizeof(MyMatrix)*totalbones;
+
+                for( unsigned int i=0; i<m_BoneOffsetMatrices.Count(); i++ )
+                {
+                    m_BoneOffsetMatrices[i].m41 *= scale;
+                    m_BoneOffsetMatrices[i].m42 *= scale;
+                    m_BoneOffsetMatrices[i].m43 *= scale;
+                }
+            }
+
+            // initialize all the final bone matrices to identity.
+            MyMatrix matidentity;
+            matidentity.SetIdentity();
+            for( unsigned int i=0; i<totalbones; i++ )
+            {
+                m_BoneFinalMatrices.Add( matidentity );
+            }
+        }
+
+        // Read in the node transforms
+        for( unsigned int ni=0; ni<totalnodes; ni++ )
+        {
+            m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
+            rawbyteoffset += sizeof(MyMatrix);
+
+            m_pSkeletonNodeTree[ni].m_Transform.m41 *= scale;
+            m_pSkeletonNodeTree[ni].m_Transform.m42 *= scale;
+            m_pSkeletonNodeTree[ni].m_Transform.m43 *= scale;
+        }
+
+        // read animation channels
+        for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
+        {
+            rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
+        }
+    }
+
+    cJSON_Delete( root );
 }
 
 int MyMesh::FindBoneIndexByName(char* name)

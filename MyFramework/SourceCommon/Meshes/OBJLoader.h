@@ -10,11 +10,13 @@
 #ifndef __OBJLoader_H__
 #define __OBJLoader_H__
 
+class MySubmesh;
+
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale);
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale);
 #endif
 
 // return 2 BufferDefinition pointers.
-void LoadBasicOBJ(char* buffer, BufferDefinition** ppVBO, BufferDefinition** ppIBO, bool removeduplicatevertices, float scale);
+void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale);
 
 #endif //__OBJLoader_H__
