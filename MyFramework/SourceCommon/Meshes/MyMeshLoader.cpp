@@ -114,11 +114,19 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
         int meshcount = 0;
         while( mesh )
         {
-            BufferDefinition** ppVBO = &(*pSubmeshList)[meshcount]->m_pVertexBuffer;
-            BufferDefinition** ppIBO = &(*pSubmeshList)[meshcount]->m_pIndexBuffer;
+            MySubmesh* pSubmesh = (*pSubmeshList)[meshcount];
+
+            BufferDefinition** ppVBO = &pSubmesh->m_pVertexBuffer;
+            BufferDefinition** ppIBO = &pSubmesh->m_pIndexBuffer;
 
             assert( ppVBO );
             assert( ppIBO );
+
+            cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
+            if( jMaterial )
+            {
+                pSubmesh->m_pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
+            }
 
             cJSONExt_GetUnsignedInt( mesh, "TotalVerts", &totalverts );
             cJSONExt_GetUnsignedInt( mesh, "TotalIndices", &totalindices );
@@ -195,8 +203,8 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
                 //delete[] indices;
 
                 assert( pSubmeshList->Count() > 0 );
-                (*pSubmeshList)[meshcount]->m_VertexFormat = (*ppVBO)->m_VertexFormat;
-                (*pSubmeshList)[meshcount]->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
+                pSubmesh->m_VertexFormat = (*ppVBO)->m_VertexFormat;
+                pSubmesh->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
             }
 
             // get the next mesh from the cJSON array.

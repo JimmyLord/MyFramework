@@ -280,6 +280,44 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
     }
 }
 
+void MyMesh::ParseFile()
+{
+    if( m_MeshReady == false )
+    {
+        if( m_pSourceFile != 0 )
+        {
+            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
+            {
+                CreateFromOBJFile( m_pSourceFile );
+            }
+            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
+            {
+                CreateFromMyMeshFile( m_pSourceFile );
+            }
+
+            if( m_SubmeshList.Count() > 0 )
+            {
+                if( m_SubmeshList[0]->m_pMaterial->m_pShaderGroup == 0 )
+                {
+                    // guess at an appropriate shader for this mesh/material.
+                    GuessAndAssignAppropriateShader();
+                }
+            }
+        }
+    }
+}
+
+void MyMesh::GuessAndAssignAppropriateShader()
+{
+    for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
+    {
+        if( m_SubmeshList[i]->m_pMaterial->m_pShaderGroup == 0 )
+        {
+            m_SubmeshList[i]->m_pMaterial->m_pShaderGroup = g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" );
+        }
+    }
+}
+
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
 {
     CreateSubmeshes( 1 );
@@ -1342,18 +1380,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 {
     if( m_MeshReady == false )
     {
-        if( m_pSourceFile != 0 )
-        {
-            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
-            {
-                CreateFromOBJFile( m_pSourceFile );
-            }
-            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
-            {
-                CreateFromMyMeshFile( m_pSourceFile );
-            }
-        }
-        return;
+        ParseFile();
     }
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
@@ -1435,7 +1462,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             {
                 if( pShader->ActivateAndProgramShader(
                     pVertexBuffer, pIndexBuffer, GL_UNSIGNED_SHORT,
-                    matviewproj, &m_Transform, pMaterial->m_pTextureColor, pMaterial->m_Tint, pMaterial->m_SpecColor, pMaterial->m_Shininess ) )
+                    matviewproj, &m_Transform, pMaterial ) )
                 {
                     checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
 

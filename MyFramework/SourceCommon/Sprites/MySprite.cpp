@@ -397,7 +397,7 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     return pShader->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, &m_Position, pTexture, m_Tint );
+        matviewproj, &m_Position, m_pMaterial );
 }
 
 void MySprite::DrawNoSetup()
@@ -446,7 +446,7 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
     if( pShader->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, &m_Position, pTexture, m_Tint ) )
+        matviewproj, &m_Position, m_pMaterial ) )
     {
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );

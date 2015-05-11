@@ -14,13 +14,11 @@
 
 ParticleRenderer::ParticleRenderer()
 {
-    m_pShaderGroup = 0;
-    m_pTexture = 0;
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_NumVertsAllocated = 0;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    //m_pVAO = 0;
 
     m_ParticleCount = 0;
 
@@ -43,7 +41,8 @@ ParticleRenderer::~ParticleRenderer()
 {
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
-    //SAFE_RELEASE( m_pVAO );
+
+    SAFE_RELEASE( m_pMaterial );
 }
 
 void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category)
@@ -200,8 +199,8 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
 
 void ParticleRenderer::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pShaderGroup = pShaderGroup;
-    m_pTexture = pTexture;
+    m_pMaterial->m_pShaderGroup = pShaderGroup;
+    m_pMaterial->m_pTextureColor = pTexture;
 
     m_pVertexBuffer->ResetVAOs();
 }
@@ -212,7 +211,8 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     //return;
 #endif
 
-    if( m_pTexture == 0 || m_pTexture->m_TextureID == 0 || m_pShaderGroup == 0 || m_ParticleCount == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->m_pTextureColor == 0 || m_pMaterial->m_pTextureColor->m_TextureID == 0 ||
+        m_pMaterial->m_pShaderGroup == 0 || m_ParticleCount == 0 )
         return;
 
     //glEnable(GL_TEXTURE_2D);
@@ -250,12 +250,12 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
 #if USE_INDEXED_TRIANGLES
-    if( ((Shader_Base*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
+    if( ((Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, 0, m_pTexture ) )
+        matviewproj, 0, m_pMaterial ) )
     {
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
-        m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
 #else
     // not supporting point sprites anymore.
@@ -264,7 +264,7 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
     //{
     //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
-    //    m_pShaderGroup->GlobalPass()->DeactivateShader();
+    //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader();
     //}
 #endif
 

@@ -11,6 +11,7 @@
 #define __Shader_Base_H__
 
 class MyLight;
+class MaterialDefinition;
 
 class Shader_Base : public BaseShader
 {
@@ -71,7 +72,7 @@ public:
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);
 
-    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint = ColorByte::White(), ColorByte speccolor = ColorByte::White(), float shininess = 0);
+    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial);
     bool ActivateAndProgramShader();
 
     void SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable);

@@ -1,47 +1,39 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
 #include "SpriteBatch.h"
 
 SpriteBatch::SpriteBatch()
-: m_Tint(255, 255, 255, 255)
 {
-    m_pShaderGroup = 0;
-    m_pTexture = 0;
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_NumSprites = 0;
 
     m_SpritesAllocated = 0;
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    m_pVAO = 0;
+    //m_pVAO = 0;
 }
 
 SpriteBatch::~SpriteBatch()
 {
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
+
+    SAFE_RELEASE( m_pMaterial );
     //SAFE_RELEASE( m_pVAO );
 }
 
 void SpriteBatch::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pShaderGroup = pShaderGroup;
-    m_pTexture = pTexture;
+    m_pMaterial->m_pShaderGroup = pShaderGroup;
+    m_pMaterial->m_pTextureColor = pTexture;
 }
 
 void SpriteBatch::AllocateVertices(int numsprites)
@@ -104,7 +96,8 @@ void SpriteBatch::AddSprite(MySprite* pSprite)
 
 void SpriteBatch::Draw(MyMatrix* matviewproj)
 {
-    if( m_pTexture == 0 || m_pTexture->m_TextureID == 0 || m_pShaderGroup == 0 || m_NumSprites == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->m_pTextureColor == 0 || m_pMaterial->m_pTextureColor->m_TextureID == 0 ||
+        m_pMaterial->m_pShaderGroup == 0 || m_NumSprites == 0 )
         return;
 
     MyMatrix pos;
@@ -122,16 +115,16 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
     ////glBufferData( GL_ARRAY_BUFFER, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts, GL_DYNAMIC_DRAW );
 
     // Draw the contents of the buffers.
-    if( ((Shader_Base*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
+    if( ((Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &pos, m_pTexture, m_Tint ) )
+            matviewproj, &pos, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( m_NumSprites*6, 0, 0 );
 #else
         MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0 );
 #endif
-        m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
 
     return;

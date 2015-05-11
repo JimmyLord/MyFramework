@@ -13,13 +13,11 @@
 class ParticleRenderer
 {
 protected:
-    ShaderGroup* m_pShaderGroup;
-    TextureDefinition* m_pTexture;
+    MaterialDefinition* m_pMaterial;
     unsigned int m_NumVertsAllocated;
 
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
-    //VAODefinition* m_pVAO;
     
     unsigned int m_ParticleCount;
 

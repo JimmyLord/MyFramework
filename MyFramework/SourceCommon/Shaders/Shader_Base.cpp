@@ -380,7 +380,7 @@ bool Shader_Base::DoVAORequirementsMatch(Shader_Base* pShader)
     return false;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess)
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial)
 {
     if( m_Initialized == false )
     {
@@ -398,7 +398,8 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     SetupAttributes( vbo, ibo, true );
     checkGlError( "SetupAttributes" );
 
-    ProgramBaseUniforms( viewprojmatrix, worldmatrix, pTexture, tint, speccolor, shininess );
+    ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->m_pTextureColor,
+        pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
 
     return true;
 }

@@ -1,32 +1,21 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
 #include "MySprite9.h"
 
 MySprite9::MySprite9()
-: m_Tint(255, 255, 255, 255)
 {
-    m_pShaderGroup = 0;
-    m_pTexture = 0;
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    m_pVAO = 0;
 
     m_Position.SetIdentity();
 
@@ -37,18 +26,19 @@ MySprite9::~MySprite9()
 {
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
-    //SAFE_RELEASE( m_pVAO );
+
+    SAFE_RELEASE( m_pMaterial );
 }
 
 void MySprite9::SetShader(ShaderGroup* pShaderGroup)
 {
-    m_pShaderGroup = pShaderGroup;
+    m_pMaterial->m_pShaderGroup = pShaderGroup;
 }
 
 void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pShaderGroup = pShaderGroup;
-    m_pTexture = pTexture;
+    m_pMaterial->m_pShaderGroup = pShaderGroup;
+    m_pMaterial->m_pTextureColor = pTexture;
 }
 
 MyMatrix MySprite9::GetPosition()
@@ -164,12 +154,12 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
 
 void MySprite9::SetTint(ColorByte tintcolor)
 {
-    m_Tint = tintcolor;
+    m_pMaterial->m_ColorDiffuse = tintcolor;
 }
 
 void MySprite9::Draw(MyMatrix* matviewproj)
 {
-    if( m_pShaderGroup == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->m_pShaderGroup == 0 )
         return;
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
@@ -180,12 +170,12 @@ void MySprite9::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = (Shader_Base*)m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
     if( pShader )
     {
         if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
-                matviewproj, &m_Position, m_pTexture, m_Tint ) )
+                matviewproj, &m_Position, m_pMaterial ) )
         {
 #if USE_D3D
             g_pD3DContext->DrawIndexed( 6, 0, 0 );

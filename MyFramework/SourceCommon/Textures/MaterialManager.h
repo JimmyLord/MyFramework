@@ -24,13 +24,14 @@ class MaterialDefinition : public CPPListNode, public RefCount
 public: // for now.
     bool m_UnsavedChanges;
 
-    char m_Name[MAX_MATERIAL_NAME_LEN];
+    char m_Name[MAX_MATERIAL_NAME_LEN]; // if [0] == 0, material won't save to disk.
     MyFileObject* m_pFile;
 
     ShaderGroup* m_pShaderGroup;
     TextureDefinition* m_pTextureColor;
-    ColorByte m_Tint;
-    ColorByte m_SpecColor;
+    ColorByte m_ColorAmbient;
+    ColorByte m_ColorDiffuse;
+    ColorByte m_ColorSpecular;
     float m_Shininess;
 
 public:
@@ -39,7 +40,7 @@ public:
 public:
     MaterialDefinition();
     MaterialDefinition(ShaderGroup* pShader);
-    MaterialDefinition(ShaderGroup* pShader, ColorByte tint);
+    MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse);
     void Init();
 
     virtual ~MaterialDefinition();
@@ -90,11 +91,12 @@ public:
     
     void FreeAllMaterials();
     
-    void LoadMaterial(const char* filename);
+    MaterialDefinition* LoadMaterial(const char* filename);
 #if MYFW_USING_WX
     void SaveAllMaterials(bool saveunchanged = false);
 #endif
 
+    MaterialDefinition* CreateMaterial();
     MaterialDefinition* CreateMaterial(const char* name);
     MaterialDefinition* CreateMaterial(MyFileObject* pFile);
     MaterialDefinition* FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);

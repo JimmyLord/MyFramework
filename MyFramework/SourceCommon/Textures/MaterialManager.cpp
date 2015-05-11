@@ -28,7 +28,7 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader)
         m_pShaderGroup->AddRef();
 }
 
-MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte tint)
+MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse)
 {
     Init();
 
@@ -36,7 +36,7 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte tint)
     if( m_pShaderGroup )
         m_pShaderGroup->AddRef();
 
-    m_Tint = tint;
+    m_ColorDiffuse = colordiffuse;
 }
 
 void MaterialDefinition::Init()
@@ -50,8 +50,9 @@ void MaterialDefinition::Init()
 
     m_pShaderGroup = 0;
     m_pTextureColor = 0;
-    m_Tint = ColorByte(255,255,255,255);
-    m_SpecColor = ColorByte(255,255,255,255);
+    m_ColorAmbient = ColorByte(255,255,255,255);
+    m_ColorDiffuse = ColorByte(255,255,255,255);
+    m_ColorSpecular = ColorByte(255,255,255,255);
     m_Shininess = 200;
 }
 
@@ -114,8 +115,17 @@ void MaterialDefinition::ImportFromFile()
             }
         }
 
-        cJSONExt_GetUnsignedCharArray( material, "Tint", &m_Tint.r, 4 );
-        cJSONExt_GetUnsignedCharArray( material, "SpecColor", &m_SpecColor.r, 4 );
+        ColorFloat tempcolor;
+        
+        cJSONExt_GetFloatArray( material, "ColorAmbient", &tempcolor.r, 4 );
+        m_ColorAmbient = tempcolor.AsColorByte();
+
+        cJSONExt_GetFloatArray( material, "ColorDiffuse", &tempcolor.r, 4 );
+        m_ColorDiffuse = tempcolor.AsColorByte();
+
+        cJSONExt_GetFloatArray( material, "ColorSpecular", &tempcolor.r, 4 );
+        m_ColorSpecular = tempcolor.AsColorByte();
+
         cJSONExt_GetFloat( material, "Shininess", &m_Shininess );
 
         m_FullyLoaded = true;
@@ -185,8 +195,9 @@ void MaterialDefinition::OnLeftClick()
     //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
     //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );
     //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, this, ComponentTransform::StaticOnValueChanged );
-    //ColorByte m_Tint;
-    //ColorByte m_SpecColor;
+    //ColorFloat m_ColorAmbient;
+    //ColorFloat m_ColorDiffuse;
+    //ColorFloat m_ColorSpecular;
 
     g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
 }
@@ -212,6 +223,9 @@ void MaterialDefinition::OnLabelEdit(wxString newlabel)
 
 void MaterialDefinition::SaveMaterial()
 {
+    if( m_Name[0] == 0 )
+        return;
+
     char filename[MAX_PATH];
     char workingdir[MAX_PATH];
 #if MYFW_WINDOWS
@@ -234,8 +248,17 @@ void MaterialDefinition::SaveMaterial()
     if( m_pTextureColor )
         cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
 
-    cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
-    cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
+    ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
+    cJSONExt_AddFloatArrayToObject( material, "ColorAmbient", &tempcolor.r, 4 );
+
+    tempcolor = m_ColorDiffuse.AsColorFloat();
+    cJSONExt_AddFloatArrayToObject( material, "ColorDiffuse", &tempcolor.r, 4 );
+
+    tempcolor = m_ColorSpecular.AsColorFloat();
+    cJSONExt_AddFloatArrayToObject( material, "ColorSpecular", &tempcolor.r, 4 );
+
+    //cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
+    //cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
     cJSON_AddNumberToObject( material, "Shininess", m_Shininess );
 
     // dump animarray to disk
@@ -336,6 +359,7 @@ void MaterialManager::Tick()
             pMaterial->ImportFromFile();
 
 #if MYFW_USING_WX
+            g_pPanelMemory->RemoveMaterial( pMaterial );
             g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
             g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
@@ -368,9 +392,18 @@ void MaterialManager::FreeAllMaterials()
     }
 }
 
-void MaterialManager::LoadMaterial(const char* filename)
+MaterialDefinition* MaterialManager::LoadMaterial(const char* filename)
 {
-    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    MaterialDefinition* pMaterial;
+
+    pMaterial = FindMaterialByFilename( filename );
+    if( pMaterial )
+    {
+        pMaterial->AddRef();
+        return pMaterial;
+    }
+
+    pMaterial = MyNew MaterialDefinition();
     m_MaterialsStillLoading.AddTail( pMaterial );
 
     pMaterial->m_pFile = RequestFile( filename );
@@ -379,6 +412,8 @@ void MaterialManager::LoadMaterial(const char* filename)
     g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
+
+    return pMaterial;
 }
 
 #if MYFW_USING_WX
@@ -395,6 +430,23 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
     }
 }
 #endif
+
+MaterialDefinition* MaterialManager::CreateMaterial()
+{
+    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    m_Materials.AddTail( pMaterial );
+    
+    pMaterial->m_FullyLoaded = true;
+    pMaterial->m_UnsavedChanges = false;
+    pMaterial->m_Name[0] = 0;
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+#endif
+
+    return 0;
+}
 
 MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 {
