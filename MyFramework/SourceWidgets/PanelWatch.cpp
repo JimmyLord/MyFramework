@@ -29,6 +29,7 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Double,
   //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,           0,        -1, }, //PanelWatchType_Vector3,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorFloat,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorByte,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_PointerWithDesc,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,           0,        75, }, //PanelWatchType_Enum,
     {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,           0,        -1, }, //PanelWatchType_SpaceWithLabel,
@@ -329,6 +330,19 @@ int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float m
     return first;
 }
 
+int PanelWatch::AddColorByte(const char* name, ColorByte* pColorByte, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    // TODO: maybe? change this to a color picker that supports alpha.
+    int first;
+    first = AddVariableOfTypeDesc( PanelWatchType_ColorByte, name, pColorByte, 0, 0, 0, 0, 0 );
+
+    // add alpha as a unsigned char
+    AddVariableOfTypeRange( PanelWatchType_UnsignedChar, "a", &pColorByte->a, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddControlsForVariable( name, first+1, 1, "a" );
+
+    return first;
+}
+
 int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeDesc( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc, 0 );
@@ -438,6 +452,12 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
+    {
+        SliderWidth = 0;
+        TextCtrlWidth = 115; // wxColourPicker
+    }
+
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorByte )
     {
         SliderWidth = 0;
         TextCtrlWidth = 115; // wxColourPicker
@@ -560,7 +580,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         pButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PanelWatch::OnButtonPressed), 0, this );
     }
 
-    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat ||
+        m_pVariables[variablenum].m_Type == PanelWatchType_ColorByte )
     {
         // TODO: change this to a color picker that supports alpha.
         wxColourPickerCtrl* pCtrl = MyNew wxColourPickerCtrl( this, variablenum, "",
@@ -890,6 +911,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
     //    }
 
     case PanelWatchType_ColorFloat:
+    case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
@@ -941,6 +963,7 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     //    break;
 
     case PanelWatchType_ColorFloat:
+    case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Button:
     case PanelWatchType_SpaceWithLabel:
@@ -1085,6 +1108,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     //    break;
 
     case PanelWatchType_ColorFloat:
+    case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Button:
     case PanelWatchType_SpaceWithLabel:
@@ -1133,7 +1157,8 @@ void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
 {
     int controlid = event.GetId();
 
-    assert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat );
+    assert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat ||
+            m_pVariables[controlid].m_Type == PanelWatchType_ColorByte );
 
     wxColour colour = m_pVariables[controlid].m_Handle_ColourPicker->GetColour();
 
@@ -1235,6 +1260,14 @@ void PanelWatch::UpdatePanel(int controltoupdate)
                                  (unsigned char)(asfloats.g * 255.0f),
                                  (unsigned char)(asfloats.b * 255.0f),
                                  (unsigned char)(asfloats.a * 255.0f) );
+                m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
+            }
+            break;
+
+        case PanelWatchType_ColorByte:
+            {
+                ColorByte* colorbyte = (ColorByte*)m_pVariables[i].m_Pointer;
+                wxColour colour( colorbyte->r, colorbyte->g, colorbyte->b, colorbyte->a );
                 m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
             }
             break;

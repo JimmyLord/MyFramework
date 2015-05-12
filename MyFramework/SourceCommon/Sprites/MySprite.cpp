@@ -15,7 +15,8 @@ MySprite::MySprite()
 {
     m_SpriteIsStatic = false;
 
-    m_pMaterial = 0;
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -391,7 +392,7 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     TextureDefinition* pTexture = GetTexture();
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return false;
 
@@ -418,7 +419,7 @@ void MySprite::DeactivateShader()
     if( m_pMaterial == 0 )
         return;
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -427,7 +428,7 @@ void MySprite::DeactivateShader()
 
 void MySprite::Draw(MyMatrix* matviewproj)
 {
-    if( m_pMaterial == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
@@ -440,7 +441,7 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
     TextureDefinition* pTexture = GetTexture();
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -465,5 +466,5 @@ Vertex_Base* MySprite::GetVerts(bool markdirty)
 
 TextureDefinition* MySprite::GetTexture()
 {
-    return m_pMaterial->m_pTextureColor;
+    return m_pMaterial->GetTextureColor();
 }

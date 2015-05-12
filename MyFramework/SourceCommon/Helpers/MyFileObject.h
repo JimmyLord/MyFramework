@@ -63,6 +63,12 @@ protected:
 
 public:
 #if MYFW_USING_WX
+    enum RightClickOptions
+    {
+        RightClick_ViewInWatchWindow = 1000,
+        RightClick_OpenFile,
+    };
+
     static void StaticOnLeftClick(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnLeftClick(); }
     void OnLeftClick();
     static void StaticOnRightClick(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnRightClick(); }

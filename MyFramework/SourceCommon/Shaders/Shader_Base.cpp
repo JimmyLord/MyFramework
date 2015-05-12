@@ -398,7 +398,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     SetupAttributes( vbo, ibo, true );
     checkGlError( "SetupAttributes" );
 
-    ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->m_pTextureColor,
+    ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->GetTextureColor(),
         pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
 
     return true;

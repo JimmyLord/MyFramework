@@ -186,7 +186,7 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
     if( pTexture == 0 )
         return;
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
 
     if( pShader )
     {
@@ -200,7 +200,7 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
             MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
             //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
 #endif
-            m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+            m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
         }
     }
 }

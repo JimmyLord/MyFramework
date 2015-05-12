@@ -32,8 +32,8 @@ SpriteBatch::~SpriteBatch()
 
 void SpriteBatch::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pMaterial->m_pShaderGroup = pShaderGroup;
-    m_pMaterial->m_pTextureColor = pTexture;
+    m_pMaterial->SetShader( pShaderGroup );
+    m_pMaterial->SetTextureColor( pTexture );
 }
 
 void SpriteBatch::AllocateVertices(int numsprites)
@@ -96,8 +96,8 @@ void SpriteBatch::AddSprite(MySprite* pSprite)
 
 void SpriteBatch::Draw(MyMatrix* matviewproj)
 {
-    if( m_pMaterial == 0 || m_pMaterial->m_pTextureColor == 0 || m_pMaterial->m_pTextureColor->m_TextureID == 0 ||
-        m_pMaterial->m_pShaderGroup == 0 || m_NumSprites == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->m_TextureID == 0 ||
+        m_pMaterial->GetShader() == 0 || m_NumSprites == 0 )
         return;
 
     MyMatrix pos;
@@ -115,7 +115,7 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
     ////glBufferData( GL_ARRAY_BUFFER, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts, GL_DYNAMIC_DRAW );
 
     // Draw the contents of the buffers.
-    if( ((Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass())->ActivateAndProgramShader(
+    if( ((Shader_Base*)m_pMaterial->GetShader()->GlobalPass())->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, &pos, m_pMaterial ) )
     {
@@ -124,7 +124,7 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
 #else
         MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0 );
 #endif
-        m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
 
     return;

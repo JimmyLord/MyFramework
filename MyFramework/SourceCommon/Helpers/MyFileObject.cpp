@@ -119,25 +119,6 @@ MyFileObject::~MyFileObject()
 #if MYFW_USING_WX
 void MyFileObject::OnLeftClick()
 {
-    g_pPanelWatch->ClearAllVariables();
-
-    g_pPanelWatch->AddSpace( this->m_FullPath );
-
-    if( strcmp( m_ExtensionWithDot, ".mymesh" ) == 0 )
-    {
-        MyMesh* pMesh = g_pMeshManager->FindMeshBySourceFile( this );
-
-        pMesh->FillPropertiesWindow( false );
-    }
-
-    //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
-    //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );
-    //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, this, ComponentTransform::StaticOnValueChanged );
-
-    if( m_CustomLeftClickCallback )
-    {
-        m_CustomLeftClickCallback( m_CustomLeftClickObject );
-    }
 }
 
 void MyFileObject::OnRightClick()
@@ -145,7 +126,10 @@ void MyFileObject::OnRightClick()
  	wxMenu menu;
     menu.SetClientData( this );
     
-    menu.Append( 1000, "Open file" );
+    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+
+    menu.Append( RightClick_OpenFile, "Open file" );
  	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
 
     // blocking call.
@@ -154,18 +138,47 @@ void MyFileObject::OnRightClick()
 
 void MyFileObject::OnPopupClick(wxEvent &evt)
 {
-#if MYFW_WINDOWS
     MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+
     int id = evt.GetId();
-    if( id == 1000 )
+    switch( id )
     {
-        char url[MAX_PATH];
-        char workingdir[MAX_PATH];
-        _getcwd( workingdir, MAX_PATH * sizeof(char) );
-        sprintf_s( url, MAX_PATH, "%s/%s", workingdir, pFileObject->m_FullPath );
-        ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
-    }
+    case RightClick_OpenFile:
+        {
+#if MYFW_WINDOWS
+            char url[MAX_PATH];
+            char workingdir[MAX_PATH];
+            _getcwd( workingdir, MAX_PATH * sizeof(char) );
+            sprintf_s( url, MAX_PATH, "%s/%s", workingdir, pFileObject->m_FullPath );
+            ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
 #endif
+        }
+        break;
+
+    case RightClick_ViewInWatchWindow:
+        {
+            g_pPanelWatch->ClearAllVariables();
+
+            g_pPanelWatch->AddSpace( pFileObject->m_FullPath );
+
+            if( strcmp( pFileObject->m_ExtensionWithDot, ".mymesh" ) == 0 )
+            {
+                MyMesh* pMesh = g_pMeshManager->FindMeshBySourceFile( pFileObject );
+
+                pMesh->FillPropertiesWindow( false );
+            }
+
+            //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, pFileObject, ComponentTransform::StaticOnValueChanged );
+            //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, pFileObject, ComponentTransform::StaticOnValueChanged );
+            //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, pFileObject, ComponentTransform::StaticOnValueChanged );
+
+            if( m_CustomLeftClickCallback )
+            {
+                m_CustomLeftClickCallback( m_CustomLeftClickObject );
+            }
+        }
+        break;
+    }
 }
 
 void MyFileObject::OnDrag()

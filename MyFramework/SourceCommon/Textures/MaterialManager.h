@@ -27,8 +27,11 @@ public: // for now.
     char m_Name[MAX_MATERIAL_NAME_LEN]; // if [0] == 0, material won't save to disk.
     MyFileObject* m_pFile;
 
+protected:
     ShaderGroup* m_pShaderGroup;
     TextureDefinition* m_pTextureColor;
+
+public:
     ColorByte m_ColorAmbient;
     ColorByte m_ColorDiffuse;
     ColorByte m_ColorSpecular;
@@ -51,14 +54,23 @@ public:
     void SetName(const char* name);
 
     void SetShader(ShaderGroup* pShader);
+    ShaderGroup* GetShader() { return m_pShaderGroup; }
+
     void SetTextureColor(TextureDefinition* pTexture);
+    TextureDefinition* GetTextureColor() { return m_pTextureColor; }
 
 public:
 #if MYFW_USING_WX
+    enum RightClickOptions
+    {
+        RightClick_ViewInWatchWindow = 1000,
+    };
+
     static void StaticOnLeftClick(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick(); }
     void OnLeftClick();
     static void StaticOnRightClick(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
+    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 

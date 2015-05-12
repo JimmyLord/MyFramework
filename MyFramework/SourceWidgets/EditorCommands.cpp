@@ -64,6 +64,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
         break;
 
     case PanelWatchType_ColorFloat:
+    case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
@@ -115,6 +116,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
         break;
 
     case PanelWatchType_ColorFloat:
+    case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
@@ -147,11 +149,17 @@ EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
 
 EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
 {
+    assert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
+
     m_NewColor = newcolor;
-    m_OldColor = *(ColorFloat*)pointer;
     m_Type = type;
     m_Pointer = pointer;
     m_ControlID = controlid;
+
+    if( m_Type == PanelWatchType_ColorFloat )
+        m_OldColor = *(ColorFloat*)pointer;
+    else
+        m_OldColor = ((ColorByte*)pointer)->AsColorFloat();
 
     m_pOnValueChangedCallBackFunc = callbackfunc;
     m_pCallbackObj = callbackobj;
@@ -163,7 +171,12 @@ EditorCommand_PanelWatchColorChanged::~EditorCommand_PanelWatchColorChanged()
 
 void EditorCommand_PanelWatchColorChanged::Do()
 {
-    *(ColorFloat*)m_Pointer = m_NewColor;
+    assert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
+
+    if( m_Type == PanelWatchType_ColorFloat )
+        *(ColorFloat*)m_Pointer = m_NewColor;
+    else
+        *(ColorByte*)m_Pointer = m_NewColor.AsColorByte();
 
     g_pPanelWatch->UpdatePanel();
 
@@ -174,7 +187,12 @@ void EditorCommand_PanelWatchColorChanged::Do()
 
 void EditorCommand_PanelWatchColorChanged::Undo()
 {
-    *(ColorFloat*)m_Pointer = m_OldColor;
+    assert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
+
+    if( m_Type == PanelWatchType_ColorFloat )
+        *(ColorFloat*)m_Pointer = m_OldColor;
+    else
+        *(ColorByte*)m_Pointer = m_OldColor.AsColorByte();
 
     g_pPanelWatch->UpdatePanel();
 

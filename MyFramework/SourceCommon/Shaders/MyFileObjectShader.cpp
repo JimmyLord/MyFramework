@@ -11,6 +11,8 @@
 
 MyFileObjectShader::MyFileObjectShader()
 {
+    m_IsAnIncludeFile = false;
+
     m_ScannedForIncludes = false;
     m_NumIncludes = 0;
 }
@@ -41,23 +43,36 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
         {
 #pragma warning (disable : 4996)
             char includefilename[MAX_PATH];
-            strcpy( includefilename, m_FullPath );
-            int pathlen = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
-            includefilename[pathlen] = 0;
-            //int bufferleft = MAX_PATH-1 - pathlen;
+            includefilename[0] = 0;
             int charsread;
-            int result = sscanf( &m_pBuffer[i], "#include \"%[^\"]\"%n", &includefilename[pathlen], &charsread );
+            int result = 0;
+            if( m_pBuffer[i+9] == '<' )
+            {
+                strcpy( includefilename, "DataEngine/Shaders/" );
+                int pathlen = (int)( strlen(includefilename) );
+                result = sscanf( &m_pBuffer[i], "#include <%[^>]>%n", &includefilename[pathlen], &charsread );
+            }
+            else
+            {
+                strcpy( includefilename, m_FullPath );
+                int pathlen = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
+                includefilename[pathlen] = 0;
+                result = sscanf( &m_pBuffer[i], "#include \"%[^\"]\"%n", &includefilename[pathlen], &charsread );
+            }
 #pragma warning (default : 4996)
 
             if( result == 1 )
             {
                 MyFileObject* pIncludeFile = ::RequestFile( includefilename );
-                if( dynamic_cast<MyFileObjectShader*>( pIncludeFile ) == 0 )
+                MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pIncludeFile );
+                if( pShaderFile == 0 )
                 {
                     LOGError( LOGTag, "MyFileObjectShader: Including a non-shader file\n" );
                     g_pFileManager->FreeFile( pIncludeFile );
                     continue;
                 }
+
+                pShaderFile->m_IsAnIncludeFile = true;
 
                 assert( m_NumIncludes < MAX_INCLUDES );
                 m_pIncludes[m_NumIncludes].m_pIncludedFile = (MyFileObjectShader*)pIncludeFile;

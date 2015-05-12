@@ -178,32 +178,54 @@ void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
 #if MYFW_USING_WX
 void MaterialDefinition::OnLeftClick()
 {
-    g_pPanelWatch->ClearAllVariables();
-
-    g_pPanelWatch->AddSpace( this->m_Name );
-
-    const char* desc = "no shader";
-    if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
-        desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
-    g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
-
-    desc = "no color texture";
-    if( m_pTextureColor )
-        desc = m_pTextureColor->m_Filename;
-    g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
-
-    //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, this, ComponentTransform::StaticOnValueChanged );
-    //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, this, ComponentTransform::StaticOnValueChanged );
-    //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, this, ComponentTransform::StaticOnValueChanged );
-    //ColorFloat m_ColorAmbient;
-    //ColorFloat m_ColorDiffuse;
-    //ColorFloat m_ColorSpecular;
-
-    g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
 }
 
 void MaterialDefinition::OnRightClick()
 {
+ 	wxMenu menu;
+    menu.SetClientData( this );
+    
+    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialDefinition::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void MaterialDefinition::OnPopupClick(wxEvent &evt)
+{
+    MaterialDefinition* pMaterial = (MaterialDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+
+    int id = evt.GetId();
+    switch( id )
+    {
+    case RightClick_ViewInWatchWindow:
+        {
+            g_pPanelWatch->ClearAllVariables();
+
+            g_pPanelWatch->AddSpace( pMaterial->m_Name );
+
+            const char* desc = "no shader";
+            if( pMaterial->m_pShaderGroup && pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
+                desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+            g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
+
+            desc = "no color texture";
+            if( pMaterial->m_pTextureColor )
+                desc = pMaterial->m_pTextureColor->m_Filename;
+            g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, pMaterial, MaterialDefinition::StaticOnDropTexture );
+
+            g_pPanelWatch->AddColorByte( "Color-Ambient", &pMaterial->m_ColorAmbient, 0, 255 );
+            g_pPanelWatch->AddColorByte( "Color-Diffuse", &pMaterial->m_ColorDiffuse, 0, 255 );
+            g_pPanelWatch->AddColorByte( "Color-Specular", &pMaterial->m_ColorSpecular, 0, 255 );
+            //ColorFloat pMaterial->m_ColorAmbient;
+            //ColorFloat pMaterial->m_ColorDiffuse;
+            //ColorFloat pMaterial->m_ColorSpecular;
+
+            g_pPanelWatch->AddFloat( "Shininess", &pMaterial->m_Shininess, 1, 300 );
+        }
+        break;
+    }
 }
 
 void MaterialDefinition::OnDrag()
@@ -445,7 +467,7 @@ MaterialDefinition* MaterialManager::CreateMaterial()
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 
-    return 0;
+    return pMaterial;
 }
 
 MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
@@ -469,7 +491,16 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
 {
     assert( pFile );
 
-    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    MaterialDefinition* pMaterial;
+
+    pMaterial = FindMaterialByFilename( pFile->m_FullPath );
+    if( pMaterial )
+    {
+        pMaterial->AddRef();
+        return pMaterial;
+    }
+
+    pMaterial = MyNew MaterialDefinition();
     m_MaterialsStillLoading.AddTail( pMaterial );
     
     pMaterial->m_FullyLoaded = false;
@@ -521,7 +552,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* filename
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->m_pFile && pMaterial->m_pFile->m_FullPath == filename )
+        if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->m_FullPath, filename ) == 0 )
             return pMaterial;
     }
 

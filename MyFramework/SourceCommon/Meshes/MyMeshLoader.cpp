@@ -123,7 +123,7 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
             assert( ppIBO );
 
             cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
-            if( jMaterial )
+            if( jMaterial && jMaterial->valuestring )
             {
                 pSubmesh->m_pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
             }

@@ -22,14 +22,20 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 ShaderGroup::ShaderGroup(MyFileObject* pFile, char* name)
 : m_Name(name)
 {
+    MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pFile );
+    assert( pShaderFile );
+
     Initialize();
 
     SetFileForAllPasses( pFile );
     g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
-    assert( name != 0 );
-    g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+    if( pShaderFile->m_IsAnIncludeFile == false )
+    {
+        assert( name != 0 );
+        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+    }
 #endif
 }
 

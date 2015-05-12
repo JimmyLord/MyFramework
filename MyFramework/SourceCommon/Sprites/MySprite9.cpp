@@ -32,13 +32,13 @@ MySprite9::~MySprite9()
 
 void MySprite9::SetShader(ShaderGroup* pShaderGroup)
 {
-    m_pMaterial->m_pShaderGroup = pShaderGroup;
+    m_pMaterial->SetShader( pShaderGroup );
 }
 
 void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pMaterial->m_pShaderGroup = pShaderGroup;
-    m_pMaterial->m_pTextureColor = pTexture;
+    m_pMaterial->SetShader( pShaderGroup );
+    m_pMaterial->SetTextureColor( pTexture );
 }
 
 MyMatrix MySprite9::GetPosition()
@@ -159,8 +159,7 @@ void MySprite9::SetTint(ColorByte tintcolor)
 
 void MySprite9::Draw(MyMatrix* matviewproj)
 {
-    if( m_pMaterial == 0 || m_pMaterial->m_pShaderGroup == 0 )
-        return;
+    if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
 
     assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
@@ -170,7 +169,7 @@ void MySprite9::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->m_pShaderGroup->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader )
     {
         if( pShader->ActivateAndProgramShader(

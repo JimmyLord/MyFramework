@@ -297,7 +297,7 @@ void MyMesh::ParseFile()
 
             if( m_SubmeshList.Count() > 0 )
             {
-                if( m_SubmeshList[0]->m_pMaterial->m_pShaderGroup == 0 )
+                if( m_SubmeshList[0]->m_pMaterial && m_SubmeshList[0]->m_pMaterial->GetShader() == 0 )
                 {
                     // guess at an appropriate shader for this mesh/material.
                     GuessAndAssignAppropriateShader();
@@ -311,9 +311,9 @@ void MyMesh::GuessAndAssignAppropriateShader()
 {
     for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
     {
-        if( m_SubmeshList[i]->m_pMaterial->m_pShaderGroup == 0 )
+        if( m_SubmeshList[i]->m_pMaterial->GetShader() == 0 )
         {
-            m_SubmeshList[i]->m_pMaterial->m_pShaderGroup = g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" );
+            m_SubmeshList[i]->m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
         }
     }
 }
@@ -1454,10 +1454,10 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
                 numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
 
-            if( pMaterial->m_pShaderGroup == 0 )
+            if( pMaterial->GetShader() == 0 )
                 return;
 
-            Shader_Base* pShader = (Shader_Base*)pMaterial->m_pShaderGroup->GlobalPass( numlights, numboneinfluences );
+            Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numlights, numboneinfluences );
             if( pShader )
             {
                 if( pShader->ActivateAndProgramShader(

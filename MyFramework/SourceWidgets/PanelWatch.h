@@ -43,6 +43,7 @@ enum PanelWatch_Types
     PanelWatchType_Double,
     //PanelWatchType_Vector3,
     PanelWatchType_ColorFloat,
+    PanelWatchType_ColorByte,
     PanelWatchType_PointerWithDesc,
     PanelWatchType_Enum,
     PanelWatchType_SpaceWithLabel,
@@ -176,6 +177,7 @@ public:
     int AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int AddColorByte(const char* name, ColorByte* pColorByte, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallbackDropTarget pOnDropCallBackFunc = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);

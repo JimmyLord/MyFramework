@@ -31,6 +31,8 @@ class MyFileObjectShader : public MyFileObject
     static const int MAX_INCLUDES = 50;
 
 public:
+    bool m_IsAnIncludeFile;
+
     bool m_ScannedForIncludes;
 
     int m_NumIncludes;
