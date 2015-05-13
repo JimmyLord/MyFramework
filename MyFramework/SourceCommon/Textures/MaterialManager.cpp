@@ -96,10 +96,19 @@ void MaterialDefinition::ImportFromFile()
         cJSON* shaderstringobj = cJSON_GetObjectItem( material, "Shader" );
         if( shaderstringobj )
         {
-            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByName( shaderstringobj->valuestring );
-            assert( pShaderGroup ); // fix
-
-            SetShader( pShaderGroup );
+            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( shaderstringobj->valuestring );
+            if( pShaderGroup != 0 )
+            {
+                SetShader( pShaderGroup );
+            }
+            else
+            {
+                MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
+                pShaderGroup = MyNew ShaderGroup( pFile );
+                SetShader( pShaderGroup );
+                pShaderGroup->Release();
+                pFile->Release();
+            }
         }
 
         cJSON* texcolorstringobj = cJSON_GetObjectItem( material, "TexColor" );

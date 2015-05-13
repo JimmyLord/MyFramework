@@ -45,10 +45,9 @@ void BaseShader::Init_BaseShader()
 BaseShader::~BaseShader()
 {
     this->Remove();
-    if( m_pFile )
-        g_pFileManager->FreeFile( m_pFile );
-    if( m_pFilePixelShader )
-        g_pFileManager->FreeFile( m_pFilePixelShader );
+    
+    SAFE_RELEASE( m_pFile );
+    SAFE_RELEASE( m_pFilePixelShader );
 
     SAFE_DELETE_ARRAY( m_pVSPredefinitions );
     SAFE_DELETE_ARRAY( m_pFSPredefinitions );

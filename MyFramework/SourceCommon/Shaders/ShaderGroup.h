@@ -33,7 +33,7 @@ class ShaderGroup : public CPPListNode, public RefCount
     static const int SHADERGROUP_MAX_BONE_INFLUENCES = 4;
 
 protected:
-    const char* m_Name; // managed externally.
+    MyFileObjectShader* m_pFile;
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
 
 protected:
@@ -41,11 +41,12 @@ protected:
     void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
-    ShaderGroup(MyFileObject* pFile, char* name = 0);
+    ShaderGroup(MyFileObject* pFile);
 
     ~ShaderGroup();
 
-    const char* GetName() { return m_Name; }
+    const char* GetName() { return m_pFile->m_FilenameWithoutExtension; }
+    MyFileObjectShader* GetFile() { return m_pFile; }
 
     BaseShader* GlobalPass(int numlights = 0, int numbones = 0);
     BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0, int numbones = 0);
@@ -70,6 +71,7 @@ public:
     void AddShaderGroup(ShaderGroup* pShaderGroup);
     ShaderGroup* FindShaderGroupByName(const char* name);
     ShaderGroup* FindShaderGroupByFile(MyFileObject* pFile);
+    ShaderGroup* FindShaderGroupByFilename(const char* fullpath);
 };
 
 #endif //__ShaderGroup_H__

@@ -19,11 +19,13 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile, char* name)
-: m_Name(name)
+ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
     MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pFile );
     assert( pShaderFile );
+
+    m_pFile = pShaderFile;
+    m_pFile->AddRef();
 
     Initialize();
 
@@ -33,8 +35,8 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile, char* name)
 #if MYFW_USING_WX
     if( pShaderFile->m_IsAnIncludeFile == false )
     {
-        assert( name != 0 );
-        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", name, StaticOnDrag );
+        assert( m_pFile->m_FilenameWithoutExtension != 0 );
+        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->m_FilenameWithoutExtension, StaticOnDrag );
     }
 #endif
 }
@@ -82,6 +84,8 @@ void ShaderGroup::DisableShadowCasting_AndDoItBadly_WillBeReplaced()
 ShaderGroup::~ShaderGroup()
 {
     this->Remove(); // remove this node from the shadergroupmanager's list
+
+    SAFE_RELEASE( m_pFile );
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
@@ -201,6 +205,24 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFile(MyFileObject* pFile)
         ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
 
         if( pShaderGroup->GetShader( ShaderPass_Main, 0, 0 )->m_pFile == pFile )
+        {
+            return pShaderGroup;
+        }
+    }
+
+    return 0;
+}
+
+ShaderGroup* ShaderGroupManager::FindShaderGroupByFilename(const char* fullpath)
+{
+    assert( fullpath );
+
+    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
+
+        MyFileObject* pFile = pShaderGroup->GetFile();
+        if( strcmp( pFile->m_FullPath, fullpath ) == 0 )
         {
             return pShaderGroup;
         }
