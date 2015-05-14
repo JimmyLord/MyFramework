@@ -368,6 +368,8 @@ void MySprite::FlipX()
 
 void MySprite::SetMaterial(MaterialDefinition* pMaterial)
 {
+    assert( pMaterial != 0 );
+
     pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;

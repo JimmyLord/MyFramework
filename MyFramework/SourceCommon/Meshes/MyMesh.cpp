@@ -33,6 +33,13 @@ MySubmesh::~MySubmesh()
     SAFE_RELEASE( m_pIndexBuffer );
 }
 
+void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
+{
+    pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
+}
+
 MyMesh::MyMesh()
 {
     m_pSourceFile = 0;
@@ -233,26 +240,30 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
 {
     assert( pFile );
 
-    // free the old .mymesh file and store a pointer to the new one.
-    pFile->AddRef();
-    SAFE_RELEASE( m_pSourceFile );
-    m_pSourceFile = pFile;
-
-    // free the old .myaniminfo file and store a pointer to the new one.
-    SAFE_RELEASE( m_pAnimationControlFile );
-    char animfilename[MAX_PATH];
-    pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
-#if MYFW_USING_WX
-    // only try to open the file if it exists, only in editor builds since file i/o isn't neccessarily synchronous otherwise.
-    if( g_pFileManager->DoesFileExist( animfilename ) )
+    // if the requested file changed, then ditch the current one and load the new one.
+    if( pFile != m_pSourceFile )
     {
+        // free the old .mymesh file and store a pointer to the new one.
+        pFile->AddRef();
+        SAFE_RELEASE( m_pSourceFile );
+        m_pSourceFile = pFile;
+
+        // free the old .myaniminfo file and store a pointer to the new one.
+        SAFE_RELEASE( m_pAnimationControlFile );
+        char animfilename[MAX_PATH];
+        pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
+#if MYFW_USING_WX
+        // only try to open the file if it exists, only in editor builds since file i/o isn't neccessarily synchronous otherwise.
+        if( g_pFileManager->DoesFileExist( animfilename ) )
+        {
+            MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
+            m_pAnimationControlFile = newfile;
+        }
+#else
         MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
         m_pAnimationControlFile = newfile;
-    }
-#else
-    MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
-    m_pAnimationControlFile = newfile;
 #endif
+    }
 
     m_MeshReady = false;
 
@@ -1615,7 +1626,7 @@ unsigned short MyMesh::GetNumVerts()
     if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
         return 0;
 
-    return (unsigned short)(m_SubmeshList[0]->m_pVertexBuffer->m_DataSize / g_VertexFormatSizes[m_SubmeshList[0]->m_pVertexBuffer->m_VertexFormat]);
+    return (unsigned short)( m_SubmeshList[0]->m_pVertexBuffer->m_DataSize / GetStride( 0 ) );
 }
 
 unsigned int MyMesh::GetNumIndices()
@@ -1642,7 +1653,10 @@ unsigned short* MyMesh::GetIndices(bool markdirty)
     return (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
 }
 
-unsigned int MyMesh::GetStride()
+unsigned int MyMesh::GetStride(unsigned int submeshindex)
 {
-    return g_VertexFormatSizes[m_SubmeshList[0]->m_pVertexBuffer->m_VertexFormat];
+    if( m_SubmeshList[submeshindex]->m_pVertexBuffer->m_VertexFormat == VertexFormat_Dynamic )
+        return m_SubmeshList[submeshindex]->m_pVertexBuffer->m_pFormatDesc->stride;
+
+    return g_VertexFormatSizes[m_SubmeshList[submeshindex]->m_pVertexBuffer->m_VertexFormat];
 }

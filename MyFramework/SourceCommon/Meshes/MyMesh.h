@@ -50,6 +50,9 @@ public:
 
     MySubmesh();
     virtual ~MySubmesh();
+
+public:
+    void SetMaterial(MaterialDefinition* pMaterial);
 };
 
 class MyMesh : public CPPListNode, public RefCount
@@ -139,7 +142,7 @@ public:
     unsigned int GetNumIndices();
     Vertex_Base* GetVerts(bool markdirty);
     unsigned short* GetIndices(bool markdirty);
-    unsigned int GetStride();
+    unsigned int GetStride(unsigned int submeshindex);
 
     unsigned int GetAnimationCount() { return m_pAnimations.Count(); }
 };

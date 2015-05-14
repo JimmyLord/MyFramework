@@ -103,16 +103,14 @@ public:
     
     void FreeAllMaterials();
     
-    MaterialDefinition* LoadMaterial(const char* filename);
 #if MYFW_USING_WX
     void SaveAllMaterials(bool saveunchanged = false);
 #endif
 
-    MaterialDefinition* CreateMaterial();
-    MaterialDefinition* CreateMaterial(const char* name);
-    MaterialDefinition* CreateMaterial(MyFileObject* pFile);
+    MaterialDefinition* CreateMaterial(const char* name = 0);
+    MaterialDefinition* LoadMaterial(const char* fullpath);
     MaterialDefinition* FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);
-    MaterialDefinition* FindMaterialByFilename(const char* filename);
+    MaterialDefinition* FindMaterialByFilename(const char* fullpath);
 
 public:
 #if MYFW_USING_WX

@@ -40,7 +40,7 @@ public:
 
     unsigned int CalculateTotalMemoryUsedByFiles();
 
-    MyFileObject* RequestFile(const char* filename); // will add a ref.
+    virtual MyFileObject* RequestFile(const char* filename); // will add a ref.
     MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
     void Tick();

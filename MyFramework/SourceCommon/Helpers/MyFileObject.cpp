@@ -266,7 +266,8 @@ void MyFileObject::ParseName(const char* filename)
         {
             if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
             {
-                i++;
+                if( filename[i] == '/' || filename[i] == '\\' )
+                    i++;
                 int namelen = extensionstartlocation-i;
                 m_FilenameWithoutExtension = MyNew char[namelen+1];
                 strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );

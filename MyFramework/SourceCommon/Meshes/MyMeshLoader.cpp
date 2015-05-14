@@ -125,7 +125,10 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
             cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
             if( jMaterial && jMaterial->valuestring )
             {
-                pSubmesh->m_pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
+                MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
+                if( pMaterial )
+                    pSubmesh->SetMaterial( pMaterial );
+                pMaterial->Release();
             }
 
             cJSONExt_GetUnsignedInt( mesh, "TotalVerts", &totalverts );

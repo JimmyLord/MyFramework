@@ -67,14 +67,8 @@ MaterialDefinition::~MaterialDefinition()
     g_pPanelMemory->RemoveMaterial( this );
 #endif
 
-    if( m_pFile )
-    {
-        g_pFileManager->FreeFile( m_pFile );
-    }
-
+    SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureColor );
-    if( m_pFile != 0 )
-        int bp = 1;
     SAFE_RELEASE( m_pShaderGroup );
 }
 
@@ -104,9 +98,14 @@ void MaterialDefinition::ImportFromFile()
             else
             {
                 MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
-                pShaderGroup = MyNew ShaderGroup( pFile );
-                SetShader( pShaderGroup );
-                pShaderGroup->Release();
+                MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pFile );
+                assert( pShaderFile );
+                if( pShaderFile )
+                {
+                    pShaderGroup = MyNew ShaderGroup( pShaderFile );
+                    SetShader( pShaderGroup );
+                    pShaderGroup->Release();
+                }
                 pFile->Release();
             }
         }
@@ -275,7 +274,7 @@ void MaterialDefinition::SaveMaterial()
 
     cJSON_AddStringToObject( material, "Name", m_Name );
     if( m_pShaderGroup )
-        cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetName() );
+        cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
     if( m_pTextureColor )
         cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
 
@@ -423,30 +422,6 @@ void MaterialManager::FreeAllMaterials()
     }
 }
 
-MaterialDefinition* MaterialManager::LoadMaterial(const char* filename)
-{
-    MaterialDefinition* pMaterial;
-
-    pMaterial = FindMaterialByFilename( filename );
-    if( pMaterial )
-    {
-        pMaterial->AddRef();
-        return pMaterial;
-    }
-
-    pMaterial = MyNew MaterialDefinition();
-    m_MaterialsStillLoading.AddTail( pMaterial );
-
-    pMaterial->m_pFile = RequestFile( filename );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif
-
-    return pMaterial;
-}
-
 #if MYFW_USING_WX
 void MaterialManager::SaveAllMaterials(bool saveunchanged)
 {
@@ -462,47 +437,37 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
 }
 #endif
 
-MaterialDefinition* MaterialManager::CreateMaterial()
-{
-    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
-    m_Materials.AddTail( pMaterial );
-    
-    pMaterial->m_FullyLoaded = true;
-    pMaterial->m_UnsavedChanges = false;
-    pMaterial->m_Name[0] = 0;
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif
-
-    return pMaterial;
-}
-
 MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 {
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
     
     pMaterial->m_FullyLoaded = true;
-    pMaterial->m_UnsavedChanges = true;
-    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
+    if( name != 0 )
+    {
+        pMaterial->m_UnsavedChanges = true;
+        strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
+    }
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    if( name )
+        g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    else
+        g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 
-    return 0;
+    return pMaterial;
 }
 
-MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
+MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
 {
-    assert( pFile );
+    assert( fullpath );
 
     MaterialDefinition* pMaterial;
 
-    pMaterial = FindMaterialByFilename( pFile->m_FullPath );
+    // check if this file was already loaded.
+    pMaterial = FindMaterialByFilename( fullpath );
     if( pMaterial )
     {
         pMaterial->AddRef();
@@ -512,12 +477,14 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
     pMaterial = MyNew MaterialDefinition();
     m_MaterialsStillLoading.AddTail( pMaterial );
     
-    pMaterial->m_FullyLoaded = false;
-    pMaterial->m_UnsavedChanges = false;
-    pMaterial->m_pFile = pFile;
-    pMaterial->m_pFile->AddRef();
+    pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
 
-    return 0;
+#if MYFW_USING_WX
+    g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+#endif
+
+    return pMaterial;
 }
 
 MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor)
@@ -547,13 +514,13 @@ MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, T
     return 0;
 }
 
-MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* filename)
+MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath)
 {
     for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( strcmp( pMaterial->m_pFile->m_FullPath, filename ) == 0 )
+        if( strcmp( pMaterial->m_pFile->m_FullPath, fullpath ) == 0 )
             return pMaterial;
     }
 
@@ -561,7 +528,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* filename
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->m_FullPath, filename ) == 0 )
+        if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->m_FullPath, fullpath ) == 0 )
             return pMaterial;
     }
 
