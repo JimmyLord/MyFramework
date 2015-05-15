@@ -35,9 +35,14 @@ MySubmesh::~MySubmesh()
 
 void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
 {
-    pMaterial->AddRef();
+    if( pMaterial )
+        pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
+
+    // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 MyMesh::MyMesh()
@@ -1349,25 +1354,28 @@ void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, Color
     LOGError( LOGTag, "TransformGizmo color wasn't set properly... need to make a material for it\n" );
 }
 
-MaterialDefinition* MyMesh::GetMaterial()
+MaterialDefinition* MyMesh::GetMaterial(int submeshindex)
 {
     return m_SubmeshList[0]->m_pMaterial;
 }
 
-void MyMesh::SetMaterial(MaterialDefinition* pMaterial)
+void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
 {
-    if( m_SubmeshList.Count() == 0 )
-        return;
+    //if( m_SubmeshList.Count() == 0 )
+    //    return;
 
-    for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
+    assert( submeshindex < (int)m_SubmeshList.Count() );
+
+    if( submeshindex == -1 )
     {
-        pMaterial->AddRef();
-        SAFE_RELEASE( m_SubmeshList[i]->m_pMaterial );
-        m_SubmeshList[i]->m_pMaterial = pMaterial;
-
-        // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
-        if( m_SubmeshList[i]->m_pVertexBuffer )
-            m_SubmeshList[i]->m_pVertexBuffer->ResetVAOs();
+        for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
+        {
+            m_SubmeshList[i]->SetMaterial( pMaterial );
+        }
+    }
+    else
+    {
+        m_SubmeshList[submeshindex]->SetMaterial( pMaterial );
     }
 }
 

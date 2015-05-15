@@ -35,9 +35,12 @@ struct MySkeletonNode
 
 class MySubmesh
 {
-public:
+    friend class MyMesh;
+
+protected:
     MaterialDefinition* m_pMaterial;
 
+public:
     int m_VertexFormat;
 
     BufferDefinition* m_pVertexBuffer;
@@ -52,6 +55,7 @@ public:
     virtual ~MySubmesh();
 
 public:
+    MaterialDefinition* GetMaterial() { return m_pMaterial; }
     void SetMaterial(MaterialDefinition* pMaterial);
 };
 
@@ -103,8 +107,8 @@ public:
     void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
 
-    virtual MaterialDefinition* GetMaterial();
-    virtual void SetMaterial(MaterialDefinition* pMaterial);
+    virtual MaterialDefinition* GetMaterial(int submeshindex);
+    virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
     void SetPosition(float x, float y, float z);
     void SetTransform(MyMatrix& matrix);
     void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);

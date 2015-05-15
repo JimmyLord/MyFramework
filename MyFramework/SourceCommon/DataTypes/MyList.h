@@ -146,12 +146,12 @@ public:
         return m_Length;
     }
 
-    unsigned int Count()
+    unsigned int Count() const
     {
         return m_Count;
     }
 
-    MyType& operator[] (int i)
+    MyType& operator[] (int i) const
     {
         return m_Objects[i];
     }
