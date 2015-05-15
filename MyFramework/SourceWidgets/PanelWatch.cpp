@@ -635,7 +635,7 @@ wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def
     assert( m_pCallbackObj && m_pCallbackFunc );
 
     g_DragAndDropStruct.m_ID = m_ControlIndex;
-    m_pCallbackFunc( m_pCallbackObj, x, y );
+    m_pCallbackFunc( m_pCallbackObj, m_ControlIndex, x, y );
 
     return wxDragNone;
 }

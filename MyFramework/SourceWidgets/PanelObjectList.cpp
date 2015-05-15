@@ -180,7 +180,7 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         if( pData && pData->m_pDropFunction )
         {
-            pData->m_pDropFunction( pData->m_pObject, x, y );
+            pData->m_pDropFunction( pData->m_pObject, -1, x, y );
         }
     }
 

@@ -15,8 +15,8 @@ class PanelObjectList;
 extern PanelObjectList* g_pPanelObjectList;
 
 typedef void (*PanelObjectListCallback)(void*);
-typedef void (*PanelObjectListCallbackDropTarget)(void*, wxCoord x, wxCoord y);
-typedef void (*PanelObjectListLabelEditCallback)(void*, wxString);
+typedef void (*PanelObjectListCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
+typedef void (*PanelObjectListLabelEditCallback)(void* pObjectPtr, wxString);
 
 class TreeItemDataGenericObjectInfo : public wxTreeItemData
 {

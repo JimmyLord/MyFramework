@@ -154,7 +154,7 @@ void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
                 animthatchanged = i;                
         }
 
-        if( animthatchanged )
+        if( animthatchanged != -1 )
         {
             wxString text = g_pPanelWatch->m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
             m_pAnimations[animthatchanged]->SetName( text );

@@ -316,7 +316,7 @@ void MaterialDefinition::SaveMaterial()
     }
 }
 
-void MaterialDefinition::OnDropShader(wxCoord x, wxCoord y)
+void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
 {
     if( g_DragAndDropStruct.m_Type == DragAndDropType_ShaderGroupPointer )
     {
@@ -331,7 +331,7 @@ void MaterialDefinition::OnDropShader(wxCoord x, wxCoord y)
     }
 }
 
-void MaterialDefinition::OnDropTexture(wxCoord x, wxCoord y)
+void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
 {
     if( g_DragAndDropStruct.m_Type == DragAndDropType_FileObjectPointer )
     {
