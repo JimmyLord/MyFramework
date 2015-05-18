@@ -95,7 +95,7 @@ public:
     virtual void AddPanes();
     virtual bool UpdateAUIManagerAndLoadPerspective(); // returns true if valid window layout was set.
     virtual void OnPostInit() {}
-    virtual void OnClose() {}
+    virtual bool OnClose();
     
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);

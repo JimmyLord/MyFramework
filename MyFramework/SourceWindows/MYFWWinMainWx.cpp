@@ -177,6 +177,14 @@ bool MainFrame::UpdateAUIManagerAndLoadPerspective()
     return false;
 }
 
+bool MainFrame::OnClose()
+{
+    g_pPanelWatch->m_pTimer->Stop();
+    g_pPanelObjectList->SelectObject( 0 );
+
+    return true;
+}
+
 void MainFrame::OnMove(wxMoveEvent& event)
 {
     if( this->IsMaximized() )
@@ -210,15 +218,12 @@ void MainFrame::OnSize(wxSizeEvent& event)
 
 void MainFrame::OnCloseWindow(wxCloseEvent& event)
 {
-    OnClose();
-
-    event.Skip();
+    if( OnClose() )
+        event.Skip();
 }
 
 void MainFrame::OnQuit(wxCommandEvent& event)
 {
-    OnClose();
-
     Close( true );
 }
 
