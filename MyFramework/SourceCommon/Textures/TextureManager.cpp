@@ -134,7 +134,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     if( pTextureDef->m_pFile == 0 )
     {
         pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
-        textureloaded = true;
+        //textureloaded = true;
     }
 #else
     if( pTextureDef->m_pFile == 0 )

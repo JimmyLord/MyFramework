@@ -56,7 +56,9 @@ protected:
     void ParseName(const char* filename);
 
     void Tick();
+public:
     void FakeFileLoad(char* buffer, int length);
+protected:
     void UnloadContents();
 
     bool IsNewVersionAvailable();

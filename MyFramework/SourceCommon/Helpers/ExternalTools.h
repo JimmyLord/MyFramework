@@ -14,6 +14,11 @@
 
 #define MYKEYCODE_BACKSPACE     67  //KEYCODE_DEL
 #define MYKEYCODE_ENTER         66
+#define MYKEYCODE_ESC           27
+#define MYKEYCODE_LEFT          37
+#define MYKEYCODE_UP            38
+#define MYKEYCODE_RIGHT         39
+#define MYKEYCODE_DOWN          40
 
 #elif MYFW_WINDOWS
 
