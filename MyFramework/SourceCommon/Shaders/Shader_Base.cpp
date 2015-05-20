@@ -480,12 +480,12 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 
         if( m_uHandle_TextureColorWidth != -1 )
         {
-            glUniform1f( m_uHandle_TextureColorWidth, pTexture->m_Width );
+            glUniform1f( m_uHandle_TextureColorWidth, (float)pTexture->m_Width );
         }
 
         if( m_uHandle_TextureColorHeight != -1 )
         {
-            glUniform1f( m_uHandle_TextureColorHeight, pTexture->m_Height );
+            glUniform1f( m_uHandle_TextureColorHeight, (float)pTexture->m_Height );
         }
     }
 

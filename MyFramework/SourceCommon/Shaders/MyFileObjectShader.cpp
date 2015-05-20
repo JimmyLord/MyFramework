@@ -11,6 +11,8 @@
 
 MyFileObjectShader::MyFileObjectShader()
 {
+    ClassnameSanityCheck();
+
     m_IsAnIncludeFile = false;
 
     m_ScannedForIncludes = false;
@@ -64,8 +66,8 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
             if( result == 1 )
             {
                 MyFileObject* pIncludeFile = ::RequestFile( includefilename );
-                MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pIncludeFile );
-                if( pShaderFile == 0 )
+                MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pIncludeFile;
+                if( pShaderFile->IsA( "MyFileShader" ) == false )
                 {
                     LOGError( LOGTag, "MyFileObjectShader: Including a non-shader file\n" );
                     g_pFileManager->FreeFile( pIncludeFile );

@@ -89,6 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Box2D.pdb</ProgramDataBaseFileName>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -145,6 +146,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

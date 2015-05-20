@@ -21,8 +21,9 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 
 ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
-    MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pFile );
-    assert( pShaderFile );
+    assert( pFile->IsA( "MyFileShader" ) );
+
+    MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
 
     m_pFile = pShaderFile;
     m_pFile->AddRef();
@@ -147,10 +148,13 @@ BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numb
 
 void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
-    MyFileObjectShader* pFileShader = dynamic_cast<MyFileObjectShader*>( pFile );
-    assert( pFileShader );
-    if( pFileShader == 0 )
+    if( pFile->IsA( "MyFileShader" ) == false )
+    {
+        assert( false );
         return;
+    }
+
+    MyFileObjectShader* pFileShader = (MyFileObjectShader*)pFile;
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {

@@ -45,6 +45,7 @@ public:
 public:
     MyFileObject();
     ~MyFileObject();
+    SetClassnameBase( "MyFileObject" ); // only first 8 character count.
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);

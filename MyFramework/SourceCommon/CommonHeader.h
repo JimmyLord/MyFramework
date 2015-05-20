@@ -89,6 +89,7 @@
 #include "JSON/cJSONHelpers.h"
 
 #include "DataTypes/CPPList.h"
+#include "Helpers/TypeInfo.h"
 #include "Helpers/RefCount.h"
 #include "Helpers/MyMemory.h"
 #include "Helpers/Utility.h"

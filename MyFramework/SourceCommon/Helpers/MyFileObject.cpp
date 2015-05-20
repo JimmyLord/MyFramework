@@ -72,6 +72,8 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
 
 MyFileObject::MyFileObject()
 {
+    ClassnameSanityCheck();
+
     m_FullPath = 0;
     m_FilenameWithoutExtension = 0;
     m_ExtensionWithDot = 0;

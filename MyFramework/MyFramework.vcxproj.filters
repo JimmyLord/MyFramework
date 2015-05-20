@@ -543,6 +543,9 @@
     <ClCompile Include="SourceCommon\Textures\MaterialManager.cpp">
       <Filter>Source\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\TypeInfo.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1165,6 +1168,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Textures\MaterialManager.h">
       <Filter>Source\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\TypeInfo.h">
+      <Filter>Source\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -41,6 +41,7 @@ public:
 public:
     MyFileObjectShader();
     ~MyFileObjectShader();
+    SetClassnameWithParent( "MyFileShader", MyFileObject ); // only first 8 character count.
 
     void CheckFileForIncludesAndAddToList();
     bool AreAllIncludesLoaded();

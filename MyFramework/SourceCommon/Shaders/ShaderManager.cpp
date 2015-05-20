@@ -147,10 +147,15 @@ void BaseShader::LoadFromFile()
     char tempfilename[MAX_PATH];
     sprintf_s( tempfilename, MAX_PATH, "%s.glsl", m_pFilename );
     MyFileObject* pFile = RequestFile( tempfilename );
-    m_pFile = dynamic_cast<MyFileObjectShader*>( pFile );
-    assert( m_pFile != 0 );
-    if( m_pFile == 0 )
+    if( pFile->IsA( "MyFileShader" ) )
+    {
+        m_pFile = (MyFileObjectShader*)pFile;
+    }
+    else
+    {
+        assert( false );
         g_pFileManager->FreeFile( pFile );
+    }
 #endif
 }
 

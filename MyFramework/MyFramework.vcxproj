@@ -971,6 +971,7 @@
       <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1130,6 +1131,7 @@
       <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1364,6 +1366,7 @@
       <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1494,6 +1497,7 @@
       <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -4038,6 +4042,7 @@
     <ClCompile Include="SourceCommon\Helpers\MyMemory.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTime.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp" />
+    <ClCompile Include="SourceCommon\Helpers\TypeInfo.cpp" />
     <ClCompile Include="SourceCommon\JSON\cJSONHelpers.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyAnimation.cpp" />
     <ClCompile Include="SourceCommon\Meshes\BufferManager.cpp" />
@@ -7295,6 +7300,7 @@
     <ClInclude Include="SourceCommon\Helpers\MyTime.h" />
     <ClInclude Include="SourceCommon\Helpers\MyTweener.h" />
     <ClInclude Include="SourceCommon\Helpers\RefCount.h" />
+    <ClInclude Include="SourceCommon\Helpers\TypeInfo.h" />
     <ClInclude Include="SourceCommon\Helpers\Utility.h" />
     <ClInclude Include="SourceCommon\JSON\cJSONHelpers.h" />
     <ClInclude Include="SourceCommon\Meshes\MyAnimation.h" />

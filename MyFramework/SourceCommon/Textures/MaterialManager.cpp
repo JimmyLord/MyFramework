@@ -98,13 +98,16 @@ void MaterialDefinition::ImportFromFile()
             else
             {
                 MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
-                MyFileObjectShader* pShaderFile = dynamic_cast<MyFileObjectShader*>( pFile );
-                assert( pShaderFile );
-                if( pShaderFile )
+                if( pFile->IsA( "MyFileShader" ) )
                 {
+                    MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
                     pShaderGroup = MyNew ShaderGroup( pShaderFile );
                     SetShader( pShaderGroup );
                     pShaderGroup->Release();
+                }
+                else
+                {
+                    assert( false );
                 }
                 pFile->Release();
             }

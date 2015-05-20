@@ -62,7 +62,7 @@ MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef
 
 char* LoadFile(const char* filepath, int* length)
 {
-    LOGInfo( LOGTag, ">>> LoadFile - Loading %s", filepath );
+    LOGInfo( LOGTag, ">>>>>>>>>>>>>>>> LoadFile - Loading %s", filepath );
 
     if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
     {
