@@ -8,7 +8,6 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include <assert.h>
 
 #if MYFW_WINDOWS
 
@@ -60,15 +59,15 @@ void ValidateAllocations(bool AssertOnAnyAllocation)
     for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )
     {
         MemObject* obj = (MemObject*)pNode;
-        assert( obj->m_size < 200000 );
-        assert( obj->m_type < 3 );
-        assert( obj->m_line < 2500 );
-        assert( obj->Next != NULL );
-        assert( obj->Prev != NULL );
+        MyAssert( obj->m_size < 200000 );
+        MyAssert( obj->m_type < 3 );
+        MyAssert( obj->m_line < 2500 );
+        MyAssert( obj->Next != NULL );
+        MyAssert( obj->Prev != NULL );
 
         LOGInfo( LOGTag, "%s(%d):(%d) %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
         if( AssertOnAnyAllocation )
-            assert( false );
+            MyAssert( false );
     }
     LOGInfo( LOGTag, "End dumping unfreed memory allocations.\n" );
 #endif
@@ -138,7 +137,7 @@ void* operator new(size_t size, char* file, unsigned long line)
     if( g_pAllocationList == (AllocationList*)1 )
         g_pAllocationList = 0;
 
-    assert( file != 0 );
+    MyAssert( file != 0 );
     //if( file == 0 && size == 380 )
     //    int bp = 1;
 
@@ -150,7 +149,7 @@ void* operator new(size_t size, char* file, unsigned long line)
     mo->m_allocationcount = AllocatedRamCount;
     if( g_pAllocationList == 0 )
     {
-        assert( AllocatedRamCount == 0 );
+        MyAssert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
@@ -160,7 +159,7 @@ void* operator new(size_t size, char* file, unsigned long line)
 
     if( mo->m_file == 0 )
     {
-        //assert( false );
+        //MyAssert( false );
         //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
@@ -191,7 +190,7 @@ void* operator new[](size_t size, char* file, unsigned long line)
     mo->m_allocationcount = AllocatedRamCount;
     if( g_pAllocationList == 0 )
     {
-        assert( AllocatedRamCount == 0 );
+        MyAssert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
@@ -201,7 +200,7 @@ void* operator new[](size_t size, char* file, unsigned long line)
 
     if( mo->m_file == 0 )
     {
-        //assert( false );
+        //MyAssert( false );
         //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
@@ -235,7 +234,7 @@ void* operator new(size_t size)
     mo->m_allocationcount = AllocatedRamCount;
     if( g_pAllocationList == 0 )
     {
-        assert( AllocatedRamCount == 0 );
+        MyAssert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
@@ -245,7 +244,7 @@ void* operator new(size_t size)
 
     if( mo->m_file == 0 )
     {
-        //assert( false );
+        //MyAssert( false );
         //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
@@ -265,7 +264,7 @@ void operator delete(void* m)
 
     MemObject* mo = (MemObject*)(((char*)m) - sizeof(MemObject));
     size_t size = mo->m_size;
-    assert( mo->m_type == newtype_reg );
+    MyAssert( mo->m_type == newtype_reg );
     //if( mo->m_type == newtype_reg )
     {
         if( mo->m_allocationcount == 0 )
@@ -310,7 +309,7 @@ void* operator new[](size_t size)
     mo->m_allocationcount = AllocatedRamCount;
     if( g_pAllocationList == 0 )
     {
-        assert( AllocatedRamCount == 0 );
+        MyAssert( AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
         mo->Next = 0;
         mo->Prev = 0;
@@ -320,7 +319,7 @@ void* operator new[](size_t size)
 
     if( mo->m_file == 0 )
     {
-        //assert( false );
+        //MyAssert( false );
         //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
     }
 
@@ -340,7 +339,7 @@ void operator delete[](void* m)
 
     MemObject* mo = (MemObject*)( ((char*)m) - sizeof(MemObject) );
     size_t size = mo->m_size;
-    assert( mo->m_type == newtype_array );
+    MyAssert( mo->m_type == newtype_array );
     //if( mo->m_type == newtype_array )
     {
         if( mo->m_allocationcount == 0 )

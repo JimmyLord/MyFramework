@@ -90,7 +90,7 @@ TextureManager::~TextureManager()
 
 TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, int minfilter, int magfilter, int wraps, int wrapt)
 {
-    assert( texturefilename );
+    MyAssert( texturefilename );
 
     LOGInfo( LOGTag, "CreateTexture - %s\n", texturefilename );
 
@@ -128,8 +128,8 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     m_TexturesStillLoading.AddTail( pTextureDef );
 
     // if the file load hasn't started... start the file load.
-    assert( pTextureDef->m_pFile == 0 );
-#if MYFW_ANDROID
+    MyAssert( pTextureDef->m_pFile == 0 );
+#if 0 //MYFW_ANDROID
     //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
     if( pTextureDef->m_pFile == 0 )
     {
@@ -167,7 +167,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
 // return true if new texture was needed.
 bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
 {
-    //assert( width > 0 && height > 0 );
+    //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
         return false;
     //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
@@ -248,7 +248,7 @@ void TextureManager::Tick()
         //LOGInfo( LOGTag, "Loading Texture: %s\n", pTextureDef->m_Filename );
 
         // if we have an opengl texture, then nothing to do.  this shouldn't happen, loaded textures should be in "m_LoadedTextures".
-        assert( pTextureDef->m_TextureID == 0 );
+        MyAssert( pTextureDef->m_TextureID == 0 );
         if( pTextureDef->m_TextureID != 0 )
         {
             LOGInfo( LOGTag, "Loading Texture: Already had a texture id?!? pTextureDef->m_TextureID != 0\n" );
@@ -257,7 +257,7 @@ void TextureManager::Tick()
 
         bool textureloaded = false;
 
-#if MYFW_ANDROID
+#if 0 //MYFW_ANDROID
         //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
         if( pTextureDef->m_pFile == 0 )
         {
@@ -266,7 +266,7 @@ void TextureManager::Tick()
         }
         else
         {
-            //LOGInfo( LOGTag, "Loading Texture: calling Android_LoadTextureFromMemory\n" );
+            LOGInfo( LOGTag, "Loading Texture: calling Android_LoadTextureFromMemory\n" );
             pTextureDef->m_TextureID = Android_LoadTextureFromMemory( pTextureDef );
             textureloaded = true;
         }
@@ -296,7 +296,7 @@ void TextureManager::Tick()
 
             if( pTextureDef->m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
             {
-                LOGError( LOGTag, "File load failed\n" );
+                LOGError( LOGTag, "File load failed %s\n", pTextureDef->m_Filename );
                 SAFE_DELETE( pTextureDef );
             }
         }
@@ -304,6 +304,8 @@ void TextureManager::Tick()
 
         if( textureloaded )
         {
+            LOGInfo( LOGTag, "textureloaded %s\n", pTextureDef->m_Filename );
+
             // by default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
             if( pTextureDef->QueryFreeWhenCreated() )
                 g_pFileManager->FreeFile( pTextureDef->m_pFile );
@@ -315,6 +317,8 @@ void TextureManager::Tick()
 #if MYFW_USING_WX
             g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnDrag );
 #endif
+
+            LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
         }
     }
 }
@@ -352,7 +356,7 @@ void TextureManager::FreeAllTextures(bool shuttingdown)
         TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
         pNode = pNode->GetNext();
 
-        assert( pTextureDef->GetRefCount() == 1 );
+        MyAssert( pTextureDef->GetRefCount() == 1 );
         pTextureDef->Release();
     }
 
@@ -361,7 +365,7 @@ void TextureManager::FreeAllTextures(bool shuttingdown)
         TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
         pNode = pNode->GetNext();
 
-        assert( pTextureDef->GetRefCount() == 1 );
+        MyAssert( pTextureDef->GetRefCount() == 1 );
         pTextureDef->Release();
     }
 
@@ -372,7 +376,7 @@ void TextureManager::FreeAllTextures(bool shuttingdown)
 
         if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
         {
-            assert( pFBODef->GetRefCount() == 1 );
+            MyAssert( pFBODef->GetRefCount() == 1 );
             pFBODef->Release();
         }
     }
@@ -384,7 +388,7 @@ void TextureManager::FreeAllTextures(bool shuttingdown)
 
         if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
         {
-            assert( pFBODef->GetRefCount() == 1 );
+            MyAssert( pFBODef->GetRefCount() == 1 );
             pFBODef->Release();
         }
     }

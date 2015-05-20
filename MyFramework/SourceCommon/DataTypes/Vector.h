@@ -103,7 +103,7 @@ public:
     inline Vector3 operator +=(const Vector3& o) { this->x += o.x; this->y += o.y; this->z += o.z; return *this; }
     inline Vector3 operator -=(const Vector3& o) { this->x -= o.x; this->y -= o.y; this->z -= o.z; return *this; }
 
-    float& operator[] (int i) { if( i == 0 ) return x; if( i == 1 ) return y; if( i == 2 ) return z; assert(false); return x; }
+    float& operator[] (int i) { if( i == 0 ) return x; if( i == 1 ) return y; if( i == 2 ) return z; MyAssert(false); return x; }
 
     //inline void operator =(const Vector2& o) { x = o.x; y = o.y; z = 0; } // couldn't make this work, used a constructor instead.
 };

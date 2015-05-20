@@ -64,7 +64,7 @@ BufferDefinition::BufferDefinition()
 
 BufferDefinition::~BufferDefinition()
 {
-    assert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete BufferDefinition objects.
+    MyAssert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete BufferDefinition objects.
 
     Invalidate( true );
     SAFE_DELETE_ARRAY( m_pData );
@@ -79,7 +79,7 @@ BufferDefinition::~BufferDefinition()
 
 void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild)
 {
-    //assert( g_pGameCore->m_GLSurfaceIsValid );
+    //MyAssert( g_pGameCore->m_GLSurfaceIsValid );
     if( g_pGameCore->m_GLSurfaceIsValid == false )
         return;
 
@@ -117,7 +117,7 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
 
 #if _DEBUG && MYFW_WINDOWS
         // Buffer shouldn't be updated twice in one frame, might cause stall.
-        //assert( m_DEBUG_LastFrameUpdated != g_GLStats.m_NumFramesDrawn );
+        //MyAssert( m_DEBUG_LastFrameUpdated != g_GLStats.m_NumFramesDrawn );
         if( m_DEBUG_LastFrameUpdated == g_GLStats.m_NumFramesDrawn )
         {
             int bp = 1;
@@ -189,13 +189,13 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
 
 void BufferDefinition::CreateAndBindVAO()
 {
-    assert( glBindVertexArray != 0 );
+    MyAssert( glBindVertexArray != 0 );
 
     if( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] == 0 )
 	{
         glGenVertexArrays( 1, &m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] );
 	}
-    assert( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] != 0 );
+    MyAssert( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] != 0 );
 
     m_CurrentVAOHandle[g_ActiveShaderPass] = m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex];
 
@@ -233,7 +233,7 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
 
 void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
-    assert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
+    MyAssert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
 
     if( datasize != m_DataSize )
     {
@@ -301,7 +301,7 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
 //
 //VAODefinition::~VAODefinition()
 //{
-//    assert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete VAODefinition objects.
+//    MyAssert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete VAODefinition objects.
 //
 //    Invalidate( true );
 //
@@ -321,13 +321,13 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
 //
 //void VAODefinition::Create()
 //{
-//    assert( m_Handle == 0 );
-//    assert( glGenVertexArrays != 0 );
+//    MyAssert( m_Handle == 0 );
+//    MyAssert( glGenVertexArrays != 0 );
 //
 //    //if( glGenVertexArrays != 0 )
 //    {
 //        glGenVertexArrays( 1, &m_Handle );
-//        assert( m_Handle != 0 );
+//        MyAssert( m_Handle != 0 );
 //        m_Initialized = true;
 //    }
 //}
@@ -395,7 +395,7 @@ void BufferManager::FreeAllBuffers()
     while( CPPListNode* pNode = m_Buffers.GetHead() )
     {
         LOGInfo( LOGTag, "Buffers weren't cleaned by their owners\n" );
-        assert( false );
+        MyAssert( false );
 
         BufferDefinition* pBuffer = (BufferDefinition*)pNode;
         while( pBuffer->GetRefCount() > 1 )
@@ -407,7 +407,7 @@ void BufferManager::FreeAllBuffers()
     //while( CPPListNode* pNode = m_VAOs.GetHead() )
     //{
     //    LOGInfo( LOGTag, "VAOs weren't cleaned by their owners\n" );
-    //    assert( false );
+    //    MyAssert( false );
 
     //    VAODefinition* pVAO = (VAODefinition*)pNode;
     //    while( pVAO->GetRefCount() > 1 )

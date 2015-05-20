@@ -151,7 +151,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 
 void PanelMemory::AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc)
 {
-    assert( pBufferDef != 0 );
+    MyAssert( pBufferDef != 0 );
 
     char tempstr[100];
 
@@ -249,7 +249,7 @@ void PanelMemory::UpdateRootNodeBufferCount()
 
 void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
 {
-    assert( pTextureDef != 0 );
+    MyAssert( pTextureDef != 0 );
 
     char tempstr[100];
 
@@ -334,7 +334,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
 
 void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
-    assert( pMaterial != 0 );
+    MyAssert( pMaterial != 0 );
 
     char tempstr[100];
 
@@ -405,7 +405,7 @@ void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
 
 void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
-    assert( pObject != 0 );
+    MyAssert( pObject != 0 );
 
     TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
     pData->m_pObject = pObject;
@@ -435,7 +435,7 @@ void PanelMemory::UpdateRootNodeMaterialCount()
 
 void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
-    assert( pFile != 0 );
+    MyAssert( pFile != 0 );
 
     char tempstr[100];
 
@@ -687,7 +687,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
 
 void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
 {
-    assert( pShaderGroup != 0 );
+    MyAssert( pShaderGroup != 0 );
 
     char tempstr[100];
 

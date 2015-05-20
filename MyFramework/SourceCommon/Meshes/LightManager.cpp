@@ -32,7 +32,7 @@ MyLight* LightManager::CreateLight()
 
 void LightManager::DestroyLight(MyLight* pLight)
 {
-    assert( pLight );
+    MyAssert( pLight );
 
     pLight->Remove();
     delete pLight;
@@ -40,7 +40,7 @@ void LightManager::DestroyLight(MyLight* pLight)
 
 int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray)
 {
-    assert( numtofind > 0 );
+    MyAssert( numtofind > 0 );
 
     if( numtofind > MAX_LIGHTS )
         numtofind = MAX_LIGHTS;

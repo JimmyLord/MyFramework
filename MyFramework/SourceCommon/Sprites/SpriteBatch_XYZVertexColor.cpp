@@ -20,15 +20,15 @@ SpriteBatch_XYZVertexColor::~SpriteBatch_XYZVertexColor()
 
 void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
 {
-    assert( m_pVertexBuffer == 0 );
+    MyAssert( m_pVertexBuffer == 0 );
 
     m_SpritesAllocated = numsprites;
 
     Vertex_Base* pVerts = (Vertex_Base*)MyNew Vertex_XYZUV_RGBA[numsprites*4];
-    assert( pVerts );
+    MyAssert( pVerts );
 
     GLushort* pIndices = MyNew GLushort[numsprites*6];
-    assert( pIndices );
+    MyAssert( pIndices );
 
     // allocate 2 empty buffers, will be filled by subbufferdata elsewhere.
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numsprites*4, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, "SpriteBatch_XYZVertexColor", "Verts" );
@@ -59,7 +59,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MySprite_XYZVertexColor* pSprite)
     //MyMatrix spriteTransform = pSprite->GetPosition();
     Vertex_XYZUV_RGBA* pBatchVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
 
-    //assert( m_NumSprites < m_SpritesAllocated - 1 );
+    //MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
     if( m_NumSprites >= m_SpritesAllocated - 1 )
     {
         LOGInfo( LOGTag, "m_NumSprites >= m_SpritesAllocated - 1\n" );
@@ -106,7 +106,7 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_XYZUV_RGBA)*m_NumSprites*4 );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     checkGlError( "pre MyBindBuffer" );
 

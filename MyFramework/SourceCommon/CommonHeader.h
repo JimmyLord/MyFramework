@@ -82,8 +82,9 @@
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
-#include <assert.h>
 #include <limits.h>
+
+#include "Helpers/MyAssert.h"
 
 #include "../../cJSON/cJSON.h"
 #include "JSON/cJSONHelpers.h"

@@ -23,7 +23,7 @@ MyFileObjectShader::~MyFileObjectShader()
 {
     for( int i=0; i<m_NumIncludes; i++ )
     {
-        assert( m_pIncludes[i].m_pIncludedFile != 0 );
+        MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
         g_pFileManager->FreeFile( m_pIncludes[i].m_pIncludedFile );
     }
@@ -36,7 +36,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
     m_ScannedForIncludes = true;
 
-    assert( m_FileLoadStatus == FileLoadStatus_Success );
+    MyAssert( m_FileLoadStatus == FileLoadStatus_Success );
 
     for( unsigned int i=0; i<m_FileLength; i++ )
     {
@@ -76,7 +76,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
                 pShaderFile->m_IsAnIncludeFile = true;
 
-                assert( m_NumIncludes < MAX_INCLUDES );
+                MyAssert( m_NumIncludes < MAX_INCLUDES );
                 m_pIncludes[m_NumIncludes].m_pIncludedFile = (MyFileObjectShader*)pIncludeFile;
                 m_pIncludes[m_NumIncludes].m_Include_StartIndex = i;
                 m_pIncludes[m_NumIncludes].m_Include_EndIndex = i + charsread;
@@ -90,7 +90,7 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
 {
     for( int i=0; i<m_NumIncludes; i++ )
     {
-        assert( m_pIncludes[i].m_pIncludedFile != 0 );
+        MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
         
         if( m_pIncludes[i].m_pIncludedFile->m_FileLoadStatus != FileLoadStatus_Success )
             return false;

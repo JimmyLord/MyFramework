@@ -21,7 +21,9 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 
 ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
-    assert( pFile->IsA( "MyFileShader" ) );
+    LOGInfo( LOGTag, "before assert MyFileShader %s\n", pFile->m_ExtensionWithDot );
+    MyAssert( pFile->IsA( "MyFileShader" ) );
+    LOGInfo( LOGTag, "before assert MyFileShader\n" );
 
     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
 
@@ -36,7 +38,7 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile)
 #if MYFW_USING_WX
     if( pShaderFile->m_IsAnIncludeFile == false )
     {
-        assert( m_pFile->m_FilenameWithoutExtension != 0 );
+        MyAssert( m_pFile->m_FilenameWithoutExtension != 0 );
         g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->m_FilenameWithoutExtension, StaticOnDrag );
     }
 #endif
@@ -150,7 +152,7 @@ void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
     if( pFile->IsA( "MyFileShader" ) == false )
     {
-        assert( false );
+        MyAssert( false );
         return;
     }
 
@@ -185,7 +187,7 @@ void ShaderGroupManager::AddShaderGroup(ShaderGroup* pShaderGroup)
 
 ShaderGroup* ShaderGroupManager::FindShaderGroupByName(const char* name)
 {
-    assert( name );
+    MyAssert( name );
 
     for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
     {
@@ -202,7 +204,7 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByName(const char* name)
 
 ShaderGroup* ShaderGroupManager::FindShaderGroupByFile(MyFileObject* pFile)
 {
-    assert( pFile );
+    MyAssert( pFile );
 
     for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
     {
@@ -219,7 +221,7 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFile(MyFileObject* pFile)
 
 ShaderGroup* ShaderGroupManager::FindShaderGroupByFilename(const char* fullpath)
 {
-    assert( fullpath );
+    MyAssert( fullpath );
 
     for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
     {

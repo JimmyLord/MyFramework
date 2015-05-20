@@ -132,7 +132,7 @@ int ReadIntAndMoveOn(char* buffer, int* index)
 
 Vector3 ParseVertex(char* buffer, int index)
 {
-    assert( buffer[index] == 'v' );
+    MyAssert( buffer[index] == 'v' );
 
     Vector3 outvector(0,0,0);
 
@@ -154,7 +154,7 @@ Vector3 ParseVertex(char* buffer, int index)
             float value = ReadFloatAndMoveOn( buffer, &index );
 
             if( count > 2 )
-                assert( value == 1 ); // seen "v 3.25000 -2.48000 14.0000 1.00000" in a file, not sure why 1 is there.
+                MyAssert( value == 1 ); // seen "v 3.25000 -2.48000 14.0000 1.00000" in a file, not sure why 1 is there.
             else
                 outvector[count] = value;
         }
@@ -172,7 +172,7 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 
     int trianglecount = 0;
 
-    assert( buffer[index] == 'f' );
+    MyAssert( buffer[index] == 'f' );
 
     // jump to the first number
     index = FindIndexOfFirstNonWhitespace( buffer, index+1 );
@@ -189,7 +189,7 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
     {
         if( buffer[index] == ' ' || buffer[index] == '\t' || buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == 0 )
         {
-            assert( numverts < 3 );
+            MyAssert( numverts < 3 );
 
             if( lastnumber > 0 )
             {
@@ -218,8 +218,8 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
         }
         else if( buffer[index] == '/' )
         {
-            assert( numverts < 3 );
-            assert( numattrs < 3 );
+            MyAssert( numverts < 3 );
+            MyAssert( numattrs < 3 );
 
             faceinfo.attributes[numverts][numattrs] = lastnumber;
             lastnumber = 0; // invalid index
@@ -239,9 +239,9 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 #if _DEBUG
 void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
 {
-    assert( pSubmeshList );
+    MyAssert( pSubmeshList );
 
-    assert( false ); // don't use this function, file i/o should be done through a RequestFile call.
+    MyAssert( false ); // don't use this function, file i/o should be done through a RequestFile call.
 
     long size;
     char* buffer = LoadFile( filename, &size );
@@ -270,8 +270,8 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
 
 void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
 {
-    assert( pSubmeshList );
-    assert( pSubmeshList->Length() == 0 );
+    MyAssert( pSubmeshList );
+    MyAssert( pSubmeshList->Length() == 0 );
 
     pSubmeshList->AllocateObjects( 1 );
     pSubmeshList->Add( MyNew MySubmesh() );
@@ -280,8 +280,8 @@ void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removedup
     BufferDefinition** ppVBO = &(*pSubmeshList)[0]->m_pVertexBuffer;
     BufferDefinition** ppIBO = &(*pSubmeshList)[0]->m_pIndexBuffer;
 
-    assert( ppVBO );
-    assert( ppIBO );
+    MyAssert( ppVBO );
+    MyAssert( ppIBO );
 
     // count the number of faces and each type of vertex attribute.
     int facecount = 0;
@@ -512,7 +512,7 @@ foundduplicate_skiptonextvert:
             }
             else if( numvertsinface == 4 )
             {
-                assert( false ); // should reach this code anymore, faces are broken up into triangles in ParseFaceInfo();
+                MyAssert( false ); // should reach this code anymore, faces are broken up into triangles in ParseFaceInfo();
                 SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
                 SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
@@ -523,7 +523,7 @@ foundduplicate_skiptonextvert:
             }
             else
             {
-                assert( false );
+                MyAssert( false );
             }
 
             vertcount += numvertsinface;

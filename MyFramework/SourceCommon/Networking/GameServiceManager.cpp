@@ -64,7 +64,7 @@ void GameServiceManager::AllocateEntries(unsigned int numentries)
         m_MatchmakingEntries.AddInactiveObject( MyNew GameMatchmakingEntry );
     }
 
-    assert( m_pWebRequestObject == 0 );
+    MyAssert( m_pWebRequestObject == 0 );
     m_pWebRequestObject = MyNew WebRequestObject;
 #if 1 //MYFW_NACL
     m_pWebRequestObject->Init( "www.flatheadgames.com", 80 );

@@ -65,7 +65,7 @@ void MySprite::Create(float spritew, float spriteh, float startu, float endu, fl
 
 void MySprite::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts)
 {
-    assert( m_SpriteIsStatic == false );
+    MyAssert( m_SpriteIsStatic == false );
 
     if( m_SpriteSize.x != spritew || m_SpriteSize.y != spriteh ||
         m_SpriteUVStart.x != startu || m_SpriteUVStart.y != startv ||
@@ -73,7 +73,7 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
         m_SpriteJustification != justificationflags )
     {
         if( spx != 0 || spy != 0 || epx != 1 || epy != 1 )
-            assert( false ); // subsections not implemented.
+            MyAssert( false ); // subsections not implemented.
 
         if( m_pVertexBuffer == 0 )
         {
@@ -104,7 +104,7 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
 
         // fill vertex buffer with data and mark it dirty.
         {
-            assert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
+            MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
             Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
             float uleft = startu;
@@ -179,7 +179,7 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
 
 void MySprite::CreateInPlace(const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
 {
-    assert( m_SpriteIsStatic == false );
+    MyAssert( m_SpriteIsStatic == false );
 
     if( m_SpriteSize.x != spritew || m_SpriteSize.y != spriteh ||
         m_SpriteUVStart.x != startu || m_SpriteUVStart.y != startv ||
@@ -212,7 +212,7 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
 
         // fill vertex buffer with data and mark it dirty.
         {
-            assert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
+            MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
             Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
             float uleft = startu;
@@ -368,7 +368,7 @@ void MySprite::FlipX()
 
 void MySprite::SetMaterial(MaterialDefinition* pMaterial)
 {
-    assert( pMaterial != 0 );
+    MyAssert( pMaterial != 0 );
 
     pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
@@ -384,13 +384,13 @@ bool MySprite::Setup(MyMatrix* matviewproj)
     if( m_pMaterial == 0 )
         return false;
 
-    assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     TextureDefinition* pTexture = GetTexture();
 
@@ -433,13 +433,13 @@ void MySprite::Draw(MyMatrix* matviewproj)
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
 
-    assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     TextureDefinition* pTexture = GetTexture();
 
@@ -458,7 +458,7 @@ void MySprite::Draw(MyMatrix* matviewproj)
 
 Vertex_Base* MySprite::GetVerts(bool markdirty)
 {
-    assert( m_pVertexBuffer );
+    MyAssert( m_pVertexBuffer );
 
     if( markdirty )
         m_pVertexBuffer->m_Dirty = true;

@@ -57,7 +57,7 @@ void WebRequestObject::RequestCloseConnection()
 
 void WebRequestObject::RequestStart(const char* page)
 {
-    assert( IsBusy() == false );
+    MyAssert( IsBusy() == false );
     if( IsBusy() )
         return;
 
@@ -73,7 +73,7 @@ void WebRequestObject::RequestStart(const char* page)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, int value)
 {
-    assert( IsBusy() == false );
+    MyAssert( IsBusy() == false );
     if( IsBusy() )
         return;
 
@@ -88,7 +88,7 @@ void WebRequestObject::RequestAddPair(const char* var, int value)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, const char* value)
 {
-    assert( IsBusy() == false );
+    MyAssert( IsBusy() == false );
     if( IsBusy() )
         return;
 
@@ -110,7 +110,7 @@ void WebRequestObject::RequestEnd()
 {
     LOGInfo( LOGTag, "WebRequestObject - RequestWebPage\n" );
 
-    assert( IsBusy() == false );
+    MyAssert( IsBusy() == false );
     if( IsBusy() )
         return;
 

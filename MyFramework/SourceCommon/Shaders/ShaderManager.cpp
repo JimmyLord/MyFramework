@@ -126,7 +126,7 @@ void BaseShader::CleanGLAllocations()
 
 void BaseShader::LoadFromFile(const char* filename)
 {
-    assert( filename != 0 );
+    MyAssert( filename != 0 );
     if( filename == 0 )
         return;
 
@@ -136,7 +136,7 @@ void BaseShader::LoadFromFile(const char* filename)
 
 void BaseShader::LoadFromFile()
 {
-    assert( m_pFile == 0 );
+    MyAssert( m_pFile == 0 );
 #if MYFW_WP8
     char tempfilename[MAX_PATH];
     sprintf_s( tempfilename, MAX_PATH, "%s.vertex.cso", m_pFilename );
@@ -153,7 +153,7 @@ void BaseShader::LoadFromFile()
     }
     else
     {
-        assert( false );
+        MyAssert( false );
         g_pFileManager->FreeFile( pFile );
     }
 #endif
@@ -161,7 +161,7 @@ void BaseShader::LoadFromFile()
 
 bool BaseShader::LoadAndCompile()
 {
-    assert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
+    MyAssert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
 
     // if we already failed to compile, don't try again.
     if( m_ShaderFailedToCompile )
@@ -296,7 +296,7 @@ void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, 
 
 void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
-    assert( false ); // no availabe with es 2.0, so avoid it for now.
+    MyAssert( false ); // no availabe with es 2.0, so avoid it for now.
     //if( index != -1 )
     //{
     //    MyEnableVertexAttribArray( index );

@@ -49,7 +49,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 {
     LOGInfo( LOGTag, "ParticleRenderer: Allocating %d Verts\n", numpoints );
 
-    assert( m_pVertexBuffer == 0 );
+    MyAssert( m_pVertexBuffer == 0 );
 
 #if USE_INDEXED_TRIANGLES
     unsigned int numverts = numpoints * 4;
@@ -84,7 +84,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 #else
             // This is insane, should be just changing cull winding order
             // fix if d3d is ever tested again.
-            assert( false );
+            MyAssert( false );
             // clockwise
             tempindices[i*6+0] = i*4+0;
             tempindices[i*6+1] = i*4+1;
@@ -108,7 +108,7 @@ void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float s
 
 void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float size)
 {
-    //assert( m_ParticleCount < m_NumVertsAllocated );
+    //MyAssert( m_ParticleCount < m_NumVertsAllocated );
     unsigned int vertexnum = m_ParticleCount;
 
 #if USE_INDEXED_TRIANGLES
@@ -160,7 +160,7 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
         }
 #else
         {
-            assert( false ); // not supported
+            MyAssert( false ); // not supported
             float screenw = (float)g_pGameCore->m_WindowWidth;
             float screenh = (float)g_pGameCore->m_WindowHeight;
 
@@ -247,7 +247,7 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_XYZUV_RGBA)*numverts );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
 #if USE_INDEXED_TRIANGLES
     if( ((Shader_Base*)m_pMaterial->GetShader()->GlobalPass())->ActivateAndProgramShader(
@@ -259,7 +259,7 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     }
 #else
     // not supporting point sprites anymore.
-    assert( false );
+    MyAssert( false );
     //if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
     //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
     //{

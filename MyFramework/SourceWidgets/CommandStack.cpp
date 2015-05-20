@@ -37,7 +37,7 @@ void CommandStack::ClearStacks()
 
 void CommandStack::Undo(unsigned int levels)
 {
-    assert( m_UndoStack.size() >= levels );
+    MyAssert( m_UndoStack.size() >= levels );
 
     for( unsigned int i=0; i<levels; i++ )
     {
@@ -53,7 +53,7 @@ void CommandStack::Undo(unsigned int levels)
 
 void CommandStack::Redo(unsigned int levels)
 {
-    assert( m_RedoStack.size() >= levels );
+    MyAssert( m_RedoStack.size() >= levels );
 
     for( unsigned int i=0; i<levels; i++ )
     {
@@ -76,7 +76,7 @@ void CommandStack::Do(EditorCommand* pCommand)
 
 void CommandStack::Add(EditorCommand* pCommand)
 {
-    assert( pCommand );
+    MyAssert( pCommand );
     if( pCommand == 0 )
         return;
 

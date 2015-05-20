@@ -24,7 +24,6 @@
 /// with a @a pp::Instance instance.
 ///
 
-#include <assert.h>
 #include <pthread.h>
 
 #include <algorithm>
@@ -59,7 +58,7 @@ public:
     /// The Graphics3DClient interfcace.
     virtual void Graphics3DContextLost()
     {
-        assert(!"Unexpectedly lost graphics context");
+        MyAssert(!"Unexpectedly lost graphics context");
     }
 
     /// Make @a this the current 3D context in @a instance.

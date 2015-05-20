@@ -32,7 +32,7 @@ MyFileObject* RequestFile(const char* filename)
     if( buffer == 0 )
     {
         LOGInfo( LOGTag, "*********** File not found: %s\n", filename );
-        //assert( false );
+        //MyAssert( false );
         file->m_LoadFailed = true;
     }
     else
@@ -45,7 +45,7 @@ MyFileObject* RequestFile(const char* filename)
 
 char* LoadFile(const char* filename, int* length)
 {
-    assert( false ); // migrate to g_pFileManager->RequestFile( filename );
+    MyAssert( false ); // migrate to g_pFileManager->RequestFile( filename );
 
     char* filecontents = 0;
 
@@ -195,7 +195,7 @@ GLuint LoadTexture(const char* filename)
     //}
     //else
     //{
-    //    assert( false );
+    //    MyAssert( false );
 
     //    // loading of the texture failed...why?
     //    glDisable( GL_TEXTURE_2D );

@@ -40,7 +40,7 @@ public:
 
     void AllocateObjects(unsigned int length)
     {
-        assert( m_ActiveObjects.Length() == 0 );
+        MyAssert( m_ActiveObjects.Length() == 0 );
         m_ActiveObjects.AllocateObjects(length);
         m_InactiveObjects.AllocateObjects(length);
     }
@@ -85,7 +85,7 @@ public:
         else
             removed = m_ActiveObjects.Remove( pObj );
 
-        assert( removed == true );
+        MyAssert( removed == true );
 
         m_InactiveObjects.Add( pObj );
     }

@@ -26,7 +26,6 @@ static int WSAGetLastError() { return errno; }
 //#include <cstdio>
 //#include <cstring>
 //#include <cstdarg>
-//#include <assert.h>
 //
 //#include <string>
 //#include <vector>
@@ -114,15 +113,15 @@ void WebRequestObject::Reset()
 
 void WebRequestObject::Init(const char* host, unsigned short port)
 {
-    assert( m_Initialized == false );
+    MyAssert( m_Initialized == false );
     if( m_Initialized )
         return;
 
-    assert( m_WaitingForGetHostByName == false );
+    MyAssert( m_WaitingForGetHostByName == false );
     if( m_WaitingForGetHostByName )
         return;
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -238,7 +237,7 @@ void* WebRequestObject::Thread_GetHostByName(void* obj)
 
 void WebRequestObject::RequestCloseConnection()
 {
-    assert( m_Sock >= 0 );
+    MyAssert( m_Sock >= 0 );
     if( m_Sock >= 0 )
         close( m_Sock );
     m_Sock = -1;
@@ -299,7 +298,7 @@ void WebRequestObject::CreateSocket()
 
 bool WebRequestObject::ConnectSocket()
 {
-    assert( m_Sock >= 0 );
+    MyAssert( m_Sock >= 0 );
     if( m_Sock == -1 )
     {
         LOGError( LOGTag, "WebRequestObject::ConnectSocket() m_Sock == -1\n" );
@@ -338,7 +337,7 @@ bool WebRequestObject::ConnectSocket()
 
 void WebRequestObject::RequestStart(const char* page)
 {
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -352,7 +351,7 @@ void WebRequestObject::RequestStart(const char* page)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, int value)
 {
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -365,7 +364,7 @@ void WebRequestObject::RequestAddPair(const char* var, int value)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, const char* value)
 {
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -385,7 +384,7 @@ void WebRequestObject::RequestEnd()
 {
     LOGInfo( LOGTag, "WebRequestObject - RequestWebPage\n" );
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -400,7 +399,7 @@ void WebRequestObject::RequestWebPage(const char* page, ...)
 {
     LOGInfo( LOGTag, "WebRequestObject - RequestWebPage\n" );
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -533,7 +532,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
             m_ResponseReady = true;
             m_RequestPending = false;
 
-            assert( m_Sock >= 0 );
+            MyAssert( m_Sock >= 0 );
             if( m_Sock >= 0 )
                 close( m_Sock );
             m_Sock = -1;
@@ -589,7 +588,7 @@ void WebRequestObject::InsertString(const char* string, int len)
 {
     if( m_CharactersReceived + len >= MAX_WebRequestLength - 1 )
     {
-        assert( false );
+        MyAssert( false );
         return;
     }
 

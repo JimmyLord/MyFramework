@@ -39,7 +39,7 @@ MyFileObject* RequestFile(const char* filename)
 
 char* LoadFile(const char* filename, int* length)
 {
-    assert( false ); // migrate to g_pFileManager->RequestFile( filename );
+    MyAssert( false ); // migrate to g_pFileManager->RequestFile( filename );
 
     char* filecontents = 0;
 
@@ -128,7 +128,7 @@ GLuint LoadTexture(const char* filename)
     //}
     //else
     //{
-    //    assert( false );
+    //    MyAssert( false );
 
     //    // loading of the texture failed...why?
     //    glDisable( GL_TEXTURE_2D );

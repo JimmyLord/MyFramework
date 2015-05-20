@@ -38,15 +38,15 @@ void SpriteBatch::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefiniti
 
 void SpriteBatch::AllocateVertices(int numsprites)
 {
-    assert( m_pVertexBuffer == 0 );
+    MyAssert( m_pVertexBuffer == 0 );
 
     m_SpritesAllocated = numsprites;
 
     Vertex_Base* pVerts = (Vertex_Base*)MyNew Vertex_Sprite[numsprites*4];
-    assert( pVerts );
+    MyAssert( pVerts );
 
     GLushort* pIndices = MyNew GLushort[numsprites*6];
-    assert( pIndices );
+    MyAssert( pIndices );
 
     // allocate 2 empty buffers, will be filled by subbufferdata elsewhere.
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*numsprites*4, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, "SpriteBatch", "Verts" );
@@ -72,7 +72,7 @@ void SpriteBatch::AddSprite(MySprite* pSprite)
     MyMatrix spriteTransform = pSprite->GetPosition();
     Vertex_Sprite* pBatchVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
-    assert( m_NumSprites < m_SpritesAllocated - 1 );
+    MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
     if( m_NumSprites >= m_SpritesAllocated - 1 )
         return;
 
@@ -107,7 +107,7 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_Sprite)*m_NumSprites*4 );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     //// update the vertex buffer with new verts data.
     //MyBindBuffer( GL_ARRAY_BUFFER, m_pVertexBuffer->m_CurrentBufferID );

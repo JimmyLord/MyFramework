@@ -41,7 +41,7 @@ public:
 
     void AllocateObjects(int length)
     {
-        assert( m_Objects == 0 );
+        MyAssert( m_Objects == 0 );
         if( length > 0 )
             m_Objects = MyNew MyType[length];
         m_Length = length;
@@ -57,11 +57,11 @@ public:
 
     bool InsertAtIndex(unsigned int index, MyType pObj)
     {
-        assert( m_Count < m_Length );
+        MyAssert( m_Count < m_Length );
         if( m_Count >= m_Length )
             return false;
 
-        assert( index <= m_Count );
+        MyAssert( index <= m_Count );
         if( index > m_Count )
             return false;
 
@@ -78,7 +78,7 @@ public:
 
     bool Add(MyType pObj)
     {
-        assert( m_Count < m_Length );
+        MyAssert( m_Count < m_Length );
         if( m_Count >= m_Length )
             return false;
 
@@ -158,8 +158,8 @@ public:
 
     void BlockFill(void* ptr, unsigned int size, unsigned int count)
     {
-        assert( m_Count == 0 );
-        assert( size == sizeof(MyType) * count );
+        MyAssert( m_Count == 0 );
+        MyAssert( size == sizeof(MyType) * count );
         memcpy( m_Objects, ptr, size );
         m_Count = count;
     }

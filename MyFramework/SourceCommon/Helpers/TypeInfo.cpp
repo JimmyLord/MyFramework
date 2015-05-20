@@ -16,7 +16,7 @@ void RegisterClassname(const char* name)
 {
     //assert if there's any trouble with this name
 
-    assert( strlen(name) >= 8 );
+    MyAssert( strlen(name) >= 8 );
 }
 
 class baseclass

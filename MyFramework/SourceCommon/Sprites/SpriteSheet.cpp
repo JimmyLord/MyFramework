@@ -99,13 +99,13 @@ void SpriteSheet::Tick(double TimePassed)
             subobj = cJSON_GetObjectItem( root, "width" ); if( subobj ) sheetw = (float)subobj->valueint;
             subobj = cJSON_GetObjectItem( root, "height" ); if( subobj ) sheeth = (float)subobj->valueint;
 
-            assert( sheetw >= 64 && sheeth >= 64 );
+            MyAssert( sheetw >= 64 && sheeth >= 64 );
 
             cJSON* files = cJSON_GetObjectItem( root, "Files" );
             if( files )
             {
                 int numfiles = cJSON_GetArraySize( files );
-                assert( numfiles > 0 );
+                MyAssert( numfiles > 0 );
                 if( numfiles > 0 )
                 {
                     m_pSpriteNames = MyNew char[numfiles * 64];
@@ -116,7 +116,7 @@ void SpriteSheet::Tick(double TimePassed)
                     {
                         cJSON* file = cJSON_GetArrayItem( files, i );
 
-                        assert( file );
+                        MyAssert( file );
                         if( file )
                         {
                             // "filename": "ChestClosed.png",
@@ -208,13 +208,13 @@ void SpriteSheet::Tick(double TimePassed)
                 subobj = cJSON_GetObjectItem( sizeobj, "w" ); if( subobj ) sheetw = (float)subobj->valueint;
                 subobj = cJSON_GetObjectItem( sizeobj, "h" ); if( subobj ) sheeth = (float)subobj->valueint;
 
-                assert( sheetw >= 64 && sheeth >= 64 );
+                MyAssert( sheetw >= 64 && sheeth >= 64 );
 
                 cJSON* frames = cJSON_GetObjectItem( root, "frames" );
                 if( frames )
                 {
                     int numframes = cJSON_GetArraySize( frames );
-                    assert( numframes > 0 );
+                    MyAssert( numframes > 0 );
                     if( numframes > 0 )
                     {
                         m_pSpriteNames = MyNew char[numframes * 64];
@@ -225,7 +225,7 @@ void SpriteSheet::Tick(double TimePassed)
                         {
                             cJSON* frame = cJSON_GetArrayItem( frames, i );
 
-                            assert( frame );
+                            MyAssert( frame );
                             if( frame )
                             {
                                 // "filename": "Circle.png",
@@ -299,7 +299,7 @@ void SpriteSheet::CreateSprites(int numsprites)
 
 int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
 {
-    assert( name );
+    MyAssert( name );
     if( name == 0 )
         return -1;
 
@@ -332,7 +332,7 @@ MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
     buffer[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
 
     int index = GetSpriteIndexByName( buffer );
-    assert( index != -1 );
+    MyAssert( index != -1 );
 
     if( index == -1 )
         return 0;

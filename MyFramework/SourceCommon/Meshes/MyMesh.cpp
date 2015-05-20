@@ -165,7 +165,7 @@ void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
 
 void MyMesh::CreateSubmeshes(int numsubmeshes)
 {
-    assert( m_SubmeshList.Length() == 0 );
+    MyAssert( m_SubmeshList.Length() == 0 );
     m_SubmeshList.AllocateObjects( numsubmeshes );
     for( int i=0; i<numsubmeshes; i++ )
         m_SubmeshList.Add( MyNew MySubmesh() );
@@ -173,11 +173,11 @@ void MyMesh::CreateSubmeshes(int numsubmeshes)
 
 void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
 {
-    assert( m_SubmeshList.Length() == 0 );
+    MyAssert( m_SubmeshList.Length() == 0 );
 
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     GLenum usage;
     int numbuffers;
@@ -243,7 +243,7 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
 void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
 {
-    assert( pFile );
+    MyAssert( pFile );
 
     // if the requested file changed, then ditch the current one and load the new one.
     if( pFile != m_pSourceFile )
@@ -337,10 +337,10 @@ void MyMesh::GuessAndAssignAppropriateShader()
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
 {
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
-    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned short numverts = 24;
     unsigned int numindices = 36;
@@ -472,10 +472,10 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
 void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags)
 {
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
-    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned short numverts = 24;
     unsigned int numindices = 36;
@@ -614,7 +614,7 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
 
 void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR)
 {
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
@@ -670,10 +670,10 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
 void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv)
 {
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
-    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     float uperc, vperc;
 
@@ -958,7 +958,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     {
         CreateSubmeshes( 1 );
     }
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
     m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
     m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
@@ -1045,7 +1045,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 {
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
     // from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
 
@@ -1058,7 +1058,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
     {
         CreateSubmeshes( 1 );
     }
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
     m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
     m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
@@ -1281,10 +1281,10 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {
     CreateSubmeshes( 1 );
-    assert( m_SubmeshList.Count() == 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
 
-    assert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    assert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
 
     unsigned char numverts = (unsigned char)((halfnumbars*2+1) * 2 * 2);
     unsigned int numindices = (halfnumbars*2+1) * 2 * 2; // halfnumbars*2+1centerline * 2axis * 2indicesperline.
@@ -1364,7 +1364,7 @@ void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
     //if( m_SubmeshList.Count() == 0 )
     //    return;
 
-    assert( submeshindex < (int)m_SubmeshList.Count() );
+    MyAssert( submeshindex < (int)m_SubmeshList.Count() );
 
     if( submeshindex == -1 )
     {
@@ -1419,13 +1419,13 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         if( NumIndicesToDraw == 0 )
             return;
 
-        assert( pVertexBuffer );
+        MyAssert( pVertexBuffer );
 
         if( pVertexBuffer->m_Dirty )
             pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
         if( pIndexBuffer && pIndexBuffer->m_Dirty )
             pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
-        assert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
+        MyAssert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
 
         checkGlError( "Drawing Mesh Rebuild()" );
 
@@ -1586,7 +1586,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
 
 void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform)
 {
-    assert( nodeindex < m_pSkeletonNodeTree.Count() );
+    MyAssert( nodeindex < m_pSkeletonNodeTree.Count() );
 
     MySkeletonNode* pNode = &m_pSkeletonNodeTree[nodeindex];
 

@@ -38,7 +38,7 @@ void MySprite_XYZVertexColor::Create(float spritew, float spriteh, float startu,
 
 void MySprite_XYZVertexColor::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts)
 {
-    assert( m_SpriteIsStatic == false );
+    MyAssert( m_SpriteIsStatic == false );
 
     m_SpriteSize.Set( spritew, spriteh );
 
@@ -70,7 +70,7 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
     }
 
     // fill vertex buffer with data and mark it dirty.
-    assert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
+    MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
     Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
     m_pVertexBuffer->m_Dirty = true;
 
@@ -173,13 +173,13 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
     if( m_pMaterial == 0 )
         return;
 
-    assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     TextureDefinition* pTexture = GetTexture();
 
@@ -207,7 +207,7 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr )
 {
-    assert( m_pVertexBuffer->m_pData );
+    MyAssert( m_pVertexBuffer->m_pData );
 
     Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
     m_pVertexBuffer->m_Dirty = true;
@@ -235,7 +235,7 @@ void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, Color
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr )
 {
-    assert( m_pVertexBuffer->m_pData );
+    MyAssert( m_pVertexBuffer->m_pData );
 
     Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
     m_pVertexBuffer->m_Dirty = true;

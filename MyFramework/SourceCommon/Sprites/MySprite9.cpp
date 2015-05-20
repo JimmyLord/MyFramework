@@ -119,7 +119,7 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
 
     // fill vertex buffer with data and mark it dirty.
     {
-        assert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
+        MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
         Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
         for( int y=0; y<4; y++ )
@@ -161,13 +161,13 @@ void MySprite9::Draw(MyMatrix* matviewproj)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
 
-    assert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
     if( m_pVertexBuffer->m_Dirty )
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    assert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader )

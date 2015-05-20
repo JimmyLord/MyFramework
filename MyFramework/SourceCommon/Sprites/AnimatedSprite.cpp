@@ -88,7 +88,7 @@ AnimatedSpriteDefinition::~AnimatedSpriteDefinition()
 
 void AnimatedSpriteDefinition::SetSpriteForFrame(unsigned int framenum, MySprite* pSprite, double holdtime)
 {
-    assert( framenum < m_MaxFrames );
+    MyAssert( framenum < m_MaxFrames );
     if( framenum >= m_MaxFrames )
         return;
 
@@ -109,7 +109,7 @@ void AnimatedSpriteDefinition::SetSpriteForFrame(unsigned int framenum, MySprite
 
 void AnimatedSpriteDefinition::SetAnchorsForFrame(unsigned int frame, AnimatedSpriteAnchorPoint* pAnchors, unsigned int numanchors)
 {
-    assert( numanchors <= m_NumAnchorsPerFrame );
+    MyAssert( numanchors <= m_NumAnchorsPerFrame );
 
     for( unsigned int i=0; i<numanchors; i++ )
     {
@@ -119,7 +119,7 @@ void AnimatedSpriteDefinition::SetAnchorsForFrame(unsigned int frame, AnimatedSp
 
 void AnimatedSpriteDefinition::SetAnchorsForFrame(unsigned int frame, Vector3* pVectors, unsigned int numanchors)
 {
-    assert( numanchors <= m_NumAnchorsPerFrame );
+    MyAssert( numanchors <= m_NumAnchorsPerFrame );
 
     for( unsigned int i=0; i<numanchors; i++ )
     {
@@ -240,11 +240,11 @@ MySprite* AnimatedSpriteDefinition::GetSprite(double time)
 
 AnimatedSpriteAnchorPoint* AnimatedSpriteDefinition::GetAnchor(double time, unsigned int anchornum)
 {
-    assert( anchornum < m_NumAnchorsPerFrame );
+    MyAssert( anchornum < m_NumAnchorsPerFrame );
 
     unsigned int frame = GetFrame(time);
 
-    assert( frame < m_NumAnchorFrames );
+    MyAssert( frame < m_NumAnchorFrames );
 
     return &m_pAnchorPoints[frame*m_NumAnchorsPerFrame + anchornum];
 }
@@ -444,7 +444,7 @@ void AnimatedSpriteInstance::Tick(double TimePassed)
 
 MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite)
 {
-    assert( m_pAnimDef );
+    MyAssert( m_pAnimDef );
     if( m_pAnimDef == 0 )
         return 0;
     
@@ -465,7 +465,7 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     else
         pSprite = m_pAnimDef->GetSprite( m_TimeFromStart );
 
-    assert( pSprite );
+    MyAssert( pSprite );
     if( pSprite == 0 )
         return 0;
 
@@ -494,7 +494,7 @@ void AnimatedSpriteInstance::SetBaseTransform(MyMatrix& mat)
 
 bool AnimatedSpriteInstance::IsFinished()
 {
-    assert( m_pAnimDef );
+    MyAssert( m_pAnimDef );
 
     if( m_TimeFromStart > m_pAnimDef->m_TimeOfLastKey )
         return true;
@@ -504,7 +504,7 @@ bool AnimatedSpriteInstance::IsFinished()
 
 AnimatedSpriteAnchorPoint* AnimatedSpriteInstance::GetAnchor(unsigned int anchornum)
 {
-    assert( m_pAnimDef );
+    MyAssert( m_pAnimDef );
 
     return m_pAnimDef->GetAnchor( m_TimeFromStart, anchornum );
 }

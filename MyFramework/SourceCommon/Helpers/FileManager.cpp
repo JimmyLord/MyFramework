@@ -22,22 +22,22 @@ FileManager::FileManager()
 
 FileManager::~FileManager()
 {
-    assert( m_FilesLoaded.GetHead() == 0 );
-    assert( m_FilesStillLoading.GetHead() == 0 );
+    MyAssert( m_FilesLoaded.GetHead() == 0 );
+    MyAssert( m_FilesStillLoading.GetHead() == 0 );
     //FreeAllFiles();
 }
 
 void FileManager::FreeFile(MyFileObject* pFile)
 {
-    assert( pFile );
+    MyAssert( pFile );
     pFile->Release(); // file's are refcounted, so release a reference to it.
 }
 
 //void FileManager::FreeAllFiles()
 //{
 //    // TODO: remove this function... why did I put this here..
-//    assert( m_FilesLoaded.GetHead() == 0 );
-//    assert( m_FilesStillLoading.GetHead() == 0 );
+//    MyAssert( m_FilesLoaded.GetHead() == 0 );
+//    MyAssert( m_FilesStillLoading.GetHead() == 0 );
 //}
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
@@ -96,7 +96,7 @@ MyFileObject* FileManager::RequestFile(const char* filename)
 
 void FileManager::ReloadFile(MyFileObject* pFile)
 {
-    assert( pFile );
+    MyAssert( pFile );
 
     pFile->UnloadContents();
     m_FilesStillLoading.MoveTail( pFile );
@@ -135,7 +135,7 @@ void FileManager::Tick()
         //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
         // sanity check, make sure file isn't already loaded.
-        assert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
+        MyAssert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
 
         // if the file already failed to load, give up on it.
         //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
@@ -269,10 +269,10 @@ void MySaveFileObject_FILE::Reset()
 
 void MySaveFileObject_FILE::WriteString(const char* path, const char* filename, const char* string)
 {
-    assert( path != 0 );
-    assert( filename != 0 );
-    assert( string != 0 );
-    assert( m_pFile == 0 );
+    MyAssert( path != 0 );
+    MyAssert( filename != 0 );
+    MyAssert( string != 0 );
+    MyAssert( m_pFile == 0 );
 
     if( m_pFile != 0 )
         return;
@@ -288,10 +288,10 @@ void MySaveFileObject_FILE::WriteString(const char* path, const char* filename, 
 
 void MySaveFileObject_FILE::ReadString(const char* path, const char* filename)
 {
-    assert( m_SaveFileOp == SFO_None );
-    assert( path != 0 );
-    assert( filename != 0 );
-    assert( m_pFile == 0 );
+    MyAssert( m_SaveFileOp == SFO_None );
+    MyAssert( path != 0 );
+    MyAssert( filename != 0 );
+    MyAssert( m_pFile == 0 );
 
     m_pFile = OpenSavedDataFile( path, filename, "rb" );
 
@@ -301,7 +301,7 @@ void MySaveFileObject_FILE::ReadString(const char* path, const char* filename)
     }
     else
     {
-        assert( m_SaveFileOp == SFO_None );
+        MyAssert( m_SaveFileOp == SFO_None );
         m_SaveFileOp = SFO_Read;
         m_OpComplete = true;
     }
@@ -314,7 +314,7 @@ void MySaveFileObject_FILE::Tick()
     if( m_OpComplete == true )
         return;
 
-    assert( m_pFile != 0 );
+    MyAssert( m_pFile != 0 );
 
     if( m_SaveFileOp == SFO_Read )
     {
@@ -336,7 +336,7 @@ void MySaveFileObject_FILE::Tick()
 
     if( m_SaveFileOp == SFO_Write )
     {
-        assert( m_pObjectToWriteBuffer != 0 );
+        MyAssert( m_pObjectToWriteBuffer != 0 );
 
         int length = (int)strlen( m_pObjectToWriteBuffer );
         fwrite( m_pObjectToWriteBuffer, length, 1, m_pFile );
@@ -366,11 +366,11 @@ GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
     unsigned int width, height;
 
     unsigned int error = lodepng_decode32( &pngbuffer, &width, &height, buffer, length );
-    assert( error == 0 );
+    MyAssert( error == 0 );
 
     GLuint texhandle = 0;
     glGenTextures( 1, &texhandle );
-    assert( texhandle != 0 );
+    MyAssert( texhandle != 0 );
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, texhandle );
 

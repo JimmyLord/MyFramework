@@ -195,7 +195,7 @@ void NaCLFileObject::AppendDataBytes(const char* buffer, int32_t num_bytes)
     if( m_BytesRead + num_bytes > m_FileLength )
     {
         LOGInfo( LOGTag, "AppendDataBytes - m_BytesRead + num_bytes > m_FileLength %d + %d > %d\n", m_BytesRead, num_bytes, m_FileLength );
-        //assert( false );
+        //MyAssert( false );
         return;
     }
 

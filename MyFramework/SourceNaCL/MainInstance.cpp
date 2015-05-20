@@ -160,7 +160,7 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
         break;
 
     default:
-        assert(false);
+        MyAssert(false);
         return false;
     }
 

@@ -304,7 +304,7 @@ void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
 {
     m_LastInputMethodUsed = InputMethod_Pad;
 
-    assert( id >= 0 && id < GCBI_NumButtons );
+    MyAssert( id >= 0 && id < GCBI_NumButtons );
 
     if( action == GCBA_Down )
         m_ButtonsHeld[id] = true;

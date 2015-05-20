@@ -285,7 +285,7 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
 
 wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
 {
-    assert( pObject != 0 );
+    MyAssert( pObject != 0 );
 
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     //int count = (int)m_pTree_Objects->GetChildrenCount( idroot, false );
@@ -316,7 +316,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
 
 void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
 {
-    assert( pObject != 0 );
+    MyAssert( pObject != 0 );
 
     // get the root count before adding the item for check below.
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
@@ -334,7 +334,7 @@ void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallback pLe
 
 wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
 {
-    assert( pObject != 0 );
+    MyAssert( pObject != 0 );
 
     wxTreeItemId newid;
 
@@ -350,7 +350,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
         pData->m_pRightClickFunction = pRightClickFunction;
 
         newid = m_pTree_Objects->AppendItem( parentid, desc, -1, -1, pData );
-        assert( newid.IsOk() );
+        MyAssert( newid.IsOk() );
 
         // if inserting the first item, then expand the tree.
         if( count == 0 )

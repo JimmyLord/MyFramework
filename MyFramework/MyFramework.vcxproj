@@ -4038,6 +4038,7 @@
     <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp" />
     <ClCompile Include="SourceCommon\Helpers\FileManager.cpp" />
+    <ClCompile Include="SourceCommon\Helpers\MyAssert.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyFileObject.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyMemory.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTime.cpp" />
@@ -7295,6 +7296,7 @@
     <ClInclude Include="SourceCommon\Helpers\ExternalTools.h" />
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h" />
     <ClInclude Include="SourceCommon\Helpers\FileManager.h" />
+    <ClInclude Include="SourceCommon\Helpers\MyAssert.h" />
     <ClInclude Include="SourceCommon\Helpers\MyFileObject.h" />
     <ClInclude Include="SourceCommon\Helpers\MyMemory.h" />
     <ClInclude Include="SourceCommon\Helpers\MyTime.h" />

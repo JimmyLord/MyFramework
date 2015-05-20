@@ -9,7 +9,6 @@
 
 #include "CommonHeader.h"
 
-#include <assert.h>
 #include <screen/screen.h>
 #include <bps/navigator.h>
 #include <bps/screen.h>
@@ -243,7 +242,7 @@ void handleScreenEvent(bps_event_t *event)
 
 int bbmain(const char* UUID)
 {
-    assert( g_pGameCore );
+    MyAssert( g_pGameCore );
 
     int rc;
     int exit_application = 0;
@@ -342,7 +341,7 @@ int bbmain(const char* UUID)
             //    g_pGameCore->m_Settled = false;
 
             rc = bps_get_event( &event, timeout );
-            assert( rc == BPS_SUCCESS );
+            MyAssert( rc == BPS_SUCCESS );
 
             if( event )
             {

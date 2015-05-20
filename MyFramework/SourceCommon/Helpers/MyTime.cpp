@@ -44,7 +44,7 @@ double MyTime_GetSystemTime(bool realtime)
 #elif MYFW_BADA
     long long ticks = 0;
     result res = Osp::System::SystemTime::GetTicks( ticks );
-    assert( res == E_SUCCESS );
+    MyAssert( res == E_SUCCESS );
     return ticks / 1000.0;
 #endif
 

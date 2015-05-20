@@ -29,16 +29,24 @@
 MyFileObject* RequestFile(const char* filename)
 {
     // TODO: uncomment next line
-    //return g_pFileManager->RequestFile( filename );
+    return g_pFileManager->RequestFile( filename );
 
-    LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
+    //LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
 
-    int length = 0;
-    MyFileObject* file = MyNew MyFileObject;
-    char* buffer = LoadFile( filename, &length );
-    file->FakeFileLoad( buffer, length );
+    //MyFileObject* pFile = 0;
 
-    return file;
+    //int length = 0;
+    //
+    //int len = (int)strlen( filename );
+    //if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
+    //    pFile = MyNew MyFileObjectShader;
+    //else
+    //    pFile = MyNew MyFileObject;
+
+    //char* buffer = LoadFile( filename, &length );
+    //pFile->FakeFileLoad( buffer, length );
+
+    //return pFile;
 }
 
 MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef)

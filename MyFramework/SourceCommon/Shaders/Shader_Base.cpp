@@ -150,7 +150,7 @@ void Shader_Base::DeactivateShader(BufferDefinition* vbo)
 void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo)
 {
 #if USE_D3D
-    assert( false );
+    MyAssert( false );
     //UINT stride = sizeof(Vertex_Sprite);
     //UINT offset = 0;
     //g_pD3DContext->IASetVertexBuffers( 0, 1, g_D3DBufferObjects[vbo-1].m_Buffer.GetAddressOf(), &stride, &offset );
@@ -272,7 +272,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
         InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,r) );
         DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
         DisableAttributeArray( m_aHandle_BoneWeight, Vector4(1,0,0,0) );
-        //assert(false); // I stopped using point sprites, so this doesn't have a handle ATM;
+        //MyAssert(false); // I stopped using point sprites, so this doesn't have a handle ATM;
         //InitializeAttributeArray( m_aHandle_Size, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,size) );
     }
     else if( vertformat == VertexFormat_XYZUVNorm_RGBA )
@@ -354,7 +354,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     }
     else
     {
-        assert( false );
+        MyAssert( false );
     }
     // ADDING_NEW_VertexFormat
 
@@ -440,18 +440,18 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
 #endif
         }
 
-        //assert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
-        assert( vbo->m_VertexFormat != VertexFormat_None );
+        //MyAssert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
+        MyAssert( vbo->m_VertexFormat != VertexFormat_None );
         InitializeAttributeArrays( vbo->m_VertexFormat, vbo->m_pFormatDesc, vbo?vbo->m_CurrentBufferID:0, ibo?ibo->m_CurrentBufferID:0 );
     }
     else
     {
 #if _DEBUG && MYFW_WINDOWS
-        assert( vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == this ||
+        MyAssert( vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == this ||
                 this->DoVAORequirementsMatch( vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] ) );
-        assert( vbo->m_DEBUG_VBOUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == vbo->m_CurrentBufferID );
+        MyAssert( vbo->m_DEBUG_VBOUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == vbo->m_CurrentBufferID );
         if( ibo )
-            assert( vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
+            MyAssert( vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
 #endif
         glBindVertexArray( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] );
     }
@@ -460,7 +460,7 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
 void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess)
 {
 #if USE_D3D
-    assert( 0 );
+    MyAssert( 0 );
     //MyMatrix temp = *worldmatrix;
     //temp.Multiply( viewprojmatrix );
 
@@ -551,18 +551,18 @@ void Shader_Base::ProgramPointSize(float pointsize)
 void Shader_Base::ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix)
 {
 #if USE_D3D
-    assert( 0 );
+    MyAssert( 0 );
 #else
     if( m_uHandle_WSCameraPos != -1 )
     {
-        assert( campos != 0 );
+        MyAssert( campos != 0 );
         glUniform3f( m_uHandle_WSCameraPos, campos->x, campos->y, campos->z );
     }
 
     if( m_uHandle_LSCameraPos != -1 )
     {
-        assert( campos != 0 );
-        assert( inverseworldmatrix != 0 );
+        MyAssert( campos != 0 );
+        MyAssert( inverseworldmatrix != 0 );
 
         Vector3 LScampos = *inverseworldmatrix * *campos;
         glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
@@ -577,17 +577,17 @@ void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* invers
     if( numlights == 0 )
         return;
 
-    assert( numlights <= MAX_LIGHTS );
-    assert( lights );
+    MyAssert( numlights <= MAX_LIGHTS );
+    MyAssert( lights );
 
 #if USE_D3D
-    assert( 0 );
+    MyAssert( 0 );
 #else
     for( int i=0; i<numlights; i++ )
     {
         if( m_uHandle_LightPos[i] != -1 )
         {
-            //assert( inverseworldmatrix != 0 );
+            //MyAssert( inverseworldmatrix != 0 );
 
             //Vector3 LSlightpos = *inverseworldmatrix * lights[i].m_Position;
             //glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );

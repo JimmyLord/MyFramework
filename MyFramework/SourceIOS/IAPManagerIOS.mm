@@ -62,7 +62,7 @@ IAPManager* g_pIAPManager = 0;
 
 - (void)StartPurchase:(const char*)ProductID
 {
-    assert( m_Busy == false );
+    MyAssert( m_Busy == false );
     if( m_Busy == true )
         return;
 
@@ -170,7 +170,7 @@ IAPManager::IAPManager()
 {
     m_Initialized = false;
 
-    assert( g_pIAPInterface == 0 );
+    MyAssert( g_pIAPInterface == 0 );
     g_pIAPInterface = [IAPInterface new];
 
     m_Initialized = true;

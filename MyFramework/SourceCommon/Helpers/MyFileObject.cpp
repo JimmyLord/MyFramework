@@ -25,6 +25,10 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
 {
     FILE* filehandle;
 
+#if MYFW_ANDROID
+    return LoadFile( filename, length );
+#endif
+
 #if MYFW_WINDOWS
     const char* fullpath = filename;
 
@@ -102,7 +106,7 @@ MyFileObject::~MyFileObject()
 {
     // make sure you call ->Release.  don't delete a file object, it's refcounted.
 #if MYFW_WINDOWS
-    assert( Prev );
+    MyAssert( Prev );
 #endif
     if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
         Remove();
@@ -198,7 +202,7 @@ void MyFileObject::SetCustomLeftClickCallback(PanelObjectListCallback callback, 
 
 void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
 {
-    assert( buffer != 0 );
+    MyAssert( buffer != 0 );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
     int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
@@ -206,7 +210,7 @@ void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, ch
 
 void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
 {
-    assert( buffer != 0 );
+    MyAssert( buffer != 0 );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
     int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
@@ -214,7 +218,7 @@ void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const ch
 
 void MyFileObject::RequestFile(const char* filename)
 {
-    assert( filename != 0 );
+    MyAssert( filename != 0 );
     if( filename == 0 )
         return;
 
@@ -230,7 +234,7 @@ void MyFileObject::ParseName(const char* filename)
     SAFE_DELETE_ARRAY( m_ExtensionWithDot );
 
     int len = (int)strlen( filename );
-    assert( len > 0 );
+    MyAssert( len > 0 );
     if( len <= 0 )
         return;
 
@@ -351,7 +355,7 @@ bool MyFileObject::IsNewVersionAvailable()
 
 void MyFileObject::FakeFileLoad(char* buffer, int length)
 {
-    assert( buffer != 0 && length > 0 );
+    MyAssert( buffer != 0 && length > 0 );
     if( buffer == 0 || length <= 0 )
         return;
 

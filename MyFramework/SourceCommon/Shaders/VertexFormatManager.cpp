@@ -63,7 +63,7 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
 
     if( m_pDynamicVertexFormatDesc.Count() >= MAX_DYNAMIC_VERTEX_FORMATS )
     {
-        assert( false );
+        MyAssert( false );
         return 0; // pretty much guananteeing a crash on the other end!
     }
 
@@ -139,6 +139,6 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
 
     // ADDING_NEW_VertexFormat
 
-    //assert( false );
+    //MyAssert( false );
     //return VertexFormat_None;
 }

@@ -218,7 +218,7 @@ void MyMatrix::CreateFrustum(float left, float right, float bottom, float top, f
     float deltaY = top - bottom;
     float deltaZ = farZ - nearZ;
 
-    assert( nearZ > 0.0f && farZ > 0.0f && deltaX > 0.0f && deltaY > 0.0f && deltaZ > 0.0f );
+    MyAssert( nearZ > 0.0f && farZ > 0.0f && deltaX > 0.0f && deltaY > 0.0f && deltaZ > 0.0f );
 
     m11 = 2.0f * nearZ / deltaX;
     m12 = m13 = m14 = 0.0f;
@@ -261,7 +261,7 @@ void MyMatrix::CreateOrtho(float left, float right, float bottom, float top, flo
     float deltaY = (top - bottom);
     float deltaZ = (farZ - nearZ);
 
-    assert( (deltaX != 0.0f) && (deltaY != 0.0f) && (deltaZ != 0.0f) );
+    MyAssert( (deltaX != 0.0f) && (deltaY != 0.0f) && (deltaZ != 0.0f) );
 
     m11 = 2.0f / deltaX;
     m12 = m13 = m14 = 0;

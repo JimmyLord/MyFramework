@@ -30,7 +30,7 @@ public:
     }
     virtual ~RefCount()
     {
-        assert( m_RefCount == 0 );
+        MyAssert( m_RefCount == 0 );
     }
 
     unsigned int GetRefCount()

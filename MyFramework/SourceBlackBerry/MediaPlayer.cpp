@@ -50,7 +50,7 @@ void MediaPlayer::StartUpMediaPlayer()
     getcwd( workingdir, PATH_MAX );
     sprintf( audiofileurl, "file://%s/%s", workingdir, audiofiletoplay );
 
-    assert( m_pMediaPlayerConnectionHandle == 0 );
+    MyAssert( m_pMediaPlayerConnectionHandle == 0 );
     m_pMediaPlayerConnectionHandle = mmr_connect( 0 );
     if( m_pMediaPlayerConnectionHandle == 0 )
     {

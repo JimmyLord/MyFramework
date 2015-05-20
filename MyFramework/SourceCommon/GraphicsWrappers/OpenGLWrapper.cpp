@@ -55,7 +55,7 @@ void GLStats::EndFrame()
 
 void MyBindBuffer(GLenum target, GLuint buffer)
 {
-    assert( target >= GL_ARRAY_BUFFER && target <= GL_ELEMENT_ARRAY_BUFFER );
+    MyAssert( target >= GL_ARRAY_BUFFER && target <= GL_ELEMENT_ARRAY_BUFFER );
 
     // TODO: forget storing this for now... VAOs are messing the the values and breaking things, will need to rethink it.
     //if( g_CurrentGLBuffers[target - GL_ARRAY_BUFFER] == buffer )
@@ -67,7 +67,7 @@ void MyBindBuffer(GLenum target, GLuint buffer)
 
 void MyDeleteBuffers(GLsizei num, GLuint* buffers)
 {
-    assert( num > 0 );
+    MyAssert( num > 0 );
 
     for( int i=0; i<num; i++ )
     {

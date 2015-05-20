@@ -308,7 +308,7 @@ GLuint glCreateShader(GLenum type)
 
 void glShaderSource(GLuint shader, GLsizei count, const GLchar** strings, const GLint* lengths)
 {
-    assert( count == 1 );
+    MyAssert( count == 1 );
 
     // shader is precompiled on windows phone, so just pass in value directly
     if( g_D3DShaderArray[shader-1].m_Type == GL_VERTEX_SHADER )
@@ -495,7 +495,7 @@ void glGenBuffers(GLsizei n, GLuint* buffers)
 void glBindBuffer(GLenum target, GLuint buffer)
 {
     if( buffer != 0 )
-        assert( g_D3DBufferObjects[buffer-1].m_InUse == true );
+        MyAssert( g_D3DBufferObjects[buffer-1].m_InUse == true );
 
     if( target == GL_ARRAY_BUFFER )
         g_ActiveBufferObject_Array = buffer-1;
@@ -521,7 +521,7 @@ void glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usa
     if( buffer == -1 )
         return;
 
-    assert( g_D3DBufferObjects[buffer].m_InUse == true );
+    MyAssert( g_D3DBufferObjects[buffer].m_InUse == true );
 
     if( g_D3DBufferObjects[buffer].m_Buffer == 0 )
     {
@@ -586,7 +586,7 @@ void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvo
         return;
     }
 
-    assert( g_D3DBufferObjects[buffer].m_InUse == true );
+    MyAssert( g_D3DBufferObjects[buffer].m_InUse == true );
 
     if( g_D3DBufferObjects[buffer].m_Buffer == 0 )
     {

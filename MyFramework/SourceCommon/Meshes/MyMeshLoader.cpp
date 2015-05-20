@@ -12,8 +12,8 @@
 
 void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
-    assert( pSubmeshList );
-    assert( pSubmeshList->Length() == 0 );
+    MyAssert( pSubmeshList );
+    MyAssert( pSubmeshList->Length() == 0 );
 
     // get the number of verts/indices/bones.
     unsigned int totalverts = 0;
@@ -53,7 +53,7 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
             m_BoneFinalMatrices.AllocateObjects( totalbones );
 
             cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
-            assert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
+            MyAssert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
             for( unsigned int i=0; i<totalbones; i++ )
             {
                 cJSON* bone = cJSON_GetArrayItem( bones, i );
@@ -119,8 +119,8 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
             BufferDefinition** ppVBO = &pSubmesh->m_pVertexBuffer;
             BufferDefinition** ppIBO = &pSubmesh->m_pIndexBuffer;
 
-            assert( ppVBO );
-            assert( ppIBO );
+            MyAssert( ppVBO );
+            MyAssert( ppIBO );
 
             cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
             if( jMaterial && jMaterial->valuestring )
@@ -205,7 +205,7 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
                 //delete[] verts;
                 //delete[] indices;
 
-                assert( pSubmeshList->Count() > 0 );
+                MyAssert( pSubmeshList->Count() > 0 );
                 pSubmesh->m_VertexFormat = (*ppVBO)->m_VertexFormat;
                 pSubmesh->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
             }
@@ -245,7 +245,10 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
             // Read in the node transforms
             for( unsigned int ni=0; ni<totalnodes; ni++ )
             {
-                m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
+                // TODO: this line fails on Android(gcc)... no clue why, so did it with a memcpy.
+                //m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
+                memcpy( &m_pSkeletonNodeTree[ni].m_Transform, &buffer[rawbyteoffset], sizeof(MyMatrix) );
+
                 rawbyteoffset += sizeof(MyMatrix);
 
                 m_pSkeletonNodeTree[ni].m_Transform.m41 *= scale;
@@ -261,6 +264,7 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
         }
     }
 
+LOGInfo( LOGTag, "delete %d \n" );
     cJSON_Delete( root );
 
     m_MeshReady = true;
@@ -288,7 +292,7 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
         pParentSkelNode->m_pChildren.Add( &m_pSkeletonNodeTree[skelnodeindex] );
 
     char* name = pNode->string;
-    assert( name );
+    MyAssert( name );
 
     skelnode.m_SkeletonNodeIndex = skelnodeindex;
     skelnode.m_BoneIndex = FindBoneIndexByName( name );
@@ -361,7 +365,7 @@ void MyMesh::LoadAnimationControlFile(char* buffer)
     // if the file doesn't exist, create a single animation for each timeline
     if( buffer == 0 )
     {
-        assert( m_pAnimationTimelines.Count() < MAX_ANIMATIONS );
+        MyAssert( m_pAnimationTimelines.Count() < MAX_ANIMATIONS );
 
         for( unsigned int i=0; i<m_pAnimationTimelines.Count(); i++ )
         {

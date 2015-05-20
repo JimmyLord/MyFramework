@@ -29,7 +29,7 @@ unsigned int ReadNextBytesAsUInt(const char* ptr, unsigned int expected)
     unsigned int result = (unsigned int)(c4*256*256*256 + c3*256*256 + c2*256 + c1);
 
 #if MYFW_WINDOWS && _DEBUG
-    assert( expected == result );
+    MyAssert( expected == result );
 #endif
     return result;
 }
@@ -42,7 +42,7 @@ unsigned short ReadNextBytesAsUShort(const char* ptr, unsigned short expected)
     unsigned short result = (unsigned short)(c2*256 + c1);
 
 #if MYFW_WINDOWS && _DEBUG
-    assert( expected == result );
+    MyAssert( expected == result );
 #endif
     return result;
 }
@@ -55,7 +55,7 @@ short ReadNextBytesAsShort(const char* ptr, short expected)
     short result = (short)(c2<<8 | c1);
 
 #if MYFW_WINDOWS && _DEBUG
-    assert( expected == result );
+    MyAssert( expected == result );
 #endif
     return result;
 }
@@ -64,10 +64,10 @@ void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
 {
     LOGInfo( LOGTag, "ReadFont - %d, %c%c%c%c\n", buffersize, filebuffer[0], filebuffer[1], filebuffer[2], filebuffer[3] );
 
-    assert( filebuffer[0] == 'B' );
-    assert( filebuffer[1] == 'M' );
-    assert( filebuffer[2] == 'F' );
-    assert( filebuffer[3] == 3 ); // This code only reads version 3 files... update it if using a newer BMFont format.
+    MyAssert( filebuffer[0] == 'B' );
+    MyAssert( filebuffer[1] == 'M' );
+    MyAssert( filebuffer[2] == 'F' );
+    MyAssert( filebuffer[3] == 3 ); // This code only reads version 3 files... update it if using a newer BMFont format.
 
     const char* fileptr = filebuffer + 4;
     
@@ -79,7 +79,7 @@ void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
         {
         case 0: // end of file?
             {
-                assert( fileptr == filebuffer + buffersize - 1 );
+                MyAssert( fileptr == filebuffer + buffersize - 1 );
                 fileptr = filebuffer + buffersize;
             }
             break;
@@ -235,7 +235,7 @@ void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
             break;
 
         default:
-            assert( false );
+            MyAssert( false );
             LOGError( LOGTag, "Failed to load bmfont file %s\n", m_ImageName );
             return;
             break;
@@ -267,7 +267,7 @@ Vector4 BMFont::QueryLetterMinMaxUV(char letter)
         // if we didn't find it quick... search for it the slow way.
         if( index <= -1 )
         {
-            assert( m_FirstNonsequentialCharIndex != 0 );
+            MyAssert( m_FirstNonsequentialCharIndex != 0 );
             for( unsigned int ch=m_FirstNonsequentialCharIndex; ch<m_NumChars; ch++ )
             {
                 if( m_Chars[ch].id == (unsigned int)letter )
@@ -335,7 +335,7 @@ Vector2 BMFont::GetSize(const char* string, float height)
             // if we didn't find it quick... search for it the slow way.
             if( index <= -1 )
             {
-                assert( m_FirstNonsequentialCharIndex != 0 );
+                MyAssert( m_FirstNonsequentialCharIndex != 0 );
                 for( unsigned int ch=m_FirstNonsequentialCharIndex; ch<m_NumChars; ch++ )
                 {
                     if( m_Chars[ch].id == (unsigned int)letter )
@@ -395,7 +395,7 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_Sprite
             // if we didn't find it quick... search for it the slow way.
             if( index <= -1 )
             {
-                assert( m_FirstNonsequentialCharIndex != 0 );
+                MyAssert( m_FirstNonsequentialCharIndex != 0 );
                 for( unsigned int ch=m_FirstNonsequentialCharIndex; ch<m_NumChars; ch++ )
                 {
                     if( m_Chars[ch].id == (unsigned int)letter )
@@ -586,7 +586,7 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_
             // if we didn't find it quick... search for it the slow way.
             if( index <= -1 )
             {
-                assert( m_FirstNonsequentialCharIndex != 0 );
+                MyAssert( m_FirstNonsequentialCharIndex != 0 );
                 for( unsigned int ch=m_FirstNonsequentialCharIndex; ch<m_NumChars; ch++ )
                 {
                     if( m_Chars[ch].id == (unsigned int)letter )

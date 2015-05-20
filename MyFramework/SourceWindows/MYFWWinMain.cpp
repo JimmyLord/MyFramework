@@ -41,7 +41,7 @@ static bool h_takescreenshot = false;
 
 bool MYFW_GetKey(int value)
 {
-    assert( value >= 0 && value < 256 );
+    MyAssert( value >= 0 && value < 256 );
     return g_KeyStates[value];
 }
 

@@ -101,7 +101,7 @@ void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numina
     if( arrayobj )
     {
         int arraysize = cJSON_GetArraySize( arrayobj );
-        assert( arraysize <= numinarray );
+        MyAssert( arraysize <= numinarray );
         for( int i=0; i<arraysize; i++ )
         {
             if( i >= numinarray )
@@ -120,7 +120,7 @@ void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int nu
     if( arrayobj )
     {
         int arraysize = cJSON_GetArraySize( arrayobj );
-        assert( arraysize <= numinarray );
+        MyAssert( arraysize <= numinarray );
         for( int i=0; i<arraysize; i++ )
         {
             if( i >= numinarray )
@@ -139,7 +139,7 @@ void cJSONExt_GetDoubleArray(cJSON* object, const char* name, double* vars, int 
     if( arrayobj )
     {
         int arraysize = cJSON_GetArraySize( arrayobj );
-        assert( arraysize <= numinarray );
+        MyAssert( arraysize <= numinarray );
         for( int i=0; i<arraysize; i++ )
         {
             if( i >= numinarray )
@@ -158,7 +158,7 @@ void cJSONExt_GetUnsignedCharArray(cJSON* object, const char* name, unsigned cha
     if( arrayobj )
     {
         int arraysize = cJSON_GetArraySize( arrayobj );
-        assert( arraysize <= numinarray );
+        MyAssert( arraysize <= numinarray );
         for( int i=0; i<arraysize; i++ )
         {
             if( i >= numinarray )

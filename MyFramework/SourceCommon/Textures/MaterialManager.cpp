@@ -76,7 +76,7 @@ void MaterialDefinition::ImportFromFile()
 {
     // TODO: replace asserts: if a shader or texture isn't found, load it.
 
-    assert( m_pFile && m_pFile->m_FileLoadStatus == FileLoadStatus_Success );
+    MyAssert( m_pFile && m_pFile->m_FileLoadStatus == FileLoadStatus_Success );
     if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
         return;
 
@@ -107,7 +107,7 @@ void MaterialDefinition::ImportFromFile()
                 }
                 else
                 {
-                    assert( false );
+                    MyAssert( false );
                 }
                 pFile->Release();
             }
@@ -117,7 +117,7 @@ void MaterialDefinition::ImportFromFile()
         if( texcolorstringobj )
         {
             TextureDefinition* pTexture = g_pTextureManager->FindTexture( texcolorstringobj->valuestring );
-            assert( pTexture ); // fix
+            MyAssert( pTexture ); // fix
             if( pTexture )
             {
                 pTexture->AddRef();
@@ -147,7 +147,7 @@ void MaterialDefinition::ImportFromFile()
 
 void MaterialDefinition::SetName(const char* name)
 {
-    assert( name );
+    MyAssert( name );
 
     if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
         return;
@@ -324,8 +324,8 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
     if( g_DragAndDropStruct.m_Type == DragAndDropType_ShaderGroupPointer )
     {
         ShaderGroup* pShaderGroup = (ShaderGroup*)g_DragAndDropStruct.m_Value;
-        assert( pShaderGroup );
-        //assert( m_pMesh );
+        MyAssert( pShaderGroup );
+        //MyAssert( m_pMesh );
 
         SetShader( pShaderGroup );
 
@@ -339,8 +339,8 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
     if( g_DragAndDropStruct.m_Type == DragAndDropType_FileObjectPointer )
     {
         MyFileObject* pFile = (MyFileObject*)g_DragAndDropStruct.m_Value;
-        assert( pFile );
-        //assert( m_pMesh );
+        MyAssert( pFile );
+        //MyAssert( m_pMesh );
 
         size_t len = strlen( pFile->m_FullPath );
         const char* filenameext = &pFile->m_FullPath[len-4];
@@ -414,13 +414,13 @@ void MaterialManager::FreeAllMaterials()
 {
     while( CPPListNode* pNode = m_MaterialsStillLoading.GetHead() )
     {
-        assert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
+        MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
         ((MaterialDefinition*)pNode)->Release();
     }
 
     while( CPPListNode* pNode = m_Materials.GetHead() )
     {
-        assert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
+        MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
         ((MaterialDefinition*)pNode)->Release();
     }
 }
@@ -465,7 +465,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 
 MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
 {
-    assert( fullpath );
+    MyAssert( fullpath );
 
     MaterialDefinition* pMaterial;
 

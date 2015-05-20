@@ -192,7 +192,7 @@ int SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
     //LOGInfo( LOGTag, "WP8 SoundPlayer::LoadSound, buffersize:%d\n", buffersize );
 
     m_WaveDescriptors[m_NumAudioBuffersLoaded] = WaveLoader::ParseWaveBuffer( buffer, buffersize );
-    assert( m_WaveDescriptors[m_NumAudioBuffersLoaded].valid );
+    MyAssert( m_WaveDescriptors[m_NumAudioBuffersLoaded].valid );
 
     //LOGInfo( LOGTag, "WP8 SoundPlayer parsed, bytes:%d, channels:%d, samples:%d, size:%d\n", 
     //    m_WaveDescriptors[m_NumAudioBuffersLoaded].bytespersample,

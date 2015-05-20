@@ -63,11 +63,11 @@ void WebRequestObject::Init(const char* host, unsigned short port)
 {
     LOGInfo( LOGTag, "WebRequestObject::Init %s:%d\n", host, port );
 
-    assert( m_Initialized == false );
+    MyAssert( m_Initialized == false );
     if( m_Initialized )
         return;
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -87,7 +87,7 @@ void WebRequestObject::RequestStart(const char* page)
 {
     LOGInfo( LOGTag, "WebRequestObject::RequestStart %s\n", page );
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -101,7 +101,7 @@ void WebRequestObject::RequestStart(const char* page)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, int value)
 {
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -114,7 +114,7 @@ void WebRequestObject::RequestAddPair(const char* var, int value)
 // will url encode var and value.
 void WebRequestObject::RequestAddPair(const char* var, const char* value)
 {
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -134,7 +134,7 @@ void WebRequestObject::RequestEnd()
 {
     LOGInfo( LOGTag, "WebRequestObject - RequestWebPage\n" );
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 
@@ -154,7 +154,7 @@ void WebRequestObject::RequestWebPage(const char* page, ...)
 {
     LOGInfo( LOGTag, "WebRequestObject - RequestWebPage\n" );
 
-    assert( m_RequestPending == false );
+    MyAssert( m_RequestPending == false );
     if( m_RequestPending )
         return;
 

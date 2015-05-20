@@ -43,8 +43,8 @@ FBODefinition::~FBODefinition()
 // returns true if a new texture needs to be created.
 bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
 {
-    assert( width <= 4096 );
-    assert( height <= 4096 );
+    MyAssert( width <= 4096 );
+    MyAssert( height <= 4096 );
 
     unsigned int NewTextureWidth = 0;
     unsigned int NewTextureHeight = 0;
@@ -136,7 +136,7 @@ bool FBODefinition::Create()
         return false;
     }
 
-    assert( m_FrameBufferID == 0 );
+    MyAssert( m_FrameBufferID == 0 );
 
     // get a framebuffer, render buffer and a texture from opengl.
     glGenFramebuffers( 1, &m_FrameBufferID );
@@ -159,7 +159,7 @@ bool FBODefinition::Create()
     {
         m_pDepthTexture = MyNew TextureDefinition();
 
-        assert( m_DepthBits == 16 || m_DepthBits == 24 || m_DepthBits == 32 );
+        MyAssert( m_DepthBits == 16 || m_DepthBits == 24 || m_DepthBits == 32 );
 
         if( m_DepthIsTexture )
         {
@@ -258,7 +258,7 @@ bool FBODefinition::Create()
     if( status != GL_FRAMEBUFFER_COMPLETE )
     {
         LOGInfo( LOGTag, "CreateFBO - error\n" );
-        //assert( false );
+        //MyAssert( false );
         Invalidate( true );
         return false;
     }

@@ -16,7 +16,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <assert.h>
 
 #include <GLES2/gl2.h>
 #if !ANDROID_NDK

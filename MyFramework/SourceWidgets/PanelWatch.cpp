@@ -152,7 +152,7 @@ void PanelWatch::ClearAllVariables()
 
 int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
 {
-    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
@@ -180,7 +180,7 @@ int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, 
 
 int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
 {
-    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
@@ -206,7 +206,7 @@ int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, v
 
 int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, float min, float max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
 {
-    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
@@ -355,7 +355,7 @@ int PanelWatch::AddEnum(const char* name, int* pInt, float numtypes, const char*
 
 int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
-    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
@@ -372,7 +372,7 @@ int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbac
 
 int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc)
 {
-    assert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
@@ -632,7 +632,7 @@ wxDragResult PanelWatchDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult
 wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
 {
     // figure out which object the stuff was dropped on and let it know.
-    assert( m_pCallbackObj && m_pCallbackFunc );
+    MyAssert( m_pCallbackObj && m_pCallbackFunc );
 
     g_DragAndDropStruct.m_ID = m_ControlIndex;
     m_pCallbackFunc( m_pCallbackObj, m_ControlIndex, x, y );
@@ -1157,7 +1157,7 @@ void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
 {
     int controlid = event.GetId();
 
-    assert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat ||
+    MyAssert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat ||
             m_pVariables[controlid].m_Type == PanelWatchType_ColorByte );
 
     wxColour colour = m_pVariables[controlid].m_Handle_ColourPicker->GetColour();

@@ -71,10 +71,10 @@ int SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 {
     LOGInfo( LOGTag, "NaCL SoundPlayer::LoadSound, buffersize:%d\n", buffersize );
 
-    assert( m_NumAudioBuffersLoaded < MAX_AUDIO_FILES );
+    MyAssert( m_NumAudioBuffersLoaded < MAX_AUDIO_FILES );
 
     m_WaveDescriptors[m_NumAudioBuffersLoaded] = WaveLoader::ParseWaveBuffer( buffer, buffersize );
-    assert( m_WaveDescriptors[m_NumAudioBuffersLoaded].valid );
+    MyAssert( m_WaveDescriptors[m_NumAudioBuffersLoaded].valid );
 
     LOGInfo( LOGTag, "NaCL SoundPlayer parsed, bytes:%d, channels:%d, samples:%d, size:%d\n", 
         m_WaveDescriptors[m_NumAudioBuffersLoaded].bytespersample,
@@ -173,10 +173,10 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
     for( unsigned int i=0; i<pSoundPlayer->m_SoundCueQueue.m_ActiveObjects.Count(); i++ )
     {
         SoundCueWrapper* pCueInfo = pSoundPlayer->m_SoundCueQueue.m_ActiveObjects[i];
-        assert( pCueInfo );
+        MyAssert( pCueInfo );
 
         MyWaveDescriptor* pWaveDesc = &pSoundPlayer->m_WaveDescriptors[pCueInfo->descindex];
-        assert( pWaveDesc );
+        MyAssert( pWaveDesc );
             
         int sizetocopy = 0;
 

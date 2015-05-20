@@ -86,14 +86,14 @@ public:
 
     virtual void WriteString(const char* path, const char* filename, const char* string)
     {
-        assert( m_SaveFileOp == SFO_None );
+        MyAssert( m_SaveFileOp == SFO_None );
         m_SaveFileOp = SFO_Write;
         m_OpComplete = false;
     }
 
     virtual void ReadString(const char* path, const char* filename)
     {
-        assert( m_SaveFileOp == SFO_None );
+        MyAssert( m_SaveFileOp == SFO_None );
         m_SaveFileOp = SFO_Read;
         m_OpComplete = false;
     }

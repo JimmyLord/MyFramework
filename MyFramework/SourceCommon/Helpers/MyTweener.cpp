@@ -79,7 +79,7 @@ void MyTweenPool::Tick(double timepassed)
 
 void MyTweenPool::AddFloat(float* var, float startvalue, float endvalue, double tweentime, MyTweenType tweentype, double delay, bool updatewhiledelayed, int id)
 {
-    assert( m_NumFloatsInUse < m_Floats.m_ListOfVars.Length() );
+    MyAssert( m_NumFloatsInUse < m_Floats.m_ListOfVars.Length() );
 
     m_Floats.SetFloat( m_NumFloatsInUse, var, startvalue, endvalue, tweentime, tweentype, delay + m_Floats.m_TimePassed, updatewhiledelayed, id );
     m_NumFloatsInUse++;
@@ -314,8 +314,8 @@ void MyTweener::SetFloat(int index, float* var, float startvalue, float endvalue
 
 void MyTweener::SetUnsignedChar(int index, unsigned char startvalue, unsigned char endvalue)
 {
-    assert( m_ListOfVars[index] != 0 );
-    assert( m_ListOfVars[index]->m_VarType == MTVT_UnsignedChar );
+    MyAssert( m_ListOfVars[index] != 0 );
+    MyAssert( m_ListOfVars[index]->m_VarType == MTVT_UnsignedChar );
 
     ( (TweenUnsignedChar*)m_ListOfVars[index] )->m_StartValue = startvalue;
     ( (TweenUnsignedChar*)m_ListOfVars[index] )->m_EndValue = endvalue;
@@ -323,8 +323,8 @@ void MyTweener::SetUnsignedChar(int index, unsigned char startvalue, unsigned ch
 
 void MyTweener::SetChar(int index, char startvalue, char endvalue)
 {
-    assert( m_ListOfVars[index] != 0 );
-    assert( m_ListOfVars[index]->m_VarType == MTVT_Char );
+    MyAssert( m_ListOfVars[index] != 0 );
+    MyAssert( m_ListOfVars[index]->m_VarType == MTVT_Char );
 
     ( (TweenChar*)m_ListOfVars[index] )->m_StartValue = startvalue;
     ( (TweenChar*)m_ListOfVars[index] )->m_EndValue = endvalue;
@@ -332,8 +332,8 @@ void MyTweener::SetChar(int index, char startvalue, char endvalue)
 
 void MyTweener::SetInt(int index, int startvalue, int endvalue)
 {
-    assert( m_ListOfVars[index] != 0 );
-    assert( m_ListOfVars[index]->m_VarType == MTVT_Int );
+    MyAssert( m_ListOfVars[index] != 0 );
+    MyAssert( m_ListOfVars[index]->m_VarType == MTVT_Int );
 
     ( (TweenInt*)m_ListOfVars[index] )->m_StartValue = startvalue;
     ( (TweenInt*)m_ListOfVars[index] )->m_EndValue = endvalue;
@@ -341,8 +341,8 @@ void MyTweener::SetInt(int index, int startvalue, int endvalue)
 
 void MyTweener::SetFloat(int index, float startvalue, float endvalue)
 {
-    assert( m_ListOfVars[index] != 0 );
-    assert( m_ListOfVars[index]->m_VarType == MTVT_Float );
+    MyAssert( m_ListOfVars[index] != 0 );
+    MyAssert( m_ListOfVars[index]->m_VarType == MTVT_Float );
 
     ( (TweenFloat*)m_ListOfVars[index] )->m_StartValue = startvalue;
     ( (TweenFloat*)m_ListOfVars[index] )->m_EndValue = endvalue;

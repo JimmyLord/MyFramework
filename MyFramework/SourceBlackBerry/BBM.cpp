@@ -54,7 +54,7 @@ bool BlackBerryMessenger::IsReady()
 
 void BlackBerryMessenger::Init(const char* UUID)
 {
-    assert( m_State == BBMState_None || m_State == BBMState_Failed );
+    MyAssert( m_State == BBMState_None || m_State == BBMState_Failed );
     if( m_State != BBMState_None && m_State != BBMState_Failed )
         return;
 

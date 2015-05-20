@@ -53,7 +53,7 @@ int MyAnimationTimeline::ImportChannelsFromBuffer(char* pBuffer, float scale)
 
 void MyAnimationTimeline::SetNumberOfChannels(unsigned int numchannels)
 {
-    assert( m_pChannels.Length() == 0 );
+    MyAssert( m_pChannels.Length() == 0 );
 
     m_pChannels.FreeAllInList();
     m_pChannels.AllocateObjects( numchannels );
@@ -102,7 +102,7 @@ Vector3 MyAnimationTimeline::GetInterpolatedTranslation(float time, unsigned int
 
     float timebetweenframes = endtimestamp - starttimestamp;
     float perctimepassed = (time - starttimestamp) / timebetweenframes;
-    //assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+    //MyAssert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
 
     Vector3& StartTranslation = pChannel->m_TranslationValues[startindex];
     Vector3& EndTranslation = pChannel->m_TranslationValues[endindex];
@@ -135,7 +135,7 @@ MyQuat MyAnimationTimeline::GetInterpolatedRotation(float time, unsigned int cha
 
     float timebetweenframes = endtimestamp - starttimestamp;
     float perctimepassed = (time - starttimestamp) / timebetweenframes;
-    //assert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+    //MyAssert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
 
     MyQuat& StartRotation = pChannel->m_RotationValues[startindex];
     MyQuat& EndRotation = pChannel->m_RotationValues[endindex];

@@ -135,7 +135,7 @@ void StunClient::Tick(double TimePassed)
         typedef int socklen_t;
 #endif
 
-        assert( m_pUDPSocket );
+        MyAssert( m_pUDPSocket );
 
         {
             sockaddr_in from;
@@ -150,7 +150,7 @@ void StunClient::Tick(double TimePassed)
                 if( type == 0x0101 ) // if "Binding Response"
                 {
                     u_short datalen = ntohs( *(u_short*)(&m_BindingResponse[2]) );
-                    assert( datalen >= 0 && datalen <= 500-20 ); // simple hardcoded sanity check.
+                    MyAssert( datalen >= 0 && datalen <= 500-20 ); // simple hardcoded sanity check.
 
                     if( datalen < 0 || datalen > 500-20 )
                     {
@@ -161,7 +161,7 @@ void StunClient::Tick(double TimePassed)
                     else
                     {
                         u_long cookie = ntohl( *(u_long*)(&m_BindingResponse[4]) );
-                        assert( cookie == 0x2112a442 );
+                        MyAssert( cookie == 0x2112a442 );
 
                         // ignore transaction id... for now?
 
@@ -182,7 +182,7 @@ void StunClient::Tick(double TimePassed)
                             {
                                 if( attribute == 0x0001 || attribute == 0x0020 ) // MAPPED_ADDRESS or XOR_MAPPED_ADDRESS
                                 {
-                                    assert( attrlen == 8 );
+                                    MyAssert( attrlen == 8 );
                                     if( attrlen != 8 )
                                     {
                                         LOGInfo( LOGTag, "StunClient: Attr Length should be 8: len=%d\n", attrlen );
@@ -192,7 +192,7 @@ void StunClient::Tick(double TimePassed)
 
                                     u_short protocolfamily = ntohs( *(u_short*)(&m_BindingResponse[offset+4]) );
 
-                                    assert( protocolfamily == 1 );
+                                    MyAssert( protocolfamily == 1 );
                                     if( protocolfamily != 1 )
                                     {
                                         LOGInfo( LOGTag, "StunClient: We don't handle IPv6\n" );
@@ -281,7 +281,7 @@ void StunClient::Tick(double TimePassed)
             // Transaction ID.              - 12 bytes - random
 
             // TODO:
-            //assert( false );
+            //MyAssert( false );
 
             // generate a binding request packet:
             *((u_short*)&m_BindingRequest[0]) = htons( 0x0001 );

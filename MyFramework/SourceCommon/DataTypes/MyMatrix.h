@@ -38,6 +38,12 @@ public:
         , m21(v21), m22(v22), m23(v23), m24(v24)
         , m31(v31), m32(v32), m33(v33), m34(v34)
         , m41(v41), m42(v42), m43(v43), m44(v44) {}
+    // Added this copy constuctor when I was having issue with Android(gcc), didn't end up using it and it shouldn't be needed.
+    //MyMatrix(const MyMatrix& o)
+    //    : m11(o.m11), m12(o.m12), m13(o.m13), m14(o.m14)
+    //    , m21(o.m21), m22(o.m22), m23(o.m23), m24(o.m24)
+    //    , m31(o.m31), m32(o.m32), m33(o.m33), m34(o.m34)
+    //    , m41(o.m41), m42(o.m42), m43(o.m43), m44(o.m44) {}
 
     // the following function will affect existing values in the matrix
     void Scale(float scale);

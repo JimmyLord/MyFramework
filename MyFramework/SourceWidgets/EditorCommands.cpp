@@ -72,7 +72,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
     default:
-        assert( false );
+        MyAssert( false );
     }
 
     g_pPanelWatch->UpdatePanel();
@@ -124,7 +124,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
     default:
-        assert( false );
+        MyAssert( false );
     }
 
     g_pPanelWatch->UpdatePanel();
@@ -149,7 +149,7 @@ EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
 
 EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
 {
-    assert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
+    MyAssert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
 
     m_NewColor = newcolor;
     m_Type = type;
@@ -171,7 +171,7 @@ EditorCommand_PanelWatchColorChanged::~EditorCommand_PanelWatchColorChanged()
 
 void EditorCommand_PanelWatchColorChanged::Do()
 {
-    assert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
+    MyAssert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
 
     if( m_Type == PanelWatchType_ColorFloat )
         *(ColorFloat*)m_Pointer = m_NewColor;
@@ -187,7 +187,7 @@ void EditorCommand_PanelWatchColorChanged::Do()
 
 void EditorCommand_PanelWatchColorChanged::Undo()
 {
-    assert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
+    MyAssert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
 
     if( m_Type == PanelWatchType_ColorFloat )
         *(ColorFloat*)m_Pointer = m_OldColor;

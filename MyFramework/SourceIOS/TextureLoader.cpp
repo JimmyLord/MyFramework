@@ -86,7 +86,7 @@ FILE* IOS_fopen(const char* filepathnameext)
 //    if( buffer == 0 )
 //    {
 //        LOGInfo( LOGTag, "*****File not found %s", filefullpath );
-//        assert( false );
+//        MyAssert( false );
 //    }
 //    else
 //    {
@@ -98,7 +98,7 @@ FILE* IOS_fopen(const char* filepathnameext)
 //
 //char* LoadFile(const char* filename, int* length)
 //{
-//    assert( false ); // migrate to g_pFileManager->RequestFile( filename );
+//    MyAssert( false ); // migrate to g_pFileManager->RequestFile( filename );
 //    char* filecontents = 0;
 //
 //    FILE* filehandle;
@@ -185,7 +185,7 @@ FILE* IOS_fopen(const char* filepathnameext)
 //    //}
 //    //else
 //    //{
-//    //    assert( false );
+//    //    MyAssert( false );
 //
 //    //    // loading of the texture failed...why?
 //    //    glDisable( GL_TEXTURE_2D );

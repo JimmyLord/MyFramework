@@ -119,17 +119,17 @@ typedef struct {
 
 /** @name Make sure the types really have the right sizes */
 /*@{*/
-#define SDL_COMPILE_TIME_ASSERT(name, x)               \
+#define SDL_COMPILE_TIME_MyAssert(name, x)               \
        typedef int SDL_dummy_ ## name[(x) * 2 - 1]
 
-SDL_COMPILE_TIME_ASSERT(uint8, sizeof(Uint8) == 1);
-SDL_COMPILE_TIME_ASSERT(sint8, sizeof(Sint8) == 1);
-SDL_COMPILE_TIME_ASSERT(uint16, sizeof(Uint16) == 2);
-SDL_COMPILE_TIME_ASSERT(sint16, sizeof(Sint16) == 2);
-SDL_COMPILE_TIME_ASSERT(uint32, sizeof(Uint32) == 4);
-SDL_COMPILE_TIME_ASSERT(sint32, sizeof(Sint32) == 4);
-SDL_COMPILE_TIME_ASSERT(uint64, sizeof(Uint64) == 8);
-SDL_COMPILE_TIME_ASSERT(sint64, sizeof(Sint64) == 8);
+SDL_COMPILE_TIME_MyAssert(uint8, sizeof(Uint8) == 1);
+SDL_COMPILE_TIME_MyAssert(sint8, sizeof(Sint8) == 1);
+SDL_COMPILE_TIME_MyAssert(uint16, sizeof(Uint16) == 2);
+SDL_COMPILE_TIME_MyAssert(sint16, sizeof(Sint16) == 2);
+SDL_COMPILE_TIME_MyAssert(uint32, sizeof(Uint32) == 4);
+SDL_COMPILE_TIME_MyAssert(sint32, sizeof(Sint32) == 4);
+SDL_COMPILE_TIME_MyAssert(uint64, sizeof(Uint64) == 8);
+SDL_COMPILE_TIME_MyAssert(sint64, sizeof(Sint64) == 8);
 /*@}*/
 
 /** @name Enum Size Check
@@ -148,7 +148,7 @@ typedef enum {
 } SDL_DUMMY_ENUM;
 
 #ifndef __NDS__
-SDL_COMPILE_TIME_ASSERT(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
+SDL_COMPILE_TIME_MyAssert(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
 #endif
 /*@}*/
 

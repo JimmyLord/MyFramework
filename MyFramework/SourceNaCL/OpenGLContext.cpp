@@ -36,9 +36,9 @@ OpenGLContext::OpenGLContext(pp::Instance* instance)
 {
     m_pInstance = (MainInstance*)instance;
     pp::Module* module = pp::Module::Get();
-    assert( module != 0 );
+    MyAssert( module != 0 );
     m_GLES2Interface = static_cast<const struct PPB_OpenGLES2*>(module->GetBrowserInterface(PPB_OPENGLES2_INTERFACE));
-    assert( m_GLES2Interface );
+    MyAssert( m_GLES2Interface );
 }
 
 OpenGLContext::~OpenGLContext()
