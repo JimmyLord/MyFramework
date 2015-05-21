@@ -231,7 +231,7 @@ bool BaseShader::LoadAndCompile()
 
     if( m_ProgramHandle == 0 )
     {
-        LOGError( "Failed to create program from %s\n", m_pFile->m_FullPath );
+        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->m_FullPath );
     }
 
     delete[] pStrings;

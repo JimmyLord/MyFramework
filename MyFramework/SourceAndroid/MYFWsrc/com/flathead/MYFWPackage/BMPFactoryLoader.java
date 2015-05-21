@@ -1,23 +1,16 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 package com.flathead.MYFWPackage;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
 
@@ -25,7 +18,7 @@ import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-//import android.util.Log;
+import android.util.Log;
 
 public class BMPFactoryLoader
 {
@@ -33,17 +26,28 @@ public class BMPFactoryLoader
 
     public long GetBinaryFileSize(String path)
     {
-        String npath = path + ".mp3";
-        //Log.v( "Flathead", "GetBinaryFileSize: " + npath);
-
+		// read the entire file to get it's length... ugly.
+		// TODO: fix this, maybe load into a buffer and see if we can pass the buffer without copying it to C++.
         try
         {
-            AssetFileDescriptor fd = m_AssetManager.openFd( npath );
-            return fd.getLength();
+            InputStream input = m_AssetManager.open( path );
+			
+			int length = 0;
+			int data = input.read();
+			while( data != -1 )
+			{
+				length++;
+				data = input.read();
+			}
+			
+			input.close();
+			
+			Log.v( "Flathead", "   JAVA: GetBinaryFileSize: " + length );
+            return length;
         }
         catch(Exception exc)
         {
-            //System.out.println("Error in LoadBinaryFile - " + exc.toString());
+            System.out.println( "Error in LoadBinaryFile - " + exc.toString() );
         }
 
         return 0;
@@ -51,32 +55,30 @@ public class BMPFactoryLoader
 
     public void LoadBinaryFile(String path, ByteBuffer buffer)
     {
-        String npath = path + ".mp3";
-        //Log.v( "Flathead", "LoadBinaryFile: " + npath);
+        String npath = path;
+        Log.v( "Flathead", "   JAVA: LoadBinaryFile: " + npath );
 
         buffer.position(0);
 
         try
         {
-            AssetFileDescriptor fd = m_AssetManager.openFd( npath );
-            //Log.v( "Flathead", "Got file descriptor" );
-            FileInputStream fis = fd.createInputStream();
-            //Log.v( "Flathead", "created file input stream" );
-            FileChannel channel = fis.getChannel();
-            //Log.v( "Flathead", "got filechannel" );
-            //int numbytes =
-            channel.read( buffer );
-            //Log.v( "Flathead", "finished read: " + numbytes );
+            InputStream input = m_AssetManager.open( path );
+			
+			int length = 0;
+			int data = input.read();
+			while( data != -1 )
+			{
+				buffer.put( length, (byte)data );
+				length++;
+				data = input.read();
+			}
+			
+			input.close();
         }
         catch(Exception exc)
         {
-            //System.out.println("Error in LoadBinaryFile - " + exc.toString());
+            System.out.println("Error in LoadBinaryFile - " + exc.toString());
         }
-
-        //Log.v( "Flathead", "ByteBuffer contents: [0] " + buffer.get(0) );
-        //Log.v( "Flathead", "ByteBuffer contents: [1] " + buffer.get(1) );
-
-        //Log.v("Flathead", "Loaded");
     }
 
     public Bitmap open(String path)

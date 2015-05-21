@@ -10,6 +10,16 @@
 #ifndef __MyAssert_H__
 #define __MyAssert_H__
 
-void MyAssert(bool condition, const char* file = __FILE__, unsigned long line = __LINE__);
+#if _DEBUG
+
+#define MyAssert(condition) MyAssertFunc(condition, __FILE__, __LINE__)
+
+void MyAssertFunc(bool condition, const char* file = __FILE__, unsigned long line = __LINE__);
+
+#else
+
+#define MyAssert() ((void)0)
+
+#endif //_DEBUG
 
 #endif //__MyAssert_H__

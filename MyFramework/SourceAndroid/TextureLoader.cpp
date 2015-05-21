@@ -20,6 +20,10 @@
 #include <sys/time.h>
 #include <time.h>
 #include <android/log.h>
+#if 0 // also add -landroid to linker settings
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#endif
 #include <stdint.h>
 
 #include <GLES/gl.h>
@@ -72,57 +76,75 @@ char* LoadFile(const char* filepath, int* length)
 {
     LOGInfo( LOGTag, ">>>>>>>>>>>>>>>> LoadFile - Loading %s", filepath );
 
+    char* filecontents = 0;
+
+#if 0 // requires Android 2.3?... still using 2.2  - not really tested, likely needs work.
+    
+    {
+        AAssetManager* pManager = AAssetManager_fromJava( g_pJavaEnvironment, g_pAssetManager );
+
+        AAsset* asset = AAssetManager_open( pManager, filepath, AASSET_MODE_STREAMING );
+        MyAssert( asset );
+        if( asset )
+        {
+            off_t length = AAsset_getLength( asset );
+	        char* filecontents = MyNew char[length];
+	    
+            int bytesread = AAsset_read(asset, filecontents, length);
+            MyAssert( bytesread == length );
+
+	        AAsset_close(asset);
+        }
+    }
+
+#else
+
     if( g_pJavaEnvironment == 0 || g_pMainActivity == 0 )
     {
         LOGError( LOGTag, "LoadFile() sanity check failed: g_pJavaEnvironment=%p g_pMainActivity=%p\n", g_pJavaEnvironment, g_pMainActivity );
         return 0;
     }
 
-//- get a request to load an uncompressed resource file from a native function
-//- call back to Java to get file size from the resource's file descriptor
-//- malloc required memory in native code
-//- create a direct byte buffer with NewDirectByteBuffer in native code
-//- pass this buffer back to Java to use for reading the resource file
-//- Java code then uses java.nio.channels.FileChannel to load the file:
-//    AssetFileDescriptor.createInputStream().getChannel().read( passed in ByteBuffer jobject passed in ); 
-    LOGInfo( LOGTag, "LoadFile - jenv %p", g_pJavaEnvironment );
+    //- call Java to get file size
+    //- allocate required memory in native code
+    //- create a direct byte buffer with NewDirectByteBuffer in native code
+    //- pass this buffer back to Java to use for reading the asset file
 
-    jstring name = g_pJavaEnvironment->NewStringUTF( filepath );
-    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pBMPFactoryLoader );
-
-    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "GetBinaryFileSize", "(Ljava/lang/String;)J" );
-    long filesize = g_pJavaEnvironment->CallLongMethod( g_pBMPFactoryLoader, methodid, name );
+    // Make a java string for the filename.
+    jstring filename = g_pJavaEnvironment->NewStringUTF( filepath );
     
-    if( filesize == 0 )
+    // Query for the length of the file from java.
+    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pBMPFactoryLoader );
+    jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "GetBinaryFileSize", "(Ljava/lang/String;)J" );
+    long filelength = g_pJavaEnvironment->CallLongMethod( g_pBMPFactoryLoader, methodid, filename );
+    
+    if( filelength == 0 )
     {
         LOGError( LOGTag, "=========================================================");
         LOGError( LOGTag, "= LoadFile - ERROR LOADING %s", filepath );
         LOGError( LOGTag, "=========================================================");
         return 0;
     }
-    LOGInfo( LOGTag, "LoadFile - filesize: %d", (int)filesize );
+    LOGInfo( LOGTag, "   LoadFile - filelength: %d", (int)filelength );
     if( length )
-        *length = filesize;
+        *length = filelength;
 
-    char* filecontents = new char[filesize+1];
-    jobject bytebuffer = g_pJavaEnvironment->NewDirectByteBuffer( filecontents, filesize+1 );
-    LOGInfo( LOGTag, "LoadBinaryFile - created buffer" );
+    // Allocate a buffer to store the file and create a DirectByteBuffer for java to have pointer to our buffer.
+    filecontents = new char[filelength+1]; // +1 for null terminator, added below.
+    jobject bytebuffer = g_pJavaEnvironment->NewDirectByteBuffer( filecontents, filelength+1 );
 
-    LOGInfo( LOGTag, "LoadBinaryFile - bmploadercls %d", cls );
-    //jclass cls = g_pJavaEnvironment->GetObjectClass( g_pAssetManager );
-    // Ask the bitmaploader for a file
-
+    // Call java to load the actual file.
     methodid = g_pJavaEnvironment->GetMethodID( cls, "LoadBinaryFile", "(Ljava/lang/String;Ljava/nio/ByteBuffer;)V" );
-    LOGInfo( LOGTag, "LoadBinaryFile - methodid %d", methodid );
+    g_pJavaEnvironment->CallVoidMethod( g_pBMPFactoryLoader, methodid, filename, bytebuffer );
 
-    g_pJavaEnvironment->CallVoidMethod( g_pBMPFactoryLoader, methodid, name, bytebuffer );
-    filecontents[filesize] = 0;
+    // stick a null terminator on our file, some code doesn't look at the file length.
+    filecontents[filelength] = 0;
 
-    g_pJavaEnvironment->DeleteLocalRef( name );
+    g_pJavaEnvironment->DeleteLocalRef( filename );
 
-    LOGInfo( LOGTag, "LoadBinaryFile - done?" );
-
+    LOGInfo( LOGTag, "   Done: LoadBinaryFile: %s", filepath );
     //LOGInfo( LOGTag, filecontents );
+#endif
 
     return filecontents;
 }

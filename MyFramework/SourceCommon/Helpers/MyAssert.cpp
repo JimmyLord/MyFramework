@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-void MyAssert(bool condition, const char* file, unsigned long line)
+void MyAssertFunc(bool condition, const char* file, unsigned long line)
 {
     if( condition == false )
     {
