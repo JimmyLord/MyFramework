@@ -102,7 +102,7 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
     cJSON* mesharray = cJSON_GetObjectItem( root, "Meshes" );
     if( mesharray )
     {
-        cJSON* mesh;
+        cJSON* mesh = 0;
         if( mesharray )
             mesh = mesharray->child;
 

@@ -255,6 +255,12 @@
 		044C649E1ADED40000BABD53 /* cJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = BF71EAF8151BA456009F0CD9 /* cJSON.h */; };
 		044C64F41ADEE59B00BABD53 /* SavedData.mm in Sources */ = {isa = PBXBuildFile; fileRef = BF27901A1520D36A007587B7 /* SavedData.mm */; };
 		044C650F1ADEFBC100BABD53 /* TextureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71EAEE151BA314009F0CD9 /* TextureLoader.cpp */; };
+		048AF09E1AF300F600EB4FC7 /* MaterialManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */; };
+		048AF09F1AF300F600EB4FC7 /* MaterialManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 048AF09D1AF300F600EB4FC7 /* MaterialManager.h */; };
+		048AF0A01AF301F500EB4FC7 /* MaterialManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */; };
+		048AF0A11AF301F600EB4FC7 /* MaterialManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */; };
+		048AF0A21AF3020000EB4FC7 /* MaterialManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 048AF09D1AF300F600EB4FC7 /* MaterialManager.h */; };
+		048AF0A31AF3020000EB4FC7 /* MaterialManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 048AF09D1AF300F600EB4FC7 /* MaterialManager.h */; };
 		04936D481AE3EA1300344903 /* CommandStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D3C1AE3EA1300344903 /* CommandStack.cpp */; };
 		04936D491AE3EA1300344903 /* CommandStack.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D3D1AE3EA1300344903 /* CommandStack.h */; };
 		04936D4A1AE3EA1300344903 /* DragAndDropHackery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D3E1AE3EA1300344903 /* DragAndDropHackery.cpp */; };
@@ -271,6 +277,18 @@
 		04AF018A197971FE002DBAE0 /* lodepng.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AF0188197971FE002DBAE0 /* lodepng.h */; };
 		04B1100C19E34120004BB5B3 /* IAPManagerIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */; };
 		04B1100D19E34120004BB5B3 /* IAPManagerIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04B1100B19E34120004BB5B3 /* IAPManagerIOS.mm */; };
+		04B72DE31B0EABD900DCB769 /* MyAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DDF1B0EABD900DCB769 /* MyAssert.cpp */; };
+		04B72DE41B0EABD900DCB769 /* MyAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE01B0EABD900DCB769 /* MyAssert.h */; };
+		04B72DE51B0EABD900DCB769 /* TypeInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DE11B0EABD900DCB769 /* TypeInfo.cpp */; };
+		04B72DE61B0EABD900DCB769 /* TypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE21B0EABD900DCB769 /* TypeInfo.h */; };
+		04B72DE71B0EABE200DCB769 /* MyAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DDF1B0EABD900DCB769 /* MyAssert.cpp */; };
+		04B72DE81B0EABE200DCB769 /* MyAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE01B0EABD900DCB769 /* MyAssert.h */; };
+		04B72DE91B0EABE200DCB769 /* TypeInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DE11B0EABD900DCB769 /* TypeInfo.cpp */; };
+		04B72DEA1B0EABE200DCB769 /* TypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE21B0EABD900DCB769 /* TypeInfo.h */; };
+		04B72DEB1B0EABE300DCB769 /* MyAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DDF1B0EABD900DCB769 /* MyAssert.cpp */; };
+		04B72DEC1B0EABE300DCB769 /* MyAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE01B0EABD900DCB769 /* MyAssert.h */; };
+		04B72DED1B0EABE300DCB769 /* TypeInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04B72DE11B0EABD900DCB769 /* TypeInfo.cpp */; };
+		04B72DEE1B0EABE300DCB769 /* TypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B72DE21B0EABD900DCB769 /* TypeInfo.h */; };
 		04B962E61AE40709009C76A7 /* MYFWWinMainWx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D5A1AE3EF9600344903 /* MYFWWinMainWx.cpp */; };
 		04B962E71AE40709009C76A7 /* MYFWWinMainWx.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D5B1AE3EF9600344903 /* MYFWWinMainWx.h */; };
 		04E9EF3C1ABF401C00AD4B64 /* CommonHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */; };
@@ -415,6 +433,8 @@
 /* Begin PBXFileReference section */
 		0423ABD91AE2FD8D00C1AE29 /* libMyFramework-wx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-wx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		044C640E1ADED37A00BABD53 /* libMyFramework-OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-OSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialManager.cpp; sourceTree = "<group>"; };
+		048AF09D1AF300F600EB4FC7 /* MaterialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialManager.h; sourceTree = "<group>"; };
 		04936D3C1AE3EA1300344903 /* CommandStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandStack.cpp; sourceTree = "<group>"; };
 		04936D3D1AE3EA1300344903 /* CommandStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandStack.h; sourceTree = "<group>"; };
 		04936D3E1AE3EA1300344903 /* DragAndDropHackery.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DragAndDropHackery.cpp; sourceTree = "<group>"; };
@@ -752,6 +772,10 @@
 		04AF0188197971FE002DBAE0 /* lodepng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lodepng.h; sourceTree = "<group>"; };
 		04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPManagerIOS.h; sourceTree = "<group>"; };
 		04B1100B19E34120004BB5B3 /* IAPManagerIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = IAPManagerIOS.mm; sourceTree = "<group>"; };
+		04B72DDF1B0EABD900DCB769 /* MyAssert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MyAssert.cpp; sourceTree = "<group>"; };
+		04B72DE01B0EABD900DCB769 /* MyAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAssert.h; sourceTree = "<group>"; };
+		04B72DE11B0EABD900DCB769 /* TypeInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeInfo.cpp; sourceTree = "<group>"; };
+		04B72DE21B0EABD900DCB769 /* TypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeInfo.h; sourceTree = "<group>"; };
 		04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonHeader.cpp; sourceTree = "<group>"; };
 		04E9EEB31ABF401C00AD4B64 /* CommonHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonHeader.h; sourceTree = "<group>"; };
 		04E9EEB51ABF401C00AD4B64 /* ColorStructs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorStructs.cpp; sourceTree = "<group>"; };
@@ -1498,6 +1522,10 @@
 		04E9EED01ABF401C00AD4B64 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				04B72DDF1B0EABD900DCB769 /* MyAssert.cpp */,
+				04B72DE01B0EABD900DCB769 /* MyAssert.h */,
+				04B72DE11B0EABD900DCB769 /* TypeInfo.cpp */,
+				04B72DE21B0EABD900DCB769 /* TypeInfo.h */,
 				04E9EED11ABF401C00AD4B64 /* ExternalTools.cpp */,
 				04E9EED21ABF401C00AD4B64 /* ExternalTools.h */,
 				04E9EED31ABF401C00AD4B64 /* FileManager.cpp */,
@@ -1652,6 +1680,8 @@
 		04E9EF371ABF401C00AD4B64 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
+				048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */,
+				048AF09D1AF300F600EB4FC7 /* MaterialManager.h */,
 				04E9EF381ABF401C00AD4B64 /* FBODefinition.cpp */,
 				04E9EF391ABF401C00AD4B64 /* FBODefinition.h */,
 				04E9EF3A1ABF401C00AD4B64 /* TextureManager.cpp */,
@@ -1759,6 +1789,7 @@
 				0423ABAA1AE2FD8D00C1AE29 /* BMFont.h in Headers */,
 				0423ABAB1AE2FD8D00C1AE29 /* OpenGLWrapper.h in Headers */,
 				0423ABAC1AE2FD8D00C1AE29 /* Vector.h in Headers */,
+				048AF0A31AF3020000EB4FC7 /* MaterialManager.h in Headers */,
 				0423ABAD1AE2FD8D00C1AE29 /* ListOfShaders.h in Headers */,
 				0423ABAE1AE2FD8D00C1AE29 /* MyMatrix.h in Headers */,
 				0423ABAF1AE2FD8D00C1AE29 /* AnimatedSprite.h in Headers */,
@@ -1773,6 +1804,7 @@
 				0423ABB61AE2FD8D00C1AE29 /* MyTweener.h in Headers */,
 				0423ABB71AE2FD8D00C1AE29 /* MySprite.h in Headers */,
 				0423ABB81AE2FD8D00C1AE29 /* OBJLoader.h in Headers */,
+				04B72DEE1B0EABE300DCB769 /* TypeInfo.h in Headers */,
 				0423ABB91AE2FD8D00C1AE29 /* TextureManager.h in Headers */,
 				0423ABBA1AE2FD8D00C1AE29 /* ShaderGroup.h in Headers */,
 				0423ABBB1AE2FD8D00C1AE29 /* cJSON.h in Headers */,
@@ -1797,6 +1829,7 @@
 				04936D531AE3EA1300344903 /* PanelWatch.h in Headers */,
 				0423ABCE1AE2FD8D00C1AE29 /* ParticleRenderer.h in Headers */,
 				04936D4F1AE3EA1300344903 /* PanelMemory.h in Headers */,
+				04B72DEC1B0EABE300DCB769 /* MyAssert.h in Headers */,
 				0423ABCF1AE2FD8D00C1AE29 /* URLEncode.h in Headers */,
 				0423ABD01AE2FD8D00C1AE29 /* MeshManager.h in Headers */,
 				0423ABD11AE2FD8D00C1AE29 /* VertexFormatManager.h in Headers */,
@@ -1812,11 +1845,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				048AF0A21AF3020000EB4FC7 /* MaterialManager.h in Headers */,
 				044C64901ADED3E100BABD53 /* SpriteBatch.h in Headers */,
 				044C64921ADED3E100BABD53 /* SpriteBatch_XYZVertexColor.h in Headers */,
 				044C64731ADED3D700BABD53 /* GLHelpers.h in Headers */,
 				044C64941ADED3E100BABD53 /* SpriteSheet.h in Headers */,
 				044C645B1ADED3C400BABD53 /* MyMeshLoader.h in Headers */,
+				04B72DEA1B0EABE200DCB769 /* TypeInfo.h in Headers */,
 				044C642E1ADED39700BABD53 /* MyQuaternion.h in Headers */,
 				044C645F1ADED3C900BABD53 /* GameService_MyServer.h in Headers */,
 				044C64291ADED39700BABD53 /* MyActivePool.h in Headers */,
@@ -1845,6 +1880,7 @@
 				044C64691ADED3C900BABD53 /* UDPSocket.h in Headers */,
 				044C64841ADED3DC00BABD53 /* WaveLoader.h in Headers */,
 				044C64491ADED3B800BABD53 /* MyTweener.h in Headers */,
+				04B72DE81B0EABE200DCB769 /* MyAssert.h in Headers */,
 				044C648A1ADED3E100BABD53 /* MySprite.h in Headers */,
 				044C645D1ADED3C400BABD53 /* OBJLoader.h in Headers */,
 				044C649A1ADED3E700BABD53 /* TextureManager.h in Headers */,
@@ -1898,6 +1934,7 @@
 				04E9EF641ABF401C00AD4B64 /* RefCount.h in Headers */,
 				04E9EF8E1ABF401C00AD4B64 /* GLHelpers.h in Headers */,
 				04E9EFAF1ABF401C00AD4B64 /* SpriteSheet.h in Headers */,
+				04B72DE61B0EABD900DCB769 /* TypeInfo.h in Headers */,
 				04E9EF671ABF401C00AD4B64 /* cJSONHelpers.h in Headers */,
 				04E9EF401ABF401C00AD4B64 /* CPPList.h in Headers */,
 				04E9EF511ABF401C00AD4B64 /* glext.h in Headers */,
@@ -1905,6 +1942,7 @@
 				04E9EF5D1ABF401C00AD4B64 /* MyFileObject.h in Headers */,
 				04E9EF771ABF401C00AD4B64 /* OBJLoader.h in Headers */,
 				04E9EF991ABF401C00AD4B64 /* VertexFormatManager.h in Headers */,
+				04B72DE41B0EABD900DCB769 /* MyAssert.h in Headers */,
 				04E9EF9F1ABF401C00AD4B64 /* WaveLoader.h in Headers */,
 				04E9EF7F1ABF401C00AD4B64 /* LeaderboardStorageScoreLoop.h in Headers */,
 				04E9EF571ABF401C00AD4B64 /* ExternalTools.h in Headers */,
@@ -1947,6 +1985,7 @@
 				04E9EF951ABF401C00AD4B64 /* ShaderGroup.h in Headers */,
 				04E9EF5F1ABF401C00AD4B64 /* MyMemory.h in Headers */,
 				A15185C2158BAAA4009A779A /* ViewController.h in Headers */,
+				048AF09F1AF300F600EB4FC7 /* MaterialManager.h in Headers */,
 				04E9EF6F1ABF401C00AD4B64 /* MyAnimation.h in Headers */,
 				04E9EF711ABF401C00AD4B64 /* MyLight.h in Headers */,
 				04E9EF4C1ABF401C00AD4B64 /* BMFont.h in Headers */,
@@ -2071,6 +2110,7 @@
 				0423AB681AE2FD8D00C1AE29 /* StunClient.cpp in Sources */,
 				0423AB691AE2FD8D00C1AE29 /* AnimationKeys.cpp in Sources */,
 				0423AB6A1AE2FD8D00C1AE29 /* cJSONHelpers.cpp in Sources */,
+				04B72DEB1B0EABE300DCB769 /* MyAssert.cpp in Sources */,
 				0423AB6B1AE2FD8D00C1AE29 /* MyTweener.cpp in Sources */,
 				04936D481AE3EA1300344903 /* CommandStack.cpp in Sources */,
 				0423AB6C1AE2FD8D00C1AE29 /* MyAnimation.cpp in Sources */,
@@ -2079,11 +2119,13 @@
 				0423AB6F1AE2FD8D00C1AE29 /* WebRequest.cpp in Sources */,
 				0423AB701AE2FD8D00C1AE29 /* MyMatrix.cpp in Sources */,
 				04936D521AE3EA1300344903 /* PanelWatch.cpp in Sources */,
+				048AF0A11AF301F600EB4FC7 /* MaterialManager.cpp in Sources */,
 				0423AB711AE2FD8D00C1AE29 /* AnimatedSprite.cpp in Sources */,
 				0423AB721AE2FD8D00C1AE29 /* GameCore.cpp in Sources */,
 				0423AB731AE2FD8D00C1AE29 /* TextureLoader.cpp in Sources */,
 				0423AB741AE2FD8D00C1AE29 /* FBODefinition.cpp in Sources */,
 				0423AB751AE2FD8D00C1AE29 /* ColorStructs.cpp in Sources */,
+				04B72DED1B0EABE300DCB769 /* TypeInfo.cpp in Sources */,
 				0423AB761AE2FD8D00C1AE29 /* MyMesh.cpp in Sources */,
 				0423AB771AE2FD8D00C1AE29 /* mtrand.cpp in Sources */,
 				0423AB781AE2FD8D00C1AE29 /* SoundPlayerOpenAL.cpp in Sources */,
@@ -2125,6 +2167,7 @@
 			files = (
 				044C646E1ADED3CE00BABD53 /* ParticleRenderer.cpp in Sources */,
 				044C64831ADED3DC00BABD53 /* WaveLoader.cpp in Sources */,
+				04B72DE91B0EABE200DCB769 /* TypeInfo.cpp in Sources */,
 				044C64771ADED3D700BABD53 /* Shader_Base.cpp in Sources */,
 				044C642F1ADED39700BABD53 /* Plane.cpp in Sources */,
 				044C643A1ADED3B100BABD53 /* OpenGLWrapper.cpp in Sources */,
@@ -2135,6 +2178,7 @@
 				044C64F41ADEE59B00BABD53 /* SavedData.mm in Sources */,
 				044C64501ADED3C400BABD53 /* LightManager.cpp in Sources */,
 				044C64951ADED3E100BABD53 /* SpriteSheet_XYZVertexColor.cpp in Sources */,
+				048AF0A01AF301F500EB4FC7 /* MaterialManager.cpp in Sources */,
 				044C64751ADED3D700BABD53 /* MyFileObjectShader.cpp in Sources */,
 				044C647D1ADED3D700BABD53 /* VertexFormatManager.cpp in Sources */,
 				044C64311ADED39700BABD53 /* Vector.cpp in Sources */,
@@ -2153,6 +2197,7 @@
 				044C650F1ADEFBC100BABD53 /* TextureLoader.cpp in Sources */,
 				044C64971ADED3E700BABD53 /* FBODefinition.cpp in Sources */,
 				044C64261ADED39700BABD53 /* ColorStructs.cpp in Sources */,
+				04B72DE71B0EABE200DCB769 /* MyAssert.cpp in Sources */,
 				044C64581ADED3C400BABD53 /* MyMesh.cpp in Sources */,
 				044C64701ADED3D200BABD53 /* mtrand.cpp in Sources */,
 				044C64811ADED3DC00BABD53 /* SoundPlayerOpenAL.cpp in Sources */,
@@ -2198,6 +2243,7 @@
 				04E9EF561ABF401C00AD4B64 /* ExternalTools.cpp in Sources */,
 				04E9EF581ABF401C00AD4B64 /* FileManager.cpp in Sources */,
 				04E9EF781ABF401C00AD4B64 /* GameService_MyServer.cpp in Sources */,
+				04B72DE51B0EABD900DCB769 /* TypeInfo.cpp in Sources */,
 				04E9EF5E1ABF401C00AD4B64 /* MyMemory.cpp in Sources */,
 				04E9EF431ABF401C00AD4B64 /* MyMatrix.cpp in Sources */,
 				04E9EF6C1ABF401C00AD4B64 /* MeshManager.cpp in Sources */,
@@ -2218,6 +2264,7 @@
 				04E9EF741ABF401C00AD4B64 /* MyMeshLoader.cpp in Sources */,
 				BFEFBC5115249B3500D29F37 /* ExternalToolsIOS.mm in Sources */,
 				04E9EFA61ABF401C00AD4B64 /* MySprite9.cpp in Sources */,
+				048AF09E1AF300F600EB4FC7 /* MaterialManager.cpp in Sources */,
 				04E9EF701ABF401C00AD4B64 /* MyLight.cpp in Sources */,
 				04E9EF3C1ABF401C00AD4B64 /* CommonHeader.cpp in Sources */,
 				04E9EF7C1ABF401C00AD4B64 /* GameServiceManager.cpp in Sources */,
@@ -2254,6 +2301,7 @@
 				A15185C3158BAAA4009A779A /* ViewController.mm in Sources */,
 				04E9EF491ABF401C00AD4B64 /* Vector.cpp in Sources */,
 				04E9EF761ABF401C00AD4B64 /* OBJLoader.cpp in Sources */,
+				04B72DE31B0EABD900DCB769 /* MyAssert.cpp in Sources */,
 				04E9EF5A1ABF401C00AD4B64 /* MessageLog.cpp in Sources */,
 				A18667CF1645923100C623C7 /* cJSON.cpp in Sources */,
 			);

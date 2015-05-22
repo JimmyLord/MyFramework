@@ -152,7 +152,7 @@ void MaterialDefinition::SetName(const char* name)
     if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
         return;
 
-    size_t len = strlen( name );
+    //size_t len = strlen( name );
     
     strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, name );
 
@@ -267,7 +267,11 @@ void MaterialDefinition::SaveMaterial()
     getcwd( workingdir, MAX_PATH * sizeof(char) );
 #endif
     sprintf_s( filename, MAX_PATH, "%s/Data/Materials/", workingdir );
+#if MYFW_WINDOWS
     CreateDirectoryA( filename, 0 );
+#else
+    MyAssert( false );
+#endif
     sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, m_Name );
 
     cJSON* root = cJSON_CreateObject();

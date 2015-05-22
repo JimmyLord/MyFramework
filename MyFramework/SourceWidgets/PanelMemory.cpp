@@ -362,7 +362,7 @@ void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* categor
         idcategory = m_pTree_Materials->AppendItem( idroot, category, -1, -1, 0 );
     }
 
-    int categorycount = (int)m_pTree_Materials->GetChildrenCount( idcategory );
+    //int categorycount = (int)m_pTree_Materials->GetChildrenCount( idcategory );
 
     // insert the Material into it's category
     {

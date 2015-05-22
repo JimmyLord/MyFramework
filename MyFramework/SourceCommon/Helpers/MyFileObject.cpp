@@ -289,8 +289,8 @@ void MyFileObject::Rename(const char* newnamewithoutextension)
 {
     char newfullpath[MAX_PATH];
 
-    int fullpathlen = strlen( m_FullPath );
-    int nameextlen = strlen( m_FilenameWithoutExtension ) + strlen( m_ExtensionWithDot );
+    int fullpathlen = (int)strlen( m_FullPath );
+    int nameextlen = (int)strlen( m_FilenameWithoutExtension ) + (int)strlen( m_ExtensionWithDot );
     int pathlen = fullpathlen - nameextlen;
 
     sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );

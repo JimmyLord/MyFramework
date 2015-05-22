@@ -19,7 +19,7 @@
 
 GLStats g_GLStats;
 
-static GLuint g_CurrentGLBuffers[2] = { 0, 0 };
+//static GLuint g_CurrentGLBuffers[2] = { 0, 0 };
 static GLenum g_CurrentGLActiveTextureUnit = -1;
 
 GLStats::GLStats()
