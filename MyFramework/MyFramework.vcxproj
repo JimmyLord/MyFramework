@@ -1008,6 +1008,8 @@
       <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -8266,6 +8268,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Android'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SourceWidgets\expr_eval.h" />
     <ClInclude Include="SourceWidgets\PanelMemory.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_64|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>

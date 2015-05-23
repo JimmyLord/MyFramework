@@ -8,17 +8,17 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+//#include <assert.h>
 
-void MyAssertFunc(bool condition, const char* file, unsigned long line)
+bool MyAssertFunc(const char* file, unsigned long line)
 {
-    if( condition == false )
-    {
-        LOGInfo( LOGTag, "======================================================\n" );
-        LOGInfo( LOGTag, "%s(%d) - assert failed\n", file, line );
-        LOGInfo( LOGTag, "======================================================\n" );
+    LOGInfo( LOGTag, "======================================================\n" );
+    LOGInfo( LOGTag, "%s(%d) - assert failed\n", file, line );
+    LOGInfo( LOGTag, "======================================================\n" );
 
 #if MYFW_WINDOWS
-        __debugbreak();
+    __debugbreak();
 #endif
-    }
+
+    return false;
 }

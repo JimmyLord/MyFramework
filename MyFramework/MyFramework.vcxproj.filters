@@ -1178,6 +1178,9 @@
     <ClInclude Include="SourceCommon\Helpers\MyAssert.h">
       <Filter>Source\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="SourceWidgets\expr_eval.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SourceIOS\ExternalToolsIOS.mm">

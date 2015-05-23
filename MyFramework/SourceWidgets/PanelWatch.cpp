@@ -12,6 +12,7 @@
 
 #include "../../Framework/MyFramework/SourceWidgets/EditorCommands.h"
 #include "../../Framework/MyFramework/SourceWidgets/CommandStack.h"
+#include "expr_eval.h"
 
 PanelWatch* g_pPanelWatch = 0;
 wxDataFormat* g_pPanelWatchDataFormat = 0;
@@ -836,7 +837,11 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         return isblank;
     }
 
-    // TODO: evaluate wxstr as math op, not just a simple atoi or atof.
+    // evaluate wxstr as math op, not just a simple atoi or atof.
+    ExprEval eval;
+    double evaluatedvalue = eval.Eval( wxstr.char_str() );
+    if( eval.GetErr() != EEE_NO_ERROR )
+        evaluatedvalue = 0;
 
     //double valueint;
     switch( m_pVariables[controlid].m_Type )
@@ -846,7 +851,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(int*)m_pVariables[controlid].m_Pointer;
-            *valuenew = wxAtoi( wxstr );
+            *valuenew = evaluatedvalue; //wxAtoi( wxstr );
             //*((int*)m_pVariables[controlid].m_Pointer) = valueint;
         }
         break;
@@ -855,7 +860,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(unsigned int*)m_pVariables[controlid].m_Pointer;
-            *valuenew = wxAtoi( wxstr );
+            *valuenew = evaluatedvalue; //wxAtoi( wxstr );
             //*((unsigned int*)m_pVariables[controlid].m_Pointer) = valueint;
         }
         break;
@@ -864,7 +869,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(char*)m_pVariables[controlid].m_Pointer;
-            *valuenew = wxAtoi( wxstr );
+            *valuenew = evaluatedvalue; //wxAtoi( wxstr );
             //*((char*)m_pVariables[controlid].m_Pointer) = (char)valueint;
         }
         break;
@@ -873,7 +878,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(unsigned char*)m_pVariables[controlid].m_Pointer;
-            *valuenew = wxAtoi( wxstr );
+            *valuenew = evaluatedvalue; //wxAtoi( wxstr );
             //*((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valueint;
         }
         break;
@@ -882,7 +887,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(bool*)m_pVariables[controlid].m_Pointer;
-            *valuenew = wxAtoi( wxstr );
+            *valuenew = evaluatedvalue; //wxAtoi( wxstr );
             //*((bool*)m_pVariables[controlid].m_Pointer) = valueint > 0 ? true : false;
         }
         break;
@@ -891,7 +896,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(float*)m_pVariables[controlid].m_Pointer;
-            wxstr.ToDouble( valuenew );
+            *valuenew = evaluatedvalue; //wxstr.ToDouble( valuenew );
             //*((float*)m_pVariables[controlid].m_Pointer) = (float)valuedouble;
         }
         break;
@@ -900,7 +905,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         //if( isblank == false )
         {
             *valueold = *(double*)m_pVariables[controlid].m_Pointer;
-            wxstr.ToDouble( valuenew );
+            *valuenew = evaluatedvalue; //wxstr.ToDouble( valuenew );
             //*((double*)m_pVariables[controlid].m_Pointer) = valuedouble;
         }
         break;

@@ -12,9 +12,9 @@
 
 #if _DEBUG
 
-#define MyAssert(condition) MyAssertFunc(condition, __FILE__, __LINE__)
+#define MyAssert(condition) ((condition) || MyAssertFunc(__FILE__, __LINE__))
 
-void MyAssertFunc(bool condition, const char* file = __FILE__, unsigned long line = __LINE__);
+bool MyAssertFunc(const char* file = __FILE__, unsigned long line = __LINE__);
 
 #else
 
