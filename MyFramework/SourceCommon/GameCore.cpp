@@ -144,6 +144,21 @@ double GameCore::Tick(double TimePassed)
 
     m_TimeSinceGameStarted += (float)TimePassed;
 
+    // generate held messages for keys and buttons.
+    {
+        for( int i=0; i<255; i++ )
+        {
+            if( m_KeysHeld[i] )
+                g_pGameCore->OnKey( GCBA_Held, i, i );
+        }
+
+        for( int i=0; i<GCBI_NumButtons; i++ )
+        {
+            if( m_ButtonsHeld[i] == true )
+                OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
+        }
+    }
+
     //if( m_GLSurfaceIsValid == false )
     //    return;
 
@@ -287,17 +302,6 @@ void GameCore::OnTouch(int action, int id, float x, float y, float pressure, flo
     m_LastInputMethodUsed = InputMethod_Touch;
 
     //LOGInfo( LOGTag, "GameCore: OnTouch (%d %d)(%f,%f)(%f %f)\n", action, id, x, y, pressure, size);
-}
-
-void GameCore::GenerateButtonHeldMessages()
-{
-    for( int i=0; i<GCBI_NumButtons; i++ )
-    {
-        if( m_ButtonsHeld[i] == true )
-        {
-            OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
-        }
-    }
 }
 
 void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)

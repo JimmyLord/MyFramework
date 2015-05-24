@@ -114,16 +114,14 @@ public:
     virtual void OnKey(GameCoreButtonActions action, int keycode, int unicodechar);
 
     // OnKeyDown and OnKeyUp are used by platform-specific code, games should override OnKeys();
-    void GenerateButtonHeldMessages();
-    virtual void OnKeyDown(int keycode, int unicodechar);
-    virtual void OnKeyUp(int keycode, int unicodechar);
+    void OnKeyDown(int keycode, int unicodechar);
+    void OnKeyUp(int keycode, int unicodechar);
 
     virtual bool IsKeyHeld(int keycode);
 
     virtual void OnPurchaseComplete(const char* id, const char* sku, IAPErrorCodes errorcode, bool newpurchase) { }
 
     virtual const char* GetMatchmakingGameName() { return 0; }
-
 };
 
 #endif //__GameCore_H__

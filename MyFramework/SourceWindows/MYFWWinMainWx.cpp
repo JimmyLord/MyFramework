@@ -807,14 +807,6 @@ void MainGLCanvas::Draw()
             g_pMainApp->m_HasFocus = false;
         }
 
-        for( int i=0; i<512; i++ )
-        {
-            if( m_KeysDown[i] )
-                g_pGameCore->OnKey( GCBA_Held, i, i );
-        }
-
-        g_pGameCore->GenerateButtonHeldMessages();
-
         if( m_TickGameCore )
         {
             double currtime = MyTime_GetRunningTime();

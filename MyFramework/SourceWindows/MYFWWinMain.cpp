@@ -104,25 +104,14 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
 
         if( keys[i] == 1 && keysold[i] == 0 )
         {
-            if( i == MYKEYCODE_BACKSPACE )
-                pGameCore->OnKeyDown( i, i );
-            else if( i == MYKEYCODE_ESC )
+            // If the game is set to quit on escape, then quit.
+            if( i == MYKEYCODE_ESC )
             {
                 if( g_EscapeButtonWillQuit )
                     g_CloseProgramRequested = true;
-
-                pGameCore->OnButtons( GCBA_Down, GCBI_Back );
-                //pGameCore->OnKeyDown( 27, 27 );
             }
-            else if( i == MYKEYCODE_LEFT )
-                pGameCore->OnKeyDown( 37, 37 );
-            else if( i == MYKEYCODE_UP )
-                pGameCore->OnKeyDown( 38, 38 );
-            else if( i == MYKEYCODE_RIGHT )
-                pGameCore->OnKeyDown( 39, 39 );
-            else if( i == MYKEYCODE_DOWN )
-                pGameCore->OnKeyDown( 40, 40 );
-            else if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
+            
+            if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
                 pGameCore->OnKeyDown( i+32, i+32 );
             else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
                 pGameCore->OnKeyDown( i, i );
@@ -132,22 +121,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
 
         if( keys[i] == 0 && keysold[i] == 1 )
         {
-            if( i == MYKEYCODE_BACKSPACE )
-                pGameCore->OnKeyUp( i, i );
-            else if( i == MYKEYCODE_ESC )
-            {
-                pGameCore->OnButtons( GCBA_Up, GCBI_Back );
-                //pGameCore->OnKeyUp( 27, 27 );
-            }
-            else if( i == MYKEYCODE_LEFT )
-                pGameCore->OnKeyUp( 37, 37 );
-            else if( i == MYKEYCODE_UP )
-                pGameCore->OnKeyUp( 38, 38 );
-            else if( i == MYKEYCODE_RIGHT )
-                pGameCore->OnKeyUp( 39, 39 );
-            else if( i == MYKEYCODE_DOWN )
-                pGameCore->OnKeyUp( 40, 40 );
-            else if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
+            if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
                 pGameCore->OnKeyUp( i+32, i+32 );
             else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
                 pGameCore->OnKeyUp( i, i );

@@ -264,7 +264,6 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
         }
     }
 
-LOGInfo( LOGTag, "delete %d \n" );
     cJSON_Delete( root );
 
     m_MeshReady = true;
