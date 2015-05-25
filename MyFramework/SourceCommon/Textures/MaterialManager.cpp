@@ -117,7 +117,7 @@ void MaterialDefinition::ImportFromFile()
         if( texcolorstringobj )
         {
             TextureDefinition* pTexture = g_pTextureManager->FindTexture( texcolorstringobj->valuestring );
-            MyAssert( pTexture ); // fix
+            //MyAssert( pTexture ); // fix
             if( pTexture )
             {
                 pTexture->AddRef();

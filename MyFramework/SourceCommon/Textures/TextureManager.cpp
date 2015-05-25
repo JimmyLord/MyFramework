@@ -297,7 +297,7 @@ void TextureManager::Tick()
             if( pTextureDef->m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
             {
                 LOGError( LOGTag, "File load failed %s\n", pTextureDef->m_Filename );
-                SAFE_DELETE( pTextureDef );
+                SAFE_RELEASE( pTextureDef );
             }
         }
 #endif

@@ -19,6 +19,17 @@ class CommandStack;
 #define MAX_PanelWatch_VARIABLES        400
 #define WXSlider_Float_Multiplier       10000.0f
 
+enum PanelWatchControlTypes
+{
+    PanelWatchControlType_StaticText,
+    PanelWatchControlType_TextCtrl,
+    PanelWatchControlType_Slider,
+    PanelWatchControlType_Button,
+    PanelWatchControlType_ColourPicker,
+    PanelWatchControlType_ChoiceBox,
+    PanelWatchControlType_NumTypes,
+};
+
 struct PanelWatchControlInfo
 {
     int height;
@@ -127,7 +138,10 @@ public:
     VariableProperties* m_pVariables;
     CommandStack* m_pCommandStack;
 
+    std::vector<wxControl*> m_Controls[PanelWatchControlType_NumTypes];
+
 protected:
+    wxControl* GetControlOfType(PanelWatchControlTypes type);
     void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname);
 
 public:

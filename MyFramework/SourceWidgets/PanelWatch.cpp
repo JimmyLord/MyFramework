@@ -97,6 +97,15 @@ PanelWatch::~PanelWatch()
 {
     ClearAllVariables();
 
+    for( int type=0; type<PanelWatchControlType_NumTypes; type++ )
+    {
+        for( unsigned int i=0; i<m_Controls[type].size(); i++ )
+        {
+            this->RemoveChild( m_Controls[type][i] );
+            SAFE_DELETE( m_Controls[type][i] );
+        }
+    }
+
     SAFE_DELETE_ARRAY( m_pVariables );
 
     SAFE_DELETE( m_pTimer );
@@ -115,26 +124,52 @@ void PanelWatch::ClearAllVariables()
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
     {
         if( m_pVariables[i].m_Handle_StaticText != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_StaticText );
+        {
+            m_pVariables[i].m_Handle_StaticText->Show( false );
+            //m_pVariables[i].m_Handle_StaticText->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText) );
+        }
         if( m_pVariables[i].m_Handle_TextCtrl != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_TextCtrl );
+        {
+            m_pVariables[i].m_Handle_TextCtrl->Show( false );
+        }
         if( m_pVariables[i].m_Handle_Slider != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_Slider );
+        {
+            m_pVariables[i].m_Handle_Slider->Show( false );
+        }
         if( m_pVariables[i].m_Handle_Button != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_Button );
+        {
+            m_pVariables[i].m_Handle_Button->Show( false );
+        }
         if( m_pVariables[i].m_Handle_ColourPicker != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_ColourPicker );
+        {
+            m_pVariables[i].m_Handle_ColourPicker->Show( false );
+        }
         if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
-            this->RemoveChild( m_pVariables[i].m_Handle_ChoiceBox );
+        {
+            m_pVariables[i].m_Handle_ChoiceBox->Show( false );
+        }
+
+        //if( m_pVariables[i].m_Handle_StaticText != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_StaticText );
+        //if( m_pVariables[i].m_Handle_TextCtrl != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_TextCtrl );
+        //if( m_pVariables[i].m_Handle_Slider != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_Slider );
+        //if( m_pVariables[i].m_Handle_Button != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_Button );
+        //if( m_pVariables[i].m_Handle_ColourPicker != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_ColourPicker );
+        //if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_ChoiceBox );
 
         SAFE_DELETE_ARRAY( m_pVariables[i].m_pEnumStrings );
 
-        SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
-        SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
-        SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
-        SAFE_DELETE( m_pVariables[i].m_Handle_Button );
-        SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
-        SAFE_DELETE( m_pVariables[i].m_Handle_ChoiceBox );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_Button );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_ChoiceBox );
 
         m_pVariables[i].m_Pointer = 0;
         m_pVariables[i].m_Range.Set( 0, 0 );
@@ -388,6 +423,99 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallb
     return m_NumVariables-1;
 }
 
+wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
+{
+    // look for an existing control of this type that isn't visible and return it.
+    for( unsigned int i=0; i<m_Controls[type].size(); i++ )
+    {
+        if( m_Controls[type][i]->IsShown() == false )
+        {
+            m_Controls[type][i]->Show( true );
+            return m_Controls[type][i];
+        }
+    }
+
+    wxControl* pControlHandle = 0;
+
+    // if none found, create a new one
+    switch( type )
+    {
+    case PanelWatchControlType_StaticText:
+        {
+            pControlHandle = MyNew wxStaticText( this, 0, wxEmptyString );
+            
+            pControlHandle->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText), 0, this );
+            //pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            //pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        }
+        break;
+
+    case PanelWatchControlType_TextCtrl:
+        {
+            pControlHandle = MyNew wxTextCtrl( this, 0 );
+
+            // if control gets focus, stop updates.
+            pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnEditBoxKillFocus), 0, this );
+
+            pControlHandle->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+            pControlHandle->Connect( wxEVT_RIGHT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+            pControlHandle->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+        }
+        break;
+
+    case PanelWatchControlType_Slider:
+        {
+            pControlHandle = MyNew wxSlider( this, 0, 0, 0, 0 );
+
+            // if control gets focus, stop updates.
+            pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+
+            //pControlHandle->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
+            //pControlHandle->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
+            //pControlHandle->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+        }
+        break;
+
+    case PanelWatchControlType_Button:
+        {
+            pControlHandle = MyNew wxButton( this, 0 );
+
+            // setup callback for when button is pressed.
+            pControlHandle->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PanelWatch::OnButtonPressed), 0, this );
+        }
+        break;
+
+    case PanelWatchControlType_ColourPicker:
+        {
+            pControlHandle = MyNew wxColourPickerCtrl( this, 0 );
+
+            // if control gets focus, stop updates.
+            pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        }
+        break;
+
+    case PanelWatchControlType_ChoiceBox:
+        {
+            pControlHandle = MyNew wxChoice( this, 0 );
+
+            // if control gets focus, stop updates.
+            pControlHandle->Connect( wxEVT_CHOICE, wxCommandEventHandler(PanelWatch::OnChoiceBoxChanged), 0, this );
+            pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+        }
+        break;
+    }
+
+    assert( pControlHandle );
+    pControlHandle->SetParent( this );
+    m_Controls[type].push_back( pControlHandle );
+
+    return m_Controls[type].back();
+}
+
 void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname)
 {
     int PaddingTop = 3;
@@ -472,22 +600,30 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     // Text label
     if( m_pVariables[variablenum].m_Type != PanelWatchType_Button )
     {
-        m_pVariables[variablenum].m_Handle_StaticText = MyNew wxStaticText( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight), pInfo->labelstyle );
+        m_pVariables[variablenum].m_Handle_StaticText = (wxStaticText*)GetControlOfType( PanelWatchControlType_StaticText );
+        MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticText ) != 0 );
+
+        //m_pVariables[variablenum].m_Handle_StaticText->Create( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight), pInfo->labelstyle );
+        m_pVariables[variablenum].m_Handle_StaticText->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_StaticText->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_StaticText->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
+        m_pVariables[variablenum].m_Handle_StaticText->SetWindowStyle( pInfo->labelstyle );
+        m_pVariables[variablenum].m_Handle_StaticText->SetLabel( variablename );
         m_pVariables[variablenum].m_Handle_StaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
 
         if( m_pVariables[variablenum].m_Type == PanelWatchType_SpaceWithLabel )
         {
-            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxColour(0,100,0,0) );
+            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxColour(0,100,0,255) );
             m_pVariables[variablenum].m_Handle_StaticText->SetForegroundColour( wxColour(255,255,255,255) );
+        }
+        else
+        {
+            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxNullColour );
+            m_pVariables[variablenum].m_Handle_StaticText->SetForegroundColour( wxNullColour );
         }
 
         PosX += LabelWidth;
         m_pVariables[variablenum].m_Rect_XYWH.w += pInfo->labelpaddingbottom;
-
-        m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText), 0, this );
-
-        //m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        //m_pVariables[variablenum].m_Handle_StaticText->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
     }
 
     // Slider
@@ -501,41 +637,41 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             sliderfloatmultiplier = WXSlider_Float_Multiplier;
         }
 
-        wxSlider* pSlider = MyNew wxSlider( this, variablenum, 0,
-            m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier, // min
-            m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier, // max
-            wxPoint(PosX, PosY), wxSize(SliderWidth, SliderHeight) );
+        //wxSlider* pSlider = MyNew wxSlider( this, variablenum, 0,
+        //    m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier, // min
+        //    m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier, // max
+        //    wxPoint(PosX, PosY), wxSize(SliderWidth, SliderHeight) );
+        //m_pVariables[variablenum].m_Handle_Slider = pSlider;
 
-        m_pVariables[variablenum].m_Handle_Slider = pSlider;
+        m_pVariables[variablenum].m_Handle_Slider = (wxSlider*)GetControlOfType( PanelWatchControlType_Slider );
+        MyAssert( dynamic_cast<wxSlider*>( m_pVariables[variablenum].m_Handle_Slider ) != 0 );
+
+        m_pVariables[variablenum].m_Handle_Slider->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_Slider->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_Slider->SetInitialSize( wxSize(SliderWidth, SliderHeight) );
+        m_pVariables[variablenum].m_Handle_Slider->SetRange( m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier,
+                                                             m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier );
 
         PosX += SliderWidth;
-
-        // if control gets focus, stop updates.
-        pSlider->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        pSlider->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
-
-        //pSlider->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        //pSlider->Connect( wxEVT_LEFT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
-        //pSlider->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
     }
 
     // Edit box
     if( g_PanelWatchControlInfo[type].editboxwidth != -1 )
     {
-        wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
-            wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
+        //wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
+        //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
+        //m_pVariables[variablenum].m_Handle_TextCtrl = pTextCtrl;
 
-        m_pVariables[variablenum].m_Handle_TextCtrl = pTextCtrl;
+        m_pVariables[variablenum].m_Handle_TextCtrl = (wxTextCtrl*)GetControlOfType( PanelWatchControlType_TextCtrl );
+        MyAssert( dynamic_cast<wxTextCtrl*>( m_pVariables[variablenum].m_Handle_TextCtrl ) != 0 );
+
+        m_pVariables[variablenum].m_Handle_TextCtrl->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_TextCtrl->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_TextCtrl->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        m_pVariables[variablenum].m_Handle_TextCtrl->SetWindowStyle( wxTE_PROCESS_ENTER );
+        m_pVariables[variablenum].m_Handle_TextCtrl->SetValue( variablename );
 
         PosX += TextCtrlWidth;
-
-        // if control gets focus, stop updates.
-        pTextCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        pTextCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnEditBoxKillFocus), 0, this );
-
-        pTextCtrl->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
-        pTextCtrl->Connect( wxEVT_RIGHT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
-        pTextCtrl->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
 
         if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         {
@@ -544,57 +680,66 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
             pDropTarget->m_ControlIndex = variablenum;
 
-            pTextCtrl->SetDropTarget( pDropTarget );            
+            m_pVariables[variablenum].m_Handle_TextCtrl->SetDropTarget( pDropTarget );            
         }
     }
 
     if( g_PanelWatchControlInfo[type].choiceboxwidth != -1 )
     {
         // add a drop list for enum types.
-        wxChoice* pChoiceBox = MyNew wxChoice( this, variablenum,
-            wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), m_pVariables[variablenum].m_NumEnumTypes,
-            m_pVariables[variablenum].m_pEnumStrings, wxTE_PROCESS_ENTER );
+        //wxChoice* pChoiceBox = MyNew wxChoice( this, variablenum,
+        //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), m_pVariables[variablenum].m_NumEnumTypes,
+        //    m_pVariables[variablenum].m_pEnumStrings, wxTE_PROCESS_ENTER );
+        //m_pVariables[variablenum].m_Handle_ChoiceBox = pChoiceBox;
 
-        pChoiceBox->SetSelection( *(int*)m_pVariables[variablenum].m_Pointer );
+        m_pVariables[variablenum].m_Handle_ChoiceBox = (wxChoice*)GetControlOfType( PanelWatchControlType_ChoiceBox );
+        MyAssert( dynamic_cast<wxChoice*>( m_pVariables[variablenum].m_Handle_ChoiceBox ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_ChoiceBox = pChoiceBox;
+        m_pVariables[variablenum].m_Handle_ChoiceBox->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_ChoiceBox->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_ChoiceBox->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        m_pVariables[variablenum].m_Handle_ChoiceBox->SetWindowStyle( wxTE_PROCESS_ENTER );
+        m_pVariables[variablenum].m_Handle_ChoiceBox->Set( m_pVariables[variablenum].m_NumEnumTypes, m_pVariables[variablenum].m_pEnumStrings );
+
+        m_pVariables[variablenum].m_Handle_ChoiceBox->SetSelection( *(int*)m_pVariables[variablenum].m_Pointer );
 
         PosX += g_PanelWatchControlInfo[type].choiceboxwidth;
-
-        // if control gets focus, stop updates.
-        pChoiceBox->Connect( wxEVT_CHOICE, wxCommandEventHandler(PanelWatch::OnChoiceBoxChanged), 0, this );
-        pChoiceBox->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        pChoiceBox->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
     }
 
     // Button
     if( m_pVariables[variablenum].m_Type == PanelWatchType_Button )
     {
-        wxButton* pButton = MyNew wxButton( this, variablenum, name,
-            wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight) );
+        //wxButton* pButton = MyNew wxButton( this, variablenum, name,
+        //    wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight) );
+        //m_pVariables[variablenum].m_Handle_Button = pButton;
 
-        m_pVariables[variablenum].m_Handle_Button = pButton;
+        m_pVariables[variablenum].m_Handle_Button = (wxButton*)GetControlOfType( PanelWatchControlType_Button );
+        MyAssert( dynamic_cast<wxButton*>( m_pVariables[variablenum].m_Handle_Button ) != 0 );
+
+        m_pVariables[variablenum].m_Handle_Button->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_Button->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_Button->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
+        m_pVariables[variablenum].m_Handle_Button->SetLabel( variablename );
 
         PosX += TextCtrlWidth;
-
-        // setup callback for when button is pressed.
-        pButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PanelWatch::OnButtonPressed), 0, this );
     }
 
     if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat ||
         m_pVariables[variablenum].m_Type == PanelWatchType_ColorByte )
     {
         // TODO: change this to a color picker that supports alpha.
-        wxColourPickerCtrl* pCtrl = MyNew wxColourPickerCtrl( this, variablenum, "",
-            wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight) );
+        //wxColourPickerCtrl* pCtrl = MyNew wxColourPickerCtrl( this, variablenum, "",
+        //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight) );
+        //m_pVariables[variablenum].m_Handle_ColourPicker = pCtrl;
 
-        m_pVariables[variablenum].m_Handle_ColourPicker = pCtrl;
+        m_pVariables[variablenum].m_Handle_ColourPicker = (wxColourPickerCtrl*)GetControlOfType( PanelWatchControlType_ColourPicker );
+        MyAssert( dynamic_cast<wxColourPickerCtrl*>( m_pVariables[variablenum].m_Handle_ColourPicker ) != 0 );
+
+        m_pVariables[variablenum].m_Handle_ColourPicker->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_ColourPicker->SetPosition( wxPoint(PosX, PosY) );
+        m_pVariables[variablenum].m_Handle_ColourPicker->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
 
         PosX += TextCtrlWidth;
-
-        // if control gets focus, stop updates.
-        pCtrl->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
-        pCtrl->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
         //if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         //{
