@@ -36,23 +36,8 @@ public:
 
     TextureDefinition* m_pTextureDef;
 
-    FontDefinition()
-    {
-        m_FullyLoaded = false;
-        m_FriendlyName[0] = 0;
-        m_Filename[0] = 0;
-        m_pFile = 0;
-        m_pFont = 0;
-
-        m_pTextureDef = 0;
-    }
-
-    virtual ~FontDefinition()
-    {
-        this->Remove();
-        g_pFileManager->FreeFile( m_pFile );
-        SAFE_DELETE( m_pFont );
-    }
+    FontDefinition();
+    virtual ~FontDefinition();
 };
 
 class FontManager

@@ -59,6 +59,13 @@ public:
     void SetTextureColor(TextureDefinition* pTexture);
     TextureDefinition* GetTextureColor() { return m_pTextureColor; }
 
+    void SetColorAmbient(ColorByte color) { m_ColorAmbient = color; }
+    ColorByte GetColorAmbient() { return m_ColorAmbient; }
+    void SetColorDiffuse(ColorByte color) { m_ColorDiffuse = color; }
+    ColorByte GetColorDiffuse() { return m_ColorDiffuse; }
+    void SetColorSpecular(ColorByte color) { m_ColorSpecular = color; }
+    ColorByte GetColorSpecular() { return m_ColorSpecular; }
+
 public:
 #if MYFW_USING_WX
     enum RightClickOptions
