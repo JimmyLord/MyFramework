@@ -69,19 +69,18 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     }
 
 	// TODO: if multiple selected, show common properties.
-    if( numselected > 0 )
-    //for( unsigned int i=0; i<numselected; i++ )
+    //unsigned int i = 0;
+    //if( numselected > 0 )
+    for( unsigned int i=0; i<numselected; i++ )
     {
-        int i = 0;
-
         // pass left click event through to the item.
         wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
         //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
 
-        if( i == 0 && pData && pData->m_pLeftClickFunction )
+        if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject );
+            pData->m_pLeftClickFunction( pData->m_pObject, i );
         }
     }
 
@@ -283,7 +282,7 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
     return m_pTree_Objects->GetRootItem();
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
 {
     MyAssert( pObject != 0 );
 
@@ -314,7 +313,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback p
     return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
 }
 
-void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
+void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -332,7 +331,7 @@ void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallback pLe
     }
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
 {
     MyAssert( pObject != 0 );
 

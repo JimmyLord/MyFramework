@@ -332,7 +332,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     m_pNotebook->SetPageText( PanelMemoryPage_Textures, tempstr );
 }
 
-void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pMaterial != 0 );
 
@@ -403,7 +403,7 @@ void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
     }
 }
 
-void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -433,7 +433,7 @@ void PanelMemory::UpdateRootNodeMaterialCount()
     m_pNotebook->SetPageText( PanelMemoryPage_Materials, tempstr );
 }
 
-void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallback pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pFile != 0 );
 
@@ -623,7 +623,7 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject );
+            pData->m_pLeftClickFunction( pData->m_pObject, 0 );
         }
     }
 }

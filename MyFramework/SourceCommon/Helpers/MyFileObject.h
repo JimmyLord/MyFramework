@@ -72,8 +72,8 @@ public:
         RightClick_OpenFile,
     };
 
-    static void StaticOnLeftClick(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnLeftClick(); }
-    void OnLeftClick();
+    static void StaticOnLeftClick(void* pObjectPtr, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
+    void OnLeftClick(unsigned int count);
     static void StaticOnRightClick(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).

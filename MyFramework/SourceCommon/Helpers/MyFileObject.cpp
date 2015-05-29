@@ -123,7 +123,7 @@ MyFileObject::~MyFileObject()
 }
 
 #if MYFW_USING_WX
-void MyFileObject::OnLeftClick()
+void MyFileObject::OnLeftClick(unsigned int count)
 {
 }
 

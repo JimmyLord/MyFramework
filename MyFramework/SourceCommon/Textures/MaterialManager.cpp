@@ -187,7 +187,7 @@ void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
 }
 
 #if MYFW_USING_WX
-void MaterialDefinition::OnLeftClick()
+void MaterialDefinition::OnLeftClick(unsigned int count)
 {
 }
 
@@ -543,7 +543,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
 }
 
 #if MYFW_USING_WX
-void MaterialManager::OnLeftClick()
+void MaterialManager::OnLeftClick(unsigned int count)
 {
 }
 

@@ -66,8 +66,8 @@ public:
         RightClick_ViewInWatchWindow = 1000,
     };
 
-    static void StaticOnLeftClick(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick(); }
-    void OnLeftClick();
+    static void StaticOnLeftClick(void* pObjectPtr, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
+    void OnLeftClick(unsigned int count);
     static void StaticOnRightClick(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
@@ -114,8 +114,8 @@ public:
 
 public:
 #if MYFW_USING_WX
-    static void StaticOnLeftClick(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnLeftClick(); }
-    void OnLeftClick();
+    static void StaticOnLeftClick(void* pObjectPtr, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
+    void OnLeftClick(unsigned int index);
     
     static void StaticOnRightClick(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
