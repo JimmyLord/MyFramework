@@ -36,6 +36,9 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 {
     *this = *pSprite;
 
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
+
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
     memcpy( pVerts, pSprite->m_pVertexBuffer->m_pData, sizeof(Vertex_Sprite)*4);
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
