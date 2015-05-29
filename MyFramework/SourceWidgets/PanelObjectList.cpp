@@ -31,6 +31,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
 
     m_pCallbackFunctionObject = 0;
     m_pOnTreeSelectionChangedFunction = 0;
+    m_UpdatePanelWatchOnSelection = true;
 
     Update();
 
@@ -48,7 +49,8 @@ PanelObjectList::~PanelObjectList()
 
 void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
-    UpdatePanelWatchWithSelectedItems();
+    if( m_UpdatePanelWatchOnSelection )
+        UpdatePanelWatchWithSelectedItems();
 }
 
 void PanelObjectList::UpdatePanelWatchWithSelectedItems()
@@ -237,6 +239,16 @@ void PanelObjectList::SelectObject(void* pObject)
     if( id.IsOk() )
     {
         m_pTree_Objects->SelectItem( id );
+    }
+}
+
+void PanelObjectList::UnselectObject(void* pObject)
+{
+    wxTreeItemId id = FindObject( pObject );
+
+    if( id.IsOk() )
+    {
+        m_pTree_Objects->UnselectItem( id );
     }
 }
 
