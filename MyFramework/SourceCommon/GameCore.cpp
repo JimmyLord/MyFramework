@@ -52,10 +52,11 @@ GameCore::~GameCore()
 {
     LOGInfo( LOGTag, "GameCore::~GameCore()\n" );
 
-    g_FontManager.FreeAllFonts();
+    g_pFontManager->FreeAllFonts();
 
     SAFE_DELETE( g_pMaterialManager );
     SAFE_DELETE( g_pTextureManager );
+    SAFE_DELETE( g_pFontManager );
     SAFE_DELETE( g_pBufferManager );
     SAFE_DELETE( g_pMeshManager );
     SAFE_DELETE( g_pLightManager );
@@ -82,6 +83,8 @@ void GameCore::InitializeManagers()
         g_pFileManager = MyNew FileManager;
     if( g_pTextureManager == 0 )
         g_pTextureManager = MyNew TextureManager;
+    if( g_pFontManager == 0 )
+        g_pFontManager = MyNew FontManager;
     if( g_pMaterialManager == 0 )
         g_pMaterialManager = MyNew MaterialManager;
     if( g_pBufferManager == 0 )
@@ -166,7 +169,7 @@ double GameCore::Tick(double TimePassed)
     g_pTextureManager->Tick();
     g_pMaterialManager->Tick();
     g_pBufferManager->Tick();
-    g_FontManager.Tick();
+    g_pFontManager->Tick();
 #if MYFW_BLACKBERRY10
     if( m_WindowWidth == m_WindowHeight )
         g_pGameServiceManager->Tick( "Q10" );

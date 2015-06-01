@@ -12,13 +12,13 @@
 #include "FontManager.h"
 #include "../Helpers/FileManager.h"
 
-FontManager g_FontManager;
+FontManager* g_pFontManager = 0;
 
 FontDefinition::FontDefinition()
 {
     m_FullyLoaded = false;
     m_FriendlyName[0] = 0;
-    m_Filename[0] = 0;
+    //m_Filename[0] = 0;
     m_pFile = 0;
     m_pFont = 0;
 
@@ -28,16 +28,33 @@ FontDefinition::FontDefinition()
 FontDefinition::~FontDefinition()
 {
     this->Remove();
-    g_pFileManager->FreeFile( m_pFile );
+    SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureDef );
     SAFE_DELETE( m_pFont );
 }
 
-FontDefinition* FontManager::CreateFont( const char* fontfilename )
+FontDefinition* FontManager::CreateFont(const char* fontfilename)
 {
     FontDefinition* pFontDef = MyNew FontDefinition();
-    strcpy_s( pFontDef->m_Filename, MAX_PATH, fontfilename );
+    //strcpy_s( pFontDef->m_Filename, MAX_PATH, fontfilename );
     pFontDef->m_pFile = RequestFile( fontfilename ); //"Data/Fonts/System24.fnt" );
+
+    m_FontsStillLoading.AddTail( pFontDef );
+
+    return pFontDef;
+}
+
+FontDefinition* FontManager::CreateFont(MyFileObject* pFile)
+{
+    MyAssert( pFile );
+
+    FontDefinition* pFontDef = FindFont( pFile );
+    if( pFontDef )
+        return pFontDef;
+
+    pFontDef = MyNew FontDefinition();
+    pFontDef->m_pFile = pFile;
+    pFile->AddRef();
 
     m_FontsStillLoading.AddTail( pFontDef );
 
@@ -59,8 +76,8 @@ void FontManager::Tick()
 
             // load the texture the font is stored on.
             char tempname[MAX_PATH];
-            strcpy_s( tempname, MAX_PATH, pFontDef->m_Filename );
-            for( int i=(int)strlen(pFontDef->m_Filename)-1; i>=0; i-- )
+            strcpy_s( tempname, MAX_PATH, pFontDef->m_pFile->m_FullPath );
+            for( int i=(int)strlen(pFontDef->m_pFile->m_FullPath)-1; i>=0; i-- )
             {
                 if( tempname[i] == '/' || tempname[i] == '\\' )
                     break;
@@ -81,7 +98,7 @@ void FontManager::Tick()
     }
 }
 
-FontDefinition* FontManager::FindFont( const char* friendlyname )
+FontDefinition* FontManager::FindFont(const char* friendlyname)
 {
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
     {
@@ -92,6 +109,23 @@ FontDefinition* FontManager::FindFont( const char* friendlyname )
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( strcmp( ((FontDefinition*)pNode)->m_FriendlyName, friendlyname ) == 0 )
+            return (FontDefinition*)pNode;
+    }
+
+    return 0;
+}
+
+FontDefinition* FontManager::FindFont(MyFileObject* pFile)
+{
+    for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( ((FontDefinition*)pNode)->m_pFile == pFile )
+            return (FontDefinition*)pNode;
+    }
+
+    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( ((FontDefinition*)pNode)->m_pFile == pFile )
             return (FontDefinition*)pNode;
     }
 
