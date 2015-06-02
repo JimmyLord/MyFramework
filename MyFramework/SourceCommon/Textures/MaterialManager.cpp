@@ -418,12 +418,14 @@ void MaterialManager::FreeAllMaterials()
 {
     while( CPPListNode* pNode = m_MaterialsStillLoading.GetHead() )
     {
+        MyAssert( false );
         MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
         ((MaterialDefinition*)pNode)->Release();
     }
 
     while( CPPListNode* pNode = m_Materials.GetHead() )
     {
+        MyAssert( false );
         MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
         ((MaterialDefinition*)pNode)->Release();
     }

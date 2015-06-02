@@ -967,7 +967,14 @@ void PanelWatch::OnTextCtrlEnter(wxCommandEvent& event)
 
     m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
     if( controlid < m_NumVariables && m_pVariables[controlid+1].m_Handle_Slider )
+    {
         m_pVariables[controlid+1].m_Handle_Slider->Navigate();
+    }
+    else
+    {
+        if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
+            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+    }
 }
 
 // returns true if blank
