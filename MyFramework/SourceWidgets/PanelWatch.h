@@ -196,6 +196,8 @@ public:
     int AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc);
+
+    void ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription);
 };
 
 #endif // __PanelWatch_H__

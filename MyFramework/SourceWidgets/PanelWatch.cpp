@@ -423,6 +423,12 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallb
     return m_NumVariables-1;
 }
 
+void PanelWatch::ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription)
+{
+    g_pPanelWatch->m_pVariables[controlid].m_Handle_TextCtrl->SetValue( pDescription );
+    g_pPanelWatch->m_pVariables[controlid].m_Description = pDescription;
+}
+
 wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
 {
     // look for an existing control of this type that isn't visible and return it.

@@ -22,9 +22,25 @@ FileManager::FileManager()
 
 FileManager::~FileManager()
 {
+    PrintListOfOpenFiles();
     MyAssert( m_FilesLoaded.GetHead() == 0 );
     MyAssert( m_FilesStillLoading.GetHead() == 0 );
     //FreeAllFiles();
+}
+
+void FileManager::PrintListOfOpenFiles()
+{
+    LOGInfo( LOGTag, "Open Files:\n" );
+    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        MyFileObject* pFile = (MyFileObject*)pNode;
+        LOGInfo( LOGTag, "   %s\n", pFile->m_FullPath );
+    }
+    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        MyFileObject* pFile = (MyFileObject*)pNode;
+        LOGInfo( LOGTag, "   %s\n", pFile->m_FullPath );
+    }
 }
 
 void FileManager::FreeFile(MyFileObject* pFile)

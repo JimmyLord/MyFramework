@@ -35,6 +35,7 @@ public:
     FileManager();
     virtual ~FileManager();
 
+    void PrintListOfOpenFiles();
     void FreeFile(MyFileObject* pFile);
     //void FreeAllFiles();
 
