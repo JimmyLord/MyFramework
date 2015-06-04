@@ -68,6 +68,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
+    case PanelWatchType_String:
         //ADDING_NEW_WatchVariableType
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
@@ -120,6 +121,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
+    case PanelWatchType_String:
         //ADDING_NEW_WatchVariableType
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:

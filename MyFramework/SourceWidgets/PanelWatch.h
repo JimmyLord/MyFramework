@@ -59,6 +59,7 @@ enum PanelWatch_Types
     PanelWatchType_Enum,
     PanelWatchType_SpaceWithLabel,
     PanelWatchType_Button,
+    PanelWatchType_String,
 
     //ADDING_NEW_WatchVariableType
 
@@ -196,6 +197,7 @@ public:
     int AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc);
+    int AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
 
     void ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription);
 };

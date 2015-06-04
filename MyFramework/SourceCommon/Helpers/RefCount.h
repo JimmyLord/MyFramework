@@ -48,6 +48,18 @@ public:
         if( m_RefCount == 0 )
             delete this;
     }
+
+#if _DEBUG
+    void RemoveFinalRefIfCreatedOnStackToAvoidAssertInDestructor()
+    {
+        m_RefCount--;
+    }
+#else
+    void RemoveFinalRefIfCreatedOnStackToAvoidAssertInDestructor()
+    {
+        // TODO: is there a reasonable way to remove this function call altogether...
+    }
+#endif
 };
 
 #endif //__RefCount_H__

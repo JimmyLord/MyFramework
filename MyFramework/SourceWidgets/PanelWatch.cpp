@@ -21,20 +21,21 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
 { // control    label                                          widths
   // height, font,wdt,pdg, style                   slider, editbox, colorpicker, choicebox,
   //          hgt     bot,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Int,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_UnsignedInt,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Char,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Bool,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Float,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_Double,
-  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,           0,        -1, }, //PanelWatchType_Vector3,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Double,
+  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          -1,        -1, }, //PanelWatchType_Vector3,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorFloat,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorByte,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,           0,        -1, }, //PanelWatchType_PointerWithDesc,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,           0,        75, }, //PanelWatchType_Enum,
-    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,           0,        -1, }, //PanelWatchType_SpaceWithLabel,
-    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,           0,        -1, }, //PanelWatchType_Button,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_PointerWithDesc,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,          -1,        75, }, //PanelWatchType_Enum,
+    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_SpaceWithLabel,
+    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_Button,
+    {    20,   8, 150,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_String
     {    -1,  -1,  -1, -1, -1,                         -1,      -1,          -1,        -1, }, //PanelWatchType_Unknown,
 };
 
@@ -417,6 +418,25 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallb
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
 
     AddControlsForVariable( label, m_NumVariables, -1, 0 );
+
+    m_NumVariables++;
+
+    return m_NumVariables-1;
+}
+
+int PanelWatch::AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
+        return -1;
+
+    m_pVariables[m_NumVariables].m_Type = PanelWatchType_String;
+    m_pVariables[m_NumVariables].m_Pointer = (void*)pString;
+    m_pVariables[m_NumVariables].m_Range.Set( 0, maxlength );
+    m_pVariables[m_NumVariables].m_pOnValueChangedCallbackFunc = pOnValueChangedCallBackFunc;
+    m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
+
+    AddControlsForVariable( name, m_NumVariables, -1, 0 );
 
     m_NumVariables++;
 
@@ -1078,6 +1098,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Button:
+    case PanelWatchType_String:
         //ADDING_NEW_WatchVariableType
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
@@ -1129,6 +1150,7 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Button:
+    case PanelWatchType_String:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
@@ -1191,7 +1213,15 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
 
         m_pVariables[controlid].m_Handle_Slider->SetRange( m_pVariables[controlid].m_Range.x * sliderfloatmultiplier,
                                                            m_pVariables[controlid].m_Range.y * sliderfloatmultiplier );
-    }    
+    }
+
+    if( m_pVariables[controlid].m_Type == PanelWatchType_String )
+    {
+        wxString wxtext = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
+        const char* text = wxtext;
+        sprintf_s( (char*)m_pVariables[controlid].m_Pointer, m_pVariables[controlid].m_Range.y, "%s", text );
+        int bp = 1;
+    }
 
     // call the parent object to say it's value changed.
     //if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
@@ -1274,6 +1304,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     case PanelWatchType_ColorByte:
     case PanelWatchType_PointerWithDesc:
     case PanelWatchType_Button:
+    case PanelWatchType_String:
     case PanelWatchType_SpaceWithLabel:
     case PanelWatchType_Unknown:
     case PanelWatchType_NumTypes:
@@ -1445,6 +1476,12 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 int valueint = *(int*)m_pVariables[i].m_Pointer;
                 slidervalue = valueint;
+            }
+            break;
+
+        case PanelWatchType_String:
+            {
+                sprintf_s( tempstring, 50, "%s", m_pVariables[i].m_Pointer );
             }
             break;
 
