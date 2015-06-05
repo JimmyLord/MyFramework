@@ -21,21 +21,21 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
 { // control    label                                          widths
   // height, font,wdt,pdg, style                   slider, editbox, colorpicker, choicebox,
   //          hgt     bot,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Int,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_UnsignedInt,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Char,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Bool,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Float,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_Double,
-  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      75,          -1,        -1, }, //PanelWatchType_Vector3,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Double,
+  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,          -1,        -1, }, //PanelWatchType_Vector3,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorFloat,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorByte,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_PointerWithDesc,
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,     170,          -1,        -1, }, //PanelWatchType_PointerWithDesc,
     {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,          -1,        75, }, //PanelWatchType_Enum,
     {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_SpaceWithLabel,
     {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_Button,
-    {    20,   8, 150,  0, wxALIGN_LEFT,               -1,      75,          -1,        -1, }, //PanelWatchType_String
+    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,     170,          -1,        -1, }, //PanelWatchType_String
     {    -1,  -1,  -1, -1, -1,                         -1,      -1,          -1,        -1, }, //PanelWatchType_Unknown,
 };
 
@@ -60,6 +60,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
     {
         m_pVariables[i].m_Handle_StaticText = 0;
+        m_pVariables[i].m_Handle_StaticTextExtraLabel = 0;
         m_pVariables[i].m_Handle_TextCtrl = 0;
         m_pVariables[i].m_Handle_Slider = 0;
         m_pVariables[i].m_Handle_Button = 0;
@@ -129,6 +130,11 @@ void PanelWatch::ClearAllVariables()
             m_pVariables[i].m_Handle_StaticText->Show( false );
             //m_pVariables[i].m_Handle_StaticText->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText) );
         }
+        if( m_pVariables[i].m_Handle_StaticTextExtraLabel != 0 )
+        {
+            m_pVariables[i].m_Handle_StaticTextExtraLabel->Show( false );
+            //m_pVariables[i].m_Handle_StaticTextExtraLabel->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText) );
+        }
         if( m_pVariables[i].m_Handle_TextCtrl != 0 )
         {
             m_pVariables[i].m_Handle_TextCtrl->Show( false );
@@ -152,6 +158,8 @@ void PanelWatch::ClearAllVariables()
 
         //if( m_pVariables[i].m_Handle_StaticText != 0 )
         //    this->RemoveChild( m_pVariables[i].m_Handle_StaticText );
+        //if( m_pVariables[i].m_Handle_StaticTextExtraLabel != 0 )
+        //    this->RemoveChild( m_pVariables[i].m_Handle_StaticTextExtraLabel );
         //if( m_pVariables[i].m_Handle_TextCtrl != 0 )
         //    this->RemoveChild( m_pVariables[i].m_Handle_TextCtrl );
         //if( m_pVariables[i].m_Handle_Slider != 0 )
@@ -166,6 +174,7 @@ void PanelWatch::ClearAllVariables()
         SAFE_DELETE_ARRAY( m_pVariables[i].m_pEnumStrings );
 
         //SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
+        //SAFE_DELETE( m_pVariables[i].m_Handle_StaticTextExtraLabel );
         //SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
         //SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
         //SAFE_DELETE( m_pVariables[i].m_Handle_Button );
@@ -542,6 +551,30 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
     return m_Controls[type].back();
 }
 
+int PanelWatch::SetupStaticTextControl(wxStaticText* pStaticText, const char* name, int variablenum, float PosX, float PosY, float LabelWidth, float LabelHeight, wxString variablename, PanelWatchControlInfo* pInfo)
+{
+    pStaticText->SetId( variablenum );
+    pStaticText->SetPosition( wxPoint(PosX, PosY) );
+    pStaticText->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
+    pStaticText->SetWindowStyle( pInfo->labelstyle );
+    pStaticText->SetLabel( variablename );
+    pStaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
+
+    if( m_pVariables[variablenum].m_Type == PanelWatchType_SpaceWithLabel )
+    {
+        pStaticText->SetBackgroundColour( wxColour(0,100,0,255) );
+        pStaticText->SetForegroundColour( wxColour(255,255,255,255) );
+    }
+    else
+    {
+        pStaticText->SetBackgroundColour( wxNullColour );
+        pStaticText->SetForegroundColour( wxNullColour );
+    }
+
+    m_pVariables[variablenum].m_Rect_XYWH.w += pInfo->labelpaddingbottom;
+    return LabelWidth;
+}
+
 void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname)
 {
     int PaddingTop = 3;
@@ -580,76 +613,42 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     
     int LabelWidth = pInfo->labelwidth;
     int SliderWidth = 120;
-    int TextCtrlWidth = 70;
+    //int TextCtrlWidth = 70;
 
     if( component >= 0 )
     {
         LabelWidth = 10;
         SliderWidth = 30;
-        TextCtrlWidth = 45;
+        //TextCtrlWidth = 45;
 
         if( component == 0 )
         {
-            LabelWidth = 60;
-            variablename = name;
-            variablename.Append( " " );
-            variablename.Append( componentname );
+            // create a label for the variable before the component label.
+            wxStaticText* pStaticText = (wxStaticText*)GetControlOfType( PanelWatchControlType_StaticText );
+            m_pVariables[variablenum].m_Handle_StaticTextExtraLabel = pStaticText;
+            MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticTextExtraLabel ) != 0 );
+
+            PosX += SetupStaticTextControl( pStaticText, name, variablenum, PosX, PosY, 90, LabelHeight, variablename, pInfo );
         }
-        else
-        {
-            variablename = componentname;
-        }
+
+        variablename = componentname;
     }
 
-    if( m_pVariables[variablenum].m_Description != 0 )
-    {
-        TextCtrlWidth = 150;
-    }
-
-    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat )
-    {
-        SliderWidth = 0;
-        TextCtrlWidth = 115; // wxColourPicker
-    }
-
-    if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorByte )
-    {
-        SliderWidth = 0;
-        TextCtrlWidth = 115; // wxColourPicker
-    }
+    int TextCtrlWidth = g_PanelWatchControlInfo[type].editboxwidth;
 
     m_pVariables[variablenum].m_Rect_XYWH.x = PosX;
     m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
-    m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + SliderWidth + TextCtrlWidth;
+    m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + 10 + /*SliderWidth +*/ TextCtrlWidth;
     m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
 
     // Text label
     if( m_pVariables[variablenum].m_Type != PanelWatchType_Button )
     {
-        m_pVariables[variablenum].m_Handle_StaticText = (wxStaticText*)GetControlOfType( PanelWatchControlType_StaticText );
+        wxStaticText* pStaticText = (wxStaticText*)GetControlOfType( PanelWatchControlType_StaticText );
+        m_pVariables[variablenum].m_Handle_StaticText = pStaticText;
         MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticText ) != 0 );
 
-        //m_pVariables[variablenum].m_Handle_StaticText->Create( this, variablenum, variablename, wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight), pInfo->labelstyle );
-        m_pVariables[variablenum].m_Handle_StaticText->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_StaticText->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_StaticText->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
-        m_pVariables[variablenum].m_Handle_StaticText->SetWindowStyle( pInfo->labelstyle );
-        m_pVariables[variablenum].m_Handle_StaticText->SetLabel( variablename );
-        m_pVariables[variablenum].m_Handle_StaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
-
-        if( m_pVariables[variablenum].m_Type == PanelWatchType_SpaceWithLabel )
-        {
-            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxColour(0,100,0,255) );
-            m_pVariables[variablenum].m_Handle_StaticText->SetForegroundColour( wxColour(255,255,255,255) );
-        }
-        else
-        {
-            m_pVariables[variablenum].m_Handle_StaticText->SetBackgroundColour( wxNullColour );
-            m_pVariables[variablenum].m_Handle_StaticText->SetForegroundColour( wxNullColour );
-        }
-
-        PosX += LabelWidth;
-        m_pVariables[variablenum].m_Rect_XYWH.w += pInfo->labelpaddingbottom;
+        PosX += SetupStaticTextControl( pStaticText, name, variablenum, PosX, PosY, LabelWidth, LabelHeight, variablename, pInfo );
     }
 
     // Slider

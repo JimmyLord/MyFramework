@@ -96,6 +96,7 @@ public:
 struct VariableProperties
 {
     wxStaticText* m_Handle_StaticText;
+    wxStaticText* m_Handle_StaticTextExtraLabel;
     wxTextCtrl* m_Handle_TextCtrl;
     wxSlider* m_Handle_Slider;
     wxButton* m_Handle_Button;
@@ -143,6 +144,7 @@ public:
 
 protected:
     wxControl* GetControlOfType(PanelWatchControlTypes type);
+    int SetupStaticTextControl(wxStaticText* pStaticText, const char* name, int variablenum, float PosX, float PosY, float LabelWidth, float LabelHeight, wxString variablename, PanelWatchControlInfo* pInfo);
     void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname);
 
 public:
