@@ -377,11 +377,14 @@ MaterialManager::MaterialManager()
 #if MYFW_USING_WX
     g_pPanelMemory->SetMaterialPanelCallbacks(this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag);
 #endif
+
+    m_pMaterialCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
 }
 
 MaterialManager::~MaterialManager()
 {
     FreeAllMaterials();
+    m_pMaterialCreatedCallbackList.FreeAllInList();
 }
 
 void MaterialManager::Tick()
@@ -457,6 +460,9 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
         pMaterial->m_UnsavedChanges = true;
         strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
     }
+
+    for( unsigned int i=0; i<m_pMaterialCreatedCallbackList.Count(); i++ )
+        m_pMaterialCreatedCallbackList[i].pFunc( m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
 
 #if MYFW_USING_WX
     if( name )
@@ -544,6 +550,18 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
     return 0;
 }
 
+void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback)
+{
+    MyAssert( pCallback != 0 );
+    MyAssert( m_pMaterialCreatedCallbackList.Count() < MAX_REGISTERED_CALLBACKS );
+
+    MaterialCreatedCallbackStruct callbackstruct;
+    callbackstruct.pObj = pObj;
+    callbackstruct.pFunc = pCallback;
+
+    m_pMaterialCreatedCallbackList.Add( callbackstruct );
+}
+
 #if MYFW_USING_WX
 void MaterialManager::OnLeftClick(unsigned int count)
 {
@@ -563,13 +581,12 @@ void MaterialManager::OnRightClick()
 
 void MaterialManager::OnPopupClick(wxEvent &evt)
 {
-#if MYFW_WINDOWS
     int id = evt.GetId();
     if( id == 1000 )
     {
-        g_pMaterialManager->CreateMaterial( "new" );
+        g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
+        // TODO: this material will cause an assert on shutdown, unless released by some other code.
     }
-#endif
 }
 
 void MaterialManager::OnDrag()

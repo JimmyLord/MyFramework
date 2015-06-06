@@ -15,6 +15,13 @@ class TextureDefinition;
 
 extern MaterialManager* g_pMaterialManager;
 
+typedef void (*MaterialCreatedCallbackFunc)(void* pObjectPtr, MaterialDefinition* pMaterial);
+struct MaterialCreatedCallbackStruct
+{
+    void* pObj;
+    MaterialCreatedCallbackFunc pFunc;
+};
+
 class MaterialDefinition : public CPPListNode, public RefCount
 {
     friend class MaterialManager;
@@ -98,9 +105,13 @@ class MaterialManager
 : public wxEvtHandler
 #endif
 {
+    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
+
 public:
     CPPListHead m_Materials;
     CPPListHead m_MaterialsStillLoading;
+
+    MyList<MaterialCreatedCallbackStruct> m_pMaterialCreatedCallbackList;
 
 public:
     MaterialManager();
@@ -109,7 +120,10 @@ public:
     void Tick();
     
     void FreeAllMaterials();
-    
+
+    // Callbacks
+    void RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback);
+
 #if MYFW_USING_WX
     void SaveAllMaterials(bool saveunchanged = false);
 #endif

@@ -21,22 +21,22 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
 { // control    label                                          widths
   // height, font,wdt,pdg, style                   slider, editbox, colorpicker, choicebox,
   //          hgt     bot,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Int,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_UnsignedInt,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Char,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Bool,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Float,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      45,          -1,        -1, }, //PanelWatchType_Double,
-  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,          -1,        -1, }, //PanelWatchType_Vector3,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorFloat,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,         115,        -1, }, //PanelWatchType_ColorByte,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,     170,          -1,        -1, }, //PanelWatchType_PointerWithDesc,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,      -1,          -1,        75, }, //PanelWatchType_Enum,
-    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_SpaceWithLabel,
-    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,  -1,      -1,          -1,        -1, }, //PanelWatchType_Button,
-    {    20,   8, 100,  0, wxALIGN_LEFT,               -1,     170,          -1,        -1, }, //PanelWatchType_String
-    {    -1,  -1,  -1, -1, -1,                         -1,      -1,          -1,        -1, }, //PanelWatchType_Unknown,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Double,
+  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,           0,         0, }, //PanelWatchType_Vector3,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0, }, //PanelWatchType_ColorFloat,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0, }, //PanelWatchType_ColorByte,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0, }, //PanelWatchType_PointerWithDesc,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,        75, }, //PanelWatchType_Enum,
+    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0, }, //PanelWatchType_SpaceWithLabel,
+    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0, }, //PanelWatchType_Button,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0, }, //PanelWatchType_String
+    {    -1,  -1,  -1, -1, -1,                          0,       0,           0,         0, }, //PanelWatchType_Unknown,
 };
 
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
@@ -635,10 +635,11 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     int TextCtrlWidth = g_PanelWatchControlInfo[type].editboxwidth;
+    int ColorPickerWidth = g_PanelWatchControlInfo[type].colorpickerwidth;
 
     m_pVariables[variablenum].m_Rect_XYWH.x = PosX;
     m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
-    m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + 10 + /*SliderWidth +*/ TextCtrlWidth;
+    m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + 10 + ColorPickerWidth + /*SliderWidth +*/ TextCtrlWidth;
     m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
 
     // Text label
@@ -652,7 +653,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     // Slider
-    if( pInfo->sliderwidth != -1 )
+    if( pInfo->sliderwidth != 0 )
     {
         float sliderfloatmultiplier = 1;
         if( m_pVariables[variablenum].m_Type == PanelWatchType_Float ||
@@ -681,7 +682,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     }
 
     // Edit box
-    if( g_PanelWatchControlInfo[type].editboxwidth != -1 )
+    if( g_PanelWatchControlInfo[type].editboxwidth != 0 )
     {
         //wxTextCtrl* pTextCtrl = MyNew wxTextCtrl( this, variablenum, "",
         //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
@@ -709,7 +710,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         }
     }
 
-    if( g_PanelWatchControlInfo[type].choiceboxwidth != -1 )
+    if( g_PanelWatchControlInfo[type].choiceboxwidth != 0 )
     {
         // add a drop list for enum types.
         //wxChoice* pChoiceBox = MyNew wxChoice( this, variablenum,
@@ -749,6 +750,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         PosX += TextCtrlWidth;
     }
 
+    // Color picker.
     if( m_pVariables[variablenum].m_Type == PanelWatchType_ColorFloat ||
         m_pVariables[variablenum].m_Type == PanelWatchType_ColorByte )
     {
@@ -762,7 +764,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
         m_pVariables[variablenum].m_Handle_ColourPicker->SetId( variablenum );
         m_pVariables[variablenum].m_Handle_ColourPicker->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_ColourPicker->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        m_pVariables[variablenum].m_Handle_ColourPicker->SetInitialSize( wxSize(ColorPickerWidth, TextCtrlHeight) );
 
         PosX += TextCtrlWidth;
 
