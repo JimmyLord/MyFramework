@@ -450,6 +450,13 @@ void MySprite::Draw(MyMatrix* matviewproj)
     if( pShader == 0 )
         return;
 
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
+    {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+
     if( pShader->ActivateAndProgramShader(
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
         matviewproj, &m_Position, m_pMaterial ) )
@@ -457,6 +464,9 @@ void MySprite::Draw(MyMatrix* matviewproj)
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );
     }
+
+    // always disable blending
+    glDisable( GL_BLEND );
 }
 
 Vertex_Base* MySprite::GetVerts(bool markdirty)

@@ -3773,6 +3773,7 @@
     <ClCompile Include="SourceCommon\Sprites\SpriteSheet.cpp" />
     <ClCompile Include="SourceCommon\Sprites\SpriteSheet_XYZVertexColor.cpp" />
     <ClCompile Include="SourceCommon\Textures\FBODefinition.cpp" />
+    <ClCompile Include="SourceCommon\Textures\MaterialDefinition.cpp" />
     <ClCompile Include="SourceCommon\Textures\MaterialManager.cpp" />
     <ClCompile Include="SourceCommon\Textures\TextureManager.cpp" />
     <ClCompile Include="SourceEmscripten\GLExtensions.cpp">
@@ -6549,6 +6550,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.h" />
     <ClInclude Include="SourceCommon\Helpers\ExternalTools.h" />
+    <ClInclude Include="SourceCommon\Helpers\GlobalEnums.h" />
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h" />
     <ClInclude Include="SourceCommon\Helpers\FileManager.h" />
     <ClInclude Include="SourceCommon\Helpers\MyAssert.h" />
@@ -6713,6 +6715,7 @@
     <ClInclude Include="SourceCommon\Sprites\SpriteSheet.h" />
     <ClInclude Include="SourceCommon\Sprites\SpriteSheet_XYZVertexColor.h" />
     <ClInclude Include="SourceCommon\Textures\FBODefinition.h" />
+    <ClInclude Include="SourceCommon\Textures\MaterialDefinition.h" />
     <ClInclude Include="SourceCommon\Textures\MaterialManager.h" />
     <ClInclude Include="SourceCommon\Textures\TextureManager.h" />
     <ClInclude Include="SourceEmscripten\GLExtensions.h">

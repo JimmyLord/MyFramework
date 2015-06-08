@@ -549,6 +549,9 @@
     <ClCompile Include="SourceCommon\Helpers\MyAssert.cpp">
       <Filter>Source\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Textures\MaterialDefinition.cpp">
+      <Filter>Source\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1180,6 +1183,12 @@
     </ClInclude>
     <ClInclude Include="SourceWidgets\expr_eval.h">
       <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Textures\MaterialDefinition.h">
+      <Filter>Source\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Helpers\GlobalEnums.h">
+      <Filter>Source\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

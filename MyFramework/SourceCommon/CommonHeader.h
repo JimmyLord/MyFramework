@@ -357,6 +357,7 @@ typedef int socklen_t;
 
 #include "Random/mtrand.h"
 
+#include "Helpers/GlobalEnums.h"
 #include "Helpers/MessageLog.h"
 #include "Helpers/MyTweener.h"
 #include "Shaders/GLHelpers.h"
@@ -386,6 +387,7 @@ typedef int socklen_t;
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"
 #include "Textures/TextureManager.h"
+#include "Textures/MaterialDefinition.h"
 #include "Textures/MaterialManager.h"
 #include "Textures/FBODefinition.h"
 #include "Networking/StunClient.h"

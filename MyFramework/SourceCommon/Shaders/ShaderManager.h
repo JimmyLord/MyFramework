@@ -23,6 +23,8 @@ public:
 
     ShaderPassTypes m_PassType;
 
+    MaterialBlendType m_BlendType;
+
     const char* m_pFilename;
     MyFileObjectShader* m_pFile; // vertex shader
     MyFileObjectShader* m_pFilePixelShader;

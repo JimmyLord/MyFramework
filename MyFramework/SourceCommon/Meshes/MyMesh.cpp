@@ -1528,6 +1528,13 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                             indexbuffertype = GL_UNSIGNED_INT;
                     }
 
+                    // Enable blending if necessary. TODO: sort draws and only set this once.
+                    if( pMaterial->IsTransparent( pShader ) )
+                    {
+                        glEnable( GL_BLEND );
+                        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                    }
+
                     if( pIndexBuffer )
                         MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
                     else
@@ -1537,6 +1544,9 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
                     pShader->DeactivateShader( pVertexBuffer );
                     checkGlError( "Drawing Mesh DeactivateShader()" );
+
+                    // always disable blending
+                    glDisable( GL_BLEND );
                 }
             }
         }

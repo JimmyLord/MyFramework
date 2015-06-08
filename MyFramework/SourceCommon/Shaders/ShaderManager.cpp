@@ -28,6 +28,9 @@ void BaseShader::Init_BaseShader()
     m_Initialized = false;
     m_ShaderFailedToCompile = false;
 
+    m_PassType = ShaderPass_NumTypes;
+    m_BlendType = MaterialBlendType_Off;
+
     m_pFilename = 0;
     m_pFile = 0;
     m_pFilePixelShader = 0;
@@ -192,6 +195,17 @@ bool BaseShader::LoadAndCompile()
     // scan file for #includes and add them to the list
     if( m_pFile->m_ScannedForIncludes == false )
         m_pFile->CheckFileForIncludesAndAddToList();
+
+    for( unsigned int i=0; i<m_pFile->m_FileLength; i++ )
+    {
+        // TODO: actually parse shader files properly, looking for some setting like these.
+        if( (i == 0 || m_pFile->m_pBuffer[i-1] != '/') &&
+            i + 19 < m_pFile->m_FileLength &&
+            m_pFile->m_pBuffer[i] == '#' && strncmp( &m_pFile->m_pBuffer[i], "#define BLENDING On", 19 ) == 0 )
+        {
+            m_BlendType = MaterialBlendType_On; 
+        }
+    }
 
     // are all #includes loaded? if not drop out and check again next frame.
     bool loadcomplete = m_pFile->AreAllIncludesLoaded();
