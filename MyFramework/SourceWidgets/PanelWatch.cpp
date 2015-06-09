@@ -321,6 +321,18 @@ int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float ma
     return AddVariableOfTypeRange( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
+int PanelWatch::Add2Floats(const char* name, const char* label1, const char* label2, float* pFloat1, float* pFloat2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+{
+    int first;
+    first = AddVariableOfTypeRange( PanelWatchType_Float, "x", pFloat1, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_Float, "y", pFloat2, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
+
+    AddControlsForVariable( name, first+0, 0, label1 );
+    AddControlsForVariable( name, first+1, 1, label2 );
+
+    return first;
+}
+
 int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
 {
     int first;

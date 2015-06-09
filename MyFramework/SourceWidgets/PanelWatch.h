@@ -190,6 +190,7 @@ public:
     int AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
+    int Add2Floats(const char* name, const char* label1, const char* label2, float* pFloat1, float* pFloat2, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);
     int AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackWithID pOnValueChangedCallBackFunc = 0);

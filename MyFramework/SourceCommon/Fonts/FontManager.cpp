@@ -98,6 +98,17 @@ void FontManager::Tick()
     }
 }
 
+FontDefinition* FontManager::GetFirstFont()
+{
+    if( m_FontsLoaded.GetHead() )
+        return (FontDefinition*)m_FontsLoaded.GetHead();
+
+    if( m_FontsStillLoading.GetHead() )
+        return (FontDefinition*)m_FontsStillLoading.GetHead();
+
+    return 0;
+}
+
 FontDefinition* FontManager::FindFont(const char* friendlyname)
 {
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )

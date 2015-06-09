@@ -42,6 +42,7 @@ public:
     FontDefinition* CreateFont(const char* fontfilename);
     FontDefinition* CreateFont(MyFileObject* pFile);
     void Tick();
+    FontDefinition* GetFirstFont();
     FontDefinition* FindFont(const char* friendlyname);
     FontDefinition* FindFont(MyFileObject* pFile);
     void FreeAllFonts();
