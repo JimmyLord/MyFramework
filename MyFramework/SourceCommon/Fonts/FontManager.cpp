@@ -131,13 +131,19 @@ FontDefinition* FontManager::FindFont(MyFileObject* pFile)
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( ((FontDefinition*)pNode)->m_pFile == pFile )
+        {
+            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
+        }
     }
 
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( ((FontDefinition*)pNode)->m_pFile == pFile )
+        {
+            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
+        }
     }
 
     return 0;

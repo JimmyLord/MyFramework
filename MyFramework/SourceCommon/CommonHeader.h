@@ -127,6 +127,7 @@
 #include "wx/menu.h"
 #pragma warning (default : 4996)
 #include <vector>
+#include <map>
 #endif
 
 #if MYFW_NACL

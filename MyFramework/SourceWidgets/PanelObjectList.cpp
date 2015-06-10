@@ -294,6 +294,24 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
     return m_pTree_Objects->GetRootItem();
 }
 
+void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
+{
+    MyAssert( pObject != 0 );
+
+    // get the root count before adding the item for check below.
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    // insert the Object under it's parent node
+    {
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+
+        m_pTree_Objects->SetItemData( idroot, pData );
+    }
+}
+
 wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
 {
     MyAssert( pObject != 0 );
@@ -323,24 +341,6 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
     }
 
     return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
-}
-
-void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
-{
-    MyAssert( pObject != 0 );
-
-    // get the root count before adding the item for check below.
-    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-
-    // insert the Object under it's parent node
-    {
-        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
-        pData->m_pObject = pObject;
-        pData->m_pLeftClickFunction = pLeftClickFunction;
-        pData->m_pRightClickFunction = pRightClickFunction;
-
-        m_pTree_Objects->SetItemData( idroot, pData );
-    }
 }
 
 wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)

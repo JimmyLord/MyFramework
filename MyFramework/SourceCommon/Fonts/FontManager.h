@@ -16,7 +16,7 @@ class BMFont;
 
 extern FontManager* g_pFontManager;
 
-class FontDefinition : public CPPListNode
+class FontDefinition : public CPPListNode, public RefCount
 {
 public:
     bool m_FullyLoaded;
