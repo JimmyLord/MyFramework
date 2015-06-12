@@ -64,11 +64,11 @@ public:
     void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveTexture(TextureDefinition* pTextureDef);
 
-    void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveMaterial(MaterialDefinition* pMaterial);
-    void SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
 
-    void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
 
     void AddDrawCall(int index, const char* category, const char* desc);

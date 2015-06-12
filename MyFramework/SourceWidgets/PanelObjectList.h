@@ -16,6 +16,7 @@ extern PanelObjectList* g_pPanelObjectList;
 
 typedef void (*PanelObjectListCallback)(void*);
 typedef void (*PanelObjectListCallbackLeftClick)(void*, unsigned int count);
+typedef void (*PanelObjectListCallbackRightClick)(void*, wxTreeItemId id);
 typedef void (*PanelObjectListCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
 typedef void (*PanelObjectListLabelEditCallback)(void* pObjectPtr, wxString);
 
@@ -33,7 +34,7 @@ public:
 
     void* m_pObject;
     PanelObjectListCallbackLeftClick m_pLeftClickFunction;
-    PanelObjectListCallback m_pRightClickFunction;
+    PanelObjectListCallbackRightClick m_pRightClickFunction;
     PanelObjectListCallback m_pDragFunction;
     PanelObjectListCallbackDropTarget m_pDropFunction;
     PanelObjectListLabelEditCallback m_pLabelEditFunction;
@@ -84,9 +85,9 @@ public:
 
     //void Refresh();
     wxTreeItemId GetTreeRoot();
-    void SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc);
+    void SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc);
     void SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction);
     void SetLabelEditFunction(void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction);
     void RemoveObject(void* pObject);

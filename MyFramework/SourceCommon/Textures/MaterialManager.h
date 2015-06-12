@@ -60,7 +60,7 @@ public:
     static void StaticOnLeftClick(void* pObjectPtr, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
     void OnLeftClick(unsigned int index);
     
-    static void StaticOnRightClick(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnRightClick(); }
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialManager*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
 

@@ -135,7 +135,7 @@ void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
     if( pData && pData->m_pRightClickFunction )
     {
-        pData->m_pRightClickFunction( pData->m_pObject );
+        pData->m_pRightClickFunction( pData->m_pObject, id );
     }
 }
 
@@ -294,7 +294,7 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
     return m_pTree_Objects->GetRootItem();
 }
 
-void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction)
+void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -312,7 +312,7 @@ void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeft
     }
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, const char* category, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc)
 {
     MyAssert( pObject != 0 );
 
@@ -343,7 +343,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
     return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallback pRightClickFunction, wxTreeItemId parentid, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc)
 {
     MyAssert( pObject != 0 );
 

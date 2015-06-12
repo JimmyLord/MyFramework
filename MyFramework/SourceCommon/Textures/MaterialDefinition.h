@@ -81,7 +81,7 @@ public:
 
     static void StaticOnLeftClick(void* pObjectPtr, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);
-    static void StaticOnRightClick(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
