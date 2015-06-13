@@ -72,7 +72,7 @@ public:
         RightClick_OpenFile,
     };
 
-    static void StaticOnLeftClick(void* pObjectPtr, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MyFileObject*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();

@@ -15,7 +15,6 @@
 #include "expr_eval.h"
 
 PanelWatch* g_pPanelWatch = 0;
-wxDataFormat* g_pPanelWatchDataFormat = 0;
 
 PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDING_NEW_WatchVariableType
 { // control    label                                          widths
@@ -42,8 +41,6 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 : wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
-    g_pPanelWatchDataFormat = MyNew wxDataFormat( "MyFormat" );
-
     m_NeedsRefresh = false;
     m_RefreshCallbackObject = 0;
     m_RefreshCallbackFunc = 0;
@@ -111,8 +108,6 @@ PanelWatch::~PanelWatch()
     SAFE_DELETE_ARRAY( m_pVariables );
 
     SAFE_DELETE( m_pTimer );
-
-    SAFE_DELETE( g_pPanelWatchDataFormat );
 }
 
 void PanelWatch::SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc)
@@ -799,7 +794,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 PanelWatchDropTarget::PanelWatchDropTarget()
 {
     wxCustomDataObject* dataobject = MyNew wxCustomDataObject;
-    dataobject->SetFormat( *g_pPanelWatchDataFormat );
+    dataobject->SetFormat( *g_pMyDataFormat );
     SetDataObject( dataobject );
     m_ControlIndex = -1;
 }

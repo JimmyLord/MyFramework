@@ -398,6 +398,7 @@ typedef int socklen_t;
 #include "GameCore.h"
 
 #if MYFW_USING_WX
+#include "../SourceWindows/MYFWWinMainWx.h"
 #include "../SourceWidgets/PanelObjectList.h"
 #include "../SourceWidgets/PanelMemory.h"
 #include "../SourceWidgets/PanelWatch.h"

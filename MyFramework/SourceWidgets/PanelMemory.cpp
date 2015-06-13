@@ -623,7 +623,7 @@ void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject, 0 );
+            pData->m_pLeftClickFunction( pData->m_pObject, id, 0 );
         }
     }
 }
@@ -664,7 +664,7 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
 #if MYFW_WINDOWS // TODO: fix on OSX
     wxCustomDataObject dataobject;
-    dataobject.SetFormat( *g_pPanelWatchDataFormat );
+    dataobject.SetFormat( *g_pMyDataFormat );
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 #endif
@@ -813,7 +813,7 @@ void PanelMemory::OnTreeEndLabelEdit(wxTreeEvent& event)
             RenameObject( pTree, pData->m_pObject, newlabel );
 
             // Call the callback and let game code handle the new name
-            pData->m_pLabelEditFunction( pData->m_pObject, newlabel );
+            pData->m_pLabelEditFunction( pData->m_pObject, id, newlabel );
         }
     }
 }

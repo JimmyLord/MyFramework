@@ -79,21 +79,26 @@ public:
         RightClick_ViewInWatchWindow = 1000,
     };
 
-    static void StaticOnLeftClick(void* pObjectPtr, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
+    // Memory panel callbacks
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);
+
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
+
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
+    static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((MaterialDefinition*)pObjectPtr)->OnLabelEdit( newlabel ); }
+    void OnLabelEdit(wxString newlabel);
+
+    // Watch panel callbacks.
     static void StaticOnDropShader(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(controlid, x, y); }
     void OnDropShader(int controlid, wxCoord x, wxCoord y);
+
     static void StaticOnDropTexture(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(controlid, x, y); }
     void OnDropTexture(int controlid, wxCoord x, wxCoord y);
-
-    static void StaticOnLabelEdit(void* pObjectPtr, wxString newlabel) { ((MaterialDefinition*)pObjectPtr)->OnLabelEdit( newlabel ); }
-    void OnLabelEdit(wxString newlabel);
 
     void SaveMaterial();
 #endif //MYFW_USING_WX

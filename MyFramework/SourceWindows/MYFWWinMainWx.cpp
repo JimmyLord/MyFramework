@@ -18,6 +18,7 @@ bool g_EscapeButtonWillQuit;
 bool g_CloseProgramRequested;
 
 unsigned int g_GLCanvasIDActive = 0;
+wxDataFormat* g_pMyDataFormat = 0;
 
 GLViewTypes g_CurrentGLViewType;
 
@@ -41,6 +42,8 @@ MainFrame::MainFrame(wxWindow* parent)
     m_ClientWidth = 0;
     m_ClientHeight = 0;
     m_Maximized = false;
+
+    g_pMyDataFormat = MyNew wxDataFormat( "MyFormat" );
 }
 
 MainFrame::~MainFrame()
@@ -52,6 +55,8 @@ MainFrame::~MainFrame()
     SAFE_DELETE( g_pPanelWatch );
     SAFE_DELETE( g_pPanelMemory );
     SAFE_DELETE( g_pPanelObjectList );
+
+    SAFE_DELETE( g_pMyDataFormat );
 
     // deinitialize the frame manager
     m_AUIManager.UnInit();

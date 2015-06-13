@@ -45,6 +45,7 @@ MainFrame* WinMain_CreateMainFrame();
 void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
 
 extern unsigned int g_GLCanvasIDActive;
+extern wxDataFormat* g_pMyDataFormat;
 
 // Main application class
 class MainApp : public wxApp

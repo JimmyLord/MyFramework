@@ -82,7 +82,7 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
 
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject, i );
+            pData->m_pLeftClickFunction( pData->m_pObject, id, i );
         }
     }
 
@@ -123,7 +123,7 @@ void PanelObjectList::OnTreeEndLabelEdit(wxTreeEvent& event)
             RenameObject( pData->m_pObject, newlabel );
 
             // Call the callback and let game code handle the new name
-            pData->m_pLabelEditFunction( pData->m_pObject, newlabel );
+            pData->m_pLabelEditFunction( pData->m_pObject, id, newlabel );
         }
     }
 }
@@ -143,8 +143,12 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
 {
     // let the object know its being dragged, so it can store it's data.
     // This only works within this app, not between apps.
+
+    // get the pointer to the tree affected.
+    wxTreeCtrl* pTree = m_pTree_Objects;
+
     wxTreeItemId id = event.GetItem();
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
     if( pData && pData->m_pDragFunction )
     {
         pData->m_pDragFunction( pData->m_pObject );
@@ -157,6 +161,7 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
 #if MYFW_WINDOWS
     wxCustomDataObject dataobject;
+    dataobject.SetFormat( *g_pMyDataFormat );
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 #endif
@@ -164,7 +169,9 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
 
 PanelObjectListDropTarget::PanelObjectListDropTarget()
 {
-    SetDataObject(new wxCustomDataObject);
+    wxCustomDataObject* dataobject = MyNew wxCustomDataObject;
+    dataobject->SetFormat( *g_pMyDataFormat );
+    SetDataObject( dataobject );
 }
 
 wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
@@ -181,7 +188,7 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         if( pData && pData->m_pDropFunction )
         {
-            pData->m_pDropFunction( pData->m_pObject, -1, x, y );
+            pData->m_pDropFunction( pData->m_pObject, id, -1, x, y );
         }
     }
 
@@ -375,21 +382,27 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
     return newid;
 }
 
-void PanelObjectList::SetDragAndDropFunctions(void* pObject, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction)
+void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction)
 {
-    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-    pData->m_pDragFunction = pDragFunction;
-    pData->m_pDropFunction = pDropFunction;
+    //wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+    //wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
+    if( id.IsOk() )
+    {
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+        pData->m_pDragFunction = pDragFunction;
+        pData->m_pDropFunction = pDropFunction;
+    }
 }
 
-void PanelObjectList::SetLabelEditFunction(void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction)
+void PanelObjectList::SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabelEditCallback pLabelEditFunction)
 {
-    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-    wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-    pData->m_pLabelEditFunction = pLabelEditFunction;
+    //wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+    //wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
+    if( id.IsOk() )
+    {
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+        pData->m_pLabelEditFunction = pLabelEditFunction;
+    }
 }
 
 void PanelObjectList::RemoveObject(void* pObject)

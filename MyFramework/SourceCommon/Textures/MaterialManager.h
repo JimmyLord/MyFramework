@@ -57,7 +57,7 @@ public:
 
 public:
 #if MYFW_USING_WX
-    static void StaticOnLeftClick(void* pObjectPtr, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
     void OnLeftClick(unsigned int index);
     
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialManager*)pObjectPtr)->OnRightClick(); }

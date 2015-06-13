@@ -77,7 +77,6 @@ typedef void (*PanelWatchCallback)(void*);
 typedef void (*PanelWatchCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
 typedef void (*PanelWatchCallbackWithID)(void* pObjectPtr, int controlid, bool finishedchanging);
 
-extern wxDataFormat* g_pPanelWatchDataFormat;
 class PanelWatchDropTarget : public wxDropTarget
 {
 public:
