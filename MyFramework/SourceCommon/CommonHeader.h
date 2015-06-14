@@ -155,7 +155,7 @@
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 1
 #if MYFW_BLACKBERRY10
-#define USE_SCORELOOP 1
+#define USE_SCORELOOP 0
 #include <bps/bps.h>
 #include <bps/paymentservice.h>
 #include "../SourceBlackBerry/IAPManager.h"
