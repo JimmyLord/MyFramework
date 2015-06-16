@@ -52,6 +52,8 @@ public:
     virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
 };
 
+void UpdatePanelWatchWithSelectedItems();
+
 class PanelObjectList : public wxPanel
 {
 public:
@@ -62,11 +64,16 @@ public:
     PanelObjectListCallback m_pOnTreeSelectionChangedFunction;
 
     // Function panel watch will call if it needs a refresh.
-    static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { ((PanelObjectList*)pObjectPtr)->UpdatePanelWatchWithSelectedItems(); }
-    void UpdatePanelWatchWithSelectedItems();
+    //static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { ((PanelObjectList*)pObjectPtr)->UpdatePanelWatchWithSelectedItems(); }
+    //void UpdatePanelWatchWithSelectedItems();
+    static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { UpdatePanelWatchWithSelectedItems(); }
+
+    wxTreeItemId m_ItemSelectedBeforeDrag;
 
 protected:
     wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObject, wxTreeItemId idroot);
+    void OnTreeItemLeftDown(wxMouseEvent& event);
+    void OnTreeItemLeftUp(wxMouseEvent& event);
     void OnTreeSelectionChanged(wxTreeEvent& event);
     void OnTreeBeginLabelEdit(wxTreeEvent& event);
     void OnTreeEndLabelEdit(wxTreeEvent& event);

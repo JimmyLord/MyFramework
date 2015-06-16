@@ -35,11 +35,14 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
 
     Update();
 
-    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelObjectList::OnTreeSelectionChanged) );
-    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler(PanelObjectList::OnTreeBeginLabelEdit) );
-    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler(PanelObjectList::OnTreeEndLabelEdit) );
-    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelObjectList::OnTreeContextMenuRequested) );
-    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelObjectList::OnDragBegin) );
+    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler( PanelObjectList::OnTreeSelectionChanged ) );
+    m_pTree_Objects->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( PanelObjectList::OnTreeItemLeftDown ) );
+    //Connect( wxEVT_LEFT_UP, wxMouseEventHandler( PanelObjectList::OnTreeItemLeftUp ) );
+    //m_pTree_Objects->Connect( wxEVT_LEFT_UP, wxMouseEventHandler( PanelObjectList::OnTreeItemLeftUp ) );
+    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler( PanelObjectList::OnTreeBeginLabelEdit ) );
+    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler( PanelObjectList::OnTreeEndLabelEdit ) );
+    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler( PanelObjectList::OnTreeContextMenuRequested ) );
+    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler( PanelObjectList::OnDragBegin ) );
 }
 
 PanelObjectList::~PanelObjectList()
@@ -47,15 +50,37 @@ PanelObjectList::~PanelObjectList()
     SAFE_DELETE( m_pTree_Objects );
 }
 
+void PanelObjectList::OnTreeItemLeftDown(wxMouseEvent& event)
+{
+    // store the first selected item, for cases when the new selected item is dragged.
+    // TODO: DRAGOBJECTLISTITEM: find a better way to deal with this.
+    wxArrayTreeItemIds selecteditems;
+    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
+    
+    if( numselected > 0 )
+    {
+        g_pPanelObjectList->m_ItemSelectedBeforeDrag = selecteditems[0].GetID();
+        //LOGInfo( LOGTag, "PanelObjectList::OnTreeItemLeftDown\n" );
+    }
+
+    event.Skip();
+}
+
+//void PanelObjectList::OnTreeItemLeftUp(wxMouseEvent& event)
+//{
+//    UpdatePanelWatchWithSelectedItems();
+//    event.Skip();
+//}
+
 void PanelObjectList::OnTreeSelectionChanged(wxTreeEvent& event)
 {
     if( m_UpdatePanelWatchOnSelection )
         UpdatePanelWatchWithSelectedItems();
 }
 
-void PanelObjectList::UpdatePanelWatchWithSelectedItems()
+void UpdatePanelWatchWithSelectedItems()
 {
-    g_pPanelWatch->SetRefreshCallback( this, PanelObjectList::StaticUpdatePanelWatchWithSelectedItems );
+    g_pPanelWatch->SetRefreshCallback( g_pPanelObjectList, PanelObjectList::StaticUpdatePanelWatchWithSelectedItems );
 
     // stop draws on watch panel
     g_pPanelWatch->Freeze();
@@ -63,11 +88,11 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     //LOGInfo( LOGTag, "PanelObjectList::OnTreeSelectionChanged\n" );
 
     wxArrayTreeItemIds selecteditems;
-    unsigned int numselected = (unsigned int)m_pTree_Objects->GetSelections( selecteditems );
+    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
 
-    if( m_pOnTreeSelectionChangedFunction )
+    if( g_pPanelObjectList->m_pOnTreeSelectionChangedFunction )
     {
-        m_pOnTreeSelectionChangedFunction( m_pCallbackFunctionObject );
+        g_pPanelObjectList->m_pOnTreeSelectionChangedFunction( g_pPanelObjectList->m_pCallbackFunctionObject );
     }
 
 	// TODO: if multiple selected, show common properties.
@@ -77,7 +102,7 @@ void PanelObjectList::UpdatePanelWatchWithSelectedItems()
     {
         // pass left click event through to the item.
         wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
-        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)g_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
 
         if( pData && pData->m_pLeftClickFunction )
@@ -141,11 +166,21 @@ void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
 
 void PanelObjectList::OnDragBegin(wxTreeEvent& event)
 {
+    //LOGInfo( LOGTag, "PanelObjectList::OnDragBegin\n" );
+
     // let the object know its being dragged, so it can store it's data.
     // This only works within this app, not between apps.
 
     // get the pointer to the tree affected.
     wxTreeCtrl* pTree = m_pTree_Objects;
+
+    // reselect the item that was selected before dragging
+    // TODO: DRAGOBJECTLISTITEM: find a better way to deal with this.
+    if( m_ItemSelectedBeforeDrag.IsOk() )
+    {
+        m_pTree_Objects->UnselectAll();
+        m_pTree_Objects->SelectItem( m_ItemSelectedBeforeDrag );
+    }
 
     wxTreeItemId id = event.GetItem();
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
