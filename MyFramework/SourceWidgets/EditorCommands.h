@@ -12,8 +12,19 @@
 
 class EditorCommand
 {
+    friend class CommandStack;
+
+protected:
+    // if these flags are set, then the commands get undone/redone as a single entity.
+    bool m_LinkedToPreviousCommandOnUndoStack;
+    bool m_LinkedToNextCommandOnRedoStack; // assigned a value during an undo op before being places on redo stack.
+
 public:
-    EditorCommand() {}
+    EditorCommand()
+    {
+        m_LinkedToPreviousCommandOnUndoStack = false;
+        m_LinkedToNextCommandOnRedoStack = false;
+    }
     virtual ~EditorCommand() {}
 
     virtual void Do() = 0;
@@ -60,6 +71,29 @@ protected:
 public:
     EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchColorChanged();
+
+    virtual void Do();
+    virtual void Undo();
+    virtual EditorCommand* Repeat();
+};
+
+//====================================================================================================
+
+class EditorCommand_PanelWatchPointerChanged : public EditorCommand
+{
+protected:
+    void* m_NewValue;
+    void* m_OldValue;
+    PanelWatch_Types m_Type;
+    void** m_pPointer;
+    int m_ControlID;
+
+    PanelWatchCallbackWithID m_pOnValueChangedCallBackFunc;
+    void* m_pCallbackObj;
+
+public:
+    EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj);
+    virtual ~EditorCommand_PanelWatchPointerChanged();
 
     virtual void Do();
     virtual void Undo();

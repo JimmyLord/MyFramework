@@ -209,4 +209,58 @@ EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
 }
 
 //====================================================================================================
+// EditorCommand_PanelWatchPointerChanged
+//====================================================================================================
+
+EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
+{
+    MyAssert( type == PanelWatchType_PointerWithDesc );
+
+    m_NewValue = newvalue;
+    m_Type = type;
+    m_pPointer = ppointer;
+    m_ControlID = controlid;
+
+    m_OldValue = *ppointer;
+
+    m_pOnValueChangedCallBackFunc = callbackfunc;
+    m_pCallbackObj = callbackobj;
+}
+
+EditorCommand_PanelWatchPointerChanged::~EditorCommand_PanelWatchPointerChanged()
+{
+}
+
+void EditorCommand_PanelWatchPointerChanged::Do()
+{
+    MyAssert( m_Type == PanelWatchType_PointerWithDesc );
+
+    *m_pPointer = m_NewValue;
+
+    g_pPanelWatch->UpdatePanel();
+
+    // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
+    if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+}
+
+void EditorCommand_PanelWatchPointerChanged::Undo()
+{
+    MyAssert( m_Type == PanelWatchType_PointerWithDesc );
+
+    *m_pPointer = m_OldValue;
+
+    g_pPanelWatch->UpdatePanel();
+
+    // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
+    if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+}
+
+EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()
+{
+    return 0;
+}
+
+//====================================================================================================
 //====================================================================================================

@@ -27,8 +27,8 @@ public:
     virtual void Undo(unsigned int levels);
     virtual void Redo(unsigned int levels);
 
-    virtual void Do(EditorCommand* pCommand);
-    virtual void Add(EditorCommand* pCommand);
+    virtual void Do(EditorCommand* pCommand, bool linktoprevious = false);
+    virtual void Add(EditorCommand* pCommand, bool linktoprevious = false);
 };
 
 #endif // __CommandStack_H__
