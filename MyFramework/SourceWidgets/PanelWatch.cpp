@@ -251,7 +251,7 @@ int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, v
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
         return -1;
 
-    int numtypes = max;
+    int numtypes = (int)max;
 
     wxString* wxstrings = MyNew wxString[numtypes];
     for( int i=0; i<numtypes; i++ )
@@ -448,7 +448,7 @@ int PanelWatch::AddString(const char* name, const char* pString, int maxlength, 
 
     m_pVariables[m_NumVariables].m_Type = PanelWatchType_String;
     m_pVariables[m_NumVariables].m_Pointer = (void*)pString;
-    m_pVariables[m_NumVariables].m_Range.Set( 0, maxlength );
+    m_pVariables[m_NumVariables].m_Range.Set( 0, (float)maxlength );
     m_pVariables[m_NumVariables].m_pOnValueChangedCallbackFunc = pOnValueChangedCallBackFunc;
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
 
@@ -561,8 +561,8 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
 int PanelWatch::SetupStaticTextControl(wxStaticText* pStaticText, const char* name, int variablenum, float PosX, float PosY, float LabelWidth, float LabelHeight, wxString variablename, PanelWatchControlInfo* pInfo)
 {
     pStaticText->SetId( variablenum );
-    pStaticText->SetPosition( wxPoint(PosX, PosY) );
-    pStaticText->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
+    pStaticText->SetPosition( wxPoint((int)PosX, (int)PosY) );
+    pStaticText->SetInitialSize( wxSize((int)LabelWidth, (int)LabelHeight) );
     pStaticText->SetWindowStyle( pInfo->labelstyle );
     pStaticText->SetLabel( variablename );
     pStaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
@@ -579,7 +579,7 @@ int PanelWatch::SetupStaticTextControl(wxStaticText* pStaticText, const char* na
     }
 
     m_pVariables[variablenum].m_Rect_XYWH.w += pInfo->labelpaddingbottom;
-    return LabelWidth;
+    return (int)LabelWidth;
 }
 
 void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname)
@@ -635,7 +635,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             m_pVariables[variablenum].m_Handle_StaticTextExtraLabel = pStaticText;
             MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticTextExtraLabel ) != 0 );
 
-            PosX += SetupStaticTextControl( pStaticText, name, variablenum, PosX, PosY, 90, LabelHeight, variablename, pInfo );
+            PosX += SetupStaticTextControl( pStaticText, name, variablenum, (float)PosX, (float)PosY, 90, (float)LabelHeight, variablename, pInfo );
         }
 
         variablename = componentname;
@@ -656,7 +656,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         m_pVariables[variablenum].m_Handle_StaticText = pStaticText;
         MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticText ) != 0 );
 
-        PosX += SetupStaticTextControl( pStaticText, name, variablenum, PosX, PosY, LabelWidth, LabelHeight, variablename, pInfo );
+        PosX += SetupStaticTextControl( pStaticText, name, variablenum, (float)PosX, (float)PosY, (float)LabelWidth, (float)LabelHeight, variablename, pInfo );
     }
 
     // Slider
@@ -682,8 +682,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         m_pVariables[variablenum].m_Handle_Slider->SetId( variablenum );
         m_pVariables[variablenum].m_Handle_Slider->SetPosition( wxPoint(PosX, PosY) );
         m_pVariables[variablenum].m_Handle_Slider->SetInitialSize( wxSize(SliderWidth, SliderHeight) );
-        m_pVariables[variablenum].m_Handle_Slider->SetRange( m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier,
-                                                             m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier );
+        m_pVariables[variablenum].m_Handle_Slider->SetRange( (int)(m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier),
+                                                             (int)(m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier) );
 
         PosX += SliderWidth;
     }
@@ -1123,11 +1123,11 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
-        *((int*)m_pVariables[controlid].m_Pointer) = valuenew;
+        *((int*)m_pVariables[controlid].m_Pointer) = (int)valuenew;
         break;
 
     case PanelWatchType_UnsignedInt:
-        *((unsigned int*)m_pVariables[controlid].m_Pointer) = valuenew;
+        *((unsigned int*)m_pVariables[controlid].m_Pointer) = (unsigned int)valuenew;
         break;
 
     case PanelWatchType_Char:
@@ -1143,7 +1143,7 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
         break;
 
     case PanelWatchType_Float:
-        *((float*)m_pVariables[controlid].m_Pointer) = valuenew;
+        *((float*)m_pVariables[controlid].m_Pointer) = (float)valuenew;
         break;
 
     case PanelWatchType_Double:
@@ -1212,22 +1212,22 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
 
         if( valuenew < m_pVariables[controlid].m_Range.x )
         {
-            m_pVariables[controlid].m_Range.x = valuenew;
+            m_pVariables[controlid].m_Range.x = (float)valuenew;
         }
         if( valuenew > m_pVariables[controlid].m_Range.y )
         {
-            m_pVariables[controlid].m_Range.y = valuenew;
+            m_pVariables[controlid].m_Range.y = (float)valuenew;
         }
 
-        m_pVariables[controlid].m_Handle_Slider->SetRange( m_pVariables[controlid].m_Range.x * sliderfloatmultiplier,
-                                                           m_pVariables[controlid].m_Range.y * sliderfloatmultiplier );
+        m_pVariables[controlid].m_Handle_Slider->SetRange( (int)(m_pVariables[controlid].m_Range.x * sliderfloatmultiplier),
+                                                           (int)(m_pVariables[controlid].m_Range.y * sliderfloatmultiplier) );
     }
 
     if( m_pVariables[controlid].m_Type == PanelWatchType_String )
     {
         wxString wxtext = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
         const char* text = wxtext;
-        sprintf_s( (char*)m_pVariables[controlid].m_Pointer, m_pVariables[controlid].m_Range.y, "%s", text );
+        sprintf_s( (char*)m_pVariables[controlid].m_Pointer, (size_t)m_pVariables[controlid].m_Range.y, "%s", text );
         int bp = 1;
     }
 
@@ -1434,7 +1434,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         case PanelWatchType_Float:
             {
                 float valuefloat = *(float*)m_pVariables[i].m_Pointer;
-                slidervalue = valuefloat * WXSlider_Float_Multiplier;
+                slidervalue = (int)(valuefloat * WXSlider_Float_Multiplier);
                 sprintf_s( tempstring, 50, "%0.2f", valuefloat );
             }
             break;
@@ -1442,7 +1442,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         case PanelWatchType_Double:
             {
                 double valuedouble = *(double*)m_pVariables[i].m_Pointer;
-                slidervalue = valuedouble * WXSlider_Float_Multiplier;
+                slidervalue = (int)(valuedouble * WXSlider_Float_Multiplier);
                 sprintf_s( tempstring, 50, "%0.2f", valuedouble );
             }
             break;

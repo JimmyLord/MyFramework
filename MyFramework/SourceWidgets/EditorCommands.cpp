@@ -36,27 +36,27 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
-        *(int*)m_Pointer += m_Difference;
+        *(int*)m_Pointer += (int)m_Difference;
         break;
 
     case PanelWatchType_UnsignedInt:
-        *(unsigned int*)m_Pointer += m_Difference;
+        *(unsigned int*)m_Pointer += (unsigned int)m_Difference;
         break;
 
     case PanelWatchType_Char:
-        *(char*)m_Pointer += m_Difference;
+        *(char*)m_Pointer += (char)m_Difference;
         break;
 
     case PanelWatchType_UnsignedChar:
-        *(unsigned char*)m_Pointer += m_Difference;
+        *(unsigned char*)m_Pointer += (unsigned char)m_Difference;
         break;
 
     case PanelWatchType_Bool:
-        *(char*)m_Pointer += m_Difference; // treating bools as char to avoid warning/error. safe?
+        *(char*)m_Pointer += (char)m_Difference; // treating bools as char to avoid warning/error. safe?
         break;
 
     case PanelWatchType_Float:
-        *(float*)m_Pointer += m_Difference;
+        *(float*)m_Pointer += (float)m_Difference;
         break;
 
     case PanelWatchType_Double:
@@ -89,27 +89,27 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
-        *(int*)m_Pointer -= m_Difference;
+        *(int*)m_Pointer -= (int)m_Difference;
         break;
 
     case PanelWatchType_UnsignedInt:
-        *(unsigned int*)m_Pointer -= m_Difference;
+        *(unsigned int*)m_Pointer -= (unsigned int)m_Difference;
         break;
 
     case PanelWatchType_Char:
-        *(char*)m_Pointer -= m_Difference;
+        *(char*)m_Pointer -= (char)m_Difference;
         break;
 
     case PanelWatchType_UnsignedChar:
-        *(unsigned char*)m_Pointer -= m_Difference;
+        *(unsigned char*)m_Pointer -= (unsigned char)m_Difference;
         break;
 
     case PanelWatchType_Bool:
-        *(char*)m_Pointer -= m_Difference; // treating bools as char to avoid warning/error. safe?
+        *(char*)m_Pointer -= (char)m_Difference; // treating bools as char to avoid warning/error. safe?
         break;
 
     case PanelWatchType_Float:
-        *(float*)m_Pointer -= m_Difference;
+        *(float*)m_Pointer -= (float)m_Difference;
         break;
 
     case PanelWatchType_Double:

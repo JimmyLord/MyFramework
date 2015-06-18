@@ -34,27 +34,27 @@
 #define USE_PTHREAD 1
 
 #if MYFW_WINDOWS
-#pragma warning(3:4061) // enumerator in switch statement is not explicitly handled by a case label
-//#pragma warning(3:4100) // unreferenced formal parameter
-//#pragma warning(3:4127) // conditional expression is constant
-//#pragma warning(3:4189) // local variable is initialized but not referenced
-#pragma warning(3:4191) // unsafe conversion from 'type of expression' to 'type required'
-#pragma warning(3:4242) // conversion from 'type1' to 'type2', possible loss of data
-#pragma warning(3:4244) // conversion from 'type1' to 'type2', possible loss of data
-#pragma warning(3:4263) // member function does not override any base class virtual member function
-#pragma warning(3:4264) // no override available for virtual member function from base 'class'; function is hidden
-#pragma warning(3:4265) // class has virtual functions, but destructor is not virtual
-#pragma warning(3:4266) // no override available for virtual member function from base 'type'; function is hidden
-#pragma warning(3:4302) // truncation from 'type1' to 'type2'
-#pragma warning(3:4389) // signed/unsigned mismatch
-//#pragma warning(3:4510) // default constructor could not be generated
-//#pragma warning(3:4610) // class 'type' can never be instantiated - user defined constructor required
-//#pragma warning(3:4702) // unreachable code
-#pragma warning(3:4826) // conversion from 'type1' to 'type2' is sign-extended. This may cause unexpected runtime behavior
-#pragma warning(3:4905) // wide string literal cast to 'LPSTR'
-#pragma warning(3:4906) // string literal cast to 'LPWSTR'
-#pragma warning(3:4928) // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
-//#pragma warning(disable:4996) // deprecated function
+#pragma warning( 3 : 4061 ) // enumerator in switch statement is not explicitly handled by a case label
+//#pragma warning( 3 : 4100 ) // unreferenced formal parameter
+//#pragma warning( 3 : 4127 ) // conditional expression is constant
+//#pragma warning( 3 : 4189 ) // local variable is initialized but not referenced
+#pragma warning( 3 : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
+#pragma warning( 3 : 4242 ) // conversion from 'type1' to 'type2', possible loss of data
+#pragma warning( 3 : 4244 ) // conversion from 'type1' to 'type2', possible loss of data
+#pragma warning( 3 : 4263 ) // member function does not override any base class virtual member function
+#pragma warning( 3 : 4264 ) // no override available for virtual member function from base 'class'; function is hidden
+#pragma warning( 3 : 4265 ) // class has virtual functions, but destructor is not virtual
+#pragma warning( 3 : 4266 ) // no override available for virtual member function from base 'type'; function is hidden
+#pragma warning( 3 : 4302 ) // truncation from 'type1' to 'type2'
+#pragma warning( 3 : 4389 ) // signed/unsigned mismatch
+//#pragma warning( 3 : 4510 ) // default constructor could not be generated
+//#pragma warning( 3 : 4610 ) // class 'type' can never be instantiated - user defined constructor required
+//#pragma warning( 3 : 4702 ) // unreachable code
+#pragma warning( 3 : 4826 ) // conversion from 'type1' to 'type2' is sign-extended. This may cause unexpected runtime behavior
+#pragma warning( 3 : 4905 ) // wide string literal cast to 'LPSTR'
+#pragma warning( 3 : 4906 ) // string literal cast to 'LPWSTR'
+#pragma warning( 3 : 4928 ) // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+//#pragma warning( disable : 4996 ) // deprecated function
 #endif
 
 #if MYFW_WP8
@@ -116,7 +116,9 @@
 #endif
 
 #if MYFW_USING_WX
-#pragma warning (disable : 4996)
+#pragma warning( push )
+#pragma warning( disable : 4996 )
+#pragma warning( disable : 4265 )
 #include "wx/wxprec.h"
 //#include "wx/wx.h"
 #include "wx/aui/aui.h"
@@ -125,7 +127,7 @@
 #include "wx/clrpicker.h"
 #include "wx/dnd.h"
 #include "wx/menu.h"
-#pragma warning (default : 4996)
+#pragma warning( pop )
 #include <vector>
 #include <map>
 #endif

@@ -43,7 +43,8 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
         if( (i == 0 || m_pBuffer[i-1] != '/') &&
             m_pBuffer[i] == '#' && strncmp( &m_pBuffer[i], "#include", 8 ) == 0 )
         {
-#pragma warning (disable : 4996)
+#pragma warning( push )
+#pragma warning( disable : 4996 )
             char includefilename[MAX_PATH];
             includefilename[0] = 0;
             int charsread;
@@ -61,7 +62,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                 includefilename[pathlen] = 0;
                 result = sscanf( &m_pBuffer[i], "#include \"%[^\"]\"%n", &includefilename[pathlen], &charsread );
             }
-#pragma warning (default : 4996)
+#pragma warning( pop )
 
             if( result == 1 )
             {

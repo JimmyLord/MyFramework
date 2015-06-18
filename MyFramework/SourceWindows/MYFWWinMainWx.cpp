@@ -727,8 +727,8 @@ void MainGLCanvas::ResizeViewport(bool clearhack)
     {
         if( m_CurrentGLViewWidth-m_CurrentGLViewHeight/1.5f >= 0 )
         {
-            g_pGameCore->OnSurfaceChanged( (m_CurrentGLViewWidth-m_CurrentGLViewHeight/1.5f)/2, 0,
-                m_CurrentGLViewHeight/1.5f, m_CurrentGLViewHeight );
+            g_pGameCore->OnSurfaceChanged( (unsigned int)((m_CurrentGLViewWidth-m_CurrentGLViewHeight/1.5f)/2), 0,
+                (unsigned int)(m_CurrentGLViewHeight/1.5f), (unsigned int)(m_CurrentGLViewHeight) );
         }
         else
         {
@@ -750,8 +750,8 @@ void MainGLCanvas::ResizeViewport(bool clearhack)
     {
         if( (m_CurrentGLViewHeight-m_CurrentGLViewWidth/1.5f)/2 >= 0 )
         {
-            g_pGameCore->OnSurfaceChanged( 0, (m_CurrentGLViewHeight-m_CurrentGLViewWidth/1.5f)/2,
-                m_CurrentGLViewWidth, m_CurrentGLViewWidth/1.5f );
+            g_pGameCore->OnSurfaceChanged( 0, (unsigned int)((m_CurrentGLViewHeight-m_CurrentGLViewWidth/1.5f)/2),
+                (unsigned int)(m_CurrentGLViewWidth), (unsigned int)(m_CurrentGLViewWidth/1.5f) );
         }
         else
         {

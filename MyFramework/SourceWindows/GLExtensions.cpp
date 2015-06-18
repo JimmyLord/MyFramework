@@ -9,8 +9,8 @@
 
 #include "CommonHeader.h"
 
-#pragma warning(push)
-#pragma warning(disable:4191) // unsafe conversion from 'type of expression' to 'type required'
+#pragma warning( push )
+#pragma warning( disable : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
 
 PFNGLUNIFORM1FPROC                  glUniform1f = 0;
 PFNGLUNIFORM2FPROC                  glUniform2f = 0;
@@ -200,4 +200,4 @@ void OpenGL_InitExtensions()
     glBindVertexArray               = (PFNGLBINDVERTEXARRAYPROC)            wglGetProcAddress( "glBindVertexArray" );
 }
 
-#pragma warning(pop)
+#pragma warning( pop )
