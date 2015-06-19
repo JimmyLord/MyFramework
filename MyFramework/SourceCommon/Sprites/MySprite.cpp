@@ -10,13 +10,18 @@
 #include "CommonHeader.h"
 #include "MySprite.h"
 
-MySprite::MySprite()
+MySprite::MySprite(bool creatematerial)
 : m_Tint(255, 255, 255, 255)
 {
     m_SpriteIsStatic = false;
 
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
-    m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
+    m_pMaterial = 0;
+
+    if( creatematerial )
+    {
+        m_pMaterial = g_pMaterialManager->CreateMaterial();
+        m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
+    }
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;

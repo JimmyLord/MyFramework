@@ -204,7 +204,8 @@ void* WebRequestObject::Thread_GetHostByName(void* obj)
 
         if( error )
         {
-#if _DEBUG
+#if _DEBUG && !MYFW_USING_WX
+            //can't print in wx because we're on another thread.
             int err = WSAGetLastError();
             LOGError( LOGTag, "THREAD-WebRequestObject::Init() inet_addr and gethostbyname failed err=%d\n", err );
 #endif
@@ -219,11 +220,14 @@ void* WebRequestObject::Thread_GetHostByName(void* obj)
     pthis->m_ServerAddress.sin_port = htons( pthis->m_Port );
     pthis->m_ServerAddress.sin_addr.s_addr = pthis->m_InAddr.s_addr;
 
+#if _DEBUG && !MYFW_USING_WX
+    //can't print in wx because we're on another thread.
     LOGInfo( LOGTag, "THREAD-WebRequestObject::Init() ip=%d.%d.%d.%d\n",
         (pthis->m_InAddr.s_addr & 0x000000ff) >>  0,
         (pthis->m_InAddr.s_addr & 0x0000ff00) >>  8,
         (pthis->m_InAddr.s_addr & 0x00ff0000) >> 16,
         (pthis->m_InAddr.s_addr & 0xff000000) >> 24 );
+#endif
 
     pthis->m_Initialized = true;
     pthis->m_WaitingForGetHostByName = false;

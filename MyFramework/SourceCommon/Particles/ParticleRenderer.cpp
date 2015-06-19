@@ -12,9 +12,15 @@
 
 #define USE_INDEXED_TRIANGLES   1
 
-ParticleRenderer::ParticleRenderer()
+ParticleRenderer::ParticleRenderer(bool creatematerial)
 {
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial = 0;
+    
+    if( creatematerial )
+    {
+        g_pMaterialManager->CreateMaterial();
+    }
+
     m_NumVertsAllocated = 0;
 
     m_pVertexBuffer = 0;
@@ -197,10 +203,21 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
     }
 }
 
+void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
+{
+    if( pMaterial )
+        pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
+}
+
 void ParticleRenderer::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
 {
-    m_pMaterial->SetShader( pShaderGroup );
-    m_pMaterial->SetTextureColor( pTexture );
+    if( m_pMaterial )
+    {
+        m_pMaterial->SetShader( pShaderGroup );
+        m_pMaterial->SetTextureColor( pTexture );
+    }
 
     m_pVertexBuffer->ResetVAOs();
 }

@@ -40,7 +40,7 @@ public:
         m_pSprites = (MySpritePtr*)MyNew MySprite_XYZVertexColorPtr[numsprites];
         for( int i=0; i<numsprites; i++ )
         {
-            m_pSprites[i] = MyNew MySprite_XYZVertexColor;
+            m_pSprites[i] = MyNew MySprite_XYZVertexColor( false );
         }
         m_NumSprites = numsprites;
     }

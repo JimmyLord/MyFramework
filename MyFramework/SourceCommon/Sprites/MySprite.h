@@ -41,7 +41,7 @@ public:
     ColorByte m_Tint;
 
 public:
-    MySprite();
+    MySprite(bool creatematerial);
     MySprite(MySprite* pSprite, const char* category);
     virtual ~MySprite();
 

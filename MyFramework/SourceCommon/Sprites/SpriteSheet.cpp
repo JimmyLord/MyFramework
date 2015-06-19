@@ -292,7 +292,7 @@ void SpriteSheet::CreateSprites(int numsprites)
     m_pSprites = MyNew MySprite*[numsprites];
     for( int i=0; i<numsprites; i++ )
     {
-        m_pSprites[i] = MyNew MySprite;
+        m_pSprites[i] = MyNew MySprite( false );
     }
     m_NumSprites = numsprites;
 }

@@ -36,7 +36,7 @@ public:
     //MyMatrix m_Position;
 
 public:
-    ParticleRenderer();
+    ParticleRenderer(bool creatematerial);
     virtual ~ParticleRenderer();
 
     void AllocateVertices(unsigned int numpoints, const char* category);
@@ -45,7 +45,9 @@ public:
     void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
     void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
 
+    void SetMaterial(MaterialDefinition* pMaterial);
     void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
+
     void Draw(MyMatrix* matviewproj);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
