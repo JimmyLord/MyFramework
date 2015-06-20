@@ -45,6 +45,7 @@ public:
     FontDefinition* GetFirstFont();
     FontDefinition* FindFont(const char* friendlyname);
     FontDefinition* FindFont(MyFileObject* pFile);
+    FontDefinition* FindFontByFilename(const char* fullpath);
     void FreeAllFonts();
     void InvalidateAllFonts();
 };

@@ -35,9 +35,12 @@ FontDefinition::~FontDefinition()
 
 FontDefinition* FontManager::CreateFont(const char* fontfilename)
 {
-    FontDefinition* pFontDef = MyNew FontDefinition();
-    //strcpy_s( pFontDef->m_Filename, MAX_PATH, fontfilename );
-    pFontDef->m_pFile = RequestFile( fontfilename ); //"Data/Fonts/System24.fnt" );
+    FontDefinition* pFontDef = FindFontByFilename( fontfilename );
+    if( pFontDef )
+        return pFontDef;
+
+    pFontDef = MyNew FontDefinition();
+    pFontDef->m_pFile = RequestFile( fontfilename );
 
     m_FontsStillLoading.AddTail( pFontDef );
 
@@ -140,6 +143,29 @@ FontDefinition* FontManager::FindFont(MyFileObject* pFile)
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( ((FontDefinition*)pNode)->m_pFile == pFile )
+        {
+            ((FontDefinition*)pNode)->AddRef();
+            return (FontDefinition*)pNode;
+        }
+    }
+
+    return 0;
+}
+
+FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
+{
+    for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
+        {
+            ((FontDefinition*)pNode)->AddRef();
+            return (FontDefinition*)pNode;
+        }
+    }
+
+    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
         {
             ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;

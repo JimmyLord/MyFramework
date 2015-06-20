@@ -280,8 +280,9 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
     }
 
 #if MYFW_USING_WX
-    g_pPanelMemory->RemoveBuffer( this );
-    g_pPanelMemory->AddBuffer( this, category, desc );
+    // TODO: temp disabled this, never used it, but can be slow with 100s of buffers.
+    //g_pPanelMemory->RemoveBuffer( this );
+    //g_pPanelMemory->AddBuffer( this, category, desc );
 #endif
 }
 

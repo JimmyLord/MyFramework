@@ -481,6 +481,14 @@ wxString PanelObjectList::GetObjectName(void* pObject)
     return "";
 }
 
+void PanelObjectList::RenameObject(wxTreeItemId id, const char* desc)
+{
+    if( id.IsOk() )
+    {
+        m_pTree_Objects->SetItemText( id, desc );
+    }
+}
+
 void PanelObjectList::RenameObject(void* pObject, const char* desc)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
