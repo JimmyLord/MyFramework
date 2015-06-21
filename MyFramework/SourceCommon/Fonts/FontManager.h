@@ -24,7 +24,7 @@ public:
     char m_FriendlyName[32];
     //char m_Filename[MAX_PATH];
     MyFileObject* m_pFile;
-    BMFont* m_pFont;
+    BMFont* m_pBMFont;
 
     TextureDefinition* m_pTextureDef;
 

@@ -20,7 +20,7 @@ FontDefinition::FontDefinition()
     m_FriendlyName[0] = 0;
     //m_Filename[0] = 0;
     m_pFile = 0;
-    m_pFont = 0;
+    m_pBMFont = 0;
 
     m_pTextureDef = 0;
 }
@@ -30,8 +30,11 @@ FontDefinition::~FontDefinition()
     this->Remove();
     SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureDef );
-    SAFE_DELETE( m_pFont );
+    SAFE_DELETE( m_pBMFont );
 }
+
+//========================
+//========================
 
 FontDefinition* FontManager::CreateFont(const char* fontfilename)
 {
@@ -72,10 +75,10 @@ void FontManager::Tick()
         FontDefinition* pFontDef = (FontDefinition*)pNode;
 
         // check if the actual font description file(*.fnt) file is done loading.
-        if( pFontDef->m_pFile && pFontDef->m_pFont == 0 && pFontDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( pFontDef->m_pFile && pFontDef->m_pBMFont == 0 && pFontDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
             // create the font description object.
-            pFontDef->m_pFont = MyNew BMFont( pFontDef->m_pFile->m_pBuffer, pFontDef->m_pFile->m_FileLength );
+            pFontDef->m_pBMFont = MyNew BMFont( pFontDef->m_pFile->m_pBuffer, pFontDef->m_pFile->m_FileLength );
 
             // load the texture the font is stored on.
             char tempname[MAX_PATH];
@@ -87,7 +90,7 @@ void FontManager::Tick()
 
                 tempname[i] = 0;
             }
-            strcat_s( tempname, MAX_PATH, pFontDef->m_pFont->QueryImageName() );
+            strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
             pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
         }
 
@@ -177,14 +180,21 @@ FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
 
 void FontManager::FreeAllFonts()
 {
+    MyAssert( m_FontsLoaded.GetHead() == 0 );
+    MyAssert( m_FontsStillLoading.GetHead() == 0 );
+
     while( CPPListNode* pNode = m_FontsLoaded.GetHead() )
     {
-        delete pNode;
+        FontDefinition* pFontDef = (FontDefinition*)pNode;
+        //MyAssert( pFontDef->GetRefCount() == 1 );
+        pFontDef->Release();
     }
 
     while( CPPListNode* pNode = m_FontsStillLoading.GetHead() )
     {
-        delete pNode;
+        FontDefinition* pFontDef = (FontDefinition*)pNode;
+        //MyAssert( pFontDef->GetRefCount() == 1 );
+        pFontDef->Release();
     }
 }
 
