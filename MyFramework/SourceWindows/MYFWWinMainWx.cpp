@@ -652,7 +652,12 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
         keycode = MYKEYCODE_DOWN;
 
     if( g_pGameCore )
-        g_pGameCore->OnKeyDown( keycode, keycode );
+    {
+        if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
+            g_pGameCore->OnKeyDown( keycode+32, keycode+32 );
+        else
+            g_pGameCore->OnKeyDown( keycode, keycode );
+    }
 
     if( keycode < 512 )
         m_KeysDown[keycode] = true;
@@ -676,7 +681,12 @@ void MainGLCanvas::KeyReleased(wxKeyEvent& event)
         keycode = MYKEYCODE_DOWN;
 
     if( g_pGameCore )
-        g_pGameCore->OnKeyUp( keycode, keycode );
+    {
+        if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
+            g_pGameCore->OnKeyUp( keycode+32, keycode+32 );
+        else
+            g_pGameCore->OnKeyUp( keycode, keycode );
+    }
 
     if( keycode < 512 )
         m_KeysDown[keycode] = false;
