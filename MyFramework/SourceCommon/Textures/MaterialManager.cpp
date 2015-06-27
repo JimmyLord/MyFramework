@@ -109,10 +109,15 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 
 #if MYFW_USING_WX
     if( name )
+    {
         g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+        g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+    }
     else
-        g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+    {
+        //g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+    }
 #endif
 
     return pMaterial;

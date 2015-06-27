@@ -71,7 +71,8 @@ MaterialDefinition::~MaterialDefinition()
         this->Remove();
 
 #if MYFW_USING_WX
-    g_pPanelMemory->RemoveMaterial( this );
+    if( m_Name[0] == 0 )
+        g_pPanelMemory->RemoveMaterial( this );
 #endif
 
     SAFE_RELEASE( m_pFile );
