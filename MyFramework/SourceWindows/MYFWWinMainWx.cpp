@@ -729,7 +729,14 @@ void MainGLCanvas::ResizeViewport(bool clearhack)
         }
     }
 
-    if( g_CurrentGLViewType == GLView_Full || m_GLCanvasID == 1 )
+    if( m_GLCanvasID == 1 )
+    {
+        // TODO: figure out why I'm doing this for the editor view.
+        g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
+        return;
+    }
+
+    if( g_CurrentGLViewType == GLView_Full )
     {
         g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
     }
