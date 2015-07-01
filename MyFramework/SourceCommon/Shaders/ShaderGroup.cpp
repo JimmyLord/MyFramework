@@ -21,6 +21,16 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 
 ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
+    Create( pFile, 0 );
+}
+
+ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
+{
+    Create( pFile, pFunc );
+}
+
+void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
+{
     LOGInfo( LOGTag, "before assert MyFileShader %s\n", pFile->m_ExtensionWithDot );
     MyAssert( pFile->IsA( "MyFileShader" ) );
     LOGInfo( LOGTag, "before assert MyFileShader\n" );
@@ -29,6 +39,8 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile)
 
     m_pFile = pShaderFile;
     m_pFile->AddRef();
+
+    m_pShaderAllocationFunction = pFunc;
 
     Initialize();
 
@@ -52,7 +64,10 @@ void ShaderGroup::Initialize()
         {
             for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
             {
-                m_pShaderPasses[p][lc][bc] = MyNew Shader_Base( (ShaderPassTypes)p );
+                if( m_pShaderAllocationFunction )
+                    m_pShaderPasses[p][lc][bc] = m_pShaderAllocationFunction( (ShaderPassTypes)p );
+                else
+                    m_pShaderPasses[p][lc][bc] = MyNew Shader_Base( (ShaderPassTypes)p );
             }
         }
     }
