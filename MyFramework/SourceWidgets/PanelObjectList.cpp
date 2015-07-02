@@ -424,8 +424,11 @@ void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCa
     if( id.IsOk() )
     {
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-        pData->m_pDragFunction = pDragFunction;
-        pData->m_pDropFunction = pDropFunction;
+        if( pData )
+        {
+            pData->m_pDragFunction = pDragFunction;
+            pData->m_pDropFunction = pDropFunction;
+        }
     }
 }
 
@@ -436,7 +439,10 @@ void PanelObjectList::SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabel
     if( id.IsOk() )
     {
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
-        pData->m_pLabelEditFunction = pLabelEditFunction;
+        if( pData )
+        {
+            pData->m_pLabelEditFunction = pLabelEditFunction;
+        }
     }
 }
 
