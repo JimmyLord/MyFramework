@@ -104,6 +104,7 @@ public:
     void SelectObject(void* pObject); // pass in 0 to unselect all.
     void UnselectObject(void* pObject);
     //void* GetSelectedObject(); // not useful, since there's no indication of object type.
+    bool IsObjectSelected(void* pObject);
     wxString GetObjectName(void* pObject);
     void RenameObject(wxTreeItemId id, const char* desc);
     void RenameObject(void* pObject, const char* desc);

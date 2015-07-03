@@ -312,6 +312,31 @@ void PanelObjectList::UnselectObject(void* pObject)
 //    return 0;
 //}
 
+bool PanelObjectList::IsObjectSelected(void* pObject)
+{
+    wxArrayTreeItemIds selecteditems;
+    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
+    
+    if( numselected > 0 )
+    {
+        for( unsigned int i=0; i<numselected; i++ )
+        {
+            wxTreeItemId id = selecteditems[i].GetID();
+            if( id.IsOk() )
+            {
+                wxTreeItemData* pData = m_pTree_Objects->GetItemData( id );
+                if( pData )
+                {
+                    if( pObject == ((TreeItemDataGenericObjectInfo*)pData)->m_pObject )
+                        return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void PanelObjectList::UpdateRootNodeObjectCount()
 {
     char tempstr[100];
