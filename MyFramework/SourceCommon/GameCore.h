@@ -109,13 +109,13 @@ public:
     virtual void OnDrawFrame();
     virtual void OnDrawFrameDone();
 
-    virtual void OnTouch(int action, int id, float x, float y, float pressure, float size);
-    virtual void OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);
-    virtual void OnKey(GameCoreButtonActions action, int keycode, int unicodechar);
+    virtual bool OnTouch(int action, int id, float x, float y, float pressure, float size);
+    virtual bool OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);
+    virtual bool OnKeys(GameCoreButtonActions action, int keycode, int unicodechar);
 
     // OnKeyDown and OnKeyUp are used by platform-specific code, games should override OnKeys();
-    void OnKeyDown(int keycode, int unicodechar);
-    void OnKeyUp(int keycode, int unicodechar);
+    bool OnKeyDown(int keycode, int unicodechar);
+    bool OnKeyUp(int keycode, int unicodechar);
 
     virtual bool IsKeyHeld(int keycode);
 

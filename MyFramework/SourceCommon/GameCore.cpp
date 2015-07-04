@@ -152,7 +152,7 @@ double GameCore::Tick(double TimePassed)
         for( int i=0; i<255; i++ )
         {
             if( m_KeysHeld[i] )
-                g_pGameCore->OnKey( GCBA_Held, i, i );
+                g_pGameCore->OnKeys( GCBA_Held, i, i );
         }
 
         for( int i=0; i<GCBI_NumButtons; i++ )
@@ -300,14 +300,15 @@ void GameCore::OnDrawFrameDone()
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 }
 
-void GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
+bool GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
 {
     m_LastInputMethodUsed = InputMethod_Touch;
 
     //LOGInfo( LOGTag, "GameCore: OnTouch (%d %d)(%f,%f)(%f %f)\n", action, id, x, y, pressure, size);
+    return false;
 }
 
-void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
+bool GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
 {
     m_LastInputMethodUsed = InputMethod_Pad;
 
@@ -317,18 +318,21 @@ void GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
         m_ButtonsHeld[id] = true;
     else if( action == GCBA_Up )
         m_ButtonsHeld[id] = false;
+
+    return false;
 }
 
-void GameCore::OnKey(GameCoreButtonActions action, int keycode, int unicodechar)
+bool GameCore::OnKeys(GameCoreButtonActions action, int keycode, int unicodechar)
 {
+    return false;
 }
 
-void GameCore::OnKeyDown(int keycode, int unicodechar)
+bool GameCore::OnKeyDown(int keycode, int unicodechar)
 {
     // if the key is mapped to a button, then call the button handler.
     if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
     {
-        OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
+        return OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
     }
     else
     {
@@ -337,16 +341,18 @@ void GameCore::OnKeyDown(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = true;
 
-        OnKey( GCBA_Down, keycode, unicodechar );
+        return OnKeys( GCBA_Down, keycode, unicodechar );
     }
+
+    return false;
 }
 
-void GameCore::OnKeyUp(int keycode, int unicodechar)
+bool GameCore::OnKeyUp(int keycode, int unicodechar)
 {
     // if the key is mapped to a button, then call the button handler.
     if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
     {
-        OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
+        return OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
     }
     else
     {
@@ -355,8 +361,10 @@ void GameCore::OnKeyUp(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = false;
 
-        OnKey( GCBA_Up, keycode, unicodechar );
+        return OnKeys( GCBA_Up, keycode, unicodechar );
     }
+
+    return false;
 }
 
 bool GameCore::IsKeyHeld(int keycode)

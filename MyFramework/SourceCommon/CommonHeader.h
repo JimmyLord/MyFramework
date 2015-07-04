@@ -113,6 +113,9 @@
 
 #if !MYFW_WINDOWS && !MYFW_WP8
 #include "../SourceNaCL/ReallyShittyCode.h"
+#else
+#define snprintf _snprintf
+#define snprintf_s _snprintf_s
 #endif
 
 #if MYFW_USING_WX

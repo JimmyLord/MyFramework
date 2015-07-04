@@ -1387,7 +1387,8 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         if( controltoupdate != -1 && controltoupdate != i )
             continue;
 
-        char tempstring[50] = "not set";
+        const int MAX_STRING_LENGTH = 255;
+        char tempstring[MAX_STRING_LENGTH] = "not set";
         int slidervalue = 0;
         switch( m_pVariables[i].m_Type )
         {
@@ -1395,7 +1396,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 int valueint = *(int*)m_pVariables[i].m_Pointer;
                 slidervalue = valueint;
-                sprintf_s( tempstring, 50, "%d", valueint );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%d", valueint );
             }
             break;
 
@@ -1403,7 +1404,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 unsigned int valueuint = *(unsigned int*)m_pVariables[i].m_Pointer;
                 slidervalue = valueuint;
-                sprintf_s( tempstring, 50, "%d", valueuint );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%d", valueuint );
             }
             break;
 
@@ -1411,7 +1412,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 char valuechar = *(char*)m_pVariables[i].m_Pointer;
                 slidervalue = valuechar;
-                sprintf_s( tempstring, 50, "%d", valuechar );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%d", valuechar );
             }
             break;
 
@@ -1419,7 +1420,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 unsigned char valueuchar = *(unsigned char*)m_pVariables[i].m_Pointer;
                 slidervalue = valueuchar;
-                sprintf_s( tempstring, 50, "%u", valueuchar );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%u", valueuchar );
             }
             break;
 
@@ -1427,7 +1428,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 bool valuebool = *(bool*)m_pVariables[i].m_Pointer;
                 slidervalue = valuebool;
-                sprintf_s( tempstring, 50, "%d", valuebool );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%d", valuebool );
             }
             break;
 
@@ -1435,7 +1436,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 float valuefloat = *(float*)m_pVariables[i].m_Pointer;
                 slidervalue = (int)(valuefloat * WXSlider_Float_Multiplier);
-                sprintf_s( tempstring, 50, "%0.2f", valuefloat );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%0.2f", valuefloat );
             }
             break;
 
@@ -1443,7 +1444,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 double valuedouble = *(double*)m_pVariables[i].m_Pointer;
                 slidervalue = (int)(valuedouble * WXSlider_Float_Multiplier);
-                sprintf_s( tempstring, 50, "%0.2f", valuedouble );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%0.2f", valuedouble );
             }
             break;
 
@@ -1451,7 +1452,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         //    {
         //        double valuedouble = *(double*)m_pVariables[i].m_Pointer;
         //        slidervalue = valuedouble * WXSlider_Float_Multiplier;
-        //        sprintf_s( tempstring, 50, "%0.2f", valuedouble );
+        //        sprintf_s( tempstring, MAX_STRING_LENGTH, "%0.2f", valuedouble );
         //    }
         //    break;
 
@@ -1476,7 +1477,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 
         case PanelWatchType_PointerWithDesc:
             {
-                sprintf_s( tempstring, 50, "%s", m_pVariables[i].m_Description );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%s", m_pVariables[i].m_Description );
             }
             break;
 
@@ -1489,7 +1490,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 
         case PanelWatchType_String:
             {
-                sprintf_s( tempstring, 50, "%s", m_pVariables[i].m_Pointer );
+                snprintf_s( tempstring, MAX_STRING_LENGTH, "%s", m_pVariables[i].m_Pointer );
             }
             break;
 
