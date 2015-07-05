@@ -471,7 +471,7 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
 
     pSprite->SetTransform( temp );
     pSprite->SetRST( rotation, scale, position, false );
-    pSprite->SetTint( ColorByte(255,255,255,(unsigned char)(alpha*255)) );
+    //pSprite->SetTint( ColorByte(255,255,255,(unsigned char)(alpha*255)) );
 
     return pSprite;
 }

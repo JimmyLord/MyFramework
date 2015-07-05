@@ -52,6 +52,7 @@ public:
 
     MaterialDefinition* CreateMaterial(const char* name = 0);
     MaterialDefinition* LoadMaterial(const char* fullpath);
+    void ReloadMaterial(MaterialDefinition* pMaterial); // can only be called if file on disk changed and is being reloaded.
     MaterialDefinition* FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);
     MaterialDefinition* FindMaterialByFilename(const char* fullpath);
 

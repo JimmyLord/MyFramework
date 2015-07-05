@@ -356,6 +356,7 @@ void MySprite::SetTransform(MyMatrix& mat)
 
 void MySprite::SetTint(ColorByte tintcolor)
 {
+    LOGError( LOGTag, "SetTint is obsolete, use materials.\n" );
     m_Tint = tintcolor;
 }
 

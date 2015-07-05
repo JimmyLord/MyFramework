@@ -150,6 +150,16 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     return pMaterial;
 }
 
+void MaterialManager::ReloadMaterial(MaterialDefinition* pMaterial)
+{
+    MyAssert( pMaterial );
+    MyAssert( pMaterial->m_pFile );
+    MyAssert( pMaterial->m_pFile->m_FileLoadStatus != FileLoadStatus_Success );
+
+    m_MaterialsStillLoading.MoveTail( pMaterial );
+    pMaterial->m_FullyLoaded = false;
+}
+
 MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor)
 {
     for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )

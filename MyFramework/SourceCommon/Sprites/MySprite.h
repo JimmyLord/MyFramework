@@ -38,7 +38,7 @@ public:
 
     MyMatrix m_Position;
     MyMatrix* m_pParentMatrix;
-    ColorByte m_Tint;
+    ColorByte m_Tint; // doesn't work anymore... use materials.
 
 public:
     MySprite(bool creatematerial);
