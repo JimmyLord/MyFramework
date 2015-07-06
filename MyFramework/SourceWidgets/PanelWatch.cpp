@@ -38,6 +38,31 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
     {    -1,  -1,  -1, -1, -1,                          0,       0,           0,         0, }, //PanelWatchType_Unknown,
 };
 
+void VariableProperties::Reset()
+{
+    m_Handle_StaticText = 0;
+    m_Handle_StaticTextExtraLabel = 0;
+    m_Handle_TextCtrl = 0;
+    m_Handle_Slider = 0;
+    m_Handle_Button = 0;
+    m_Handle_ColourPicker = 0;
+    m_Handle_ChoiceBox = 0;
+    m_Pointer = 0;
+    m_Range.Set( 0, 0 );
+    m_Description = 0;
+    m_NumEnumTypes = 0;
+    m_pEnumStrings = 0;
+    m_Type = PanelWatchType_Unknown;
+    m_pCallbackObj = 0;
+    m_pOnDropCallbackFunc = 0;
+    m_pOnButtonPressedCallbackFunc = 0;
+    m_pOnValueChangedCallbackFunc = 0;
+    m_ValueOnLeftMouseDown = 0;
+    m_LeftMouseIsDown = 0;
+    m_StartMousePosition = wxPoint(0,0);
+    m_LastMousePosition = wxPoint(0,0);
+}
+
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 : wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
@@ -56,27 +81,7 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
     {
-        m_pVariables[i].m_Handle_StaticText = 0;
-        m_pVariables[i].m_Handle_StaticTextExtraLabel = 0;
-        m_pVariables[i].m_Handle_TextCtrl = 0;
-        m_pVariables[i].m_Handle_Slider = 0;
-        m_pVariables[i].m_Handle_Button = 0;
-        m_pVariables[i].m_Handle_ColourPicker = 0;
-        m_pVariables[i].m_Handle_ChoiceBox = 0;
-        m_pVariables[i].m_Pointer = 0;
-        m_pVariables[i].m_Range.Set( 0, 0 );
-        m_pVariables[i].m_Description = 0;
-        m_pVariables[i].m_NumEnumTypes = 0;
-        m_pVariables[i].m_pEnumStrings = 0;
-        m_pVariables[i].m_Type = PanelWatchType_Unknown;
-        m_pVariables[i].m_pCallbackObj = 0;
-        m_pVariables[i].m_pOnDropCallbackFunc = 0;
-        m_pVariables[i].m_pOnButtonPressedCallbackFunc = 0;
-        m_pVariables[i].m_pOnValueChangedCallbackFunc = 0;
-        m_pVariables[i].m_ValueOnLeftMouseDown = 0;
-        m_pVariables[i].m_LeftMouseIsDown = 0;
-        m_pVariables[i].m_StartMousePosition = wxPoint(0,0);
-        m_pVariables[i].m_LastMousePosition = wxPoint(0,0);
+        m_pVariables[i].Reset();
     }
 
     m_pTimer = MyNew wxTimer( this, wxID_ANY );
@@ -176,22 +181,13 @@ void PanelWatch::ClearAllVariables()
         //SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
         //SAFE_DELETE( m_pVariables[i].m_Handle_ChoiceBox );
 
-        m_pVariables[i].m_Pointer = 0;
-        m_pVariables[i].m_Range.Set( 0, 0 );
-        m_pVariables[i].m_Description = 0;
-        m_pVariables[i].m_NumEnumTypes = 0;
-        m_pVariables[i].m_pEnumStrings = 0;
-        m_pVariables[i].m_Type = PanelWatchType_Unknown;
-        m_pVariables[i].m_pCallbackObj = 0;
-        m_pVariables[i].m_pOnDropCallbackFunc = 0;
-        m_pVariables[i].m_pOnButtonPressedCallbackFunc = 0;
-        m_pVariables[i].m_pOnValueChangedCallbackFunc = 0;
+        m_pVariables[i].Reset();
     }
 
     m_NumVariables = 0;
 }
 
-int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
+int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, bool addcontrols)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -219,7 +215,7 @@ int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, 
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
+int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -245,7 +241,7 @@ int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, v
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, float min, float max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc, bool addcontrols)
+int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, float min, float max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, bool addcontrols)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -281,42 +277,42 @@ int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, v
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_UnsignedInt, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddChar(const char* name, char* pChar, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Char, name, pChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddUnsignedChar(const char* name, unsigned char* pUChar, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_UnsignedChar, name, pUChar, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddBool(const char* name, bool* pBool, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Bool, name, pBool, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddFloat(const char* name, float* pFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Float, name, pFloat, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddDouble(const char* name, double* pDouble, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Double, name, pDouble, min, max, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::Add2Floats(const char* name, const char* label1, const char* label2, float* pFloat1, float* pFloat2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::Add2Floats(const char* name, const char* label1, const char* label2, float* pFloat1, float* pFloat2, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     int first;
     first = AddVariableOfTypeRange( PanelWatchType_Float, "x", pFloat1, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
@@ -328,7 +324,7 @@ int PanelWatch::Add2Floats(const char* name, const char* label1, const char* lab
     return first;
 }
 
-int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     int first;
     first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector2->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
@@ -340,7 +336,7 @@ int PanelWatch::AddVector2(const char* name, Vector2* pVector2, float min, float
     return first;
 }
 
-int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     int first;
     first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector3->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
@@ -354,7 +350,7 @@ int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float
     return first;
 }
 
-int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     int first;
     first = AddVariableOfTypeRange( PanelWatchType_Float, "x", &pVector4->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
@@ -370,7 +366,7 @@ int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float
     return first;
 }
 
-int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     // TODO: maybe? change this to a color picker that supports alpha.
     int first;
@@ -383,7 +379,7 @@ int PanelWatch::AddColorFloat(const char* name, ColorFloat* pColorFloat, float m
     return first;
 }
 
-int PanelWatch::AddColorByte(const char* name, ColorByte* pColorByte, float min, float max, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddColorByte(const char* name, ColorByte* pColorByte, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     // TODO: maybe? change this to a color picker that supports alpha.
     int first;
@@ -396,17 +392,17 @@ int PanelWatch::AddColorByte(const char* name, ColorByte* pColorByte, float min,
     return first;
 }
 
-int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeDesc( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc, 0 );
 }
 
-int PanelWatch::AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     return AddVariableOfTypeEnum( PanelWatchType_Enum, name, pInt, 0, numtypes, ppStrings, pCallbackObj, pOnValueChangedCallBackFunc, true );
 }
 
-int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -440,7 +436,7 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallb
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj, PanelWatchCallbackWithID pOnValueChangedCallBackFunc)
+int PanelWatch::AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -980,7 +976,7 @@ void PanelWatch::OnClickStaticText(wxMouseEvent& event)
     int controlid = event.GetId();
 
     if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-        m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+        m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, 0 );
 }
 
 void PanelWatch::OnTimer(wxTimerEvent& event)
@@ -1006,8 +1002,9 @@ void PanelWatch::OnTextCtrlEnter(wxCommandEvent& event)
     }
     else
     {
+        // TODO: support oldvalue for text controls.
         if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, 0 );
     }
 }
 
@@ -1178,14 +1175,14 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     
                 // call the parent object to say it's value changed... finished changing.
                 if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, valueold );
             }
         }
         else
         {
             // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
             if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false );
+                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false, valueold );
         }
     }
 
@@ -1238,7 +1235,7 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
         {
             // TODO: if typed into a pointer box, deal with it... along with undo/redo.
             if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, 0 );
         }
         else
         {
@@ -1322,7 +1319,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     {
         // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
         if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false );
+            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, false, 0 );
 
         if( addundocommand )
         {
@@ -1347,7 +1344,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     
                 // call the parent object to say it's value changed... finished changing.
                 if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true );
+                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, 0 );
             }
         }
     }
@@ -1501,7 +1498,10 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             continue;
         }
 
-        if( m_pVariables[i].m_Handle_TextCtrl != 0 )
+        if( strcmp( tempstring, "not set" ) == 0 )
+            int bp = 1;
+
+        if( m_pVariables[i].m_Handle_ChoiceBox == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
             m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
 
         if( m_pVariables[i].m_Handle_Slider != 0 )

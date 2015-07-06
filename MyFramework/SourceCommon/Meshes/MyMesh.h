@@ -136,7 +136,7 @@ public:
     static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed(); }
     void OnSaveAnimationsPressed();
 
-    static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool finishedchanging) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
+    static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool finishedchanging, double oldvalue) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
     void OnValueChanged(int controlid, bool finishedchanging);
 #endif
 

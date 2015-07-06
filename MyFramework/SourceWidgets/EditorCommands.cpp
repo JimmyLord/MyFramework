@@ -15,7 +15,7 @@
 // EditorCommand_PanelWatchNumberValueChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     m_Difference = difference;
     m_Type = type;
@@ -32,34 +32,43 @@ EditorCommand_PanelWatchNumberValueChanged::~EditorCommand_PanelWatchNumberValue
 
 void EditorCommand_PanelWatchNumberValueChanged::Do()
 {
+    double oldvalue = 0;
+
     switch( m_Type )
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
+        oldvalue = *(int*)m_Pointer;
         *(int*)m_Pointer += (int)m_Difference;
         break;
 
     case PanelWatchType_UnsignedInt:
+        oldvalue = *(unsigned int*)m_Pointer;
         *(unsigned int*)m_Pointer += (unsigned int)m_Difference;
         break;
 
     case PanelWatchType_Char:
+        oldvalue = *(char*)m_Pointer;
         *(char*)m_Pointer += (char)m_Difference;
         break;
 
     case PanelWatchType_UnsignedChar:
+        oldvalue = *(unsigned char*)m_Pointer;
         *(unsigned char*)m_Pointer += (unsigned char)m_Difference;
         break;
 
     case PanelWatchType_Bool:
+        oldvalue = *(char*)m_Pointer;
         *(char*)m_Pointer += (char)m_Difference; // treating bools as char to avoid warning/error. safe?
         break;
 
     case PanelWatchType_Float:
+        oldvalue = *(float*)m_Pointer;
         *(float*)m_Pointer += (float)m_Difference;
         break;
 
     case PanelWatchType_Double:
+        oldvalue = *(double*)m_Pointer;
         *(double*)m_Pointer += m_Difference;
         break;
 
@@ -80,39 +89,48 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, oldvalue );
 }
 
 void EditorCommand_PanelWatchNumberValueChanged::Undo()
 {
+    double oldvalue = 0;
+
     switch( m_Type )
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
+        oldvalue = *(int*)m_Pointer;
         *(int*)m_Pointer -= (int)m_Difference;
         break;
 
     case PanelWatchType_UnsignedInt:
+        oldvalue = *(unsigned int*)m_Pointer;
         *(unsigned int*)m_Pointer -= (unsigned int)m_Difference;
         break;
 
     case PanelWatchType_Char:
+        oldvalue = *(char*)m_Pointer;
         *(char*)m_Pointer -= (char)m_Difference;
         break;
 
     case PanelWatchType_UnsignedChar:
+        oldvalue = *(unsigned char*)m_Pointer;
         *(unsigned char*)m_Pointer -= (unsigned char)m_Difference;
         break;
 
     case PanelWatchType_Bool:
+        oldvalue = *(char*)m_Pointer;
         *(char*)m_Pointer -= (char)m_Difference; // treating bools as char to avoid warning/error. safe?
         break;
 
     case PanelWatchType_Float:
+        oldvalue = *(float*)m_Pointer;
         *(float*)m_Pointer -= (float)m_Difference;
         break;
 
     case PanelWatchType_Double:
+        oldvalue = *(double*)m_Pointer;
         *(double*)m_Pointer -= m_Difference;
         break;
 
@@ -133,7 +151,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, oldvalue );
 }
 
 EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
@@ -149,7 +167,7 @@ EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
 // EditorCommand_PanelWatchColorChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     MyAssert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
 
@@ -184,7 +202,7 @@ void EditorCommand_PanelWatchColorChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, 0 );
 }
 
 void EditorCommand_PanelWatchColorChanged::Undo()
@@ -200,7 +218,7 @@ void EditorCommand_PanelWatchColorChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, 0 );
 }
 
 EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
@@ -212,7 +230,7 @@ EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
 // EditorCommand_PanelWatchPointerChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackWithID callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     MyAssert( type == PanelWatchType_PointerWithDesc );
 
@@ -241,7 +259,7 @@ void EditorCommand_PanelWatchPointerChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, 0 );
 }
 
 void EditorCommand_PanelWatchPointerChanged::Undo()
@@ -254,7 +272,7 @@ void EditorCommand_PanelWatchPointerChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, 0 );
 }
 
 EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()
