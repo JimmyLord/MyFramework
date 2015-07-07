@@ -118,8 +118,19 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
     //MyBindBuffer( GL_ARRAY_BUFFER, 0 );
     //checkGlError( "MyBindBuffer" );
 
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    if( pShader == 0 )
+        return;
+
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
+    {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+
     // Draw the contents of the buffers.
-    if( ((Shader_Base*)m_pMaterial->GetShader()->GlobalPass())->ActivateAndProgramShader(
+    if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, &pos, m_pMaterial ) )
     {
@@ -130,6 +141,9 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
 #endif
         m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
+
+    // always disable blending
+    glDisable( GL_BLEND );
 
     return;
 }
