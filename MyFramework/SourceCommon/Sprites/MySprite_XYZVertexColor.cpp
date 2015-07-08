@@ -180,22 +180,31 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
         return;
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    if( pShader == 0 )
+        return;
 
-    if( pShader )
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
     {
-        if( pShader->ActivateAndProgramShader(
-                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Position, m_pMaterial ) )
-        {
-#if USE_D3D
-            g_pD3DContext->DrawIndexed( 6, 0, 0 );
-#else
-            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
-            //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
-#endif
-            m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
-        }
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     }
+
+    if( pShader->ActivateAndProgramShader(
+            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            matviewproj, &m_Position, m_pMaterial ) )
+    {
+#if USE_D3D
+        g_pD3DContext->DrawIndexed( 6, 0, 0 );
+#else
+        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+        //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
+#endif
+        m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+    }
+
+    // always disable blending
+    glDisable( GL_BLEND );
 }
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr )

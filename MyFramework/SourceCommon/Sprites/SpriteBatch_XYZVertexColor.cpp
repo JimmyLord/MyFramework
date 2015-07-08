@@ -139,7 +139,7 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
 #else
         MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0 );
 #endif
-        m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        pShader->DeactivateShader( m_pVertexBuffer );
     }
 
     // always disable blending

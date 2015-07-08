@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -30,7 +22,7 @@ SpriteSheet::SpriteSheet()
     m_pSprites = 0;
     m_NumSprites = 0;
     m_pJSONFile = 0;
-    m_pTextureDef = 0;
+    m_pMaterial = 0;
 
     m_SpriteScale = 1;
 
@@ -52,22 +44,26 @@ SpriteSheet::~SpriteSheet()
     }
 
     SAFE_DELETE_ARRAY( m_pSprites );
-    if( m_pJSONFile )
-        g_pFileManager->FreeFile( m_pJSONFile );
-    if( m_pTextureDef )
-        m_pTextureDef->Release();
+    SAFE_RELEASE( m_pJSONFile );
+    SAFE_RELEASE( m_pMaterial );
 }
 
-void SpriteSheet::Load(const char* basefilename, int minfilter, int magfilter, int wraps, int wrapt)
+void SpriteSheet::Create(MaterialDefinition* pMaterial)
 {
-    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", basefilename );
+    TextureDefinition* pTextureDef = pMaterial->GetTextureColor();
 
-    char path[MAX_PATH];
-    sprintf_s( path, MAX_PATH, "%s.json", basefilename );
-    m_pJSONFile = RequestFile( path );
+    MyAssert( pMaterial && pTextureDef && pTextureDef->m_pFile );
+    if( pMaterial == 0 || pTextureDef == 0 || pTextureDef->m_pFile == 0 )
+        return;
 
-    sprintf_s( path, MAX_PATH, "%s.png", basefilename );
-    m_pTextureDef = g_pTextureManager->CreateTexture( path, minfilter, magfilter, wraps, wrapt );
+    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pTextureDef->m_pFile->m_FilenameWithoutExtension );
+
+    char jsonpath[MAX_PATH];
+    pTextureDef->m_pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".json", jsonpath, MAX_PATH );
+    m_pJSONFile = RequestFile( jsonpath );
+
+    pMaterial->AddRef();
+    m_pMaterial = pMaterial;
 }
 
 void SpriteSheet::Tick(double TimePassed)
@@ -76,7 +72,7 @@ void SpriteSheet::Tick(double TimePassed)
         return;
 
     // parse json and create array of sprites.
-    if( m_pJSONFile->m_FileLoadStatus == FileLoadStatus_Success && m_pTextureDef->m_FullyLoaded )
+    if( m_pJSONFile->m_FileLoadStatus == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->m_FullyLoaded )
     {
         cJSON* root = cJSON_Parse( m_pJSONFile->m_pBuffer );
 
@@ -110,7 +106,7 @@ void SpriteSheet::Tick(double TimePassed)
                 {
                     m_pSpriteNames = MyNew char[numfiles * 64];
                     m_pSpriteUVs = MyNew Vector4[numfiles];
-                    CreateSprites( numfiles );
+                    CreateSprites( numfiles, m_pMaterial );
 
                     for( int i=0; i<numfiles; i++ )
                     {
@@ -219,7 +215,7 @@ void SpriteSheet::Tick(double TimePassed)
                     {
                         m_pSpriteNames = MyNew char[numframes * 64];
                         m_pSpriteUVs = MyNew Vector4[numframes];
-                        CreateSprites( numframes );
+                        CreateSprites( numframes, m_pMaterial );
 
                         for( int i=0; i<numframes; i++ )
                         {
@@ -287,12 +283,13 @@ void SpriteSheet::Tick(double TimePassed)
     }
 }
 
-void SpriteSheet::CreateSprites(int numsprites)
+void SpriteSheet::CreateSprites(int numsprites, MaterialDefinition* pMaterial)
 {
     m_pSprites = MyNew MySprite*[numsprites];
     for( int i=0; i<numsprites; i++ )
     {
         m_pSprites[i] = MyNew MySprite( false );
+        m_pSprites[i]->SetMaterial( pMaterial );
     }
     m_NumSprites = numsprites;
 }
@@ -344,8 +341,8 @@ void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float
 {
     m_pJSONFile = sourcesheet->m_pJSONFile;
 
-    m_pTextureDef = sourcesheet->m_pTextureDef;
-    m_pTextureDef->AddRef();
+    m_pMaterial = sourcesheet->m_pMaterial;
+    m_pMaterial->AddRef();
 
     m_SpriteScale = sourcesheet->m_SpriteScale;
 
@@ -354,7 +351,8 @@ void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float
     m_SubspriteStartY = sy;
     m_SubspriteEndY = ey;
 
-    Tick(0);
+    // actually create the sprites... everything should be loaded, so one tick should be enough.
+    Tick( 0 );
 
     m_pJSONFile = 0;
 }

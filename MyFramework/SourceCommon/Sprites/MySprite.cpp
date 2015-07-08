@@ -356,7 +356,7 @@ void MySprite::SetTransform(MyMatrix& mat)
 
 void MySprite::SetTint(ColorByte tintcolor)
 {
-    LOGError( LOGTag, "SetTint is obsolete, use materials.\n" );
+    //LOGError( LOGTag, "SetTint is obsolete, use materials.\n" );
     m_Tint = tintcolor;
 }
 
@@ -379,7 +379,8 @@ void MySprite::SetMaterial(MaterialDefinition* pMaterial)
 {
     MyAssert( pMaterial != 0 );
 
-    pMaterial->AddRef();
+    if( pMaterial )
+        pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
 
@@ -407,9 +408,21 @@ bool MySprite::Setup(MyMatrix* matviewproj)
     if( pShader == 0 )
         return false;
 
-    return pShader->ActivateAndProgramShader(
-        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, &m_Position, m_pMaterial );
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
+    {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+
+    bool activated = pShader->ActivateAndProgramShader(
+                        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                        matviewproj, &m_Position, m_pMaterial );
+
+    // always disable blending
+    glDisable( GL_BLEND );
+
+    return activated;
 }
 
 void MySprite::DrawNoSetup()
@@ -487,5 +500,8 @@ Vertex_Base* MySprite::GetVerts(bool markdirty)
 
 TextureDefinition* MySprite::GetTexture()
 {
+    if( m_pMaterial == 0 )
+        return 0;
+
     return m_pMaterial->GetTextureColor();
 }

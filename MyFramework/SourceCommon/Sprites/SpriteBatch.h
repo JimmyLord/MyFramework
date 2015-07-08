@@ -29,8 +29,9 @@ public:
     SpriteBatch();
     virtual ~SpriteBatch();
 
-    void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
     void Reset() { m_NumSprites = 0; }
+
+    void SetMaterial(MaterialDefinition* pMaterial);
 
     virtual void AllocateVertices(int numsprites);
     virtual void AddSprite(MySprite* pSprite);

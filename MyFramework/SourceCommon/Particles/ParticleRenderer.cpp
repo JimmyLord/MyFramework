@@ -209,15 +209,6 @@ void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
         pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
-}
-
-void ParticleRenderer::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
-{
-    if( m_pMaterial )
-    {
-        m_pMaterial->SetShader( pShaderGroup );
-        m_pMaterial->SetTextureColor( pTexture );
-    }
 
     m_pVertexBuffer->ResetVAOs();
 }
@@ -266,13 +257,24 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    if( pShader == 0 )
+        return;
+
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
+    {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+
 #if USE_INDEXED_TRIANGLES
-    if( ((Shader_Base*)m_pMaterial->GetShader()->GlobalPass())->ActivateAndProgramShader(
-        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, 0, m_pMaterial ) )
+    if( pShader->ActivateAndProgramShader(
+            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            matviewproj, 0, m_pMaterial ) )
     {
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
-        m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        pShader->DeactivateShader( m_pVertexBuffer );
     }
 #else
     // not supporting point sprites anymore.
@@ -284,6 +286,9 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader();
     //}
 #endif
+
+    // always disable blending
+    glDisable( GL_BLEND );
 
     //glEnable( GL_BLEND );
     if( m_Additive ) // revert back to regular enabled alpha blending.

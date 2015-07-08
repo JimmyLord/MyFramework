@@ -12,7 +12,7 @@
 
 SpriteBatch::SpriteBatch()
 {
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial = 0;//g_pMaterialManager->CreateMaterial();
     m_NumSprites = 0;
 
     m_SpritesAllocated = 0;
@@ -30,10 +30,12 @@ SpriteBatch::~SpriteBatch()
     //SAFE_RELEASE( m_pVAO );
 }
 
-void SpriteBatch::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
+void SpriteBatch::SetMaterial(MaterialDefinition* pMaterial)
 {
-    m_pMaterial->SetShader( pShaderGroup );
-    m_pMaterial->SetTextureColor( pTexture );
+    if( pMaterial )
+        pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
 }
 
 void SpriteBatch::AllocateVertices(int numsprites)
@@ -114,8 +116,19 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
     //glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts );
     ////glBufferData( GL_ARRAY_BUFFER, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts, GL_DYNAMIC_DRAW );
 
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    if( pShader == 0 )
+        return;
+
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
+    {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+
     // Draw the contents of the buffers.
-    if( ((Shader_Base*)m_pMaterial->GetShader()->GlobalPass())->ActivateAndProgramShader(
+    if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, &pos, m_pMaterial ) )
     {
@@ -124,8 +137,11 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
 #else
         MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0 );
 #endif
-        m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
+        pShader->DeactivateShader( m_pVertexBuffer );
     }
+
+    // always disable blending
+    glDisable( GL_BLEND );
 
     return;
 }

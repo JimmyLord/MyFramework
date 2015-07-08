@@ -12,7 +12,7 @@
 
 MySprite9::MySprite9()
 {
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial = 0;
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
@@ -30,15 +30,12 @@ MySprite9::~MySprite9()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void MySprite9::SetShader(ShaderGroup* pShaderGroup)
+void MySprite9::SetMaterial(MaterialDefinition* pMaterial)
 {
-    m_pMaterial->SetShader( pShaderGroup );
-}
-
-void MySprite9::SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture)
-{
-    m_pMaterial->SetShader( pShaderGroup );
-    m_pMaterial->SetTextureColor( pTexture );
+    if( pMaterial )
+        pMaterial->AddRef();
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
 }
 
 MyMatrix MySprite9::GetPosition()
@@ -170,19 +167,29 @@ void MySprite9::Draw(MyMatrix* matviewproj)
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
-    if( pShader )
+    if( pShader == 0 )
+        return;
+
+    // Enable blending if necessary. TODO: sort draws and only set this once.
+    if( m_pMaterial->IsTransparent( pShader ) )
     {
-        if( pShader->ActivateAndProgramShader(
-                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
-                matviewproj, &m_Position, m_pMaterial ) )
-        {
-#if USE_D3D
-            g_pD3DContext->DrawIndexed( 6, 0, 0 );
-            //g_pD3DContext->Draw( 6, 0 );
-#else
-            MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0 );
-#endif
-            pShader->DeactivateShader( m_pVertexBuffer );
-        }
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     }
+
+    if( pShader->ActivateAndProgramShader(
+            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
+            matviewproj, &m_Position, m_pMaterial ) )
+    {
+#if USE_D3D
+        g_pD3DContext->DrawIndexed( 6, 0, 0 );
+        //g_pD3DContext->Draw( 6, 0 );
+#else
+        MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0 );
+#endif
+        pShader->DeactivateShader( m_pVertexBuffer );
+    }
+
+    // always disable blending
+    glDisable( GL_BLEND );
 }

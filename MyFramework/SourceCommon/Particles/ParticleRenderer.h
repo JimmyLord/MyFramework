@@ -46,7 +46,6 @@ public:
     void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
 
     void SetMaterial(MaterialDefinition* pMaterial);
-    void SetShaderAndTexture(ShaderGroup* pShaderGroup, TextureDefinition* pTexture);
 
     void Draw(MyMatrix* matviewproj);
 
