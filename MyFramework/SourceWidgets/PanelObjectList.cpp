@@ -107,7 +107,7 @@ void UpdatePanelWatchWithSelectedItems()
 
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject, id, i );
+            pData->m_pLeftClickFunction( pData->m_pObject_LeftClick ? pData->m_pObject_LeftClick : pData->m_pObject, id, i );
         }
     }
 
@@ -148,7 +148,7 @@ void PanelObjectList::OnTreeEndLabelEdit(wxTreeEvent& event)
             RenameObject( pData->m_pObject, newlabel );
 
             // Call the callback and let game code handle the new name
-            pData->m_pLabelEditFunction( pData->m_pObject, id, newlabel );
+            pData->m_pLabelEditFunction( pData->m_pObject_LabelEdit ? pData->m_pObject_LabelEdit : pData->m_pObject, id, newlabel );
         }
     }
 }
@@ -160,7 +160,7 @@ void PanelObjectList::OnTreeContextMenuRequested(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
     if( pData && pData->m_pRightClickFunction )
     {
-        pData->m_pRightClickFunction( pData->m_pObject, id );
+        pData->m_pRightClickFunction( pData->m_pObject_RightClick ? pData->m_pObject_RightClick : pData->m_pObject, id );
     }
 }
 
@@ -186,7 +186,7 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
     if( pData && pData->m_pDragFunction )
     {
-        pData->m_pDragFunction( pData->m_pObject );
+        pData->m_pDragFunction( pData->m_pObject_Drag ? pData->m_pObject_Drag : pData->m_pObject );
     }
     else
     {
@@ -223,7 +223,7 @@ wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResul
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         if( pData && pData->m_pDropFunction )
         {
-            pData->m_pDropFunction( pData->m_pObject, id, -1, x, y );
+            pData->m_pDropFunction( pData->m_pObject_Drop ? pData->m_pObject_Drop : pData->m_pObject, id, -1, x, y );
         }
     }
 
@@ -471,6 +471,51 @@ void PanelObjectList::SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabel
     }
 }
 
+void PanelObjectList::SetCustomObjectForCallback_LeftClick(wxTreeItemId id, void* pObject)
+{
+    if( id.IsOk() == false ) return;
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData )
+        pData->m_pObject_LeftClick = pObject;
+}
+
+void PanelObjectList::SetCustomObjectForCallback_RightClick(wxTreeItemId id, void* pObject)
+{
+    if( id.IsOk() == false ) return;
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData )
+        pData->m_pObject_RightClick = pObject;
+}
+
+void PanelObjectList::SetCustomObjectForCallback_Drag(wxTreeItemId id, void* pObject)
+{
+    if( id.IsOk() == false ) return;
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData )
+        pData->m_pObject_Drag = pObject;
+}
+
+void PanelObjectList::SetCustomObjectForCallback_Drop(wxTreeItemId id, void* pObject)
+{
+    if( id.IsOk() == false ) return;
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData )
+        pData->m_pObject_Drop = pObject;
+}
+
+void PanelObjectList::SetCustomObjectForCallback_LabelEdit(wxTreeItemId id, void* pObject)
+{
+    if( id.IsOk() == false ) return;
+
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+    if( pData )
+        pData->m_pObject_LabelEdit = pObject;
+}
+
 void PanelObjectList::RemoveObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
@@ -496,6 +541,30 @@ void* PanelObjectList::GetObject(wxTreeItemId id)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
 
     return pData->m_pObject;
+}
+
+void PanelObjectList::Tree_MoveObject(void* pParent, void* pObjectToMove, void* pPreviousObject)
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+    wxTreeItemId idparent = FindObject( m_pTree_Objects, pParent, idroot );
+    wxTreeItemId idtomove = FindObject( m_pTree_Objects, pObjectToMove, idparent );
+
+    wxString itemname = m_pTree_Objects->GetItemText( idtomove );
+    TreeItemDataGenericObjectInfo* olditemdata = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( idtomove );
+    TreeItemDataGenericObjectInfo* itemdata = MyNew TreeItemDataGenericObjectInfo();
+    *itemdata = *olditemdata;
+
+    if( pPreviousObject != 0 )
+    {
+        wxTreeItemId idprevious = FindObject( m_pTree_Objects, pPreviousObject, idparent );
+        m_pTree_Objects->InsertItem( idparent, idprevious, itemname, -1, -1, itemdata );
+    }
+    else
+    {
+        m_pTree_Objects->InsertItem( idparent, 0, itemname, -1, -1, itemdata );
+    }
+
+    m_pTree_Objects->Delete( idtomove );
 }
 
 wxString PanelObjectList::GetObjectName(void* pObject)

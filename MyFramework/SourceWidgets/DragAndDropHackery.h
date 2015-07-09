@@ -20,6 +20,7 @@ enum DragAndDropTypes
     DragAndDropType_MaterialDefinitionPointer,
     DragAndDropType_FileObjectPointer,
     DragAndDropType_TextureDefinitionPointer,
+    DragAndDropType_MenuItem,
 };
 
 struct DragAndDropStruct
