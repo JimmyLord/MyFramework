@@ -40,7 +40,10 @@ FontDefinition* FontManager::CreateFont(const char* fontfilename)
 {
     FontDefinition* pFontDef = FindFontByFilename( fontfilename );
     if( pFontDef )
+    {
+        pFontDef->AddRef();
         return pFontDef;
+    }
 
     pFontDef = MyNew FontDefinition();
     pFontDef->m_pFile = RequestFile( fontfilename );
@@ -56,7 +59,10 @@ FontDefinition* FontManager::CreateFont(MyFileObject* pFile)
 
     FontDefinition* pFontDef = FindFont( pFile );
     if( pFontDef )
+    {
+        pFontDef->AddRef();
         return pFontDef;
+    }
 
     pFontDef = MyNew FontDefinition();
     pFontDef->m_pFile = pFile;
@@ -137,19 +143,13 @@ FontDefinition* FontManager::FindFont(MyFileObject* pFile)
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( ((FontDefinition*)pNode)->m_pFile == pFile )
-        {
-            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
-        }
     }
 
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( ((FontDefinition*)pNode)->m_pFile == pFile )
-        {
-            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
-        }
     }
 
     return 0;
@@ -160,19 +160,13 @@ FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
-        {
-            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
-        }
     }
 
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
-        {
-            ((FontDefinition*)pNode)->AddRef();
             return (FontDefinition*)pNode;
-        }
     }
 
     return 0;

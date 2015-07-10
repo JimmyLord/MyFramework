@@ -210,7 +210,8 @@ void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
 
-    m_pVertexBuffer->ResetVAOs();
+    if( m_pVertexBuffer )
+        m_pVertexBuffer->ResetVAOs();
 }
 
 void ParticleRenderer::Draw(MyMatrix* matviewproj)
