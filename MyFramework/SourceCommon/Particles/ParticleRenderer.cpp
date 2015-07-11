@@ -266,7 +266,10 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     if( m_pMaterial->IsTransparent( pShader ) )
     {
         glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        if( m_Additive )
+            glBlendFunc( GL_ONE, GL_ONE );
+        else
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     }
 
 #if USE_INDEXED_TRIANGLES
