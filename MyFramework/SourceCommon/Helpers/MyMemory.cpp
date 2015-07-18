@@ -138,6 +138,8 @@ void* operator new(size_t size, char* file, unsigned long line)
         g_pAllocationList = 0;
 
     MyAssert( file != 0 );
+    //if( AllocatedRamCount == 83240 )
+    //    int bp = 1;
     //if( file == 0 && size == 380 )
     //    int bp = 1;
 
@@ -182,6 +184,9 @@ void* operator new[](size_t size, char* file, unsigned long line)
     if( g_pAllocationList == (AllocationList*)1 )
         g_pAllocationList = 0;
 
+    //if( AllocatedRamCount == 83240 )
+    //    int bp = 1;
+
     MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
     mo->m_size = size;
     mo->m_type = newtype_array;
@@ -223,6 +228,8 @@ void* operator new(size_t size)
     if( g_pAllocationList == (AllocationList*)1 )
         g_pAllocationList = 0;
 
+    //if( AllocatedRamCount == 83240 )
+    //    int bp = 1;
     //if( size == 16 )
     //    int bp = 1;
 
@@ -300,6 +307,9 @@ void* operator new[](size_t size)
     }
     if( g_pAllocationList == (AllocationList*)1 )
         g_pAllocationList = 0;
+
+    //if( AllocatedRamCount == 83240 )
+    //    int bp = 1;
 
     MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
     mo->m_size = size;
