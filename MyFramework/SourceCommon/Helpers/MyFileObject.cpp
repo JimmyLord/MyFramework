@@ -99,6 +99,7 @@ MyFileObject::MyFileObject()
 
 #if MYFW_USING_WX
     m_CustomLeftClickCallback = 0;
+    m_CustomLeftClickObject = 0;
 #endif
 }
 
@@ -142,6 +143,29 @@ void MyFileObject::OnRightClick()
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
 }
 
+void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
+{
+#if MYFW_WINDOWS
+    char url[MAX_PATH];
+    char workingdir[MAX_PATH];
+    _getcwd( workingdir, MAX_PATH * sizeof(char) );
+    sprintf_s( url, MAX_PATH, "%s/%s", workingdir, m_FullPath );
+
+    if( g_pFileManager->DoesFileExist( url ) == false )
+    {
+        FILE* file;
+        fopen_s( &file, url, "wb" );
+
+        if( file )
+        {
+            fclose( file );
+        }
+    }
+
+    ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
+#endif
+}
+
 void MyFileObject::OnPopupClick(wxEvent &evt)
 {
     MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
@@ -151,13 +175,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
     {
     case RightClick_OpenFile:
         {
-#if MYFW_WINDOWS
-            char url[MAX_PATH];
-            char workingdir[MAX_PATH];
-            _getcwd( workingdir, MAX_PATH * sizeof(char) );
-            sprintf_s( url, MAX_PATH, "%s/%s", workingdir, pFileObject->m_FullPath );
-            ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
-#endif
+            pFileObject->OSLaunchFile( true );
         }
         break;
 
