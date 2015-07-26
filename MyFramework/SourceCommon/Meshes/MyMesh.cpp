@@ -1462,11 +1462,11 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             }
 
             // Enable blending if necessary. TODO: sort draws and only set this once.
-            if( pMaterial->IsTransparent( pShader ) )
-            {
-                glEnable( GL_BLEND );
-                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            }
+            //if( pMaterial->IsTransparent( pShader ) )
+            //{
+            //    glEnable( GL_BLEND );
+            //    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            //}
 
             if( pIndexBuffer )
                 MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
