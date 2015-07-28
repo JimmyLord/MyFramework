@@ -273,6 +273,12 @@
 		04936D511AE3EA1300344903 /* PanelObjectList.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D451AE3EA1300344903 /* PanelObjectList.h */; };
 		04936D521AE3EA1300344903 /* PanelWatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04936D461AE3EA1300344903 /* PanelWatch.cpp */; };
 		04936D531AE3EA1300344903 /* PanelWatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 04936D471AE3EA1300344903 /* PanelWatch.h */; };
+		04AA9BC91B67383400FBC03D /* MaterialDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA9BC71B67383400FBC03D /* MaterialDefinition.cpp */; };
+		04AA9BCA1B67383400FBC03D /* MaterialDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA9BC71B67383400FBC03D /* MaterialDefinition.cpp */; };
+		04AA9BCB1B67383400FBC03D /* MaterialDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA9BC71B67383400FBC03D /* MaterialDefinition.cpp */; };
+		04AA9BCC1B67383400FBC03D /* MaterialDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AA9BC81B67383400FBC03D /* MaterialDefinition.h */; };
+		04AA9BCD1B67383400FBC03D /* MaterialDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AA9BC81B67383400FBC03D /* MaterialDefinition.h */; };
+		04AA9BCE1B67383400FBC03D /* MaterialDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AA9BC81B67383400FBC03D /* MaterialDefinition.h */; };
 		04AF0189197971FE002DBAE0 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AF0187197971FE002DBAE0 /* lodepng.cpp */; };
 		04AF018A197971FE002DBAE0 /* lodepng.h in Headers */ = {isa = PBXBuildFile; fileRef = 04AF0188197971FE002DBAE0 /* lodepng.h */; };
 		04B1100C19E34120004BB5B3 /* IAPManagerIOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */; };
@@ -768,6 +774,8 @@
 		04936EA51AE3EF9700344903 /* SoundPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundPlayer.cpp; sourceTree = "<group>"; };
 		04936EA61AE3EF9700344903 /* SoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundPlayer.h; sourceTree = "<group>"; };
 		04936EA71AE3EF9700344903 /* wglext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wglext.h; sourceTree = "<group>"; };
+		04AA9BC71B67383400FBC03D /* MaterialDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialDefinition.cpp; path = ../../../../../ProjectInfiniteDungNew/Framework/MyFramework/SourceCommon/Textures/MaterialDefinition.cpp; sourceTree = "<group>"; };
+		04AA9BC81B67383400FBC03D /* MaterialDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialDefinition.h; path = ../../../../../ProjectInfiniteDungNew/Framework/MyFramework/SourceCommon/Textures/MaterialDefinition.h; sourceTree = "<group>"; };
 		04AF0187197971FE002DBAE0 /* lodepng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lodepng.cpp; sourceTree = "<group>"; };
 		04AF0188197971FE002DBAE0 /* lodepng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lodepng.h; sourceTree = "<group>"; };
 		04B1100A19E34120004BB5B3 /* IAPManagerIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPManagerIOS.h; sourceTree = "<group>"; };
@@ -1680,6 +1688,8 @@
 		04E9EF371ABF401C00AD4B64 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
+				04AA9BC71B67383400FBC03D /* MaterialDefinition.cpp */,
+				04AA9BC81B67383400FBC03D /* MaterialDefinition.h */,
 				048AF09C1AF300F600EB4FC7 /* MaterialManager.cpp */,
 				048AF09D1AF300F600EB4FC7 /* MaterialManager.h */,
 				04E9EF381ABF401C00AD4B64 /* FBODefinition.cpp */,
@@ -1837,6 +1847,7 @@
 				0423ABD31AE2FD8D00C1AE29 /* FileManager.h in Headers */,
 				04936D511AE3EA1300344903 /* PanelObjectList.h in Headers */,
 				0423ABD41AE2FD8D00C1AE29 /* MyFileObjectShader.h in Headers */,
+				04AA9BCE1B67383400FBC03D /* MaterialDefinition.h in Headers */,
 				0423ABD51AE2FD8D00C1AE29 /* GameCore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1887,6 +1898,7 @@
 				044C647A1ADED3D700BABD53 /* ShaderGroup.h in Headers */,
 				044C649E1ADED40000BABD53 /* cJSON.h in Headers */,
 				044C64431ADED3B800BABD53 /* MyFileObject.h in Headers */,
+				04AA9BCD1B67383400FBC03D /* MaterialDefinition.h in Headers */,
 				044C64551ADED3C400BABD53 /* MyAnimation.h in Headers */,
 				044C64511ADED3C400BABD53 /* LightManager.h in Headers */,
 				044C642A1ADED39700BABD53 /* MyList.h in Headers */,
@@ -1989,6 +2001,7 @@
 				04E9EF6F1ABF401C00AD4B64 /* MyAnimation.h in Headers */,
 				04E9EF711ABF401C00AD4B64 /* MyLight.h in Headers */,
 				04E9EF4C1ABF401C00AD4B64 /* BMFont.h in Headers */,
+				04AA9BCC1B67383400FBC03D /* MaterialDefinition.h in Headers */,
 				04E9EF6B1ABF401C00AD4B64 /* LightManager.h in Headers */,
 				04E9EFA11ABF401C00AD4B64 /* AnimatedSprite.h in Headers */,
 				04E9EF8F1ABF401C00AD4B64 /* ListOfShaders.h in Headers */,
@@ -2145,6 +2158,7 @@
 				0423AB841AE2FD8D00C1AE29 /* MyMeshLoader.cpp in Sources */,
 				0423AB851AE2FD8D00C1AE29 /* MyQuaternion.cpp in Sources */,
 				0423AB861AE2FD8D00C1AE29 /* MySprite.cpp in Sources */,
+				04AA9BCB1B67383400FBC03D /* MaterialDefinition.cpp in Sources */,
 				0423AB871AE2FD8D00C1AE29 /* MyMemory.cpp in Sources */,
 				0423AB881AE2FD8D00C1AE29 /* ShaderGroup.cpp in Sources */,
 				0423AB891AE2FD8D00C1AE29 /* cJSON.cpp in Sources */,
@@ -2228,6 +2242,7 @@
 				044C64911ADED3E100BABD53 /* SpriteBatch_XYZVertexColor.cpp in Sources */,
 				044C64601ADED3C900BABD53 /* GameService_ScoreLoop.cpp in Sources */,
 				044C649B1ADED3FB00BABD53 /* lodepng.cpp in Sources */,
+				04AA9BCA1B67383400FBC03D /* MaterialDefinition.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2256,6 +2271,7 @@
 				BF27901B1520D36A007587B7 /* SavedData.mm in Sources */,
 				04B1100D19E34120004BB5B3 /* IAPManagerIOS.mm in Sources */,
 				04E9EFA41ABF401C00AD4B64 /* MySprite.cpp in Sources */,
+				04AA9BC91B67383400FBC03D /* MaterialDefinition.cpp in Sources */,
 				04E9EF4B1ABF401C00AD4B64 /* BMFont.cpp in Sources */,
 				04AF0189197971FE002DBAE0 /* lodepng.cpp in Sources */,
 				04E9EF901ABF401C00AD4B64 /* MyFileObjectShader.cpp in Sources */,
