@@ -452,6 +452,9 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
         MyAssert( vbo->m_DEBUG_VBOUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == vbo->m_CurrentBufferID );
         if( ibo )
             MyAssert( vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
+        // TODO: find a better way to handle on the fly shader changes.
+        //   - one current situation is if editor changes shader on a material through the interface.
+        vbo->ResetVAOs();
 #endif
         glBindVertexArray( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] );
     }
