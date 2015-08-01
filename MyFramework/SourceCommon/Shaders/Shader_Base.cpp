@@ -24,6 +24,8 @@ Shader_Base::Shader_Base(ShaderPassTypes type)
 
 void Shader_Base::Init_Shader_Base()
 {
+    ClassnameSanityCheck();
+
     m_aHandle_Position = -1;
     m_aHandle_UVCoord = -1;
     m_aHandle_Normal = -1;

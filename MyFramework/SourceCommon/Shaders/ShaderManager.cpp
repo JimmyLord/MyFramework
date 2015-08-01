@@ -25,6 +25,8 @@ BaseShader::BaseShader(ShaderPassTypes type)
 
 void BaseShader::Init_BaseShader()
 {
+    ClassnameSanityCheck();
+
     m_Initialized = false;
     m_ShaderFailedToCompile = false;
 

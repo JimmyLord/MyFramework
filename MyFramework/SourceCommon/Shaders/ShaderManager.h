@@ -48,6 +48,7 @@ public:
     BaseShader(ShaderPassTypes type);
     void Init_BaseShader();
     virtual ~BaseShader();
+    SetClassnameBase( "BaseShader" ); // only first 8 character count.
 
     virtual void Init(ShaderPassTypes type);
 

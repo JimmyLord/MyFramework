@@ -441,6 +441,41 @@ void BufferManager::InvalidateAllBuffers(bool cleanglallocs)
     //}
 }
 
+#if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX
+void BufferManager::ResetAllVBOsUsingShader(ShaderGroup* pShaderGroup)
+{
+    for( CPPListNode* pNode = m_Buffers.GetHead(); pNode; )
+    {
+        BufferDefinition* pBufferDef = (BufferDefinition*)pNode;
+        pNode = pNode->GetNext();
+
+        // if this is a vertex buffer
+        if( pBufferDef->m_Target == GL_ARRAY_BUFFER )
+        {
+            for( int i=0; i<3; i++ )
+            {
+                for( int p=0; p<ShaderPass_NumTypes; p++ )
+                {
+                    BaseShader* pShader = pShaderGroup->GetShader( (ShaderPassTypes)p, 0, 0 );
+
+                    // if the shader isn't a Shader_Base, this won't work for now...
+                    // TODO: move DoVAORequirementsMatch to BaseShader, make it virtual somehow.
+                    if( pShader->IsA( "ShadBase" ) )
+                    {
+                        Shader_Base* pShader_Base = (Shader_Base*)pShader;
+                        if( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] != pShader ||
+                            pShader_Base->DoVAORequirementsMatch( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] ) )
+                        {
+                            pBufferDef->ResetVAOs();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
+
 unsigned int BufferManager::CalculateTotalMemoryUsedByBuffers()
 {
     unsigned int totalsize = 0;

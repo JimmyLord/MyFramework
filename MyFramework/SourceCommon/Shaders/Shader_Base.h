@@ -60,11 +60,10 @@ protected:
     void InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo);
     void InitializeVAO(GLuint vao);
 
-    bool DoVAORequirementsMatch(Shader_Base* pShader);
-
 public:
     Shader_Base();
     Shader_Base(ShaderPassTypes type);
+    SetClassnameBase( "ShadBase" ); // only first 8 character count.
     void Init_Shader_Base();
     virtual ~Shader_Base();
 
@@ -86,6 +85,8 @@ public:
     void ProgramLightmap(TextureDefinition* pTexture);
     void ProgramDepthmap(TextureDefinition* pTexture);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
+
+    virtual bool DoVAORequirementsMatch(Shader_Base* pShader);
 };
 
 #endif //__Shader_Base_H__
