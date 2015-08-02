@@ -86,7 +86,7 @@ public:
     void ProgramDepthmap(TextureDefinition* pTexture);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
 
-    virtual bool DoVAORequirementsMatch(Shader_Base* pShader);
+    virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };
 
 #endif //__Shader_Base_H__

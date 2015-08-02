@@ -350,6 +350,11 @@ void BaseShader::DeactivateShader(BufferDefinition* vbo)
 {
 }
 
+bool BaseShader::DoVAORequirementsMatch(BaseShader* pShader)
+{
+    return true;
+}
+
 void ShaderManager::AddShader(BaseShader* pShader)
 {
     m_ShaderList.AddTail( pShader );

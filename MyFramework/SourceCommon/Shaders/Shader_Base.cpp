@@ -367,16 +367,23 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
 #endif //USE_D3D
 }
 
-bool Shader_Base::DoVAORequirementsMatch(Shader_Base* pShader)
+bool Shader_Base::DoVAORequirementsMatch(BaseShader* pShader)
 {
-    if( pShader->m_aHandle_Position     == m_aHandle_Position &&
-        pShader->m_aHandle_UVCoord      == m_aHandle_UVCoord &&
-        pShader->m_aHandle_Normal       == m_aHandle_Normal &&
-        pShader->m_aHandle_VertexColor  == m_aHandle_VertexColor &&
-        pShader->m_aHandle_BoneIndex    == m_aHandle_BoneIndex &&
-        pShader->m_aHandle_BoneWeight   == m_aHandle_BoneWeight )
+    //BaseShader::DoVAORequirementsMatch( pShader );
+
+    if( pShader->IsA( "ShadBase" ) )
     {
-        return true;
+        Shader_Base* pShader_Base = (Shader_Base*)pShader;
+
+        if( pShader_Base->m_aHandle_Position     == m_aHandle_Position &&
+            pShader_Base->m_aHandle_UVCoord      == m_aHandle_UVCoord &&
+            pShader_Base->m_aHandle_Normal       == m_aHandle_Normal &&
+            pShader_Base->m_aHandle_VertexColor  == m_aHandle_VertexColor &&
+            pShader_Base->m_aHandle_BoneIndex    == m_aHandle_BoneIndex &&
+            pShader_Base->m_aHandle_BoneWeight   == m_aHandle_BoneWeight )
+        {
+            return true;
+        }
     }
 
     return false;
@@ -455,7 +462,6 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
         if( ibo )
             MyAssert( vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
         // TODO: find a better way to handle on the fly shader changes.
-        //   - one current situation is if editor changes shader on a material through the interface.
         vbo->ResetVAOs();
 #endif
         glBindVertexArray( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] );

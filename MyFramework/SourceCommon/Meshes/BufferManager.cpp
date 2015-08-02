@@ -458,13 +458,12 @@ void BufferManager::ResetAllVBOsUsingShader(ShaderGroup* pShaderGroup)
                 {
                     BaseShader* pShader = pShaderGroup->GetShader( (ShaderPassTypes)p, 0, 0 );
 
-                    // if the shader isn't a Shader_Base, this won't work for now...
-                    // TODO: move DoVAORequirementsMatch to BaseShader, make it virtual somehow.
-                    if( pShader->IsA( "ShadBase" ) )
+                    // does this shader have the same attributes as the old one.
+                    // if not reset the VAO.
+                    if( pShader )
                     {
-                        Shader_Base* pShader_Base = (Shader_Base*)pShader;
                         if( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] != pShader ||
-                            pShader_Base->DoVAORequirementsMatch( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] ) )
+                            pShader->DoVAORequirementsMatch( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] ) )
                         {
                             pBufferDef->ResetVAOs();
                         }

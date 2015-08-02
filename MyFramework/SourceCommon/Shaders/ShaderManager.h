@@ -67,6 +67,8 @@ public:
     void DisableAttributeArray(GLint index, Vector4 value);
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0);
+
+    virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };
 
 class ShaderManager
