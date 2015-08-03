@@ -31,6 +31,17 @@ protected:
     CPPListHead m_FilesLoaded;
     CPPListHead m_FilesStillLoading;
 
+protected:
+#if USE_PTHREAD
+    pthread_t m_FileIOThreads[1]; // TODO: there should be one of these for each file system in use.
+    pthread_mutex_t m_FileIOThreadLocks[1];
+    bool m_FileIOThreadIsLocked[1];
+    bool m_KillFileIOThread[1];
+    MyFileObject* m_pFileThisFileIOThreadIsLoading[1];
+
+    static void* Thread_FileIO(void* obj);
+#endif USE_PTHREAD
+
 public:
     FileManager();
     virtual ~FileManager();

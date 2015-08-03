@@ -19,6 +19,19 @@ FileManager* g_pFileManager = 0;
 
 FileManager::FileManager()
 {
+#if USE_PTHREAD
+    for( int threadid=0; threadid<1; threadid++ )
+    {
+        m_FileIOThreadLocks[threadid] = PTHREAD_MUTEX_INITIALIZER;
+        pthread_mutex_lock( &m_FileIOThreadLocks[threadid] );
+        m_FileIOThreadIsLocked[threadid] = true;
+
+        pthread_create( &m_FileIOThreads[threadid], 0, &Thread_FileIO, this );
+
+        m_KillFileIOThread[threadid] = 0;
+        m_pFileThisFileIOThreadIsLoading[threadid] = 0;
+    }
+#endif //USE_PTHREAD
 }
 
 FileManager::~FileManager()
@@ -27,7 +40,48 @@ FileManager::~FileManager()
     MyAssert( m_FilesLoaded.GetHead() == 0 );
     MyAssert( m_FilesStillLoading.GetHead() == 0 );
     //FreeAllFiles();
+
+#if USE_PTHREAD
+    // grab the thread mutex... small chance we have to wait for a file to finish loading.
+    for( int threadid=0; threadid<1; threadid++ )
+    {
+        if( m_FileIOThreadIsLocked[threadid] == false )
+            pthread_mutex_lock( &m_FileIOThreadLocks[threadid] );
+
+        // wait for the thread to end.
+        m_KillFileIOThread[threadid] = true;
+        pthread_mutex_unlock( &m_FileIOThreadLocks[threadid] );
+        pthread_join( m_FileIOThreads[threadid], 0 );
+    }
+#endif //USE_PTHREAD
 }
+
+#if USE_PTHREAD
+void* FileManager::Thread_FileIO(void* obj)
+{
+    FileManager* pthis = (FileManager*)obj;
+
+    int threadid = 0; // TODO: have filemanager pass in a proper threadid.
+
+    while( 1 )
+    {
+        pthread_mutex_lock( &pthis->m_FileIOThreadLocks[threadid] );
+        
+        if( pthis->m_pFileThisFileIOThreadIsLoading[threadid] )
+        {
+            pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Tick();
+            pthis->m_pFileThisFileIOThreadIsLoading[threadid] = 0;
+        }
+
+        pthread_mutex_unlock( &pthis->m_FileIOThreadLocks[threadid] );
+
+        if( pthis->m_KillFileIOThread[threadid] )
+            break;
+    }
+
+    return 0;
+}
+#endif //USE_PTHREAD
 
 void FileManager::PrintListOfOpenFiles()
 {
@@ -142,35 +196,72 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
 
 void FileManager::Tick()
 {
-    // continue to tick any files still in the "loading" queue.
-    CPPListNode* pNextNode;
-    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+#if USE_PTHREAD
+    int threadindex = 0;
+
+    // if there are no files to load, grab the mutex to lock the loading thread until there are.
+    if( m_pFileThisFileIOThreadIsLoading[threadindex] == 0 )
     {
-        pNextNode = pNode->GetNext();
-
-        MyFileObject* pFile = (MyFileObject*)pNode;
-        //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
-
-        // sanity check, make sure file isn't already loaded.
-        MyAssert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
-
-        // if the file already failed to load, give up on it.
-        //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
-        if( pFile->m_FileLoadStatus > FileLoadStatus_Success )
-            continue;
-
-        pFile->Tick();
-
-        // if we're done loading, move the file into the loaded list.
-        if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( m_FileIOThreadIsLocked[threadindex] == false ) // if we don't already have the lock, grab it.
         {
-            LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
+            pthread_mutex_lock( &m_FileIOThreadLocks[threadindex] );
+            m_FileIOThreadIsLocked[threadindex] = true;
+        }
+    }
 
-            m_FilesLoaded.MoveTail( pFile );
+    // if we don't own the mutex for the fileio thread, then return
+    if( m_FileIOThreadIsLocked[threadindex] == false )
+        return;
+#endif //USE_PTHREAD
+
+    // check if there are more files to load.
+    {
+#if USE_PTHREAD
+        // the file being loaded should be 0 if we have the mutex.
+        MyAssert( m_pFileThisFileIOThreadIsLoading[threadindex] == 0 );
+#endif //USE_PTHREAD
+
+        // continue to tick any files still in the "loading" queue.
+        CPPListNode* pNextNode;
+        for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+        {
+            pNextNode = pNode->GetNext();
+
+            MyFileObject* pFile = (MyFileObject*)pNode;
+            //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
+
+            // sanity check, make sure file isn't already loaded.
+            //MyAssert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
+
+            // if the file already failed to load, give up on it.
+            //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
+            if( pFile->m_FileLoadStatus > FileLoadStatus_Success )
+                continue;
+
+            // if we're done loading, move the file into the loaded list.
+            if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+            {
+                //LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
+
+                m_FilesLoaded.MoveTail( pFile );
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
+                g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
 #endif
+            }
+            else
+            {
+#if USE_PTHREAD
+                // release the mutex so the fileio thread can load the file we want.
+                m_pFileThisFileIOThreadIsLoading[threadindex] = pFile;
+                pthread_mutex_unlock( &m_FileIOThreadLocks[threadindex] );
+                m_FileIOThreadIsLocked[threadindex] = false;
+#else
+                pFile->Tick();
+#endif
+
+                break; // file io thread only loads one file at a time.
+            }
         }
     }
 }
