@@ -155,6 +155,17 @@ void MaterialDefinition::ImportFromFile()
     cJSON_Delete( root );
 }
 
+void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
+{
+    g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pFile );
+
+    if( m_pShaderGroup )
+        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroup->GetFile() );
+
+    if( m_pTextureColor )
+        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->m_pFile );
+}
+
 void MaterialDefinition::SetName(const char* name)
 {
     MyAssert( name );

@@ -61,6 +61,8 @@ public:
     MyFileObject* GetFirstFileLoaded() { return (MyFileObject*)m_FilesLoaded.GetHead(); }
     MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }
 
+    void MoveFileToFrontOfFileLoadedList(MyFileObject* pFile);
+
 #if MYFW_USING_WX
     bool DoesFileExist(const char* filename);
 #endif

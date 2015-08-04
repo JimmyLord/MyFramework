@@ -306,6 +306,23 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
     return numfilesupdated;
 }
 
+void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
+{
+    if( pFile == 0 )
+        return;
+
+    // make sure the file is in the loaded list.
+    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        MyFileObject* pFileLoaded = (MyFileObject*)pNode;
+        if( pFileLoaded == pFile )
+        {
+            m_FilesLoaded.MoveHead( pFile );
+            return;
+        }
+    }
+}
+
 #if MYFW_USING_WX
 bool FileManager::DoesFileExist(const char* filename)
 {

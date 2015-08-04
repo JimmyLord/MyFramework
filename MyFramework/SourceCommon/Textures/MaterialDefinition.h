@@ -51,6 +51,7 @@ public:
     virtual ~MaterialDefinition();
 
     void ImportFromFile();
+    void MoveAssociatedFilesToFrontOfFileList();
 
     const char* GetName() { return m_Name; }
     void SetName(const char* name);
