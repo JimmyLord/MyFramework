@@ -39,6 +39,8 @@ MySprite::MySprite(bool creatematerial)
 
 MySprite::MySprite(MySprite* pSprite, const char* category)
 {
+    MyAssert( pSprite != 0 );
+
     *this = *pSprite;
 
     m_pMaterial = g_pMaterialManager->CreateMaterial();
@@ -321,7 +323,12 @@ void MySprite::SetPosition(MyMatrix* mat)
     m_Position = *mat;
 }
 
-void MySprite::SetZRotation(float rotation, bool preserveposition, Vector3* localpivot)
+void MySprite::SetZRotation(float rotation)
+{
+    SetZRotationWithPivot( rotation );
+}
+
+void MySprite::SetZRotationWithPivot(float rotation, bool preserveposition, Vector3* localpivot)
 {
     Vector3 oldpos;
     if( preserveposition )

@@ -49,7 +49,8 @@ void GLStats::NewFrame()
 void GLStats::EndFrame()
 {
 #if MYFW_USING_WX
-    g_pPanelMemory->m_DrawCallListDirty = false;
+    if( g_GLCanvasIDActive == 0 )
+        g_pPanelMemory->m_DrawCallListDirty = false;
 #endif
 }
 
@@ -102,7 +103,7 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
     }
 
 #if MYFW_USING_WX
-    if( g_pPanelMemory->m_DrawCallListDirty == true )
+    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
     {
         g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
     }

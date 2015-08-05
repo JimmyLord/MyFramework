@@ -56,7 +56,8 @@ public:
     void SetPosition(Vector3 pos, bool setindentity = true);
     void SetPosition(float x, float y, float z, bool setindentity = true);
     void SetPosition(MyMatrix* mat);
-    void SetZRotation(float rotation, bool preserveposition = true, Vector3* localpivot = 0);
+    void SetZRotation(float rotation);
+    void SetZRotationWithPivot(float rotation, bool preserveposition = true, Vector3* localpivot = 0);
     void SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity = true);
     void SetTransform(MyMatrix& mat);
     ColorByte* GetTintPointer() { return &m_Tint; }
