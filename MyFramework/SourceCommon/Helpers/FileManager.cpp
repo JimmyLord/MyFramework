@@ -69,7 +69,11 @@ void* FileManager::Thread_FileIO(void* obj)
         
         if( pthis->m_pFileThisFileIOThreadIsLoading[threadid] )
         {
-            pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Tick();
+            while( pthis->m_pFileThisFileIOThreadIsLoading[threadid]->m_FileLoadStatus == FileLoadStatus_Loading )
+            {
+                pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Tick();
+            }
+
             pthis->m_pFileThisFileIOThreadIsLoading[threadid] = 0;
         }
 
