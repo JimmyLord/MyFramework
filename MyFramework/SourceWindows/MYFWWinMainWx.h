@@ -37,7 +37,7 @@ enum MenuIDs
     myID_GLViewType_Wide,
     myID_Undo,
     myID_Redo,
-    myID_NumIDs,
+    myID_LastID,
 };
 
 void WinMain_CreateGameCore();
