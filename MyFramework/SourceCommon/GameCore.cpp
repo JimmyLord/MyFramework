@@ -300,6 +300,10 @@ void GameCore::OnDrawFrameDone()
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 }
 
+void GameCore::OnFileRenamed(char* fullpathbefore, char* fullpathafter)
+{
+}
+
 bool GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
 {
     m_LastInputMethodUsed = InputMethod_Touch;
