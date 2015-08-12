@@ -42,4 +42,6 @@ void cJSONExt_GetString(cJSON* object, const char* name, char* variable, int buf
 
 size_t cJSONExt_GetStringLength(cJSON* object, const char* name);
 
+void cJSONExt_ReplaceStringInJSONObject(cJSON* object, const char* newstring);
+
 #endif //__cJSON_Helpers_H__

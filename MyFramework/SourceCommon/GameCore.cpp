@@ -300,7 +300,7 @@ void GameCore::OnDrawFrameDone()
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 }
 
-void GameCore::OnFileRenamed(char* fullpathbefore, char* fullpathafter)
+void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathafter)
 {
 }
 
