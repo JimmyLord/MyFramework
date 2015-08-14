@@ -201,7 +201,7 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
 {
     if( g_pGameCore->IsReadyToRender() )
     {
-        g_pGameCore->OnDrawFrame();
+        g_pGameCore->OnDrawFrame( 0 );
         g_pGameCore->OnDrawFrameDone();
     }
 }
