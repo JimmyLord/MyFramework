@@ -40,7 +40,7 @@ protected:
     MyFileObject* m_pFileThisFileIOThreadIsLoading[1];
 
     static void* Thread_FileIO(void* obj);
-#endif USE_PTHREAD
+#endif //USE_PTHREAD
 
 public:
     FileManager();

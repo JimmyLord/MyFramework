@@ -14,21 +14,8 @@
 
 #define MYKEYCODE_BACKSPACE     67  //KEYCODE_DEL
 #define MYKEYCODE_ENTER         66
-#define MYKEYCODE_ESC           27
-#define MYKEYCODE_LEFT          37
-#define MYKEYCODE_UP            38
-#define MYKEYCODE_RIGHT         39
-#define MYKEYCODE_DOWN          40
 
 #elif MYFW_WINDOWS
-
-#define MYKEYCODE_BACKSPACE     8
-#define MYKEYCODE_ENTER         13
-#define MYKEYCODE_ESC           27
-#define MYKEYCODE_LEFT          37
-#define MYKEYCODE_UP            38
-#define MYKEYCODE_RIGHT         39
-#define MYKEYCODE_DOWN          40
 
 #if MYFW_USING_WX
 #define MYKEYCODE_LSHIFT        306
@@ -54,18 +41,7 @@
 
 #elif MYFW_NACL || MYFW_EMSCRIPTEN
 
-#define MYKEYCODE_BACKSPACE     8  //KEYCODE_DEL
-#define MYKEYCODE_ENTER         13
-
 #elif MYFW_OSX
-
-#define MYKEYCODE_BACKSPACE     8
-#define MYKEYCODE_ENTER         13
-#define MYKEYCODE_ESC           27
-#define MYKEYCODE_LEFT          37
-#define MYKEYCODE_UP            38
-#define MYKEYCODE_RIGHT         39
-#define MYKEYCODE_DOWN          40
 
 #if MYFW_USING_WX
 #define MYKEYCODE_LSHIFT        306
@@ -93,6 +69,28 @@
 #define MYKEYCODE_RIGHT         0
 #define MYKEYCODE_DOWN          0
 
+#endif
+
+#ifndef MYKEYCODE_BACKSPACE
+#define MYKEYCODE_BACKSPACE     8
+#endif
+#ifndef MYKEYCODE_ENTER
+#define MYKEYCODE_ENTER         13
+#endif
+#ifndef MYKEYCODE_ESC
+#define MYKEYCODE_ESC           27
+#endif
+#ifndef MYKEYCODE_LEFT
+#define MYKEYCODE_LEFT          37
+#endif
+#ifndef MYKEYCODE_UP
+#define MYKEYCODE_UP            38
+#endif
+#ifndef MYKEYCODE_RIGHT
+#define MYKEYCODE_RIGHT         39
+#endif
+#ifndef MYKEYCODE_DOWN
+#define MYKEYCODE_DOWN          40
 #endif
 
 #if MYFW_WP8
