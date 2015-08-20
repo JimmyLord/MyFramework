@@ -838,7 +838,7 @@ void MainGLCanvas::Draw()
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
         }
 
-        g_pGameCore->OnDrawFrame();
+        g_pGameCore->OnDrawFrame( m_GLCanvasID );
         g_pGameCore->OnDrawFrameDone();
 
         SwapBuffers();

@@ -106,8 +106,9 @@ public:
     virtual void OnSurfaceCreated();
     virtual void OnSurfaceLost();
     virtual void OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height);
-    virtual void OnDrawFrame();
+    virtual void OnDrawFrame(unsigned int canvasid);
     virtual void OnDrawFrameDone();
+    virtual void OnFileRenamed(const char* fullpathbefore, const char* fullpathafter);
 
     virtual bool OnTouch(int action, int id, float x, float y, float pressure, float size);
     virtual bool OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);

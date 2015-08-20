@@ -244,7 +244,7 @@ void appRender2(long tick, int width, int height)
 
     g_UnpausedTime += g_pGameCore->Tick(millspassed / 1000.0f);
 
-    g_pGameCore->OnDrawFrame();
+    g_pGameCore->OnDrawFrame( 0 );
     g_pGameCore->OnDrawFrameDone();
 
     //DrawScene();

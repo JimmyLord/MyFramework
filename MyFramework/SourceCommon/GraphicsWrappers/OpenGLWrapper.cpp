@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -27,23 +19,26 @@ GLStats::GLStats()
     m_NumFramesDrawn = 0;
     m_TotalDrawCalls = 0;
     m_NumDrawCallsThisFrameSoFar = 0;
-    m_NumDrawCallsLastFrame = 0;
-    m_EvenOddDrawCall = 0;
+    for( int i=0; i<10; i++ )
+        m_NumDrawCallsLastFrame[i] = 0;
+    m_EvenOddFrame = 0;
+
+    m_CurrentCanvasID = 0;
 }
 
 GLStats::~GLStats()
 {
 }
 
-void GLStats::NewFrame()
+void GLStats::NewFrame(unsigned int canvasid)
 {
     m_NumFramesDrawn++;
-    m_NumDrawCallsLastFrame = m_NumDrawCallsThisFrameSoFar;
+    m_CurrentCanvasID = canvasid;
     m_NumDrawCallsThisFrameSoFar = 0;
     
-    m_EvenOddDrawCall++;
-    if( m_EvenOddDrawCall == 2 )
-        m_EvenOddDrawCall = 0;
+    m_EvenOddFrame++;
+    if( m_EvenOddFrame == 2 )
+        m_EvenOddFrame = 0;
 }
 
 void GLStats::EndFrame()
@@ -52,6 +47,14 @@ void GLStats::EndFrame()
     if( g_GLCanvasIDActive == 0 )
         g_pPanelMemory->m_DrawCallListDirty = false;
 #endif
+
+    if( m_CurrentCanvasID < 10 )
+        m_NumDrawCallsLastFrame[m_CurrentCanvasID] = m_NumDrawCallsThisFrameSoFar;
+}
+
+int GLStats::GetNumDrawCallsLastFrameForCurrentCanvasID()
+{
+    return m_NumDrawCallsLastFrame[m_CurrentCanvasID];
 }
 
 void MyBindBuffer(GLenum target, GLuint buffer)

@@ -43,6 +43,8 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler( PanelObjectList::OnTreeEndLabelEdit ) );
     Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler( PanelObjectList::OnTreeContextMenuRequested ) );
     Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler( PanelObjectList::OnDragBegin ) );
+    Connect( wxEVT_COMMAND_TREE_ITEM_ACTIVATED, wxTreeEventHandler( PanelObjectList::OnActivate ) );
+    Connect( wxEVT_TREE_KEY_DOWN, wxTreeEventHandler( PanelObjectList::OnKeyDown ) );
 }
 
 PanelObjectList::~PanelObjectList()
@@ -200,6 +202,38 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     wxDropSource dragsource( dataobject );    
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 #endif
+}
+
+void PanelObjectList::OnActivate(wxTreeEvent& event)
+{
+    // ATM, activating an item will allow user to rename it.
+    wxArrayTreeItemIds selecteditems;
+    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
+    
+    if( numselected == 1 )
+    {
+        wxTreeItemId id = selecteditems[0].GetID();
+        m_pTree_Objects->EditLabel( id );
+    }
+}
+
+void PanelObjectList::OnKeyDown(wxTreeEvent& event)
+{
+    if( event.GetKeyCode() == WXK_F2 )
+    {
+        wxArrayTreeItemIds selecteditems;
+        unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
+    
+        if( numselected == 1 )
+        {
+            wxTreeItemId id = selecteditems[0].GetID();
+            m_pTree_Objects->EditLabel( id );
+        }
+
+        return;
+    }
+
+    event.Skip();
 }
 
 PanelObjectListDropTarget::PanelObjectListDropTarget()

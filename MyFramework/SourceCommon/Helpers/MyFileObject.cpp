@@ -305,6 +305,11 @@ void MyFileObject::ParseName(const char* filename)
 
 void MyFileObject::Rename(const char* newnamewithoutextension)
 {
+#if MYFW_USING_WX
+    char fullpathbefore[MAX_PATH];
+    sprintf_s( fullpathbefore, MAX_PATH, "%s", m_FullPath );
+#endif
+
     char newfullpath[MAX_PATH];
 
     int fullpathlen = (int)strlen( m_FullPath );
@@ -317,6 +322,10 @@ void MyFileObject::Rename(const char* newnamewithoutextension)
     rename( m_FullPath, newfullpath );
 
     ParseName( newfullpath );
+
+#if MYFW_USING_WX
+    g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
+#endif
 }
 
 void MyFileObject::Tick()

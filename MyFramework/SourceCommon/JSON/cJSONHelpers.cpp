@@ -11,6 +11,11 @@
 
 static bool OverrodeJSONMemoryAllocation = false;
 
+// To get access to these funcs/vars from cjson, I had to make the not-static in cJSON.cpp
+extern void *(*cJSON_malloc)(size_t sz);
+extern void (*cJSON_free)(void *ptr);
+extern char* cJSON_strdup(const char* str);
+
 void* MyJSONMalloc(size_t sz)
 {
     // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
@@ -227,4 +232,14 @@ size_t cJSONExt_GetStringLength(cJSON* object, const char* name)
         return strlen( obj->valuestring );
     
     return 0;
+}
+
+void cJSONExt_ReplaceStringInJSONObject(cJSON* object, const char* newstring)
+{
+    MyAssert( !(object->type&cJSON_IsReference) && object->valuestring );
+    if( !(object->type&cJSON_IsReference) && object->valuestring )
+    {
+        cJSON_free( object->valuestring );
+        object->valuestring = cJSON_strdup( newstring );
+    }
 }

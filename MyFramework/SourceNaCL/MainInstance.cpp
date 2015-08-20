@@ -239,7 +239,7 @@ void MainInstance::DrawSelf()
         lasttime = currtime;        
 
         g_UnpausedTime += g_pGameCore->Tick( timepassed );
-        g_pGameCore->OnDrawFrame();
+        g_pGameCore->OnDrawFrame( 0 );
         g_pGameCore->OnDrawFrameDone();
         m_OpenGLContext->FlushContext();
     }

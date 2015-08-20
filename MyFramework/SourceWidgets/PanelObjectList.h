@@ -103,6 +103,8 @@ protected:
     void OnTreeEndLabelEdit(wxTreeEvent& event);
     void OnTreeContextMenuRequested(wxTreeEvent& event);
     void OnDragBegin(wxTreeEvent& event);
+    void OnActivate(wxTreeEvent& event);
+    void OnKeyDown(wxTreeEvent& event);
     void UpdateRootNodeObjectCount();
 
     // drop code for drag and drop.

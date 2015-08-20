@@ -392,7 +392,7 @@ int bbmain(const char* UUID)
         {
             //LOGInfo( LOGTag, "timepassed - %f\n", (float)timepassed );
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
-            g_pGameCore->OnDrawFrame();
+            g_pGameCore->OnDrawFrame( 0 );
             g_pGameCore->OnDrawFrameDone();
         }
 

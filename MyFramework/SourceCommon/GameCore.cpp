@@ -288,9 +288,9 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
     checkGlError( "glViewport" );
 }
 
-void GameCore::OnDrawFrame()
+void GameCore::OnDrawFrame(unsigned int canvasid)
 {
-    g_GLStats.NewFrame();
+    g_GLStats.NewFrame( canvasid );
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 }
 
@@ -298,6 +298,10 @@ void GameCore::OnDrawFrameDone()
 {
     g_GLStats.EndFrame();
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
+}
+
+void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathafter)
+{
 }
 
 bool GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
