@@ -156,7 +156,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
 
 bool WebRequestObject::IsBusy()
 {
-    if( m_pFileObject && m_pFileObject->m_FileReady == false )
+    if( m_pFileObject && m_pFileObject->m_FileLoadStatus != FileLoadStatus_Success )
         return true;
 
     return false;
@@ -173,7 +173,7 @@ char* WebRequestObject::GetResult()
 {
     //LOGInfo( LOGTag, "WebRequestObject::GetResult\n" );
 
-    if( m_pFileObject && m_pFileObject->m_FileReady )
+    if( m_pFileObject && m_pFileObject->m_FileLoadStatus == FileLoadStatus_Success )
         return m_pFileObject->m_pBuffer;
 
     return 0;
