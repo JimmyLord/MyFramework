@@ -18,7 +18,7 @@ bool MyAssertFunc(const char* file = __FILE__, unsigned long line = __LINE__);
 
 #else
 
-#define MyAssert() ((void)0)
+#define MyAssert(condition) ((void)0)
 
 #endif //_DEBUG
 

@@ -545,6 +545,9 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
             pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
         }
         break;
+
+    case PanelWatchControlType_NumTypes:
+        break;
     }
 
     assert( pControlHandle );

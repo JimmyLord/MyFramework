@@ -51,13 +51,13 @@ double MyTime_GetSystemTime(bool realtime)
     return 0;
 }
 
+static double starttime = MyTime_GetSystemTime();
+
 double MyTime_GetRunningTime()
 {
-    static double firsttime = MyTime_GetSystemTime();
-    
     double currenttime = MyTime_GetSystemTime();
 
-    return currenttime - firsttime;
+    return currenttime - starttime;
 }
 
 double g_UnpausedTime = 0;
