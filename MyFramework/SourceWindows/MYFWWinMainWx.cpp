@@ -698,8 +698,8 @@ void MainGLCanvas::Resized(wxSizeEvent& evt)
 
     //wxGLCanvas::OnSize(evt);
  
-    if( g_pGameCore )
-        g_pGameCore->OnSurfaceChanged( 0, 0, evt.GetSize().x, evt.GetSize().y );
+    //if( g_pGameCore )
+    //    g_pGameCore->OnSurfaceChanged( 0, 0, evt.GetSize().x, evt.GetSize().y );
 
     m_CurrentGLViewWidth = evt.GetSize().x;
     m_CurrentGLViewHeight = evt.GetSize().y;
@@ -731,7 +731,7 @@ void MainGLCanvas::ResizeViewport(bool clearhack)
 
     if( m_GLCanvasID == 1 )
     {
-        // TODO: figure out why I'm doing this for the editor view.
+        // GameCore should pass this along to Editor_OnSurfaceChanged for any editor canvas (canvas 1 ATM).
         g_pGameCore->OnSurfaceChanged( 0, 0, m_CurrentGLViewWidth, m_CurrentGLViewHeight );
         return;
     }
