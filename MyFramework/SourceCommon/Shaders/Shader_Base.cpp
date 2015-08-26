@@ -53,7 +53,9 @@ void Shader_Base::Init_Shader_Base()
 
     m_uHandle_BoneTransforms = -1;
 
-    m_uTime = -1;
+    m_uHandle_Time = -1;
+
+    m_uHandle_FramebufferSize = -1;
 
     m_uHandle_WSCameraPos = -1;
     m_uHandle_LSCameraPos = -1;
@@ -101,12 +103,14 @@ bool Shader_Base::LoadAndCompile()
     m_uHandle_TextureSpecColor =    GetUniformLocation( m_ProgramHandle, "u_TextureSpecColor" );
     m_uHandle_Shininess =           GetUniformLocation( m_ProgramHandle, "u_Shininess" );
 
-    m_uHandle_BoneTransforms =   GetUniformLocation( m_ProgramHandle, "u_BoneTransforms" );
+    m_uHandle_BoneTransforms =      GetUniformLocation( m_ProgramHandle, "u_BoneTransforms" );
 
-    m_uTime =                    GetUniformLocation( m_ProgramHandle, "u_Time" );
+    m_uHandle_Time =                GetUniformLocation( m_ProgramHandle, "u_Time" );
 
-    m_uHandle_WSCameraPos =        GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
-    m_uHandle_LSCameraPos =        GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
+    m_uHandle_FramebufferSize =     GetUniformLocation( m_ProgramHandle, "u_FBSize" );
+
+    m_uHandle_WSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
+    m_uHandle_LSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
 
     for( int i=0; i<4; i++ )
     {
@@ -508,10 +512,10 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
     if( m_uHandle_Shininess != -1 )
         glUniform1f( m_uHandle_Shininess, shininess );
 
-    if( m_uTime != -1 )
+    if( m_uHandle_Time != -1 )
     {
         float time = (float)MyTime_GetUnpausedTime();
-        glUniform1f( m_uTime, time );
+        glUniform1f( m_uHandle_Time, time );
     }
 
     checkGlError( "Shader_Base::ActivateAndProgramShader" );
@@ -671,4 +675,10 @@ void Shader_Base::ProgramBoneTransforms(MyMatrix* transforms, int numtransforms)
 {
     if( m_uHandle_BoneTransforms != -1 )
         glUniformMatrix4fv( m_uHandle_BoneTransforms, numtransforms, GL_FALSE, &transforms[0].m11 );
+}
+
+void Shader_Base::ProgramFramebufferSize(float width, float height)
+{
+    if( m_uHandle_FramebufferSize != -1 )
+        glUniform2f( m_uHandle_FramebufferSize, width, height );    
 }

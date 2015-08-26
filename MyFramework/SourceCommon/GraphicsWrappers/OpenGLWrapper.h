@@ -21,6 +21,14 @@ public:
 
     unsigned int m_CurrentCanvasID;
 
+    unsigned int m_PreviousFramebuffer;
+    unsigned int m_PreviousFramebufferWidth;
+    unsigned int m_PreviousFramebufferHeight;
+
+    unsigned int m_CurrentFramebuffer;
+    unsigned int m_CurrentFramebufferWidth;
+    unsigned int m_CurrentFramebufferHeight;
+
 public:
     GLStats();
     ~GLStats();
@@ -46,5 +54,7 @@ void MyDrawArrays(GLenum mode, GLint first, GLsizei count);
 
 void MyEnableVertexAttribArray(GLuint index);
 void MyDisableVertexAttribArray(GLuint index);
+
+void MyBindFramebuffer(GLenum target, GLuint framebuffer, unsigned int fbwidth, unsigned int fbheight);
 
 #endif //__OpenGLWrapper_H__

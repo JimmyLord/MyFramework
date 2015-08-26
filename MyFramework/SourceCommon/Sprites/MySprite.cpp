@@ -487,6 +487,9 @@ void MySprite::Draw(MyMatrix* matviewproj)
         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
         matviewproj, &m_Position, m_pMaterial ) )
     {
+        pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
+        //pShader->ProgramFramebufferSize( 700, 400 );
+
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );
     }

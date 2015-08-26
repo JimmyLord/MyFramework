@@ -24,6 +24,14 @@ GLStats::GLStats()
     m_EvenOddFrame = 0;
 
     m_CurrentCanvasID = 0;
+
+    m_PreviousFramebuffer = 0;
+    m_PreviousFramebufferWidth = 0;
+    m_PreviousFramebufferHeight = 0;
+
+    m_CurrentFramebuffer = 0;
+    m_CurrentFramebufferWidth = 0;
+    m_CurrentFramebufferHeight = 0;
 }
 
 GLStats::~GLStats()
@@ -129,4 +137,22 @@ void MyEnableVertexAttribArray(GLuint index)
 void MyDisableVertexAttribArray(GLuint index)
 {
     glDisableVertexAttribArray( index );
+}
+
+void MyBindFramebuffer(GLenum target, GLuint framebuffer, unsigned int fbwidth, unsigned int fbheight)
+{
+    if( g_GLStats.m_CurrentFramebuffer == framebuffer )
+        return;
+
+    glBindFramebuffer( target, framebuffer );
+
+    checkGlError( "glBindFramebuffer" );
+
+    g_GLStats.m_PreviousFramebuffer = g_GLStats.m_CurrentFramebuffer;
+    g_GLStats.m_PreviousFramebufferWidth = g_GLStats.m_CurrentFramebufferWidth;
+    g_GLStats.m_PreviousFramebufferHeight = g_GLStats.m_CurrentFramebufferHeight;
+
+    g_GLStats.m_CurrentFramebuffer = framebuffer;
+    g_GLStats.m_CurrentFramebufferWidth = fbwidth;
+    g_GLStats.m_CurrentFramebufferHeight = fbheight;
 }

@@ -31,6 +31,8 @@ FBODefinition::FBODefinition()
     m_NeedColorTexture = true;
     m_DepthBits = 32;
     m_DepthIsTexture = false;
+
+    m_LastFrameBufferID = -1;
 }
 
 FBODefinition::~FBODefinition()
@@ -229,7 +231,7 @@ bool FBODefinition::Create()
 
     // attach everything to the FBO
     {
-        glBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID );
+        MyBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID, 0, 0 );
 
         // attach color texture
         if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
@@ -248,7 +250,7 @@ bool FBODefinition::Create()
             }
         }
 
-        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+        MyBindFramebuffer( GL_FRAMEBUFFER, 0, 0, 0 );
         checkGlError( "glBindFramebufferEXT" );
     }
 
@@ -271,17 +273,29 @@ bool FBODefinition::Create()
     return true;
 }
 
-void FBODefinition::Bind()
+void FBODefinition::Bind(bool storeframebufferid)
 {
 #if !USE_D3D
-    glBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID );
+    //if( storeframebufferid )
+    //    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &m_LastFrameBufferID );
+
+    MyBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID, m_Width, m_Height );
     checkGlError( "glBindFramebuffer" );
 #endif
 }
 
-void FBODefinition::Unbind()
+void FBODefinition::Unbind(bool restorelastframebufferid)
 {
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    //if( restorelastframebufferid )
+    //{
+    //    MyAssert( m_LastFrameBufferID != -1 );
+    //    MyBindFramebuffer( GL_FRAMEBUFFER, m_LastFrameBufferID );
+        MyBindFramebuffer( GL_FRAMEBUFFER, g_GLStats.m_PreviousFramebuffer, g_GLStats.m_PreviousFramebufferWidth, g_GLStats.m_PreviousFramebufferHeight );
+    //}
+    //else
+    //    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    //m_LastFrameBufferID = -1;
 }
 
 void FBODefinition::Invalidate(bool cleanglallocs)

@@ -45,7 +45,9 @@ public:
 
     GLint m_uHandle_BoneTransforms;
 
-    GLint m_uTime;
+    GLint m_uHandle_Time;
+    
+    GLint m_uHandle_FramebufferSize;
 
     GLint m_uHandle_WSCameraPos;
     GLint m_uHandle_LSCameraPos;
@@ -85,6 +87,7 @@ public:
     void ProgramLightmap(TextureDefinition* pTexture);
     void ProgramDepthmap(TextureDefinition* pTexture);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
+    void ProgramFramebufferSize(float width, float height);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };

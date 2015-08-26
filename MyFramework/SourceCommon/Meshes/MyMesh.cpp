@@ -1538,6 +1538,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                             indexbuffertype = GL_UNSIGNED_INT;
                     }
 
+                    pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
+
                     // Enable blending if necessary. TODO: sort draws and only set this once.
                     if( pMaterial->IsTransparent( pShader ) )
                     {

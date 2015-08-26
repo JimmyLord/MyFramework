@@ -38,6 +38,8 @@ public:
     int m_DepthBits;
     bool m_DepthIsTexture;
 
+    int m_LastFrameBufferID;
+
 protected:
     bool Create(); // TextureManager will call this.
 
@@ -48,8 +50,8 @@ public:
     // returns true if a new texture needs to be created.
     bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
 
-    void Bind();
-    void Unbind();
+    void Bind(bool storeframebufferid);
+    void Unbind(bool restorelastframebufferid);
 
     void Invalidate(bool cleanglallocs);
 };

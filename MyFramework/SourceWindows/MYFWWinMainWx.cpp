@@ -147,7 +147,7 @@ void MainFrame::AddPanes()
     g_pPanelObjectList = MyNew PanelObjectList( this );
 
     // add the panes to the manager
-    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Top().Caption("GLCanvas") );
+    m_AUIManager.AddPane( m_pGLCanvas, wxAuiPaneInfo().Name("GLCanvas").Top().Caption("Game") );
     m_AUIManager.AddPane( g_pPanelWatch, wxAuiPaneInfo().Name("PanelWatch").Right().Caption("Watch").Layer(1) );
     m_AUIManager.AddPane( g_pPanelMemory, wxAuiPaneInfo().Name("PanelMemory").Right().Caption("Memory").Layer(1) );
     m_AUIManager.AddPane( g_pPanelObjectList, wxAuiPaneInfo().Name("PanelObjectList").Left().Caption("Objects").Layer(1) );
@@ -501,8 +501,8 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 
     //LOGInfo( LOGTag, "MainGLCanvas::MouseMoved Event, %d, %d\n", event.m_x, event.m_y );
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
@@ -795,7 +795,8 @@ void MainGLCanvas::Draw()
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    wxGLCanvas::SetCurrent( *m_GLContext );
+    m_GLContext->SetCurrent( *this );
+    //SetCurrent( *m_GLContext );
     wxPaintDC( this );
 
     if( g_pGameCore )
@@ -838,9 +839,16 @@ void MainGLCanvas::Draw()
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
         }
 
-        g_pGameCore->OnDrawFrame( m_GLCanvasID );
-        g_pGameCore->OnDrawFrameDone();
+        int currentframebuffer;
+        glGetIntegerv( GL_FRAMEBUFFER_BINDING, &currentframebuffer );
+        MyAssert( currentframebuffer == 0 );
 
-        SwapBuffers();
+        //if( m_GLCanvasID == 0 )
+        {
+            g_pGameCore->OnDrawFrame( m_GLCanvasID );
+            g_pGameCore->OnDrawFrameDone();
+        }
     }
+
+    SwapBuffers();
 }
