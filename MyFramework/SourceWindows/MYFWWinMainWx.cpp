@@ -14,6 +14,8 @@
 #include "../../Framework/MyFramework/SourceWidgets/EditorCommands.h"
 #include "../../Framework/MyFramework/SourceWidgets/CommandStack.h"
 
+#define TESTING_FRAGCOORDISSUE 0
+
 bool g_EscapeButtonWillQuit;
 bool g_CloseProgramRequested;
 
@@ -315,7 +317,8 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
-    g_pGameCore->OnKeyDown( keycode, keycode );
+    if( g_pGameCore )
+        g_pGameCore->OnKeyDown( keycode, keycode );
 }
 
 void MainFrame::OnKeyReleased(wxKeyEvent& event)
@@ -420,10 +423,12 @@ bool MainApp::OnInit()
     wxSize size = m_pMainFrame->m_pGLCanvas->GetSize();
 
     // Create and initialize our Game object.
+#if !TESTING_FRAGCOORDISSUE
     WinMain_CreateGameCore();
     g_pGameCore->OnSurfaceCreated();
     g_pGameCore->OnSurfaceChanged( 0, 0, size.x, size.y );
     g_pGameCore->OneTimeInit();
+#endif
 
     m_pMainFrame->ResizeViewport();
     m_pMainFrame->OnPostInit();
@@ -501,8 +506,8 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 
     //LOGInfo( LOGTag, "MainGLCanvas::MouseMoved Event, %d, %d\n", event.m_x, event.m_y );
 
-    //if( g_pGameCore )
-    //    g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    if( g_pGameCore )
+        g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
@@ -797,7 +802,16 @@ void MainGLCanvas::Draw()
 
     m_GLContext->SetCurrent( *this );
     //SetCurrent( *m_GLContext );
-    wxPaintDC( this );
+    //wxPaintDC( this );
+
+#if TESTING_FRAGCOORDISSUE
+    void FragCoordTest(MainGLCanvas* pGLCanvas);
+    
+    FragCoordTest( this );
+    SwapBuffers();
+
+    return;
+#endif
 
     if( g_pGameCore )
     {
@@ -852,3 +866,78 @@ void MainGLCanvas::Draw()
 
     SwapBuffers();
 }
+
+#if TESTING_FRAGCOORDISSUE
+
+void FragCoordTest(MainGLCanvas* pGLCanvas)
+{
+    static bool loadedassets = false;
+    static unsigned int proghandle = 0;
+
+    if( loadedassets == false )
+    {
+        loadedassets = true;
+
+        FILE* pFile;
+        fopen_s( &pFile, "Data/Shaders/TestFragCoord.glsl", "rb" );
+
+        char buffer[10000];
+        int size = fread( buffer, 1, 10000, pFile );
+        buffer[size] = 0;
+        unsigned int vert;
+        unsigned int frag;
+
+        proghandle = createProgram( size, buffer, size, buffer, &vert, &frag );
+
+        fclose( pFile );
+    }
+
+    MyBindBuffer( GL_ARRAY_BUFFER, 0 );
+    MyBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    MyAssert( proghandle != 0 );
+    if( proghandle != 0 )
+    {
+        float verts[] =
+        {
+            -0.95f, -0.95f, // bl
+             0.95f,  0.95f, // tr
+            -0.95f,  0.95f, // tl
+             0.95f,  0.95f, // tr
+            -0.95f, -0.95f, // bl
+             0.95f, -0.95f, // br
+        };
+
+        float time = (float)MyTime_GetRunningTime();
+        for( int i=0; i<12; i++ )
+        {
+            verts[i] += sin( time ) * 0.02f;
+        }
+
+        if( pGLCanvas->m_GLCanvasID == 0 )
+            glClearColor( 0.5f, 0.0f, 0.0f, 1.0f );
+        else
+            glClearColor( 0.0f, 0.5f, 0.0f, 1.0f );
+        glClear( GL_COLOR_BUFFER_BIT );
+
+        glDisable( GL_DEPTH_TEST );
+
+        glViewport( 0, 0, pGLCanvas->m_CurrentGLViewWidth, pGLCanvas->m_CurrentGLViewHeight );
+
+        glUseProgram( proghandle );
+
+        int apos = glGetAttribLocation( proghandle, "a_Position" );
+
+        glUniform2f( 0, (float)pGLCanvas->m_CurrentGLViewWidth, (float)pGLCanvas->m_CurrentGLViewHeight );
+
+        glVertexAttribPointer( apos, 2, GL_FLOAT, 0, 8, verts );
+        glEnableVertexAttribArray( apos );
+
+        glDrawArrays( GL_TRIANGLES, 0, 6 );
+
+        //glPointSize( 10 );
+        //glDrawArrays( GL_POINTS, 0, 6 );
+    }
+}
+
+#endif //TESTING_FRAGCOORDISSUE
