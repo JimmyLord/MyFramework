@@ -192,6 +192,7 @@ public:
     //virtual ~Vector3Int() {}
 
     inline void Set(int nx, int ny, int nz) { x = nx; y = ny; z = nz; }
+    inline void Set(Vector3Int vec) { x = vec.x; y = vec.y; z = vec.z; }
     inline float LengthSquared() const {return (float)x*x + y*y + z*z;}
     inline float Length() const {return sqrtf((float)x*x + y*y + z*z);}
 
