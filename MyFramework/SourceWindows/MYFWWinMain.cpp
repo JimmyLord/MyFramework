@@ -342,7 +342,7 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
         return false;
     }
 
-    static PIXELFORMATDESCRIPTOR pfd =  // pfd Tells Windows How We Want Things To Be
+    PIXELFORMATDESCRIPTOR pfd =  // pfd Tells Windows How We Want Things To Be
     {
         sizeof(PIXELFORMATDESCRIPTOR),  // Size Of This Pixel Format Descriptor
         1,                              // Version Number
