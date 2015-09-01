@@ -58,7 +58,7 @@ void VariableProperties::Reset()
     m_pOnButtonPressedCallbackFunc = 0;
     m_pOnValueChangedCallbackFunc = 0;
     m_ValueOnLeftMouseDown = 0;
-    m_LeftMouseIsDown = 0;
+    m_CapturedMouse = 0;
     m_StartMousePosition = wxPoint(0,0);
     m_LastMousePosition = wxPoint(0,0);
 }
@@ -499,6 +499,7 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
             pControlHandle->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(PanelWatch::OnMouseDown), 0, this );
             pControlHandle->Connect( wxEVT_RIGHT_UP, wxMouseEventHandler(PanelWatch::OnMouseUp), 0, this );
             pControlHandle->Connect( wxEVT_MOTION, wxMouseEventHandler(PanelWatch::OnMouseMove), 0, this );
+            pControlHandle->Connect( wxEVT_LEAVE_WINDOW, wxMouseEventHandler(PanelWatch::OnMouseLeftControl), 0, this );
         }
         break;
 
@@ -890,7 +891,9 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
     {
         int value = pVar->m_Handle_Slider->GetValue();
 
-        pVar->m_LeftMouseIsDown = true;
+        MyAssert( false ); // if a slider is used, I'll need to retest all slider code.
+        //pVar->m_CapturedMouse = true;
+
         pVar->m_ValueOnLeftMouseDown = value;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
@@ -901,10 +904,12 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         //bool isblank =
         GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        pVar->m_LeftMouseIsDown = true;
         pVar->m_ValueOnLeftMouseDown = newvalue;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
+
+        pVar->m_Handle_TextCtrl->CaptureMouse();
+        pVar->m_CapturedMouse = true;
     }
 }
 
@@ -918,7 +923,11 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
 
     if( m_pVariables[controlid].m_Handle_TextCtrl )
     {
-        m_pVariables[controlid].m_LeftMouseIsDown = false;
+        if( m_pVariables[controlid].m_CapturedMouse )
+        {
+            m_pVariables[controlid].m_Handle_TextCtrl->ReleaseMouse();
+            m_pVariables[controlid].m_CapturedMouse = false;
+        }
 
         double newvalue, oldvalue;
         bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
@@ -940,7 +949,7 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
 
     event.Skip();
 
-    if( m_pVariables[controlid].m_LeftMouseIsDown )
+    if( m_pVariables[controlid].m_CapturedMouse )
     {
         wxPoint pos = event.GetPosition();
         wxPoint lastpos = m_pVariables[controlid].m_LastMousePosition;
@@ -950,25 +959,77 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
         {
             if( m_pVariables[controlid].m_Handle_TextCtrl )
             {
-                //wxRect rect = m_pVariables[controlid].m_Handle_TextCtrl->GetClientRect();
-
-                m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
+                //m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
 
                 double newvalue, oldvalue;
-                //bool isblank =
                 GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 int diff = pos.x - lastpos.x;
-                newvalue += 0.2f * diff;
+
+                if( m_pVariables[controlid].m_Type == PanelWatchType_Int ||
+                    m_pVariables[controlid].m_Type == PanelWatchType_UnsignedInt ||
+                    m_pVariables[controlid].m_Type == PanelWatchType_Char ||
+                    m_pVariables[controlid].m_Type == PanelWatchType_UnsignedChar ||
+                    m_pVariables[controlid].m_Type == PanelWatchType_Bool )
+                {
+                    // whole numbers are handled in OnMouseLeftControl
+                    //newvalue += diff;
+                }
+                else
+                {
+                    newvalue += 0.2f * diff;
+                }
 
                 //LOGInfo( LOGTag, "moved %d %d\n", pos.x, lastpos.x );
 
-                SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+                if( newvalue != oldvalue )
+                {
+                    SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+                }
             }
         }
 
         m_pVariables[controlid].m_LastMousePosition = pos;
     }
+}
+
+void PanelWatch::OnMouseLeftControl(wxMouseEvent& event)
+{
+    int controlid = event.GetId();
+
+    if( m_pVariables[controlid].m_CapturedMouse )
+    {
+        if( m_pVariables[controlid].m_Handle_TextCtrl )
+        {
+            // Change all whole numbers by 1 each time the mouse leaves the control window.
+
+            if( m_pVariables[controlid].m_Type == PanelWatchType_Int ||
+                m_pVariables[controlid].m_Type == PanelWatchType_UnsignedInt ||
+                m_pVariables[controlid].m_Type == PanelWatchType_Char ||
+                m_pVariables[controlid].m_Type == PanelWatchType_UnsignedChar ||
+                m_pVariables[controlid].m_Type == PanelWatchType_Bool )
+            {
+                wxPoint pos = event.GetPosition();
+                wxPoint ctrlpos = m_pVariables[controlid].m_StartMousePosition;
+
+                int direction = 1;
+                if( pos.x < ctrlpos.x )
+                    direction = -1;
+
+                double newvalue, oldvalue;
+                GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
+
+                newvalue += direction;
+
+                SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+            }
+
+            m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
+        }
+        return;
+    }
+
+    event.Skip();
 }
 
 void PanelWatch::OnClickStaticText(wxMouseEvent& event)
@@ -1258,9 +1319,11 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)
 {
+    MyAssert( false ); // if a slider is used, I'll need to retest all slider code.
+
     int controlid = event.GetId();
 
-    if( m_pVariables[controlid].m_LeftMouseIsDown == false )
+    if( m_pVariables[controlid].m_CapturedMouse == false )
         return;
 
     int value = m_pVariables[controlid].m_Handle_Slider->GetValue();

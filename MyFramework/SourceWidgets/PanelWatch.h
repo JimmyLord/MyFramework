@@ -119,7 +119,7 @@ struct VariableProperties
     double m_ValueOnLeftMouseDown;
     wxPoint m_StartMousePosition;
     wxPoint m_LastMousePosition;
-    bool m_LeftMouseIsDown;
+    bool m_CapturedMouse;
 
     void Reset();
 };
@@ -160,6 +160,7 @@ public:
     void OnMouseDown(wxMouseEvent& event);
     void OnMouseUp(wxMouseEvent& event);
     void OnMouseMove(wxMouseEvent& event);
+    void OnMouseLeftControl(wxMouseEvent& event);
 
     void OnClickStaticText(wxMouseEvent& event);
 
