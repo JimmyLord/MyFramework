@@ -58,6 +58,7 @@ void VariableProperties::Reset()
     m_pOnButtonPressedCallbackFunc = 0;
     m_pOnValueChangedCallbackFunc = 0;
     m_ValueOnLeftMouseDown = 0;
+    m_ValueChangedSinceMouseWasPressed = false;
     m_CapturedMouse = 0;
     m_StartMousePosition = wxPoint(0,0);
     m_LastMousePosition = wxPoint(0,0);
@@ -895,6 +896,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         //pVar->m_CapturedMouse = true;
 
         pVar->m_ValueOnLeftMouseDown = value;
+        pVar->m_ValueChangedSinceMouseWasPressed = false;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
     }
@@ -905,6 +907,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
         pVar->m_ValueOnLeftMouseDown = newvalue;
+        pVar->m_ValueChangedSinceMouseWasPressed = false;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
 
@@ -917,7 +920,7 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
 {
     //LOGInfo( LOGTag, "OnMouseUp:\n" );
 
-    bool showrightclickmenu = true;
+    //bool showrightclickmenu = true;
 
     int controlid = event.GetId();
 
@@ -935,12 +938,15 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
         if( isblank == false && newvalue != m_pVariables[controlid].m_ValueOnLeftMouseDown )
         {
             SetControlValueFromDouble( controlid, newvalue, m_pVariables[controlid].m_ValueOnLeftMouseDown, true );
-            showrightclickmenu = false;
+            //showrightclickmenu = false;
         }
+
+        // if the value changed, then don't show the right click menu.
+        if( m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed )
+            return;
     }
 
-    if( showrightclickmenu )
-        event.Skip();
+    event.Skip();
 }
 
 void PanelWatch::OnMouseMove(wxMouseEvent& event)
@@ -974,10 +980,12 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
                 {
                     // whole numbers are handled in OnMouseLeftControl
                     //newvalue += diff;
+                    //m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
                 }
                 else
                 {
                     newvalue += 0.2f * diff;
+                    m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
                 }
 
                 //LOGInfo( LOGTag, "moved %d %d\n", pos.x, lastpos.x );
@@ -1020,6 +1028,7 @@ void PanelWatch::OnMouseLeftControl(wxMouseEvent& event)
                 GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 newvalue += direction;
+                m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
 
                 SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
             }
@@ -1180,6 +1189,13 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
 
 void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging)
 {
+    // if a range is specified, clamp the new value to that range.
+    if( !fequal( m_pVariables[controlid].m_Range.x, m_pVariables[controlid].m_Range.y ) )
+    {
+        MyAssert( m_pVariables[controlid].m_Range.x < m_pVariables[controlid].m_Range.y );
+        MyClamp( valuenew, (double)m_pVariables[controlid].m_Range.x, (double)m_pVariables[controlid].m_Range.y );
+    }
+
     switch( m_pVariables[controlid].m_Type )
     {
     case PanelWatchType_Int:

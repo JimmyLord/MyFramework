@@ -117,6 +117,7 @@ struct VariableProperties
 
     // using with right mouse now, used by text controls to change numbers.
     double m_ValueOnLeftMouseDown;
+    bool m_ValueChangedSinceMouseWasPressed;
     wxPoint m_StartMousePosition;
     wxPoint m_LastMousePosition;
     bool m_CapturedMouse;
