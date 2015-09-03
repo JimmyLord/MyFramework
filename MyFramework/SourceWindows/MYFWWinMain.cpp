@@ -111,9 +111,9 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
                     g_CloseProgramRequested = true;
             }
             
-            if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-                pGameCore->OnKeyDown( i+32, i+32 );
-            else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
+            //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
+            //    pGameCore->OnKeyDown( i+32, i+32 );
+            //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
                 pGameCore->OnKeyDown( i, i );
 
             //LOGInfo( LOGTag, "Calling pGameCore->OnKeyDown( %d, %d )\n", i, i );
@@ -121,9 +121,9 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
 
         if( keys[i] == 0 && keysold[i] == 1 )
         {
-            if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-                pGameCore->OnKeyUp( i+32, i+32 );
-            else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
+            //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
+            //    pGameCore->OnKeyUp( i+32, i+32 );
+            //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
                 pGameCore->OnKeyUp( i, i );
         }
     }

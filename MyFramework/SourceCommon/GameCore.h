@@ -113,6 +113,7 @@ public:
     virtual bool OnTouch(int action, int id, float x, float y, float pressure, float size);
     virtual bool OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);
     virtual bool OnKeys(GameCoreButtonActions action, int keycode, int unicodechar);
+    virtual void GenerateKeyHeldMessages();
 
     // OnKeyDown and OnKeyUp are used by platform-specific code, games should override OnKeys();
     bool OnKeyDown(int keycode, int unicodechar);

@@ -126,9 +126,9 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
                 m_ShiftsHeld = 1;
 
             int keycode = keyevent.GetKeyCode();
-            if( keycode >= 'A' && keycode <= 'Z' && m_ShiftsHeld == 0 )
-                g_pGameCore->OnKeyDown( keycode+32, keycode+32 );
-            else
+            //if( keycode >= 'A' && keycode <= 'Z' && m_ShiftsHeld == 0 )
+            //    g_pGameCore->OnKeyDown( keycode+32, keycode+32 );
+            //else
                 g_pGameCore->OnKeyDown( keycode, keycode );
 
             //LOGInfo( LOGTag, "Key Down\n" );
@@ -144,9 +144,9 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
                 m_ShiftsHeld = 0;
 
             int keycode = keyevent.GetKeyCode();
-            if( keycode >= 'A' && keycode <= 'Z' && m_ShiftsHeld == 0 )
-                g_pGameCore->OnKeyUp( keycode+32, keycode+32 );
-            else
+            //if( keycode >= 'A' && keycode <= 'Z' && m_ShiftsHeld == 0 )
+            //    g_pGameCore->OnKeyUp( keycode+32, keycode+32 );
+            //else
                 g_pGameCore->OnKeyUp( keycode, keycode );
 
             //LOGInfo( LOGTag, "Key Up\n" );

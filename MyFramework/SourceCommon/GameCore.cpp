@@ -147,20 +147,7 @@ double GameCore::Tick(double TimePassed)
 
     m_TimeSinceGameStarted += (float)TimePassed;
 
-    // generate held messages for keys and buttons.
-    {
-        for( int i=0; i<255; i++ )
-        {
-            if( m_KeysHeld[i] )
-                g_pGameCore->OnKeys( GCBA_Held, i, i );
-        }
-
-        for( int i=0; i<GCBI_NumButtons; i++ )
-        {
-            if( m_ButtonsHeld[i] == true )
-                OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
-        }
-    }
+    GenerateKeyHeldMessages();
 
     //if( m_GLSurfaceIsValid == false )
     //    return;
@@ -333,6 +320,8 @@ bool GameCore::OnKeys(GameCoreButtonActions action, int keycode, int unicodechar
 
 bool GameCore::OnKeyDown(int keycode, int unicodechar)
 {
+    // TODO: don't ignore the unicode characters.
+
     // if the key is mapped to a button, then call the button handler.
     if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
     {
@@ -345,7 +334,10 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = true;
 
-        return OnKeys( GCBA_Down, keycode, unicodechar );
+        if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+            return OnKeys( GCBA_Down, keycode, keycode+32 );
+        else
+            return OnKeys( GCBA_Down, keycode, keycode );
     }
 
     return false;
@@ -353,6 +345,8 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
 
 bool GameCore::OnKeyUp(int keycode, int unicodechar)
 {
+    // TODO: don't ignore the unicode characters.
+
     // if the key is mapped to a button, then call the button handler.
     if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
     {
@@ -365,7 +359,10 @@ bool GameCore::OnKeyUp(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = false;
 
-        return OnKeys( GCBA_Up, keycode, unicodechar );
+        if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+            return OnKeys( GCBA_Up, keycode, keycode+32 );
+        else
+            return OnKeys( GCBA_Up, keycode, keycode );
     }
 
     return false;
@@ -385,4 +382,25 @@ bool GameCore::IsKeyHeld(int keycode)
     }
 
     return false;
+}
+
+void GameCore::GenerateKeyHeldMessages()
+{
+    // generate held messages for keys and buttons.
+    for( int i=0; i<255; i++ )
+    {
+        if( m_KeysHeld[i] )
+        {
+            if( i >= 'A' && i <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+                g_pGameCore->OnKeys( GCBA_Held, i, i+32 );
+            else
+                g_pGameCore->OnKeys( GCBA_Held, i, i );
+        }
+    }
+
+    for( int i=0; i<GCBI_NumButtons; i++ )
+    {
+        if( m_ButtonsHeld[i] == true )
+            OnButtons( GCBA_Held, (GameCoreButtonIDs)i );
+    }
 }

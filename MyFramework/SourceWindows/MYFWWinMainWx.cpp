@@ -656,11 +656,16 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
+    if( m_KeysDown[keycode] == true )
+        return;
+
+    //LOGInfo( LOGTag, "KeyPressed: %d\n", keycode );
+
     if( g_pGameCore )
     {
-        if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
-            g_pGameCore->OnKeyDown( keycode+32, keycode+32 );
-        else
+        //if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
+        //    g_pGameCore->OnKeyDown( keycode+32, keycode+32 );
+        //else
             g_pGameCore->OnKeyDown( keycode, keycode );
     }
 
@@ -685,11 +690,13 @@ void MainGLCanvas::KeyReleased(wxKeyEvent& event)
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
 
+    //LOGInfo( LOGTag, "KeyReleased: %d\n", keycode );
+
     if( g_pGameCore )
     {
-        if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
-            g_pGameCore->OnKeyUp( keycode+32, keycode+32 );
-        else
+        //if( keycode >= 'A' && keycode <= 'Z' && m_KeysDown[MYKEYCODE_LSHIFT] == 0 && m_KeysDown[MYKEYCODE_RSHIFT] == 0 )
+        //    g_pGameCore->OnKeyUp( keycode+32, keycode+32 );
+        //else
             g_pGameCore->OnKeyUp( keycode, keycode );
     }
 
@@ -851,6 +858,10 @@ void MainGLCanvas::Draw()
             m_LastTimeTicked = currtime;
 
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
+        }
+        else
+        {
+            g_pGameCore->GenerateKeyHeldMessages();
         }
 
         int currentframebuffer;
