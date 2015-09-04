@@ -114,8 +114,8 @@ void MyMesh::FillPropertiesWindow(bool clear)
     {
         // TODO: replace AddPointerWithDescription with a panel watch control for char*s
         m_ControlID_AnimationName[i] = g_pPanelWatch->AddPointerWithDescription( "Name", 0, m_pAnimations[i]->m_Name, this, 0, MyMesh::StaticOnValueChanged );
-        g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 100 );
-        g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 100 );
+        g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 0 );
+        g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 0 );
     }
 
     g_pPanelWatch->AddButton( "Add Animation", this, MyMesh::StaticOnAddAnimationPressed );

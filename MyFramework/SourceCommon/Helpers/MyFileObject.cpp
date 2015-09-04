@@ -192,10 +192,6 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
                 pMesh->FillPropertiesWindow( false );
             }
 
-            //g_pPanelWatch->AddVector3( "Pos", &m_Position, -1.0f, 1.0f, pFileObject, ComponentTransform::StaticOnValueChanged );
-            //g_pPanelWatch->AddVector3( "Scale", &m_Scale, 0.0f, 10.0f, pFileObject, ComponentTransform::StaticOnValueChanged );
-            //g_pPanelWatch->AddVector3( "Rot", &m_Rotation, 0, 360, pFileObject, ComponentTransform::StaticOnValueChanged );
-
             if( m_CustomLeftClickCallback )
             {
                 m_CustomLeftClickCallback( m_CustomLeftClickObject );
