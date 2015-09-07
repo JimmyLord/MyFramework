@@ -23,17 +23,17 @@ void TypeInfoTestCode();
 void RegisterClassname(const char* name);
 
 #define SetClassnameBase(name) \
- virtual void ClassnameSanityCheck() { RegisterClassname(name); } \
+ virtual void ClassnameSanityCheck() { static bool ClassnameHasBeenRegistered = false; if( ClassnameHasBeenRegistered == false ) RegisterClassname(name); ClassnameHasBeenRegistered = true; } \
  virtual const char* GetClassname() { return name; } \
  virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : false ); }
 
 #define SetClassnameWithParent(name,parent) \
- virtual void ClassnameSanityCheck() { RegisterClassname(name); } \
+ virtual void ClassnameSanityCheck() { static bool ClassnameHasBeenRegistered = false; if( ClassnameHasBeenRegistered == false ) RegisterClassname(name); ClassnameHasBeenRegistered = true; } \
  virtual const char* GetClassname() { return name; } \
  virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : parent::IsA(classname) ); }
 
 #define SetClassnameWith2Parents(name,parent1,parent2) \
- virtual void ClassnameSanityCheck() { RegisterClassname(name); } \
+ virtual void ClassnameSanityCheck() { static bool ClassnameHasBeenRegistered = false; if( ClassnameHasBeenRegistered == false ) RegisterClassname(name); ClassnameHasBeenRegistered = true; } \
  virtual const char* GetClassname() { return name; } \
  virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
 

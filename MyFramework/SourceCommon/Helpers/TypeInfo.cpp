@@ -11,12 +11,25 @@
 
 #if MYFW_WINDOWS && _DEBUG
 
-// TODO: in RegisterClassname() check for duplicate registered classnames...
+std::vector<std::string> g_RegisteredClassnames;
+
 void RegisterClassname(const char* name)
 {
-    //assert if there's any trouble with this name
-
+    // assert if there's any trouble with this name
     MyAssert( strlen(name) >= 8 );
+
+    // Store this classname in a vector and check for duplicate registered classnames.
+    std::vector<std::string>::iterator it;
+
+    it = std::find( g_RegisteredClassnames.begin(), g_RegisteredClassnames.end(), name );
+    if( it != g_RegisteredClassnames.end() )
+    {
+        MyAssert( false ); // classname was used twice.
+    }
+    else
+    {    
+        g_RegisteredClassnames.push_back( name );
+    }
 }
 
 class baseclass
