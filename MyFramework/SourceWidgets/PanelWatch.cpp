@@ -1447,7 +1447,10 @@ void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
     asfloats.r = colour.Red()   / 255.0f;
     asfloats.g = colour.Green() / 255.0f;
     asfloats.b = colour.Blue()  / 255.0f;
-    asfloats.a = ((ColorFloat*)m_pVariables[controlid].m_Pointer)->a; // colour picker doesn't do alpha.
+    if( m_pVariables[controlid].m_Type == PanelWatchType_ColorByte )
+        asfloats.a = ((ColorByte*)m_pVariables[controlid].m_Pointer)->a / 255.0f; // colour picker doesn't do alpha.
+    else
+        asfloats.a = ((ColorFloat*)m_pVariables[controlid].m_Pointer)->a; // colour picker doesn't do alpha.
 
     // add the command to the undo stack and change the value at the same time.
     m_pCommandStack->Do( MyNew EditorCommand_PanelWatchColorChanged(

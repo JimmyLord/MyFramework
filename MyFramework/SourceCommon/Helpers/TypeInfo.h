@@ -19,7 +19,6 @@
 
 void TypeInfoTestCode();
 
-// TODO: in RegisterClassname() check for duplicate registered classnames...
 void RegisterClassname(const char* name);
 
 #define SetClassnameBase(name) \
