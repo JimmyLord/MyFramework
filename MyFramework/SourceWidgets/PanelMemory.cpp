@@ -21,7 +21,7 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
     m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxSize(2000,2000) );
 
     m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
-        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
+        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS );// | wxTR_MULTIPLE );
     idroot = m_pTree_Materials->AddRoot( "Materials" );
     m_pNotebook->AddPage( m_pTree_Materials, "Mat" );    
 
@@ -52,8 +52,8 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
     Update();
 
-    Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnDrawCallTabSelected) );
-    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnDrawCallTreeSelectionChanged) );
+    Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnTabSelected) );
+    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnTreeSelectionChanged) );
     Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeBeginLabelEdit) );
     Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeEndLabelEdit) );
     Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelMemory::OnTreeContextMenuRequested) );
@@ -417,6 +417,25 @@ void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallba
     m_pTree_Materials->SetItemData( idroot, pData );
 }
 
+MaterialDefinition* PanelMemory::GetSelectedMaterial()
+{
+    m_pTree_Materials->GetSelection();
+    wxTreeItemId id = m_pTree_Materials->GetSelection();
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+
+    if( id.IsOk() && id != idroot )
+    {
+        wxTreeItemData* pData = m_pTree_Materials->GetItemData( id );
+        if( pData )
+        {
+            MaterialDefinition* objptr = (MaterialDefinition*)((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
+            return objptr;
+        }
+    }
+
+    return 0;
+}
+
 void PanelMemory::UpdateRootNodeMaterialCount()
 {
     char tempstr[100];
@@ -594,15 +613,20 @@ void PanelMemory::RemoveAllDrawCalls()
     m_DrawCallListDirty = true;
 }
 
-void PanelMemory::OnDrawCallTabSelected(wxNotebookEvent& event)
+void PanelMemory::OnTabSelected(wxNotebookEvent& event)
 {
     RemoveAllDrawCalls();
 }
 
-void PanelMemory::OnDrawCallTreeSelectionChanged(wxTreeEvent& event)
+void PanelMemory::OnTreeSelectionChanged(wxTreeEvent& event)
 {
     // get the pointer to the tree affected.
     wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+
+    //// if any material in the material tab is selected, do nothing...
+    //if( pTree == m_pTree_Materials )
+    //{
+    //}
 
     // if any item in the draw call tab is selected, set m_DrawCallIndexToDraw.
     if( pTree == m_pTree_DrawCalls )

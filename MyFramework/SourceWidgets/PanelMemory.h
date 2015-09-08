@@ -47,8 +47,8 @@ protected:
     void UpdateRootNodeDrawCallCount();
     void UpdateRootNodeShaderGroupCount();
 
-    void OnDrawCallTabSelected(wxNotebookEvent& event);
-    void OnDrawCallTreeSelectionChanged(wxTreeEvent& event);
+    void OnTabSelected(wxNotebookEvent& event);
+    void OnTreeSelectionChanged(wxTreeEvent& event);
     void OnTreeContextMenuRequested(wxTreeEvent& event);
     void OnDragBegin(wxTreeEvent& event);
 
@@ -67,6 +67,7 @@ public:
     void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveMaterial(MaterialDefinition* pMaterial);
     void SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    MaterialDefinition* GetSelectedMaterial();
 
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
