@@ -42,8 +42,12 @@ void MaterialManager::Tick()
             pMaterial->ImportFromFile();
 
 #if MYFW_USING_WX
+            char* foldername = "Unknown";
+            if( pMaterial->m_pFile )
+                foldername = pMaterial->m_pFile->GetNameOfDeepestFolderPath();
+
             g_pPanelMemory->RemoveMaterial( pMaterial );
-            g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+            g_pPanelMemory->AddMaterial( pMaterial, foldername, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
             g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
         }
@@ -110,7 +114,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 #if MYFW_USING_WX
     if( name )
     {
-        g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+        g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
         g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
     }
     else
@@ -143,7 +147,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Global", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->m_FilenameWithoutExtension, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 

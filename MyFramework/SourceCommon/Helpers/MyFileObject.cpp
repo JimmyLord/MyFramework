@@ -230,6 +230,45 @@ void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const ch
     sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
 }
 
+static char g_FolderName[MAX_PATH];
+
+char* MyFileObject::GetNameOfDeepestFolderPath()
+{
+    int len = (int)strlen( m_FullPath );
+    MyAssert( len > 0 );
+    if( len <= 0 )
+        return "";
+
+    int folderstartlocation = len;
+    int i = folderstartlocation;
+    while( i >= 0 )
+    {
+        if( m_FullPath[i] == '/' )
+        {
+            folderstartlocation = i;
+            i--;
+            break;
+        }
+        i--;
+    }
+
+    while( i >= 0 )
+    {
+        if( i == 0 || m_FullPath[i] == '/' )
+        {
+            if( m_FullPath[i] == '/' )
+                i++;
+            int namelen = folderstartlocation-i;
+            strncpy_s( g_FolderName, namelen+1, &m_FullPath[i], namelen );
+            g_FolderName[namelen] = 0;
+            return g_FolderName;
+        }
+        i--;
+    }
+
+    return "";
+}
+
 void MyFileObject::RequestFile(const char* filename)
 {
     MyAssert( filename != 0 );
