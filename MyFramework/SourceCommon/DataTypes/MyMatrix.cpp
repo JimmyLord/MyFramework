@@ -228,8 +228,13 @@ void MyMatrix::CreateFrustum(float left, float right, float bottom, float top, f
 
     m31 = (right + left) / deltaX;
     m32 = (top + bottom) / deltaY;
+#if MYFW_RIGHTHANDED
     m33 = -(nearZ + farZ) / deltaZ;
     m34 = -1.0f;
+#else
+    m33 = (nearZ + farZ) / deltaZ;
+    m34 = 1.0f;
+#endif
 
     m43 = -2.0f * nearZ * farZ / deltaZ;
     m41 = m42 = m44 = 0.0f;
@@ -268,8 +273,12 @@ void MyMatrix::CreateOrtho(float left, float right, float bottom, float top, flo
 
     m22 = 2.0f / deltaY;
     m21 = m23 = m24 = 0;
-    
+
+#if MYFW_RIGHTHANDED
     m33 = -2.0f / deltaZ;
+#else
+    m33 = 2.0f / deltaZ;
+#endif
     m31 = m32 = m34 = 0;
 
     m41 = -(right + left) / deltaX;

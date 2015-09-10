@@ -52,12 +52,21 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
     {
         GLushort* pIndices = MyNew GLushort[6];
 
+#if MYFW_RIGHTHANDED
         pIndices[0] = 0; // TL
         pIndices[1] = 2; // BL
         pIndices[2] = 1; // TR
         pIndices[3] = 2; // BL
         pIndices[4] = 3; // BR
         pIndices[5] = 1; // TR
+#else
+        pIndices[0] = 0; // TL
+        pIndices[1] = 1; // TR
+        pIndices[2] = 2; // BL
+        pIndices[3] = 2; // BL
+        pIndices[4] = 1; // TR
+        pIndices[5] = 3; // BR
+#endif
 
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
     }

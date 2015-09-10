@@ -79,7 +79,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
         GLushort* tempindices = MyNew GLushort[numindices]; // deleted eventually by buffermanager/bufferdef
         for( GLushort i=0; i<numpoints; i++ )
         {
-#if !USE_D3D
+#if MYFW_RIGHTHANDED //!USE_D3D
             // Counter-clockwise
             tempindices[i*6+0] = i*4+0;
             tempindices[i*6+1] = i*4+2;
@@ -88,9 +88,6 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
             tempindices[i*6+4] = i*4+3;
             tempindices[i*6+5] = i*4+1;
 #else
-            // This is insane, should be just changing cull winding order
-            // fix if d3d is ever tested again.
-            MyAssert( false );
             // clockwise
             tempindices[i*6+0] = i*4+0;
             tempindices[i*6+1] = i*4+1;
