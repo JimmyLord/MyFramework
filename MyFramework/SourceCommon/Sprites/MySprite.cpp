@@ -10,6 +10,20 @@
 #include "CommonHeader.h"
 #include "MySprite.h"
 
+// These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
+//   for code to use them, you'd need to fill your vertex buffer in this order.
+// 0--1
+// |\ |
+// | \|
+// 3--2
+#if MYFW_RIGHTHANDED
+//                                TL, BL, TR,   BL, BR, TR   
+char g_SpriteVertexIndices[6] = {  0,  2,  1,    2,  3,  1 }; // counter-clockwise winding
+#else                                                           
+//                                TL, TR, BL,   BL, TR, BR
+char g_SpriteVertexIndices[6] = {  0,  1,  2,    2,  1,  3 }; // clockwise winding
+#endif
+
 MySprite::MySprite(bool creatematerial)
 : m_Tint(255, 255, 255, 255)
 {
@@ -102,21 +116,12 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
         {
             GLushort* pIndices = MyNew GLushort[6];
 
-#if MYFW_RIGHTHANDED
-            pIndices[0] = 0; // TL
-            pIndices[1] = 2; // BL
-            pIndices[2] = 1; // TR
-            pIndices[3] = 2; // BL
-            pIndices[4] = 3; // BR
-            pIndices[5] = 1; // TR
-#else
-            pIndices[0] = 0; // TL
-            pIndices[1] = 1; // TR
-            pIndices[2] = 2; // BL
-            pIndices[3] = 2; // BL
-            pIndices[4] = 1; // TR
-            pIndices[5] = 3; // BR
-#endif
+            pIndices[0] = g_SpriteVertexIndices[0];
+            pIndices[1] = g_SpriteVertexIndices[1];
+            pIndices[2] = g_SpriteVertexIndices[2];
+            pIndices[3] = g_SpriteVertexIndices[3];
+            pIndices[4] = g_SpriteVertexIndices[4];
+            pIndices[5] = g_SpriteVertexIndices[5];
 
             m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }
@@ -219,21 +224,12 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
         {
             GLushort* pIndices = MyNew GLushort[6];
 
-#if MYFW_RIGHTHANDED
-            pIndices[0] = 0; // TL
-            pIndices[1] = 2; // BL
-            pIndices[2] = 1; // TR
-            pIndices[3] = 2; // BL
-            pIndices[4] = 3; // BR
-            pIndices[5] = 1; // TR
-#else
-            pIndices[0] = 0; // TL
-            pIndices[1] = 1; // TR
-            pIndices[2] = 2; // BL
-            pIndices[3] = 2; // BL
-            pIndices[4] = 1; // TR
-            pIndices[5] = 3; // BR
-#endif
+            pIndices[0] = g_SpriteVertexIndices[0];
+            pIndices[1] = g_SpriteVertexIndices[1];
+            pIndices[2] = g_SpriteVertexIndices[2];
+            pIndices[3] = g_SpriteVertexIndices[3];
+            pIndices[4] = g_SpriteVertexIndices[4];
+            pIndices[5] = g_SpriteVertexIndices[5];
 
             m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }

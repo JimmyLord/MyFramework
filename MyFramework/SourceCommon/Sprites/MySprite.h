@@ -19,6 +19,8 @@ class ShaderGroup;
 class MySprite;
 typedef MySprite* MySpritePtr;
 
+extern char g_SpriteVertexIndices[6];
+
 class MySprite : public RefCount
 {
 protected:

@@ -35,21 +35,12 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
 
     for( GLushort i=0; i<numsprites; i++ )
     {
-#if MYFW_RIGHTHANDED
-        pIndices[i*6 + 0] = i*4 + 0;
-        pIndices[i*6 + 1] = i*4 + 1;
-        pIndices[i*6 + 2] = i*4 + 2;
-        pIndices[i*6 + 3] = i*4 + 2;
-        pIndices[i*6 + 4] = i*4 + 1;
-        pIndices[i*6 + 5] = i*4 + 3;
-#else
-        pIndices[i*6 + 0] = i*4 + 0;
-        pIndices[i*6 + 1] = i*4 + 2;
-        pIndices[i*6 + 2] = i*4 + 1;
-        pIndices[i*6 + 3] = i*4 + 2;
-        pIndices[i*6 + 4] = i*4 + 3;
-        pIndices[i*6 + 5] = i*4 + 1;
-#endif
+        pIndices[i*6 + 0] = i*4 + g_SpriteVertexIndices[0];
+        pIndices[i*6 + 1] = i*4 + g_SpriteVertexIndices[1];
+        pIndices[i*6 + 2] = i*4 + g_SpriteVertexIndices[2];
+        pIndices[i*6 + 3] = i*4 + g_SpriteVertexIndices[3];
+        pIndices[i*6 + 4] = i*4 + g_SpriteVertexIndices[4];
+        pIndices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
     }
 
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );

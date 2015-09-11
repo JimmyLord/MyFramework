@@ -79,23 +79,12 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
         GLushort* tempindices = MyNew GLushort[numindices]; // deleted eventually by buffermanager/bufferdef
         for( GLushort i=0; i<numpoints; i++ )
         {
-#if MYFW_RIGHTHANDED //!USE_D3D
-            // Counter-clockwise
-            tempindices[i*6+0] = i*4+0;
-            tempindices[i*6+1] = i*4+2;
-            tempindices[i*6+2] = i*4+1;
-            tempindices[i*6+3] = i*4+2;
-            tempindices[i*6+4] = i*4+3;
-            tempindices[i*6+5] = i*4+1;
-#else
-            // clockwise
-            tempindices[i*6+0] = i*4+0;
-            tempindices[i*6+1] = i*4+1;
-            tempindices[i*6+2] = i*4+2;
-            tempindices[i*6+3] = i*4+2;
-            tempindices[i*6+4] = i*4+1;
-            tempindices[i*6+5] = i*4+3;
-#endif
+            tempindices[i*6 + 0] = i*4 + g_SpriteVertexIndices[0];
+            tempindices[i*6 + 1] = i*4 + g_SpriteVertexIndices[1];
+            tempindices[i*6 + 2] = i*4 + g_SpriteVertexIndices[2];
+            tempindices[i*6 + 3] = i*4 + g_SpriteVertexIndices[3];
+            tempindices[i*6 + 4] = i*4 + g_SpriteVertexIndices[4];
+            tempindices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
         }
 
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, 2, category, "Particles-Indices" );
