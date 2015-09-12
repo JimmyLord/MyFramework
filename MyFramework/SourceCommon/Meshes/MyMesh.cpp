@@ -1044,9 +1044,6 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
 void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
-
     // from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
 
     int numverts = 12;
@@ -1115,6 +1112,9 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
     pVerts[ 9].pos.Set(  t,  0,  1 );
     pVerts[10].pos.Set( -t,  0, -1 );
     pVerts[11].pos.Set( -t,  0,  1 );
+
+    for( int i=0; i<12; i++ )
+        pVerts[i].pos *= radius;
 
     // create 20 triangles of the icosahedron
     unsigned char indexlist[] =
