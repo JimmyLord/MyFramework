@@ -84,4 +84,10 @@ inline float MyRoundToMultipleOf(float number, float multiple)
     return number;
 }
 
+// a simple runtime version of offsetof, should be safe with non-POD types, I think.
+inline size_t MyOffsetOf(void* pObject, void* pMember)
+{
+    return (char*)pMember - (char*)pObject;
+}
+
 #endif //__Utility_H__
