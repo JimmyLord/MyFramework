@@ -384,7 +384,7 @@ int PanelWatch::AddColorByte(const char* name, ColorByte* pColorByte, float min,
 {
     // TODO: maybe? change this to a color picker that supports alpha.
     int first;
-    first = AddVariableOfTypeDesc( PanelWatchType_ColorByte, name, pColorByte, 0, 0, 0, 0, 0 );
+    first = AddVariableOfTypeDesc( PanelWatchType_ColorByte, name, pColorByte, 0, pCallbackObj, 0, pOnValueChangedCallBackFunc, 0 );
 
     // add alpha as a unsigned char
     AddVariableOfTypeRange( PanelWatchType_UnsignedChar, "a", &pColorByte->a, min, max, pCallbackObj, pOnValueChangedCallBackFunc, false );
