@@ -193,16 +193,33 @@ void EditorCommand_PanelWatchColorChanged::Do()
 {
     MyAssert( m_Type == PanelWatchType_ColorFloat || m_Type == PanelWatchType_ColorByte );
 
+    double oldvalue = 0;
+
     if( m_Type == PanelWatchType_ColorFloat )
+    {
         *(ColorFloat*)m_Pointer = m_NewColor;
+
+        // TODO: same as below for colorfloats
+    }
     else
+    {
+        // store the old color in a local var.
+        // send the pointer to that var via callback in the double.
+        // TODO: make 64-bit friendly, along with potentially a lot of other things.
+        ColorByte oldcolor = *(ColorByte*)m_Pointer;
+        *(int*)&oldvalue = (int)&oldcolor;
+
+        // Update the ColorByte stored at the pointer.
         *(ColorByte*)m_Pointer = m_NewColor.AsColorByte();
+    }
 
     g_pPanelWatch->UpdatePanel();
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, 0 );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, true, oldvalue );
+    }
 }
 
 void EditorCommand_PanelWatchColorChanged::Undo()
