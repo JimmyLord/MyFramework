@@ -22,6 +22,16 @@ inline bool fnotequal(const float a, const float b, const float epsilon = FEQUAL
     return fabs(a - b) > epsilon;
 }
 
+inline bool fequal(const double a, const double b, const double epsilon = FEQUALEPSILON)
+{
+    return fabs(a - b) <= epsilon;
+}
+
+inline bool fnotequal(const double a, const double b, const double epsilon = FEQUALEPSILON)
+{
+    return fabs(a - b) > epsilon;
+}
+
 template <class MyType> void MySwap(MyType &v1, MyType &v2)
 {
     MyType temp = v1;
