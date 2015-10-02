@@ -475,6 +475,29 @@ void PanelWatch::ChangeDescriptionForPointerWithDescription(int controlid, const
     m_pVariables[controlid].m_Description = pDescription;
 }
 
+void PanelWatch::ChangeStaticTextFontStyle(int controlid, wxFontStyle style, wxFontWeight weight)
+{
+    //pStaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
+    wxFont font = m_pVariables[controlid].m_Handle_StaticText->GetFont();
+    font.SetStyle( style );
+    font.SetWeight( weight );
+
+    if( m_pVariables[controlid].m_Handle_StaticText )
+        m_pVariables[controlid].m_Handle_StaticText->SetFont( font );
+
+    if( m_pVariables[controlid].m_Handle_StaticTextExtraLabel )
+        m_pVariables[controlid].m_Handle_StaticTextExtraLabel->SetFont( font );
+}
+
+void PanelWatch::ChangeStaticTextBGColor(int controlid, wxColour colour)
+{
+    if( m_pVariables[controlid].m_Handle_StaticText )
+        m_pVariables[controlid].m_Handle_StaticText->SetBackgroundColour( colour );
+
+    if( m_pVariables[controlid].m_Handle_StaticTextExtraLabel )
+        m_pVariables[controlid].m_Handle_StaticTextExtraLabel->SetBackgroundColour( colour );
+}
+
 wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
 {
     // look for an existing control of this type that isn't visible and return it.
@@ -1474,7 +1497,7 @@ void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
     int controlid = event.GetId();
 
     MyAssert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat ||
-            m_pVariables[controlid].m_Type == PanelWatchType_ColorByte );
+              m_pVariables[controlid].m_Type == PanelWatchType_ColorByte );
 
     wxColour colour = m_pVariables[controlid].m_Handle_ColourPicker->GetColour();
 

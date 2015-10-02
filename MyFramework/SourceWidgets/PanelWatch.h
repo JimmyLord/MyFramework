@@ -211,6 +211,8 @@ public:
     void SetRightClickFunction(int controlid, PanelWatchCallbackRightClick pRightClickCallbackFunc);
 
     void ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription);
+    void ChangeStaticTextFontStyle(int controlid, wxFontStyle style, wxFontWeight weight);
+    void ChangeStaticTextBGColor(int controlid, wxColour colour);
 };
 
 #endif // __PanelWatch_H__
