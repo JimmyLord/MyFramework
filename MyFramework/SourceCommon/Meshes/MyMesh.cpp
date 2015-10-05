@@ -68,10 +68,19 @@ MyMesh::~MyMesh()
 
     SAFE_RELEASE( m_pSourceFile );
 
+    Clear();
+}
+
+void MyMesh::Clear()
+{
     while( m_BoneNames.Count() )
     {
         delete[] m_BoneNames.RemoveIndex( 0 );
     }
+
+    m_BoneOffsetMatrices.FreeAllInList();
+    m_BoneFinalMatrices.FreeAllInList();
+    m_pSkeletonNodeTree.FreeAllInList();
 
     while( m_pAnimationTimelines.Count() )
     {
@@ -91,6 +100,8 @@ MyMesh::~MyMesh()
     }
 
     m_SubmeshList.FreeAllInList();
+
+    m_MeshReady = false;
 }
 
 #if MYFW_USING_WX

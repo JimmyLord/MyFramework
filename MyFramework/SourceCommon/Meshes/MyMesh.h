@@ -88,6 +88,8 @@ public:
     MyMesh();
     virtual ~MyMesh();
 
+    void Clear();
+
     void CreateSubmeshes(int numsubmeshes);
     void CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic = false);
 

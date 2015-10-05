@@ -14,6 +14,9 @@
 
 void OpenGL_InitExtensions();
 
+extern PFNGLTEXIMAGE3DPROC                  glTexImage3D;
+extern PFNGLFRAMEBUFFERTEXTURELAYERPROC     glFramebufferTextureLayer;
+
 extern PFNGLUNIFORM1FPROC                   glUniform1f;
 extern PFNGLUNIFORM2FPROC                   glUniform2f;
 extern PFNGLUNIFORM3FPROC                   glUniform3f;

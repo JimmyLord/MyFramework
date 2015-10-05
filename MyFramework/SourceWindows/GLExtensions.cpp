@@ -12,6 +12,9 @@
 #pragma warning( push )
 #pragma warning( disable : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
 
+PFNGLTEXIMAGE3DPROC                 glTexImage3D = 0;
+PFNGLFRAMEBUFFERTEXTURELAYERPROC    glFramebufferTextureLayer = 0;
+
 PFNGLUNIFORM1FPROC                  glUniform1f = 0;
 PFNGLUNIFORM2FPROC                  glUniform2f = 0;
 PFNGLUNIFORM3FPROC                  glUniform3f = 0;
@@ -93,6 +96,9 @@ PFNGLBINDVERTEXARRAYPROC            glBindVertexArray = 0;
 
 void OpenGL_InitExtensions()
 {
+    glTexImage3D                    = (PFNGLTEXIMAGE3DPROC)                 wglGetProcAddress( "glTexImage3D" );
+    glFramebufferTextureLayer       = (PFNGLFRAMEBUFFERTEXTURELAYERPROC)    wglGetProcAddress( "glFramebufferTextureLayer" );
+
     glUniform1i                     = (PFNGLUNIFORM1IPROC)                  wglGetProcAddress( "glUniform1i" );
     glUniform2i                     = (PFNGLUNIFORM2IPROC)                  wglGetProcAddress( "glUniform2i" );
     glUniform3i                     = (PFNGLUNIFORM3IPROC)                  wglGetProcAddress( "glUniform3i" );
