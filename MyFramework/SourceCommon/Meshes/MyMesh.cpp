@@ -77,6 +77,7 @@ void MyMesh::Clear()
     {
         delete[] m_BoneNames.RemoveIndex( 0 );
     }
+    m_BoneNames.FreeAllInList();
 
     m_BoneOffsetMatrices.FreeAllInList();
     m_BoneFinalMatrices.FreeAllInList();
@@ -86,11 +87,13 @@ void MyMesh::Clear()
     {
         delete m_pAnimationTimelines.RemoveIndex( 0 );
     }
+    m_pAnimationTimelines.FreeAllInList();
 
     while( m_pAnimations.Count() )
     {
         delete m_pAnimations.RemoveIndex( 0 );
     }
+    //m_pAnimations.FreeAllInList(); // Allocated in contructor to max size.
 
     SAFE_RELEASE( m_pAnimationControlFile );
 
@@ -98,7 +101,6 @@ void MyMesh::Clear()
     {
         delete m_SubmeshList.RemoveIndex( 0 );
     }
-
     m_SubmeshList.FreeAllInList();
 
     m_MeshReady = false;

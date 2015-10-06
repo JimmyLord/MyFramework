@@ -32,7 +32,7 @@ class MyAnimation
 {
     static const int MAX_ANIMATION_NAME_LEN = 32;
 public:
-    char m_Name[MAX_ANIMATION_NAME_LEN];
+    char m_Name[MAX_ANIMATION_NAME_LEN+1];
     int m_TimelineIndex;
 
     float m_StartTime;
@@ -41,7 +41,9 @@ public:
 public:
     void SetName(const char* name)
     {
-        strcpy_s( m_Name, MAX_ANIMATION_NAME_LEN, name );
+        if( strlen(name) > MAX_ANIMATION_NAME_LEN )
+            LOGInfo( LOGTag, "Warning: animation name longer than 32 characters - %s - truncating", name );
+        strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
     }
 };
 
