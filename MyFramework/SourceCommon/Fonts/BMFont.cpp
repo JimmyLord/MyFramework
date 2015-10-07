@@ -658,17 +658,31 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_
                 verts[lettercount*4+1].u = uright;
                 verts[lettercount*4+1].v = vtop;
 
-                // lower right
-                verts[lettercount*4+2].x = xright;
+#if MYFW_RIGHTHANDED
+                // lower left
+                verts[lettercount*4+2].x = xleft;
                 verts[lettercount*4+2].y = ybottom;
-                verts[lettercount*4+2].u = uright;
+                verts[lettercount*4+2].u = uleft;
                 verts[lettercount*4+2].v = vbottom;
 
-                // lower left
-                verts[lettercount*4+3].x = xleft;
+                // lower right
+                verts[lettercount*4+3].x = xright;
                 verts[lettercount*4+3].y = ybottom;
-                verts[lettercount*4+3].u = uleft;
+                verts[lettercount*4+3].u = uright;
                 verts[lettercount*4+3].v = vbottom;
+#else
+                // lower left
+                verts[lettercount*4+2].x = xleft;
+                verts[lettercount*4+2].y = ybottom;
+                verts[lettercount*4+2].u = uleft;
+                verts[lettercount*4+2].v = vbottom;
+
+                // lower right
+                verts[lettercount*4+3].x = xright;
+                verts[lettercount*4+3].y = ybottom;
+                verts[lettercount*4+3].u = uright;
+                verts[lettercount*4+3].v = vbottom;
+#endif
             }
             else //if( quads == false )
             {
@@ -678,6 +692,7 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_
                 verts[lettercount*6].u = uleft;
                 verts[lettercount*6].v = vtop;
 
+#if MYFW_RIGHTHANDED
                 // lower left
                 verts[lettercount*6+1].x = xleft;
                 verts[lettercount*6+1].y = ybottom;
@@ -689,13 +704,26 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_
                 verts[lettercount*6+2].y = ytop;
                 verts[lettercount*6+2].u = uright;
                 verts[lettercount*6+2].v = vtop;
+#else
+                // upper right
+                verts[lettercount*6+1].x = xright;
+                verts[lettercount*6+1].y = ytop;
+                verts[lettercount*6+1].u = uright;
+                verts[lettercount*6+1].v = vtop;
 
+                // lower left
+                verts[lettercount*6+2].x = xleft;
+                verts[lettercount*6+2].y = ybottom;
+                verts[lettercount*6+2].u = uleft;
+                verts[lettercount*6+2].v = vbottom;
+#endif
                 // lower left
                 verts[lettercount*6+3].x = xleft;
                 verts[lettercount*6+3].y = ybottom;
                 verts[lettercount*6+3].u = uleft;
                 verts[lettercount*6+3].v = vbottom;
 
+#if MYFW_RIGHTHANDED
                 // lower right
                 verts[lettercount*6+4].x = xright;
                 verts[lettercount*6+4].y = ybottom;
@@ -707,6 +735,19 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_
                 verts[lettercount*6+5].y = ytop;
                 verts[lettercount*6+5].u = uright;
                 verts[lettercount*6+5].v = vtop;
+#else
+                // upper right
+                verts[lettercount*6+4].x = xright;
+                verts[lettercount*6+4].y = ytop;
+                verts[lettercount*6+4].u = uright;
+                verts[lettercount*6+4].v = vtop;
+
+                // lower right
+                verts[lettercount*6+5].x = xright;
+                verts[lettercount*6+5].y = ybottom;
+                verts[lettercount*6+5].u = uright;
+                verts[lettercount*6+5].v = vbottom;
+#endif
             }
 
             lettercount++;
