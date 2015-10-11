@@ -102,8 +102,8 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
     }
     if( boneinfluences > 0 )
     {
-        pDesc->offset_boneindex = offset;   offset += sizeof(unsigned char) * 4;
-        pDesc->offset_boneweight = offset;  offset += sizeof(float) * 4;
+        pDesc->offset_boneindex = offset;   offset += sizeof(unsigned char) * boneinfluences;
+        pDesc->offset_boneweight = offset;  offset += sizeof(float) * boneinfluences;
     }
 
     pDesc->stride = offset;

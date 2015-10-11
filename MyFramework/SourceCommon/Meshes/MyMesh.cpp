@@ -1583,6 +1583,11 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
     if( animindex >= m_pAnimations.Count() )
         return;
 
+    // TODO: find a cleaner solution then checking every tick.
+    //       this can/should only happen if a new mesh file replaced on old one with more animations.
+    if( oldanimindex >= m_pAnimations.Count() )
+        oldanimindex = 0;
+
     MyAnimationTimeline* pTimeline;
     float AnimationTime;
 
