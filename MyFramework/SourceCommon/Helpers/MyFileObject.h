@@ -44,7 +44,7 @@ public:
 
 public:
     MyFileObject();
-    ~MyFileObject();
+    virtual ~MyFileObject();
     SetClassnameBase( "MyFileObject" ); // only first 8 character count.
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
@@ -61,7 +61,7 @@ protected:
 public:
     void FakeFileLoad(char* buffer, int length);
 protected:
-    void UnloadContents();
+    virtual void UnloadContents();
 
     bool IsNewVersionAvailable();
 

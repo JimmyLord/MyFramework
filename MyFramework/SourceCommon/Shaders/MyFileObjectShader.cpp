@@ -21,12 +21,27 @@ MyFileObjectShader::MyFileObjectShader()
 
 MyFileObjectShader::~MyFileObjectShader()
 {
+    ClearIncludedFiles();
+}
+
+void MyFileObjectShader::UnloadContents()
+{
+    MyFileObject::UnloadContents();
+
+    ClearIncludedFiles();
+}
+
+void MyFileObjectShader::ClearIncludedFiles()
+{
     for( int i=0; i<m_NumIncludes; i++ )
     {
         MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
         g_pFileManager->FreeFile( m_pIncludes[i].m_pIncludedFile );
     }
+
+    m_ScannedForIncludes = false;
+    m_NumIncludes = 0;
 }
 
 void MyFileObjectShader::CheckFileForIncludesAndAddToList()
