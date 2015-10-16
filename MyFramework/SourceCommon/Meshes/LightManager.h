@@ -18,8 +18,10 @@ class LightManager
 {
     static const int MAX_LIGHTS = 8;
 
-public:
+protected:
     CPPListHead m_LightList;
+    CPPListHead m_DisabledLightList;
+
     MyLight m_LightArray[MAX_LIGHTS];
 
 public:
@@ -28,6 +30,8 @@ public:
 
     MyLight* CreateLight();
     void DestroyLight(MyLight* pLight);
+
+    void SetLightEnabled(MyLight* pLight, bool enabled);
 
     int FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray);
 };

@@ -23,6 +23,7 @@ LightManager::~LightManager()
 
 MyLight* LightManager::CreateLight()
 {
+    // TODO: make a pool of lights, so we don't alloc/free all the time.
     MyLight* pLight = MyNew MyLight();
 
     m_LightList.AddTail( pLight );
@@ -36,6 +37,24 @@ void LightManager::DestroyLight(MyLight* pLight)
 
     pLight->Remove();
     delete pLight;
+}
+
+void LightManager::SetLightEnabled(MyLight* pLight, bool enabled)
+{
+    MyAssert( pLight );
+    if( pLight == 0 )
+        return;
+
+    if( enabled )
+    {
+        MyAssert( m_LightList.GetTail() != pLight );
+        m_LightList.MoveTail( pLight );
+    }
+    else
+    {
+        MyAssert( m_DisabledLightList.GetTail() != pLight );
+        m_DisabledLightList.MoveTail( pLight );
+    }
 }
 
 int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray)
