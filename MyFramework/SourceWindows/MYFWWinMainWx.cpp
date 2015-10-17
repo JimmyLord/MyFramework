@@ -556,6 +556,8 @@ void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
 
 void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
 {
+    SetFocus();
+
     if( m_MouseCaptured_ButtonsHeld == 0 )
         CaptureMouse();
     m_MouseCaptured_ButtonsHeld++;
@@ -584,6 +586,8 @@ void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
 
 void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
 {
+    SetFocus();
+
     if( m_MouseCaptured_ButtonsHeld == 0 )
         CaptureMouse();
     m_MouseCaptured_ButtonsHeld++;
