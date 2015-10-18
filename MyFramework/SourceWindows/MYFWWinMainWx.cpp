@@ -130,6 +130,7 @@ void MainFrame::InitFrame()
 
     // notify wxAUI which frame to use
     m_AUIManager.SetManagedWindow( this );
+    m_AUIManager.SetFlags( m_AUIManager.GetFlags() | wxAUI_MGR_ALLOW_ACTIVE_PANE );
 }
 
 void MainFrame::AddPanes()
