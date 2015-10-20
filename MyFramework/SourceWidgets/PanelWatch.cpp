@@ -249,7 +249,7 @@ int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, v
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, float min, float max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols)
+int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, int min, int max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -264,7 +264,7 @@ int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, v
     }
 
     m_pVariables[m_NumVariables].m_Pointer = pVar;
-    m_pVariables[m_NumVariables].m_Range.Set( min, max );
+    m_pVariables[m_NumVariables].m_Range.Set( (float)min, (float)max ); // turning our ints to floats, not ideal.
     m_pVariables[m_NumVariables].m_Description = 0;
     m_pVariables[m_NumVariables].m_NumEnumTypes = numtypes;
     m_pVariables[m_NumVariables].m_pEnumStrings = wxstrings;
@@ -406,7 +406,7 @@ int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, cons
     return AddVariableOfTypeDesc( PanelWatchType_PointerWithDesc, name, pPointer, pDescription, pCallbackObj, pOnDropCallBackFunc, pOnValueChangedCallBackFunc, 0, pRightClickCallbackFunc );
 }
 
-int PanelWatch::AddEnum(const char* name, int* pInt, float numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
+int PanelWatch::AddEnum(const char* name, int* pInt, int numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
     return AddVariableOfTypeEnum( PanelWatchType_Enum, name, pInt, 0, numtypes, ppStrings, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, true );
 }
