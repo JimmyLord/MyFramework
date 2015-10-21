@@ -151,8 +151,9 @@ public:
         return m_Count;
     }
 
-    MyType& operator[] (int i) const
+    MyType& operator[] (unsigned int i) const
     {
+        MyAssert( i < m_Count );
         return m_Objects[i];
     }
 

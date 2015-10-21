@@ -97,11 +97,16 @@ Vector3 MyAnimationTimeline::GetInterpolatedTranslation(float time, unsigned int
     startindex -= 1;
     int endindex = startindex+1;
 
+    if( startindex < 0 )
+        startindex = 0;
+
     float starttimestamp = pChannel->m_TranslationTimes[startindex];
     float endtimestamp = pChannel->m_TranslationTimes[endindex];
 
     float timebetweenframes = endtimestamp - starttimestamp;
-    float perctimepassed = (time - starttimestamp) / timebetweenframes;
+    float perctimepassed = 0;
+    if( timebetweenframes > 0 )
+        perctimepassed = (time - starttimestamp) / timebetweenframes;
     //MyAssert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
 
     Vector3& StartTranslation = pChannel->m_TranslationValues[startindex];
@@ -130,11 +135,16 @@ MyQuat MyAnimationTimeline::GetInterpolatedRotation(float time, unsigned int cha
     startindex -= 1;
     int endindex = startindex+1;
 
+    if( startindex < 0 )
+        startindex = 0;
+
     float starttimestamp = pChannel->m_RotationTimes[startindex];
     float endtimestamp = pChannel->m_RotationTimes[endindex];
 
     float timebetweenframes = endtimestamp - starttimestamp;
-    float perctimepassed = (time - starttimestamp) / timebetweenframes;
+    float perctimepassed = 0;
+    if( timebetweenframes > 0 )
+        perctimepassed = (time - starttimestamp) / timebetweenframes;
     //MyAssert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
 
     MyQuat& StartRotation = pChannel->m_RotationValues[startindex];
