@@ -1369,7 +1369,7 @@ void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, Color
 
 MaterialDefinition* MyMesh::GetMaterial(int submeshindex)
 {
-    return m_SubmeshList[0]->m_pMaterial;
+    return m_SubmeshList[submeshindex]->m_pMaterial;
 }
 
 void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
