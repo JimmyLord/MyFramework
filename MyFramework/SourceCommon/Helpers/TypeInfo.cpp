@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-#if MYFW_WINDOWS && _DEBUG
+#if MYFW_USING_WX && _DEBUG
 
 std::vector<std::string> g_RegisteredClassnames;
 

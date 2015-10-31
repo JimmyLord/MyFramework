@@ -15,7 +15,7 @@
 // Also defines ClassnameSanityCheck(), meant to be dropped in the constructor of any defining SetClassNameX
 //      this func will check for duplicate classnames or classnames with a length < 8 characters long.
 
-#if MYFW_WINDOWS && _DEBUG
+#if MYFW_USING_WX && _DEBUG
 
 void TypeInfoTestCode();
 

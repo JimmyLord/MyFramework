@@ -3599,6 +3599,7 @@
     <ClCompile Include="SourceCommon\Helpers\MyTime.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp" />
     <ClCompile Include="SourceCommon\Helpers\TypeInfo.cpp" />
+    <ClCompile Include="SourceCommon\Helpers\Utility.cpp" />
     <ClCompile Include="SourceCommon\JSON\cJSONHelpers.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyAnimation.cpp" />
     <ClCompile Include="SourceCommon\Meshes\BufferManager.cpp" />

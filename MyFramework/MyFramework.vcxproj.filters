@@ -552,6 +552,9 @@
     <ClCompile Include="SourceCommon\Textures\MaterialDefinition.cpp">
       <Filter>Source\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Helpers\Utility.cpp">
+      <Filter>Source\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
