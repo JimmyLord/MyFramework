@@ -69,7 +69,7 @@ public:
     virtual bool Setup(MyMatrix* matviewproj);
     virtual void DrawNoSetup();
     virtual void DeactivateShader();
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
 
     Vertex_Base* GetVerts(bool markdirty);
 

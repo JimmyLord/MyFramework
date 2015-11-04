@@ -515,5 +515,8 @@ GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texturedef->m_WrapS );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texturedef->m_WrapT );
 
+    texturedef->m_Width = width;
+    texturedef->m_Height = height;
+
     return texhandle;
 }

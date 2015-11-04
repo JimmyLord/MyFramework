@@ -161,8 +161,10 @@ void MySprite_XYZVertexColor::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj)
+void MySprite_XYZVertexColor::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
+    MyAssert( pShaderOverride == 0 ); // TODO: support overriding shaders
+
     if( m_pMaterial == 0 )
         return;
 

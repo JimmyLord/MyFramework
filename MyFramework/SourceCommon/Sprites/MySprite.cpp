@@ -469,8 +469,11 @@ void MySprite::DeactivateShader()
     pShader->DeactivateShader( m_pVertexBuffer );
 }
 
-void MySprite::Draw(MyMatrix* matviewproj)
+void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
+    if( pShaderOverride ) // TODO: support shader overrides
+        return;
+
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
 
@@ -482,9 +485,11 @@ void MySprite::Draw(MyMatrix* matviewproj)
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    //TextureDefinition* pTexture = GetTexture();
-
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_Base* pShader = 0;
+    if( pShaderOverride )
+        pShader = (Shader_Base*)pShaderOverride->GlobalPass();
+    else
+        pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -496,11 +501,10 @@ void MySprite::Draw(MyMatrix* matviewproj)
     }
 
     if( pShader->ActivateAndProgramShader(
-        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-        matviewproj, &m_Position, m_pMaterial ) )
+            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            matviewproj, &m_Position, m_pMaterial ) )
     {
         pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
-        //pShader->ProgramFramebufferSize( 700, 400 );
 
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );

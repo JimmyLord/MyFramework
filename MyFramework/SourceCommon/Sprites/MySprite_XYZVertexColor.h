@@ -34,7 +34,7 @@ public:
     //virtual bool Setup(MyMatrix* matviewproj);
     //virtual void DrawNoSetup();
     //virtual void DeactivateShader();
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
 
     virtual void SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr );
     virtual void SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr );
