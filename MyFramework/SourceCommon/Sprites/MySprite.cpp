@@ -471,9 +471,6 @@ void MySprite::DeactivateShader()
 
 void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
-    if( pShaderOverride ) // TODO: support shader overrides
-        return;
-
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
 
@@ -487,31 +484,48 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 
     Shader_Base* pShader = 0;
     if( pShaderOverride )
-        pShader = (Shader_Base*)pShaderOverride->GlobalPass();
-    else
-        pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
-    if( pShader == 0 )
-        return;
-
-    // Enable blending if necessary. TODO: sort draws and only set this once.
-    if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    }
+        // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
+        pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
 
-    if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &m_Position, m_pMaterial ) )
-    {
-        pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
+        MyAssert( pShader );
+        if( pShader == 0 )
+            return;
+
+        pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
+        pShader->ProgramPosition( matviewproj, &m_Position );
 
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );
     }
+    else
+    {
+        pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
 
-    // always disable blending
-    glDisable( GL_BLEND );
+        MyAssert( pShader );
+        if( pShader == 0 )
+            return;
+
+        // Enable blending if necessary. TODO: sort draws and only set this once.
+        if( m_pMaterial->IsTransparent( pShader ) )
+        {
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        }
+
+        if( pShader->ActivateAndProgramShader(
+                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                matviewproj, &m_Position, m_pMaterial ) )
+        {
+            pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
+
+            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+            pShader->DeactivateShader( m_pVertexBuffer );
+        }
+
+        // always disable blending
+        glDisable( GL_BLEND );
+    }
 }
 
 Vertex_Base* MySprite::GetVerts(bool markdirty)
