@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,6 +10,11 @@
 #ifndef __MyMatrix_H__
 #define __MyMatrix_H__
 
+// Values are stored column major.
+// m11 m21 m31 m41       Sx  0  0 Tx
+// m12 m22 m32 m42  --\   0 Sy  0 Ty
+// m13 m23 m33 m43  --/   0  0 Sz Tz
+// m14 m24 m34 m44        0  0  0  1
 class MyMatrix
 {
 public:
@@ -17,25 +22,25 @@ public:
 
 public:
     MyMatrix() {}
-    MyMatrix(const Vector3& right, const Vector3& up, const Vector3& at)
-        : m11(right.x), m12(up.x), m13(at.x), m14(0)
-        , m21(right.y), m22(up.y), m23(at.y), m24(0)
-        , m31(right.z), m32(up.z), m33(at.z), m34(0)
-        , m41(0),       m42(0),    m43(0),    m44(1) {}
+    //MyMatrix(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos) // view axes(inverse)
+    //    : m11(right.x), m21(right.y), m31(right.z), m41(pos.x),
+    //    , m12(up.x),    m22(up.y),    m32(up.z),    m42(pos.y),
+    //    , m13(at.x),    m23(at.y),    m33(at.z),    m43(pos.z),
+    //    , m14(0),       m24(0),       m34(0),       m44(1)      {}
     MyMatrix(float v11, float v12, float v13, float v14,
              float v21, float v22, float v23, float v24,
              float v31, float v32, float v33, float v34,
              float v41, float v42, float v43, float v44)
-        : m11(v11), m12(v12), m13(v13), m14(v14)
-        , m21(v21), m22(v22), m23(v23), m24(v24)
-        , m31(v31), m32(v32), m33(v33), m34(v34)
-        , m41(v41), m42(v42), m43(v43), m44(v44) {}
+        : m11(v11), m21(v21), m31(v31), m41(v41)
+        , m12(v12), m22(v22), m32(v32), m42(v42)
+        , m13(v13), m23(v23), m33(v33), m43(v43)
+        , m14(v14), m24(v24), m34(v34), m44(v44) {}
     // Added this copy constuctor when I was having issue with Android(gcc), didn't end up using it and it shouldn't be needed.
     //MyMatrix(const MyMatrix& o)
-    //    : m11(o.m11), m12(o.m12), m13(o.m13), m14(o.m14)
-    //    , m21(o.m21), m22(o.m22), m23(o.m23), m24(o.m24)
-    //    , m31(o.m31), m32(o.m32), m33(o.m33), m34(o.m34)
-    //    , m41(o.m41), m42(o.m42), m43(o.m43), m44(o.m44) {}
+    //    : m11(o.m11), m21(o.m21), m31(o.m31), m41(o.m41)
+    //    , m12(o.m12), m22(o.m22), m32(o.m32), m42(o.m42)
+    //    , m13(o.m13), m23(o.m23), m33(o.m33), m43(o.m43)
+    //    , m14(o.m14), m24(o.m24), m34(o.m34), m44(o.m44) {}
 
     // the following function will affect existing values in the matrix
     void Scale(float scale);
@@ -49,6 +54,8 @@ public:
 
     // all create/set functions will overright values in the matrix
     void SetIdentity();
+    void SetAxesView(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos);
+    void SetAxesWorld(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos);
     void SetTranslation(Vector3 pos);
     void SetTranslation(float x, float y, float z);
     void CreateScale(float scale);
@@ -61,8 +68,9 @@ public:
     void CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ);
     void CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ);
     void CreateOrtho(float left, float right, float bottom, float top, float nearZ, float farZ);
-    void CreateLookAtLeftHanded(const Vector3& eye, const Vector3& up, const Vector3& at);
-    void CreateLookAt(const Vector3& eye, const Vector3& up, const Vector3& at);
+    void CreateLookAtViewLeftHanded(const Vector3& eye, const Vector3& up, const Vector3& at);
+    void CreateLookAtView(const Vector3& eye, const Vector3& up, const Vector3& at);
+    void CreateLookAtWorld(const Vector3& eye, const Vector3& up, const Vector3& at);
 
     // get values from matrix
     Vector3 GetTranslation() { return Vector3( m41, m42, m43 ); }

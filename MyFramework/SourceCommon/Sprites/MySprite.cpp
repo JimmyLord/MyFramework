@@ -77,17 +77,17 @@ MySprite::~MySprite()
     //SAFE_RELEASE( m_pVAO );
 }
 
-void MySprite::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
+void MySprite::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
+    CreateSubsection( category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
+void MySprite::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( "MySprite", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
+    CreateSubsection( "MySprite", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts)
+void MySprite::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts, bool facepositivez)
 {
     MyAssert( m_SpriteIsStatic == false );
 
@@ -187,6 +187,14 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
             pVerts[3].u = uright;
             pVerts[3].v = vbottom;
 
+            if( facepositivez == true )
+            {
+                pVerts[0].x = xright;
+                pVerts[1].x = xleft;
+                pVerts[2].x = xright;
+                pVerts[3].x = xleft;
+            }
+
             m_pVertexBuffer->m_Dirty = true;
         }
 
@@ -201,7 +209,7 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
     }
 }
 
-void MySprite::CreateInPlace(const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
+void MySprite::CreateInPlace(const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
     MyAssert( m_SpriteIsStatic == false );
 

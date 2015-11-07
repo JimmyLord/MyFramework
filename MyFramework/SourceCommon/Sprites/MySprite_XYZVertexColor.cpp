@@ -19,17 +19,17 @@ MySprite_XYZVertexColor::~MySprite_XYZVertexColor()
 {
 }
 
-void MySprite_XYZVertexColor::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
+void MySprite_XYZVertexColor::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
+    CreateSubsection( category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite_XYZVertexColor::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts)
+void MySprite_XYZVertexColor::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( "Default", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts );
+    CreateSubsection( "Default", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite_XYZVertexColor::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts)
+void MySprite_XYZVertexColor::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts, bool facepositivez)
 {
     MyAssert( m_SpriteIsStatic == false );
 
@@ -143,6 +143,14 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
         pVerts[3].y = ybottom;
         pVerts[3].u = uright;
         pVerts[3].v = vbottom;
+
+        if( facepositivez )
+        {
+            pVerts[0].x = xright;
+            pVerts[1].x = xleft;
+            pVerts[2].x = xright;
+            pVerts[3].x = xleft;
+        }
     }
 }
 

@@ -15,6 +15,22 @@ void MyMatrix::SetIdentity()
     m11 = m22 = m33 = m44 = 1;
 }
 
+void MyMatrix::SetAxesView(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos)
+{
+    m11 = right.x; m21 = right.y; m31 = right.z; m41 = pos.x;
+    m12 = up.x;    m22 = up.y;    m32 = up.z;    m42 = pos.y;
+    m13 = at.x;    m23 = at.y;    m33 = at.z;    m43 = pos.z;
+    m14 = 0;       m24 = 0;       m34 = 0;       m44 = 1;
+}
+
+void MyMatrix::SetAxesWorld(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos)
+{
+    m11 = right.x; m21 = up.x; m31 = at.x; m41 = pos.x;
+    m12 = right.y; m22 = up.y; m32 = at.y; m42 = pos.y;
+    m13 = right.z; m23 = up.z; m33 = at.z; m43 = pos.z;
+    m14 = 0;       m24 = 0;    m34 = 0;    m44 = 1;
+}
+
 void MyMatrix::SetTranslation(Vector3 pos)
 {
     m41 = pos.x;
@@ -279,30 +295,35 @@ void MyMatrix::CreateOrtho(float left, float right, float bottom, float top, flo
     m44 = 1;
 }
 
-void MyMatrix::CreateLookAtLeftHanded(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
+void MyMatrix::CreateLookAtViewLeftHanded(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
 {
     Vector3 zaxis = (at - eye).Normalize();
     Vector3 xaxis = (up.Cross(zaxis)).Normalize();
     Vector3 yaxis = zaxis.Cross(xaxis);
 
-    *this = MyMatrix( xaxis, yaxis, zaxis );
+    Vector3 pos = Vector3( -xaxis.Dot( eye ), -yaxis.Dot( eye ), -zaxis.Dot( eye ) );
 
-    m41 = -xaxis.Dot( eye );
-    m42 = -yaxis.Dot( eye );
-    m43 = -zaxis.Dot( eye );
+    SetAxesView( xaxis, yaxis, zaxis, pos );
 }
 
-void MyMatrix::CreateLookAt(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
+void MyMatrix::CreateLookAtView(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
 {
     Vector3 zaxis = (eye - at).Normalize();
     Vector3 xaxis = (up.Cross(zaxis)).Normalize();
     Vector3 yaxis = zaxis.Cross(xaxis);
 
-    *this = MyMatrix( xaxis, yaxis, zaxis );
-    
-    m41 = -xaxis.Dot( eye );
-    m42 = -yaxis.Dot( eye );
-    m43 = -zaxis.Dot( eye );
+    Vector3 pos = Vector3( -xaxis.Dot( eye ), -yaxis.Dot( eye ), -zaxis.Dot( eye ) );
+
+    SetAxesView( xaxis, yaxis, zaxis, pos );
+}
+
+void MyMatrix::CreateLookAtWorld(const Vector3& objpos, const Vector3& up, const Vector3& at)
+{
+    Vector3 zaxis = (at - objpos).Normalize();
+    Vector3 xaxis = (up.Cross(zaxis)).Normalize();
+    Vector3 yaxis = zaxis.Cross(xaxis);
+
+    SetAxesWorld( xaxis, yaxis, zaxis, objpos );
 }
 
 Vector3 MyMatrix::GetEulerAngles()
