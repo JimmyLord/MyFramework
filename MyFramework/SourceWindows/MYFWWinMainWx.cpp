@@ -85,9 +85,9 @@ void MainFrame::InitFrame()
         m_Edit->Append( myID_Redo, wxT("&Redo\tCtrl-Y") );
 
         m_View = MyNew wxMenu;
-        m_View->Append( myID_SavePerspective, wxT("&Save window layout") );
-        m_View->Append( myID_LoadPerspective, wxT("&Load window layout") );
-        m_View->Append( myID_ResetPerspective, wxT("&Reset window layout") );
+        m_View->Append( myID_View_SavePerspective, wxT("&Save window layout") );
+        m_View->Append( myID_View_LoadPerspective, wxT("&Load window layout") );
+        m_View->Append( myID_View_ResetPerspective, wxT("&Reset window layout") );
 
         m_Aspect = MyNew wxMenu;
         m_AspectMenuItems[GLView_Full] = m_Aspect->AppendCheckItem( myID_GLViewType_Fill, wxT("&Fill\tAlt-1") );
@@ -116,9 +116,9 @@ void MainFrame::InitFrame()
         Connect( myID_Undo, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         Connect( myID_Redo, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
 
-        Connect( myID_SavePerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
-        Connect( myID_LoadPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
-        Connect( myID_ResetPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+        Connect( myID_View_SavePerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+        Connect( myID_View_LoadPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+        Connect( myID_View_ResetPerspective, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
 
         Connect( myID_GLViewType_Fill, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         Connect( myID_GLViewType_Tall, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
@@ -251,7 +251,7 @@ void MainFrame::OnMenu(wxCommandEvent& event)
             m_pCommandStack->Redo( 1 );
         break;
 
-    case myID_SavePerspective:
+    case myID_View_SavePerspective:
         {
             m_SavedPerspectiveString = m_AUIManager.SavePerspective();
 
@@ -269,11 +269,11 @@ void MainFrame::OnMenu(wxCommandEvent& event)
         }
         break;
 
-    case myID_LoadPerspective:
+    case myID_View_LoadPerspective:
         m_AUIManager.LoadPerspective( m_SavedPerspectiveString );
         break;
 
-    case myID_ResetPerspective:
+    case myID_View_ResetPerspective:
         m_AUIManager.LoadPerspective( m_DefaultPerspectiveString );
         break;
 

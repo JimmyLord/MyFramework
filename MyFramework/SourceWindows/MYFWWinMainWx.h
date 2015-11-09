@@ -28,9 +28,9 @@ enum GLViewTypes
 
 enum MenuIDs
 {
-    myID_SavePerspective = wxID_HIGHEST + 1,
-    myID_LoadPerspective,
-    myID_ResetPerspective,
+    myID_View_SavePerspective = wxID_HIGHEST + 1,
+    myID_View_LoadPerspective,
+    myID_View_ResetPerspective,
     myID_GLViewType_Fill,
     myID_GLViewType_Tall,
     myID_GLViewType_Square,
