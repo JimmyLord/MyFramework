@@ -96,7 +96,7 @@
 #pragma warning( 3 : 4692 ) // 'function': signature of non-private member contains assembly private native type 'native_type'
 //#pragma warning( 3 : 4702 ) // unreachable code
 //#pragma warning( 3 : 4710 ) // 'function': function not inlined
-#pragma warning( 3 : 4738 ) // storing 32-bit float result in memory, possible loss of performance
+//TODO: look into it, was triggering a lot in release. #pragma warning( 3 : 4738 ) // storing 32-bit float result in memory, possible loss of performance
 //2015? #pragma warning( 3 : 4767 ) // section name 'symbol' is longer than 8 characters and will be truncated by the linker
 #pragma warning( 3 : 4786 ) // 'symbol' : object name was truncated to 'number' characters in the debug information
 //#pragma warning( 3 : 4820 ) // 'bytes' bytes padding added after construct 'member_name'
