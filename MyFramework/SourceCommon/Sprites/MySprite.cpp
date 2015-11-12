@@ -431,6 +431,9 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     //TextureDefinition* pTexture = GetTexture();
 
+    if( m_pMaterial->GetShader() == 0 )
+        return false;
+
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return false;

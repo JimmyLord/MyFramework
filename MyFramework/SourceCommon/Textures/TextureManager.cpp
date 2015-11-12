@@ -70,7 +70,7 @@ void TextureDefinition::OnDrag()
 
 void TextureDefinition::Invalidate(bool cleanglallocs)
 {
-    if( cleanglallocs )
+    if( cleanglallocs && m_TextureID != 0 )
     {
         glDeleteTextures( 1, &m_TextureID );
     }

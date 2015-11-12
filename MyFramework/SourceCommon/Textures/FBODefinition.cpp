@@ -304,16 +304,26 @@ void FBODefinition::Invalidate(bool cleanglallocs)
     if( cleanglallocs )
     {
         if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+        {
             glDeleteTextures( 1, &m_pColorTexture->m_TextureID );
+            m_pColorTexture->m_TextureID = 0;
+        }
+
         if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
         {
             if( m_DepthIsTexture )
                 glDeleteTextures( 1, &m_pDepthTexture->m_TextureID );
             else
                 glDeleteRenderbuffers( 1, &m_pDepthTexture->m_TextureID );
+
+            m_pDepthTexture->m_TextureID = 0;
         }
+
         if( m_FrameBufferID != 0 )
+        {
             glDeleteFramebuffers( 1, &m_FrameBufferID );
+            m_FrameBufferID = 0;
+        }
 
         SAFE_RELEASE( m_pColorTexture );
         SAFE_RELEASE( m_pDepthTexture );
