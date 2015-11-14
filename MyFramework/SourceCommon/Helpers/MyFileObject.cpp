@@ -192,10 +192,12 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
                 pMesh->FillPropertiesWindow( false );
             }
 
-            if( m_CustomLeftClickCallback )
-            {
-                m_CustomLeftClickCallback( m_CustomLeftClickObject );
-            }
+            //// TODO: not sure what this was for and yet still caused occasional crashes, removed for now.
+            ////       also, left click callback on right click event?!?
+            //if( m_CustomLeftClickCallback )
+            //{
+            //    m_CustomLeftClickCallback( m_CustomLeftClickObject );
+            //}
         }
         break;
     }

@@ -48,6 +48,7 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
 MyMesh::MyMesh()
 {
     m_pSourceFile = 0;
+    m_ForceCheckForAnimationFile = false;
     m_MeshReady = false;
 
     m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
@@ -96,6 +97,7 @@ void MyMesh::Clear()
     //m_pAnimations.FreeAllInList(); // Allocated in contructor to max size.
 
     SAFE_RELEASE( m_pAnimationControlFile );
+    m_ForceCheckForAnimationFile = true; // needed for when a mesh file gets reloaded because of changes, this will reload the anim file.
 
     while( m_SubmeshList.Count() )
     {
@@ -256,26 +258,37 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
 void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
 {
+    //LOGInfo( LOGTag, "%d: MyMesh::CreateFromMyMeshFile ( %s ) m_pAnimationControlFile = %d\n", this, pFile->m_FilenameWithoutExtension, m_pAnimationControlFile );
+
     MyAssert( pFile );
 
     // if the requested file changed, then ditch the current one and load the new one.
-    if( pFile != m_pSourceFile )
+    if( pFile != m_pSourceFile || m_ForceCheckForAnimationFile )
     {
+        m_ForceCheckForAnimationFile = false;
+
         // free the old .mymesh file and store a pointer to the new one.
         pFile->AddRef();
         SAFE_RELEASE( m_pSourceFile );
         m_pSourceFile = pFile;
 
         // free the old .myaniminfo file and store a pointer to the new one.
+        //if( m_pAnimationControlFile )
+        //    LOGInfo( LOGTag, "Releasing old animation file ( %s ) file = %d\n", pFile->m_FilenameWithoutExtension, m_pAnimationControlFile );
         SAFE_RELEASE( m_pAnimationControlFile );
         char animfilename[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
 #if MYFW_USING_WX
-        // only try to open the file if it exists, only in editor builds since file i/o isn't neccessarily synchronous otherwise.
+        // only try to open the file if it exists, only in editor builds since file i/o isn't necessarily synchronous otherwise.
         if( g_pFileManager->DoesFileExist( animfilename ) )
         {
             MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
             m_pAnimationControlFile = newfile;
+            //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned true file = %d\n", animfilename, m_pAnimationControlFile );
+        }
+        else
+        {
+            //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned false\n", animfilename );
         }
 #else
         MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
@@ -290,8 +303,11 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
       )
     {
+        //LOGInfo( LOGTag, "Animation File = %d\n", m_pAnimationControlFile );
+
         if( m_pAnimationControlFile && m_pAnimationControlFile->m_FileLoadStatus == FileLoadStatus_Error_FileNotFound )
         {
+            //LOGInfo( LOGTag, "Animation File - error loading file\n" );
             g_pFileManager->FreeFile( m_pAnimationControlFile );
             m_pAnimationControlFile = 0;
         }
@@ -300,6 +316,7 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
         
         if( m_pAnimationControlFile )
         {
+            //LOGInfo( LOGTag, "LoadAnimationControlFile = %s\n", m_pAnimationControlFile->m_pBuffer );
             LoadAnimationControlFile( m_pAnimationControlFile->m_pBuffer );
         }
         else

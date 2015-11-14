@@ -79,6 +79,7 @@ public:
     MyList<MySubmesh*> m_SubmeshList;
 
     MyFileObject* m_pSourceFile;
+    bool m_ForceCheckForAnimationFile;
     bool m_MeshReady;
 
 protected:
