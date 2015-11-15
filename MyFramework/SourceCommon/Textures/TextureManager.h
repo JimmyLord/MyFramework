@@ -78,7 +78,7 @@ public:
 
     TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
     GLuint CreateTextureFromBuffer(TextureDefinition* texturedef);
-    TextureDefinition* FindTexture(const char* texturefilename);
+    TextureDefinition* FindTexture(const char* texturefilename); // Does not add to the TextureDefinition ref count.
 
     void FreeAllTextures(bool shuttingdown);
     void InvalidateAllTextures(bool cleanglallocs);

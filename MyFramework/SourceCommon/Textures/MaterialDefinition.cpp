@@ -123,13 +123,11 @@ void MaterialDefinition::ImportFromFile()
         cJSON* texcolorstringobj = cJSON_GetObjectItem( material, "TexColor" );
         if( texcolorstringobj )
         {
-            TextureDefinition* pTexture = g_pTextureManager->FindTexture( texcolorstringobj->valuestring );
-            //MyAssert( pTexture ); // fix
+            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( texcolorstringobj->valuestring );
+            MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.
             if( pTexture )
             {
-                pTexture->AddRef();
-                SAFE_RELEASE( m_pTextureColor );
-                m_pTextureColor = pTexture;
+                SetTextureColor( pTexture );
             }
         }
 

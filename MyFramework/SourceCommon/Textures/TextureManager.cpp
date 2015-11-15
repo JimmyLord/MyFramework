@@ -95,29 +95,15 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     LOGInfo( LOGTag, "CreateTexture - %s\n", texturefilename );
 
     // find the texture if it already exists:
-    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    TextureDefinition* pTextureDef = FindTexture( texturefilename );
+    if( pTextureDef != 0 )
     {
-        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-
-        if( strcmp( pTextureDef->m_Filename, texturefilename ) == 0 )
-        {
-            pTextureDef->AddRef();
-            return pTextureDef;
-        }
+        pTextureDef->AddRef();
+        return pTextureDef;
     }
 
-    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; pNode = pNode->GetNext() )
-    {
-        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-
-        if( strcmp( pTextureDef->m_Filename, texturefilename ) == 0 )
-        {
-            pTextureDef->AddRef();
-            return pTextureDef;
-        }
-    }
-
-    TextureDefinition* pTextureDef = MyNew TextureDefinition();
+    // Create a new texture and add it to m_TexturesStillLoading
+    pTextureDef = MyNew TextureDefinition();
     pTextureDef->m_ManagedByTextureManager = true;
     strcpy_s( pTextureDef->m_Filename, MAX_PATH, texturefilename );
     pTextureDef->m_MinFilter = minfilter;
