@@ -594,7 +594,7 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
         break;
     }
 
-    assert( pControlHandle );
+    MyAssert( pControlHandle );
     pControlHandle->SetParent( this );
     m_Controls[type].push_back( pControlHandle );
 

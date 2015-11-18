@@ -121,7 +121,7 @@ void MaterialDefinition::ImportFromFile()
         }
 
         cJSON* texcolorstringobj = cJSON_GetObjectItem( material, "TexColor" );
-        if( texcolorstringobj )
+        if( texcolorstringobj && texcolorstringobj->valuestring[0] != 0 )
         {
             TextureDefinition* pTexture = g_pTextureManager->CreateTexture( texcolorstringobj->valuestring );
             MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.

@@ -276,6 +276,9 @@ void MyFileObject::RequestFile(const char* filename)
     MyAssert( filename != 0 );
     if( filename == 0 )
         return;
+    MyAssert( filename[0] != 0 );
+    if( filename[0] == 0 )
+        return;
 
     LOGInfo( LOGTag, "RequestFile %s\n", filename );
 

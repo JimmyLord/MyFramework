@@ -525,7 +525,18 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 void Shader_Base::ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix)
 {
     if( m_uHandle_World != -1 )
-        glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&worldmatrix->m11 );
+    {
+        if( worldmatrix )
+        {
+            glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&worldmatrix->m11 );
+        }
+        else
+        {
+            MyMatrix identity;
+            identity.SetIdentity();
+            glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&identity.m11 );
+        }
+    }
 
     if( m_uHandle_ViewProj != -1 )
         glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&viewprojmatrix->m11 );

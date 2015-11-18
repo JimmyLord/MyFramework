@@ -143,6 +143,13 @@ unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 
 MyFileObject* FileManager::RequestFile(const char* filename)
 {
+    MyAssert( filename != 0 );
+    if( filename == 0 )
+        return 0;
+    MyAssert( filename[0] != 0 );
+    if( filename[0] == 0 )
+        return 0;
+
     MyFileObject* pFile;
     
     // check if the file has already been requested... might still be loading.
@@ -478,6 +485,13 @@ void MySaveFileObject_FILE::Tick()
 #if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX
 MyFileObject* RequestFile(const char* filename)
 {
+    MyAssert( filename != 0 );
+    if( filename == 0 )
+        return 0;
+    MyAssert( filename[0] != 0 );
+    if( filename[0] == 0 )
+        return 0;
+
     return g_pFileManager->RequestFile( filename );
 }
 #endif

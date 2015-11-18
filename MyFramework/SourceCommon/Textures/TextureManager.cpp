@@ -123,7 +123,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
         //textureloaded = true;
     }
 #else
-    if( pTextureDef->m_pFile == 0 )
+    if( pTextureDef->m_pFile == 0 && pTextureDef->m_Filename[0] != 0 )
     {
         //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
         pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
@@ -260,9 +260,13 @@ void TextureManager::Tick()
         // if the file load hasn't started... start the file load.
         if( pTextureDef->m_pFile == 0 )
         {
-            //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
-            pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
-            //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
+            MyAssert( pTextureDef->m_Filename[0] != 0 );
+            if( pTextureDef->m_Filename[0] != 0 )
+            {
+                //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
+                pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
+                //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
+            }
         }
         else
         {
