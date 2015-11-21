@@ -206,8 +206,7 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj)
     //return;
 #endif
 
-    if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->m_TextureID == 0 ||
-        m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
         return;
 
     //glEnable(GL_TEXTURE_2D);
