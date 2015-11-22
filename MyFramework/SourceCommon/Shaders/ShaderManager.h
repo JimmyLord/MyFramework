@@ -36,11 +36,13 @@ public:
 
 protected:
     char* m_pVSPredefinitions; // allocated in constructor if needed.
+    char* m_pGSPredefinitions; // allocated in constructor if needed.
     char* m_pFSPredefinitions;
 
 public:
     unsigned int m_ProgramHandle;
     unsigned int m_VertexShaderHandle;
+    unsigned int m_GeometryShaderHandle;
     unsigned int m_FragmentShaderHandle;
 
 public:
@@ -52,7 +54,7 @@ public:
 
     virtual void Init(ShaderPassTypes type);
 
-    void OverridePredefs(const char* VSpredef, const char* FSpredef, bool alsousedefaults);
+    void OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsousedefaults);
 
     virtual void Invalidate(bool cleanglallocs);
     virtual void CleanGLAllocations();

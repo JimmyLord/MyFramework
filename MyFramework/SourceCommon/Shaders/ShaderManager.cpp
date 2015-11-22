@@ -38,10 +38,12 @@ void BaseShader::Init_BaseShader()
     m_pFilePixelShader = 0;
 
     m_pVSPredefinitions = 0;
+    m_pGSPredefinitions = 0;
     m_pFSPredefinitions = 0;
 
     m_ProgramHandle = 0;
     m_VertexShaderHandle = 0;
+    m_GeometryShaderHandle = 0;
     m_FragmentShaderHandle = 0;
 
     g_pShaderManager->AddShader( this );
@@ -55,6 +57,7 @@ BaseShader::~BaseShader()
     SAFE_RELEASE( m_pFilePixelShader );
 
     SAFE_DELETE_ARRAY( m_pVSPredefinitions );
+    SAFE_DELETE_ARRAY( m_pGSPredefinitions );
     SAFE_DELETE_ARRAY( m_pFSPredefinitions );
 
     Invalidate( true );
@@ -65,7 +68,7 @@ void BaseShader::Init(ShaderPassTypes type)
     m_PassType = type;
 }
 
-void BaseShader::OverridePredefs(const char* VSpredef, const char* FSpredef, bool alsousedefaults)
+void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsousedefaults)
 {
     if( VSpredef )
     {
@@ -78,6 +81,19 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* FSpredef, boo
         if( alsousedefaults )
             strcat_s( newvsstr, vslen, VERTEXPREDEFINES );
         m_pVSPredefinitions = newvsstr;
+    }
+
+    if( GSpredef )
+    {
+        int gslen = (int)strlen( GSpredef );
+        if( alsousedefaults )
+            gslen += strlen( GEOMETRYPREDEFINES );
+        gslen += 1;
+        char* newgsstr = MyNew char[gslen];
+        strcpy_s( newgsstr, gslen, GSpredef );
+        if( alsousedefaults )
+            strcat_s( newgsstr, gslen, GEOMETRYPREDEFINES );
+        m_pGSPredefinitions = newgsstr;
     }
 
     if( FSpredef )
@@ -104,6 +120,7 @@ void BaseShader::Invalidate(bool cleanglallocs)
 
     m_ProgramHandle = 0;
     m_VertexShaderHandle = 0;
+    m_GeometryShaderHandle = 0;
     m_FragmentShaderHandle = 0;
 
     m_ShaderFailedToCompile = false;
@@ -116,13 +133,16 @@ void BaseShader::CleanGLAllocations()
         m_Initialized = false;
 
         glDetachShader( m_ProgramHandle, m_VertexShaderHandle );
+        glDetachShader( m_ProgramHandle, m_GeometryShaderHandle );
         glDetachShader( m_ProgramHandle, m_FragmentShaderHandle );    
         glDeleteShader( m_VertexShaderHandle );
+        glDeleteShader( m_GeometryShaderHandle );
         glDeleteShader( m_FragmentShaderHandle );
         glDeleteProgram( m_ProgramHandle );
 
         m_ProgramHandle = 0;
         m_VertexShaderHandle = 0;
+        m_GeometryShaderHandle = 0;
         m_FragmentShaderHandle = 0;
     }
 
@@ -198,14 +218,27 @@ bool BaseShader::LoadAndCompile()
     if( m_pFile->m_ScannedForIncludes == false )
         m_pFile->CheckFileForIncludesAndAddToList();
 
+    bool creategeometryshader = false;
+
     for( unsigned int i=0; i<m_pFile->m_FileLength; i++ )
     {
         // TODO: actually parse shader files properly, looking for some setting like these.
         if( (i == 0 || m_pFile->m_pBuffer[i-1] != '/') &&
-            i + 19 < m_pFile->m_FileLength &&
-            m_pFile->m_pBuffer[i] == '#' && strncmp( &m_pFile->m_pBuffer[i], "#define BLENDING On", 19 ) == 0 )
+            m_pFile->m_pBuffer[i] == '#' )
         {
-            m_BlendType = MaterialBlendType_On; 
+            char blendstr[] = "#define BLENDING On";
+            if( i + strlen(blendstr) < m_pFile->m_FileLength &&
+                strncmp( &m_pFile->m_pBuffer[i], blendstr, strlen( blendstr ) ) == 0 )
+            {
+                m_BlendType = MaterialBlendType_On; 
+            }
+
+            char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";
+            if( i + strlen(blendstr) < m_pFile->m_FileLength &&
+                strncmp( &m_pFile->m_pBuffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
+            {
+                creategeometryshader = true; 
+            }
         }
     }
 
@@ -235,15 +268,29 @@ bool BaseShader::LoadAndCompile()
         pVSPre = m_pVSPredefinitions;
     int VSPreLen = (int)strlen( pVSPre );
 
+    const char* pGSPre = GEOMETRYPREDEFINES;
+    if( m_pGSPredefinitions )
+        pGSPre = m_pGSPredefinitions;
+    int GSPreLen = (int)strlen( pGSPre );
+
     const char* pFSPre = FRAGMENTPREDEFINES;
     if( m_pFSPredefinitions )
         pFSPre = m_pFSPredefinitions;
     int FSPreLen = (int)strlen( pFSPre );
 
     // actually create and compile the shader objects.
-    m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
-                                     VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                     numchunks, pStrings, pLengths );
+    if( creategeometryshader )
+    {
+        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
+                                         VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
+                                         numchunks, pStrings, pLengths );
+    }
+    else
+    {
+        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
+                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
+                                         numchunks, pStrings, pLengths );
+    }
 
     if( m_ProgramHandle == 0 )
     {

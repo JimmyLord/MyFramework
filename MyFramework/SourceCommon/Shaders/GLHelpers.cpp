@@ -286,6 +286,92 @@ GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreV
     return programid;
 }
 
+GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths)
+{
+    checkGlError( "createProgram" );
+
+    ppChunks[1] = pPreVertexSource;
+    pLengths[1] = prevslen;
+    *vsid = loadShader( GL_VERTEX_SHADER, numchunks, ppChunks, pLengths );
+    if( *vsid == 0 )
+    {
+        return 0;
+    }
+
+    ppChunks[1] = pPreGeometrySource;
+    pLengths[1] = pregslen;
+    *gsid = loadShader( GL_GEOMETRY_SHADER, numchunks, ppChunks, pLengths );
+    if( *gsid == 0 )
+    {
+        glDeleteShader( *vsid );
+        *vsid = 0;
+        return 0;
+    }
+
+    ppChunks[1] = pPreFragmentSource;
+    pLengths[1] = prefslen;
+    *fsid = loadShader( GL_FRAGMENT_SHADER, numchunks, ppChunks, pLengths );
+    if( *fsid == 0 )
+    {
+        glDeleteShader( *vsid );
+        glDeleteShader( *gsid );
+        *vsid = 0;
+        *gsid = 0;
+        return 0;
+    }
+
+    GLuint programid = glCreateProgram();
+    if( programid )
+    {
+        glAttachShader( programid, *vsid );
+        checkGlError( "glAttachShader - Vertex" );
+        
+        glAttachShader( programid, *gsid );
+        checkGlError( "glAttachShader - Geometry" );
+
+        glAttachShader( programid, *fsid );
+        checkGlError( "glAttachShader - Fragment" );
+        
+        glLinkProgram( programid );
+        GLint linkStatus = GL_FALSE;
+        glGetProgramiv( programid, GL_LINK_STATUS, &linkStatus );
+
+        if( linkStatus != GL_TRUE )
+        {
+#if !USE_D3D
+            GLint bufLength = 0;
+            glGetProgramiv( programid, GL_INFO_LOG_LENGTH, &bufLength );
+            if( bufLength )
+            {
+                char* buf = (char*)malloc( bufLength );
+                if( buf )
+                {
+                    glGetProgramInfoLog( programid, bufLength, 0, buf );
+                    LOGError( LOGTag, "Could not link program:\n%s\n", buf );
+
+                    MyAssert( false );
+
+                    printShaderSource( *vsid );
+                    printShaderSource( *fsid );
+
+                    free(buf);
+                }
+            }
+#endif
+            LOGError( LOGTag, "Could not link program:\n" );
+
+            glDeleteProgram( programid );
+            glDeleteShader( *vsid );
+            glDeleteShader( *fsid );
+            programid = 0;
+            *vsid = 0;
+            *fsid = 0;
+        }
+    }
+
+    return programid;
+}
+
 GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, const char* pPassDefine)
 {
     checkGlError( "createProgram" );

@@ -23,21 +23,26 @@ GLint GetUniformLocation(GLuint programhandle, const char* name, ...);
 
 #if MYFW_WINDOWS && MY_SHITTY_LAPTOP
 #define VERTEXPREDEFINES "#define VertexShader 1\n#define WIN32 1\n#define MY_SHITTY_LAPTOP 1\n"
+#define GEOMETRYPREDEFINES "#define GeometryShader 1\n#define WIN32 1\n#define MY_SHITTY_LAPTOP 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n#define WIN32 1\n#define MY_SHITTY_LAPTOP 1\n"
 #elif MY_SHITTY_LAPTOP
 #define VERTEXPREDEFINES "#define VertexShader 1\n#define MY_SHITTY_LAPTOP 1\n"
+#define GEOMETRYPREDEFINES "#define GeometryShader 1\n#define MY_SHITTY_LAPTOP 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n#define MY_SHITTY_LAPTOP 1\n"
 #elif MYFW_WINDOWS || MYFW_OSX
 #define VERTEXPREDEFINES "#define VertexShader 1\n#define WIN32 1\n"
+#define GEOMETRYPREDEFINES "#define GeometryShader 1\n#define WIN32 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n#define WIN32 1\n"
 #else
 #define VERTEXPREDEFINES "#define VertexShader 1\n"
+#define GEOMETRYPREDEFINES "#define GeometryShader 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n"
 #endif
 
 GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* pLengths);
 GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, const char* pSource, int sourcelen, const char* pPassDefine);
 GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths);
+GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths);
 GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen = strlen(VERTEXPREDEFINES), const char* pPreVertexSource = VERTEXPREDEFINES, int prefslen = strlen(FRAGMENTPREDEFINES), const char* pPreFragmentSource = FRAGMENTPREDEFINES, const char* pPassDefine = 0);
 
 #endif //__GLHelpers_H__

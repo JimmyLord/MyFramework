@@ -186,7 +186,7 @@ void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 
                     sprintf_s( tempstr, 50, "#define NUM_LIGHTS %d\n#define NUM_INF_BONES %d\n", lc, bc );
 
-                    m_pShaderPasses[p][lc][bc]->OverridePredefs( tempstr, tempstr, true );
+                    m_pShaderPasses[p][lc][bc]->OverridePredefs( tempstr, tempstr, tempstr, true );
                 }
             }
         }
