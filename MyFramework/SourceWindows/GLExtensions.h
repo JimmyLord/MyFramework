@@ -97,4 +97,12 @@ extern PFNGLGENVERTEXARRAYSPROC             glGenVertexArrays;
 extern PFNGLDELETEVERTEXARRAYSPROC          glDeleteVertexArrays;
 extern PFNGLBINDVERTEXARRAYPROC             glBindVertexArray;
 
+extern PFNGLGENERATEMIPMAPPROC              glGenerateMipmap;
+
+extern PFNGLDRAWARRAYSINSTANCEDPROC         glDrawArraysInstanced;      //(GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
+extern PFNGLDRAWELEMENTSINSTANCEDPROC       glDrawElementsInstanced;    //(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount);
+extern PFNGLVERTEXATTRIBDIVISORPROC         glVertexAttribDivisor;      //(GLuint index, GLuint divisor);
+
+//extern PFNGLVERTEXBINDINGDIVISORPROC        glVertexBindingDivisor;     //(GLuint bindingindex, GLuint divisor)
+
 #endif //__GLExtensions_H__

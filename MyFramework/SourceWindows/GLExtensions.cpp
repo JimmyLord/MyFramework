@@ -94,6 +94,14 @@ PFNGLGENVERTEXARRAYSPROC            glGenVertexArrays = 0;
 PFNGLDELETEVERTEXARRAYSPROC         glDeleteVertexArrays = 0;
 PFNGLBINDVERTEXARRAYPROC            glBindVertexArray = 0;
 
+PFNGLGENERATEMIPMAPPROC             glGenerateMipmap = 0;
+
+PFNGLDRAWARRAYSINSTANCEDPROC        glDrawArraysInstanced = 0;      //(GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
+PFNGLDRAWELEMENTSINSTANCEDPROC      glDrawElementsInstanced = 0;    //(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount);
+PFNGLVERTEXATTRIBDIVISORPROC        glVertexAttribDivisor = 0;      //(GLuint index, GLuint divisor);
+
+//PFNGLVERTEXBINDINGDIVISORPROC       glVertexBindingDivisor = 0;     //(GLuint bindingindex, GLuint divisor);
+
 void OpenGL_InitExtensions()
 {
     glTexImage3D                    = (PFNGLTEXIMAGE3DPROC)                 wglGetProcAddress( "glTexImage3D" );
@@ -204,6 +212,14 @@ void OpenGL_InitExtensions()
     glGenVertexArrays               = (PFNGLGENVERTEXARRAYSPROC)            wglGetProcAddress( "glGenVertexArrays" );
     glDeleteVertexArrays            = (PFNGLDELETEVERTEXARRAYSPROC)         wglGetProcAddress( "glDeleteVertexArrays" );
     glBindVertexArray               = (PFNGLBINDVERTEXARRAYPROC)            wglGetProcAddress( "glBindVertexArray" );
+
+    glGenerateMipmap                = (PFNGLGENERATEMIPMAPPROC)             wglGetProcAddress( "glGenerateMipmap" );
+
+    glDrawArraysInstanced           = (PFNGLDRAWARRAYSINSTANCEDPROC)        wglGetProcAddress( "glDrawArraysInstanced" );
+    glDrawElementsInstanced         = (PFNGLDRAWELEMENTSINSTANCEDPROC)      wglGetProcAddress( "glDrawElementsInstanced" );
+    glVertexAttribDivisor           = (PFNGLVERTEXATTRIBDIVISORPROC)        wglGetProcAddress( "glVertexAttribDivisor" );
+    
+    //glVertexBindingDivisor          = (PFNGLVERTEXBINDINGDIVISORPROC)       wglGetProcAddress( "glVertexBindingDivisor" );
 }
 
 #pragma warning( pop )
