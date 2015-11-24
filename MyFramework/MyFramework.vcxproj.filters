@@ -555,6 +555,9 @@
     <ClCompile Include="SourceCommon\Helpers\Utility.cpp">
       <Filter>Source\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp">
+      <Filter>Source\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1192,6 +1195,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\GlobalEnums.h">
       <Filter>Source\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h">
+      <Filter>Source\Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

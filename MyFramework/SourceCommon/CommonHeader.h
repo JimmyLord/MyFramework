@@ -458,6 +458,7 @@ typedef int socklen_t;
 #include "Networking/StunClient.h"
 #include "Networking/GameServiceManager.h"
 #include "Particles/ParticleRenderer.h"
+#include "Particles/ParticleRendererInstanced.h"
 
 #include "GameCore.h"
 

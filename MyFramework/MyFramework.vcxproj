@@ -3678,6 +3678,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SourceCommon\Particles\ParticleRenderer.cpp" />
+    <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp" />
     <ClCompile Include="SourceCommon\Random\mtrand.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -6640,6 +6641,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h" />
+    <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h" />
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />

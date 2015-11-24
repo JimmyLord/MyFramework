@@ -39,15 +39,15 @@ public:
     ParticleRenderer(bool creatematerial);
     virtual ~ParticleRenderer();
 
-    void AllocateVertices(unsigned int numpoints, const char* category);
-    void Reset() { m_ParticleCount = 0; }
+    virtual void AllocateVertices(unsigned int numpoints, const char* category);
+    virtual void Reset() { m_ParticleCount = 0; }
 
-    void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
-    void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
+    virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
+    virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
 
-    void SetMaterial(MaterialDefinition* pMaterial);
+    virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    void Draw(MyMatrix* matviewproj);
+    virtual void Draw(MyMatrix* matviewproj);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };
