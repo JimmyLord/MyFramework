@@ -234,7 +234,7 @@ void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const ch
 
 static char g_FolderName[MAX_PATH];
 
-char* MyFileObject::GetNameOfDeepestFolderPath()
+const char* MyFileObject::GetNameOfDeepestFolderPath()
 {
     int len = (int)strlen( m_FullPath );
     MyAssert( len > 0 );

@@ -234,22 +234,31 @@ public class MYFWActivity extends Activity
 		m_BMPFactoryLoader = new BMPFactoryLoader();
 		m_BMPFactoryLoader.m_AssetManager = m_AssetManager;
 
+		Log.v("Flathead", "Java - [Flow] - m_AudioManager/m_AssetManager initialized and bmpfactory created");
+
 		m_ExitOnBackButton = true;
 
 		m_SoundPlayer = new SoundPlayer();
 		m_SoundPlayer.m_AssetManager = m_AssetManager;
 
+		Log.v("Flathead", "Java - [Flow] - m_SoundPlayer created");
+
 		super.onCreate(savedInstanceState);
 
+        Log.v("Flathead", "Java - [Flow] - before setContentView");
 		setContentView( m_MainViewResourceID );//R.layout.main );
+        Log.v("Flathead", "Java - [Flow] - after setContentView");
 
 		// Lookup your LinearLayout assuming it's been given
 		// the attribute android:id="@+id/mainLayout"
+        Log.v("Flathead", "Java - [Flow] - findViewById -> " + m_MainLayoutResourceID);
 		m_MainLayout = (LinearLayout)findViewById( m_MainLayoutResourceID );//R.id.mainLayout );
 		//Log.v("Flathead", "Java - Main Layout: " + m_MainLayout);
 
 		// m_AdViewParent = (LinearLayout) findViewById(R.id.adViewParent);
 		// Log.v("Flathead", "Java - Main AdViewParent: " + m_MainLayout);
+
+        Log.v("Flathead", "Java - [Flow] - m_MainLayout setup");
 
 		if( m_ShowAds )
 		{

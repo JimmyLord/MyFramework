@@ -32,6 +32,9 @@
 
 #define USE_OPENGL 1
 #define USE_PTHREAD 1
+#if MYFW_WINDOWS
+#define USE_GEOMETRY_SHADER 1
+#endif
 
 #if MYFW_WINDOWS
 #pragma warning( 3 : 4061 ) // enumerator in switch statement is not explicitly handled by a case label
@@ -394,6 +397,12 @@ typedef unsigned long   u_long;
 #define close closesocket
 typedef int socklen_t;
 //#include <errno.h> // for EISCONN, EINPROGRESS, EWOULDBLOCK, EALREADY, EINVAL, EISCONN, etc...
+#endif
+
+#if MYFW_WINDOWS
+#define MYFW_USEINSTANCEDPARTICLES  1
+#else
+#define MYFW_USEINSTANCEDPARTICLES  0
 #endif
 
 #include "GraphicsWrappers/OpenGLWrapper.h"

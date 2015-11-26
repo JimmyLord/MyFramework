@@ -298,6 +298,7 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
         return 0;
     }
 
+#if USE_GEOMETRY_SHADER
     ppChunks[1] = pPreGeometrySource;
     pLengths[1] = pregslen;
     *gsid = loadShader( GL_GEOMETRY_SHADER, numchunks, ppChunks, pLengths );
@@ -307,6 +308,7 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
         *vsid = 0;
         return 0;
     }
+#endif
 
     ppChunks[1] = pPreFragmentSource;
     pLengths[1] = prefslen;

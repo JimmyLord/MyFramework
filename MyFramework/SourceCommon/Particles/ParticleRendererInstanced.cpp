@@ -8,9 +8,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "ParticleRendererInstanced.h"
 
-#define USE_INDEXED_TRIANGLES   1
+#if MYFW_USEINSTANCEDPARTICLES
+
+#include "ParticleRendererInstanced.h"
 
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
@@ -103,7 +104,6 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     }
 
-#if USE_INDEXED_TRIANGLES
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, 0, m_pMaterial ) )
@@ -149,16 +149,6 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
         glVertexAttribDivisor( aiscaleloc, 0 );
         glVertexAttribDivisor( aicolorloc, 0 );
     }
-#else
-    // not supporting point sprites anymore.
-    MyAssert( false );
-    //if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
-    //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
-    //{
-    //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
-    //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader();
-    //}
-#endif
 
     // always disable blending
     glDisable( GL_BLEND );
@@ -175,3 +165,5 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
 
     return;
 }
+
+#endif //MYFW_USEINSTANCEDPARTICLES

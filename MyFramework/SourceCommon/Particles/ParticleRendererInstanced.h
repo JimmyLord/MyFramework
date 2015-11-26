@@ -10,6 +10,8 @@
 #ifndef __ParticleRendererInstanced_H__
 #define __ParticleRendererInstanced_H__
 
+#if MYFW_USEINSTANCEDPARTICLES
+
 struct ParticleInstanceData
 {
     float pos[3];
@@ -52,5 +54,7 @@ public:
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };
+
+#endif //MYFW_USEINSTANCEDPARTICLES
 
 #endif //__ParticleRendererInstanced_H__

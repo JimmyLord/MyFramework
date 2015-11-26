@@ -42,7 +42,7 @@ void MaterialManager::Tick()
             pMaterial->ImportFromFile();
 
 #if MYFW_USING_WX
-            char* foldername = "Unknown";
+            const char* foldername = "Unknown";
             if( pMaterial->m_pFile )
                 foldername = pMaterial->m_pFile->GetNameOfDeepestFolderPath();
 

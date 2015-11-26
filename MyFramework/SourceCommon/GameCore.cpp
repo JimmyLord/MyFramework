@@ -334,9 +334,11 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = true;
 
+#if MYFW_WINDOWS || MYFW_OSX
         if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
             return OnKeys( GCBA_Down, keycode, keycode+32 );
         else
+#endif
             return OnKeys( GCBA_Down, keycode, keycode );
     }
 
@@ -359,9 +361,11 @@ bool GameCore::OnKeyUp(int keycode, int unicodechar)
         if( keycode >= 0 && keycode < 255 )
             m_KeysHeld[keycode] = false;
 
+#if MYFW_WINDOWS || MYFW_OSX
         if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
             return OnKeys( GCBA_Up, keycode, keycode+32 );
         else
+#endif
             return OnKeys( GCBA_Up, keycode, keycode );
     }
 
@@ -391,9 +395,11 @@ void GameCore::GenerateKeyHeldMessages()
     {
         if( m_KeysHeld[i] )
         {
+#if MYFW_WINDOWS || MYFW_OSX
             if( i >= 'A' && i <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
                 g_pGameCore->OnKeys( GCBA_Held, i, i+32 );
             else
+#endif
                 g_pGameCore->OnKeys( GCBA_Held, i, i );
         }
     }

@@ -49,7 +49,7 @@ public:
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
-    char* GetNameOfDeepestFolderPath();
+    const char* GetNameOfDeepestFolderPath();
 
     void Rename(const char* newnamewithoutextension);
 
