@@ -18,15 +18,14 @@ Windows
     
 Android
 - vs-android (http://code.google.com/p/vs-android/) to compile c++ code in Visual Studio 2010
-    - vs-android-0.951-cateia-mod-v3.rar
-- jdk-6u45 <- 32 bit version
-- adt-bundle-windows <- 20131030, 32 bit version
-- android-ndk <- used an older version for vs-android compatibility
-    - android-ndk-r8e-windows-x86.zip <- 32 bit version
-- apache-ant-1.9.3
-- setx ANDROID_NDK_ROOT E:\Apps\android-ndk-r8e
-- setx ANDROID_HOME E:\Apps\adt-bundle-windows-x86-20131030\sdk
-- setx ANT_HOME E:\Apps\apache-ant-1.9.3
+    - vs-android-0.964.zip
+- jdk-7u76-windows-x64.exe
+- android-studio-bundle-141.2422023-windows.exe
+- android-ndk-r10e-windows-x86_64.exe
+- apache-ant-1.9.3-bin.zip
+- setx ANDROID_NDK_ROOT E:\Apps\android-ndk-r10e
+- setx ANDROID_HOME E:\Apps\Android\sdk <- to allow vs-android can build apk
+- setx ANT_HOME E:\Apps\apache-ant-1.9.3 <- to allow vs-android can build apk
 - mklink /d C:\Users\Me\.android E:\AppData\.android
 
 BlackBerry 10/Playbook
