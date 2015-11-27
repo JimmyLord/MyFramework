@@ -263,6 +263,8 @@ using namespace Osp::Graphics::Opengl;
 #endif
 
 #if MYFW_ANDROID
+#undef USE_PTHREAD
+#define USE_PTHREAD 0
 #include <jni.h>
 #include <time.h>
 #include <android/log.h>
