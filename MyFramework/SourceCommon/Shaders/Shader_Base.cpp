@@ -173,7 +173,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     //g_pD3DContext->PSSetSamplers( 0, 1, g_pD3DSampleStateLinearWrap.GetAddressOf() );
 #else
 
-#if MYFW_IOS || MYFW_OSX
+#if MYFW_IOS || MYFW_OSX || MYFW_NACL
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
 

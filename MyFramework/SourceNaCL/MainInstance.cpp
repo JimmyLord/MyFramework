@@ -22,6 +22,7 @@
 #include "ppapi/cpp/size.h"
 #include "ppapi/cpp/var.h"
 #include "ppapi/cpp/input_event.h"
+#include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
 
 MainInstance* g_pInstance = 0;
 
@@ -30,6 +31,7 @@ static int currheight = -1;
 
 MainInstance::MainInstance(PP_Instance instance)
 : pp::Instance(instance)
+, m_CallbackFactory(this)
 {
     g_pInstance = this;
 
@@ -49,7 +51,7 @@ MainInstance::MainInstance(PP_Instance instance)
 
 MainInstance::~MainInstance()
 {
-    m_OpenGLContext->MakeContextCurrent(this);
+    //m_OpenGLContext.MakeContextCurrent(this);
 }
 
 // Handle an incoming input event by switching on type and dispatching
@@ -181,26 +183,80 @@ void MainInstance::HandleMessage(const pp::Var& message)
     //m_ScriptingBridge.InvokeMethod( message.AsString() );
 }
 
-void MainInstance::DidChangeView(const pp::Rect& position, const pp::Rect& clip)
+bool MainInstance::InitGL(int32_t new_width, int32_t new_height)
+{
+    if( !glInitializePPAPI( pp::Module::Get()->get_browser_interface() ) )
+    {
+        //fprintf( stderr, "Unable to initialize GL PPAPI!\n" );
+        return false;
+    }
+
+    const int32_t attrib_list[] =
+    {
+        PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
+        PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
+        PP_GRAPHICS3DATTRIB_WIDTH, new_width,
+        PP_GRAPHICS3DATTRIB_HEIGHT, new_height,
+        PP_GRAPHICS3DATTRIB_NONE
+    };
+
+    m_OpenGLContext = pp::Graphics3D( this, attrib_list );
+    if( !BindGraphics( m_OpenGLContext ) )
+    {
+        //fprintf( stderr, "Unable to bind 3d context!\n" );
+        m_OpenGLContext = pp::Graphics3D();
+        glSetCurrentContextPPAPI(0);
+        return false;
+    }
+
+    glSetCurrentContextPPAPI( m_OpenGLContext.pp_resource() );
+    return true;
+}
+
+void MainInstance::DidChangeView(const pp::View& view)
 {
     LOGInfo( LOGTag, "DidChangeView\n" );
 
-    if( position.size().width() == currwidth && position.size().height() == currheight )
+    int32_t new_width = view.GetRect().width() * view.GetDeviceScale();
+    int32_t new_height = view.GetRect().height() * view.GetDeviceScale();
+
+    if( new_width == currwidth && new_height == currheight )
         return; // Size didn't change, no need to update anything.
 
     LOGInfo( LOGTag, "DidChangeView - something changed\n" );
 
-    currwidth = position.size().width();
-    currheight = position.size().height();
+    currwidth = new_width;
+    currheight = new_height;
 
-    if( m_OpenGLContext == 0 )
-        m_OpenGLContext.reset(new OpenGLContext(this));
-    m_OpenGLContext->InvalidateContext(this);
-    m_OpenGLContext->ResizeContext(position.size());
+    //if( m_OpenGLContext == 0 )
+    //    m_OpenGLContext.reset(new OpenGLContext(this));
+    //m_OpenGLContext->InvalidateContext(this);
+    //m_OpenGLContext->ResizeContext(position.size());
 
-    if( !m_OpenGLContext->MakeContextCurrent(this) )
-        return;
+    //if( !m_OpenGLContext->MakeContextCurrent(this) )
+    //    return;
     
+    if( m_OpenGLContext.is_null() )
+    {
+        if( !InitGL( new_width, new_height ) )
+        {
+            return; // failed
+        }
+        //InitShaders();
+        //InitBuffers();
+        //InitTexture();
+        //MainLoop(0);
+    }
+    else
+    {
+        // Resize the buffers to the new size of the module.
+        int32_t result = m_OpenGLContext.ResizeBuffers( new_width, new_height );
+        if( result < 0 )
+        {
+            return; // Unable to resize buffers
+        }
+    }
+
     if( g_pGameCore )
     {
         g_pGameCore->OnSurfaceCreated();
@@ -211,15 +267,15 @@ void MainInstance::DidChangeView(const pp::Rect& position, const pp::Rect& clip)
             g_pGameCore->OneTimeInit();
     }
 
-    DrawSelf();
+    //DrawSelf();
 }
 
-void MainInstance::DrawSelf()
+void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)
 {
-    if( m_OpenGLContext == 0 )
-        return;
+    //if( m_OpenGLContext == 0 )
+    //    return;
 
-    m_OpenGLContext->MakeContextCurrent(this);
+    //m_OpenGLContext->MakeContextCurrent(this);
 
     static double lasttime = MyTime_GetSystemTime();
 
@@ -241,6 +297,8 @@ void MainInstance::DrawSelf()
         g_UnpausedTime += g_pGameCore->Tick( timepassed );
         g_pGameCore->OnDrawFrame( 0 );
         g_pGameCore->OnDrawFrameDone();
-        m_OpenGLContext->FlushContext();
+
+        m_OpenGLContext.SwapBuffers( m_CallbackFactory.NewCallback( &MainInstance::DrawSelf ) );
+        //m_OpenGLContext->FlushContext();
     }
 }

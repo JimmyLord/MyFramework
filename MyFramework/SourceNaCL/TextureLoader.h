@@ -19,6 +19,7 @@
 #define __TextureLoader_H__
 
 #include "../SourceCommon/Helpers/FileManager.h"
+#include "../SourceCommon/Helpers/MyFileObject.h"
 
 #include <string>
 // TODONACLUPDATE: test this header change.

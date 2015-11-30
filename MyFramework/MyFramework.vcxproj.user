@@ -75,4 +75,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|NaCl32'">
     <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|PNaCl'">
+    <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">
+    <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|PNaCl'">
+    <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WxDebug|PNaCl'">
+    <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WxRelease|PNaCl'">
+    <LocalDebuggerCommand>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</LocalDebuggerCommand>
+  </PropertyGroup>
 </Project>

@@ -1,24 +1,15 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "../SourceCommon/CommonHeader.h"
 #include "TextureLoader.h"
 #include "MainInstance.h"
-#include "../../Soil/SOIL.h"
 
 NaCLFileObject::NaCLFileObject(pp::Instance* pInstance)
 : m_URLRequest(pInstance)
@@ -56,7 +47,7 @@ void NaCLFileObject::OnOpen(int32_t result)
     {
         LOGInfo( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
-        m_LoadFailed = true;
+        m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
 
@@ -70,7 +61,7 @@ void NaCLFileObject::OnOpen(int32_t result)
     {
         LOGInfo( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
-        m_LoadFailed = true;
+        m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
     else
@@ -115,7 +106,8 @@ void NaCLFileObject::OnRead(int32_t result)
         LOGInfo( LOGTag, "OnRead - File Load Complete\n" );
 
         // Streaming the file is complete.
-        m_FileReady = true;
+        m_FileLoadStatus = FileLoadStatus_Success;
+
         //ReportResultAndDie(url_, url_response_body_, true);
     }
     else if( result > 0 )
@@ -129,7 +121,7 @@ void NaCLFileObject::OnRead(int32_t result)
     {
         // A read error occurred.
         LOGInfo( LOGTag, "OnRead - Load Failed\n" );
-        m_LoadFailed = true;
+        m_FileLoadStatus = FileLoadStatus_Error_Other;
         //ReportResultAndDie(url_, "pp::URLLoader::ReadResponseBody() result<0", false);
     }
 }
@@ -225,33 +217,3 @@ GLuint LoadTexture(const char* filename)
 {
     return 0;
 }
-
-//GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
-//{
-//    GLuint texid = 0;
-//
-//    char* buffer = texturedef->m_pFile->m_pBuffer;
-//    int length = texturedef->m_pFile->m_FileLength;
-//
-//    LOGInfo( LOGTag, "LoadTextureFromMemory - length %d\n", length );
-//
-//    texid = SOIL_load_OGL_texture_from_memory( (unsigned char*)buffer, length, 
-//                                    SOIL_LOAD_AUTO,
-//                                    SOIL_CREATE_NEW_ID,
-//                                    SOIL_FLAG_POWER_OF_TWO
-//                                    //| SOIL_FLAG_MIPMAPS
-//                                    //| SOIL_FLAG_MULTIPLY_ALPHA
-//                                    //| SOIL_FLAG_COMPRESS_TO_DXT
-//                                    //| SOIL_FLAG_DDS_LOAD_DIRECT
-//                                    //| SOIL_FLAG_NTSC_SAFE_RGB
-//                                    //| SOIL_FLAG_CoCg_Y
-//                                    //| SOIL_FLAG_TEXTURE_RECTANGLE
-//                                  );
-//
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter ); //LINEAR );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter ); //GL_LINEAR );
-//
-//    LOGInfo( LOGTag, "LoadTextureFromMemory - texid %d\n", texid );
-//
-//    return texid;
-//}

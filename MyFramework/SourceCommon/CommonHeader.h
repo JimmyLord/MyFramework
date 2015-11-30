@@ -198,6 +198,9 @@
 #endif
 
 #if MYFW_NACL
+#define MYFW_OPENGLES2 1
+#undef USE_PTHREAD
+#define USE_PTHREAD 0
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 0
 #include <GLES2/gl2.h>
