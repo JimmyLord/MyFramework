@@ -47,7 +47,7 @@ void NaCLFileObject::OnOpen(int32_t result)
     {
         LOGInfo( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
-        m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
 
@@ -61,7 +61,7 @@ void NaCLFileObject::OnOpen(int32_t result)
     {
         LOGInfo( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
-        m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
     else
@@ -76,18 +76,18 @@ void NaCLFileObject::OnOpen(int32_t result)
         {
             lengthstr += strlen("Content-Length:");
             LOGInfo( LOGTag, "Content-Length: found %s\n", lengthstr );
-            m_FileLength = atoi( lengthstr );
-            LOGInfo( LOGTag, "Content-Length: found %d\n", m_FileLength );
+            m_pFile->m_FileLength = atoi( lengthstr );
+            LOGInfo( LOGTag, "Content-Length: found %d\n", m_pFile->m_FileLength );
         }
         else
         {
             LOGInfo( LOGTag, "File Length not reported by web server -> using 10000 will crash if loading file bigger\n" );
-            m_FileLength = 10000;
+            m_pFile->m_FileLength = 10000;
         }
 
-        LOGInfo( LOGTag, "OnOpen File Length -> %d\n", m_FileLength );
-        m_pBuffer = MyNew char[m_FileLength];
-        m_BytesRead = 0;
+        LOGInfo( LOGTag, "OnOpen File Length -> %d\n", m_pFile->m_FileLength );
+        m_pFile->m_pBuffer = MyNew char[m_pFile->m_FileLength];
+        m_pFile->m_BytesRead = 0;
     }
 
     // Start streaming.
@@ -106,7 +106,7 @@ void NaCLFileObject::OnRead(int32_t result)
         LOGInfo( LOGTag, "OnRead - File Load Complete\n" );
 
         // Streaming the file is complete.
-        m_FileLoadStatus = FileLoadStatus_Success;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Success;
 
         //ReportResultAndDie(url_, url_response_body_, true);
     }
@@ -121,7 +121,7 @@ void NaCLFileObject::OnRead(int32_t result)
     {
         // A read error occurred.
         LOGInfo( LOGTag, "OnRead - Load Failed\n" );
-        m_FileLoadStatus = FileLoadStatus_Error_Other;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_Other;
         //ReportResultAndDie(url_, "pp::URLLoader::ReadResponseBody() result<0", false);
     }
 }
@@ -178,34 +178,37 @@ void NaCLFileObject::ReadBody()
 void NaCLFileObject::AppendDataBytes(const char* buffer, int32_t num_bytes)
 {
     //LOGInfo( LOGTag, "AppendDataBytes - %d, %s\n", num_bytes, buffer );
-    LOGInfo( LOGTag, "AppendDataBytes - %d, total %d\n", num_bytes, m_BytesRead + num_bytes );
+    LOGInfo( LOGTag, "AppendDataBytes - %d, total %d\n", num_bytes, m_pFile->m_BytesRead + num_bytes );
 
     if( num_bytes <= 0 )
         return;
 
     // Make sure we don't get a buffer overrun.
-    if( m_BytesRead + num_bytes > m_FileLength )
+    if( m_pFile->m_BytesRead + num_bytes > m_pFile->m_FileLength )
     {
-        LOGInfo( LOGTag, "AppendDataBytes - m_BytesRead + num_bytes > m_FileLength %d + %d > %d\n", m_BytesRead, num_bytes, m_FileLength );
+        LOGInfo( LOGTag, "AppendDataBytes - m_BytesRead + num_bytes > m_FileLength %d + %d > %d\n", m_pFile->m_BytesRead, num_bytes, m_pFile->m_FileLength );
         //MyAssert( false );
         return;
     }
 
-    memcpy( &m_pBuffer[m_BytesRead], buffer, num_bytes );
-    m_BytesRead += num_bytes;
+    memcpy( &m_pFile->m_pBuffer[m_pFile->m_BytesRead], buffer, num_bytes );
+    m_pFile->m_BytesRead += num_bytes;
 }
 
 MyFileObject* RequestFile(const char* filename)
 {
     // TODO: uncomment next line
-    //return g_pFileManager->RequestFile( filename );
+    MyFileObject* pFile = g_pFileManager->RequestFile( filename );
 
     LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
 
-    NaCLFileObject* file = MyNew NaCLFileObject( g_pInstance );
-    file->GetURL( filename );
+    NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
+    naclfile->GetURL( filename );
+    naclfile->m_pFile = pFile;
 
-    return file;
+    pFile->m_pNaClFileObject = naclfile;
+
+    return pFile;
 }
 
 char* LoadFile(const char* filename, int* length)

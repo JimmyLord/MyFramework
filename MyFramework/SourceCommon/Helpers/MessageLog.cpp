@@ -53,6 +53,7 @@ void LOGError(const char* tag, const char* message, ...)
 
 #if MYFW_NACL
 #include "../../SourceNaCL/MainInstance.h"
+#include <stdio.h>
 #endif
 
 #if _DEBUG
@@ -71,7 +72,8 @@ void LOGInfo(const char* tag, const char* message, ...)
 #if MYFW_EMSCRIPTEN
     printf( szBuff );
 #elif MYFW_NACL && !MYFW_PPAPI
-    g_pInstance->PostMessage( pp::Var( szBuff ) );
+    fprintf( stdout, "%s", szBuff );
+    //g_pInstance->PostMessage( pp::Var( szBuff ) );
 #elif MYFW_BLACKBERRY
     fprintf( stderr, "%s", szBuff ); // stdout doesn't go to console on BB10, so put this here.
 #else

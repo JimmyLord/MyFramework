@@ -12,6 +12,10 @@
 
 typedef void (*PanelObjectListCallback)(void*);
 
+#if MYFW_NACL
+class NaCLFileObject;
+#endif
+
 enum FileLoadStatus
 {
     FileLoadStatus_Loading,
@@ -35,6 +39,10 @@ public:
     unsigned int m_FileLength;
     char* m_pBuffer;
     int m_BytesRead;
+
+#if MYFW_NACL
+    NaCLFileObject* m_pNaClFileObject;
+#endif
 
 #if MYFW_WINDOWS
     FILETIME m_FileLastWriteTime;

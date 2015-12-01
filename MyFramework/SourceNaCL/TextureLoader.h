@@ -32,12 +32,14 @@
 
 class TextureDefinition;
 
-class NaCLFileObject : public MyFileObject
+class NaCLFileObject
 {
 protected:
     char m_TempReadBuffer[4096];
 
 public:
+    MyFileObject* m_pFile;
+
     pp::URLRequestInfo m_URLRequest;
     pp::URLLoader m_URLLoader;
     pp::CompletionCallbackFactory<NaCLFileObject> m_CCFactory;

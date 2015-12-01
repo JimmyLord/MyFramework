@@ -86,6 +86,10 @@ MyFileObject::MyFileObject()
     m_pBuffer = 0;
     m_BytesRead = 0;
 
+#if MYFW_NACL
+    m_pNaClFileObject = 0;
+#endif
+
 #if MYFW_WINDOWS
     m_FileLastWriteTime.dwHighDateTime = 0;
     m_FileLastWriteTime.dwLowDateTime = 0;
@@ -116,6 +120,10 @@ MyFileObject::~MyFileObject()
     SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
     SAFE_DELETE_ARRAY( m_ExtensionWithDot );
     SAFE_DELETE_ARRAY( m_pBuffer );
+
+#if MYFW_NACL
+    SAFE_DELETE( m_pNaClFileObject );
+#endif
 
 #if MYFW_USING_WX
     if( g_pPanelMemory )

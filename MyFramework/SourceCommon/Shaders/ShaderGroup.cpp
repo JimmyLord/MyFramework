@@ -31,7 +31,11 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
 
 void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
 {
-    MyAssert( pFile->IsA( "MyFileShader" ) );
+    if( pFile->IsA( "MyFileShader" ) == false )
+    {
+        MyAssert( false );
+        return;
+    }
 
     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
 
