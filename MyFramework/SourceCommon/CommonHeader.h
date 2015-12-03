@@ -405,7 +405,7 @@ typedef int socklen_t;
 #endif
 
 #if MYFW_WINDOWS
-#define MYFW_USEINSTANCEDPARTICLES  1
+#define MYFW_USEINSTANCEDPARTICLES  0
 #else
 #define MYFW_USEINSTANCEDPARTICLES  0
 #endif
