@@ -31,7 +31,7 @@ class WebRequestObject
 {
 protected:
     char m_HostString[255];
-    NaCLFileObject* m_pFileObject;
+    MyFileObject* m_pFileObject;
 
     bool m_SomethingWentWrong;
 

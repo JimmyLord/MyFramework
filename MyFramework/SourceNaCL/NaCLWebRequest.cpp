@@ -115,8 +115,13 @@ void WebRequestObject::RequestEnd()
     //LOGInfo( LOGTag, "WebRequestObject - RequestEnd page - %s\n", m_PageWanted );
     //LOGInfo( LOGTag, "WebRequestObject - RequestEnd temp - %s\n", tempstr );
 
-    m_pFileObject = MyNew NaCLFileObject( g_pInstance );
-    m_pFileObject->GetURL( m_PageWanted );
+    NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
+
+    m_pFileObject = MyNew MyFileObject();
+    m_pFileObject->m_pNaClFileObject = naclfile;
+    naclfile->m_pFile = m_pFileObject;
+
+    naclfile->GetURL( m_PageWanted );
     //m_pFileObject->GetURL( tempstr );
     //m_pFileObject->GetURL( page );
 }
@@ -136,8 +141,13 @@ void WebRequestObject::RequestWebPage(const char* page, ...)
 
     LOGInfo( LOGTag, "WebRequestObject::RequestWebPage %s\n", tempstr );
 
-    m_pFileObject = MyNew NaCLFileObject( g_pInstance );
-    m_pFileObject->GetURL( m_PageWanted );
+    NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
+
+    m_pFileObject = MyNew MyFileObject();
+    m_pFileObject->m_pNaClFileObject = naclfile;
+    naclfile->m_pFile = m_pFileObject;
+
+    naclfile->GetURL( m_PageWanted );
     //m_pFileObject->GetURL( tempstr );
     //m_pFileObject->GetURL( page );
 }

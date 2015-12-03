@@ -9,6 +9,9 @@
 
 #include "CommonHeader.h"
 #include "FileManager.h"
+#if MYFW_NACL
+#include "../../SourceNaCL/MainInstance.h"
+#endif //MYFW_NACL
 
 #pragma warning( push )
 #pragma warning( disable : 4996 )
@@ -172,6 +175,16 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     pFile->RequestFile( filename );
 
     m_FilesStillLoading.AddTail( pFile );
+
+#if MYFW_NACL
+    LOGInfo( LOGTag, "Creating new NaCLFileObject\n" );
+
+    NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
+    naclfile->GetURL( filename );
+    naclfile->m_pFile = pFile;
+
+    pFile->m_pNaClFileObject = naclfile;
+#endif //MYFW_NACL
 
     return pFile;
 }

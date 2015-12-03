@@ -267,7 +267,7 @@ void MainInstance::DidChangeView(const pp::View& view)
             g_pGameCore->OneTimeInit();
     }
 
-    //DrawSelf();
+    DrawSelf( 0 );
 }
 
 void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)

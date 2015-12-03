@@ -197,18 +197,7 @@ void NaCLFileObject::AppendDataBytes(const char* buffer, int32_t num_bytes)
 
 MyFileObject* RequestFile(const char* filename)
 {
-    // TODO: uncomment next line
-    MyFileObject* pFile = g_pFileManager->RequestFile( filename );
-
-    LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
-
-    NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
-    naclfile->GetURL( filename );
-    naclfile->m_pFile = pFile;
-
-    pFile->m_pNaClFileObject = naclfile;
-
-    return pFile;
+    return g_pFileManager->RequestFile( filename );
 }
 
 char* LoadFile(const char* filename, int* length)
