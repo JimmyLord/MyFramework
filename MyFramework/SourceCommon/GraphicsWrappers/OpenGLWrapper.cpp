@@ -144,9 +144,11 @@ void MyBindFramebuffer(GLenum target, GLuint framebuffer, unsigned int fbwidth, 
     if( g_GLStats.m_CurrentFramebuffer == framebuffer )
         return;
 
+    checkGlError( "before glBindFramebuffer" );
+
     glBindFramebuffer( target, framebuffer );
 
-    checkGlError( "glBindFramebuffer" );
+    checkGlError( "after glBindFramebuffer" );
 
     g_GLStats.m_PreviousFramebuffer = g_GLStats.m_CurrentFramebuffer;
     g_GLStats.m_PreviousFramebufferWidth = g_GLStats.m_CurrentFramebufferWidth;

@@ -973,6 +973,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
 
 void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles)
 {
+    checkGlError( "MyMesh::CreatePlane" );
+
     int numverts = vertcount.x * vertcount.y;
     if( numverts < 0 || numverts > 65535 )
         return;
@@ -1427,6 +1429,8 @@ void MyMesh::RebuildIndices()
 
 void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
+    checkGlError( "start of MyMesh::Draw()" );
+
     if( m_MeshReady == false )
     {
         ParseFile();
@@ -1593,6 +1597,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             }
         }
     }
+
+    checkGlError( "end of MyMesh::Draw()" );
 }
 
 void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc)

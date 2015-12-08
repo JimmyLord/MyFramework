@@ -132,13 +132,26 @@ void BaseShader::CleanGLAllocations()
     {
         m_Initialized = false;
 
-        glDetachShader( m_ProgramHandle, m_VertexShaderHandle );
-        glDetachShader( m_ProgramHandle, m_GeometryShaderHandle );
-        glDetachShader( m_ProgramHandle, m_FragmentShaderHandle );    
+        checkGlError( "start of BaseShader::CleanGLAllocations" );
+
+        if( m_VertexShaderHandle )
+            glDetachShader( m_ProgramHandle, m_VertexShaderHandle );
+        if( m_GeometryShaderHandle )
+            glDetachShader( m_ProgramHandle, m_GeometryShaderHandle );
+        if( m_FragmentShaderHandle )
+            glDetachShader( m_ProgramHandle, m_FragmentShaderHandle );    
+
+        checkGlError( "BaseShader::CleanGLAllocations" );
+
         glDeleteShader( m_VertexShaderHandle );
         glDeleteShader( m_GeometryShaderHandle );
         glDeleteShader( m_FragmentShaderHandle );
+
+        checkGlError( "BaseShader::CleanGLAllocations" );
+
         glDeleteProgram( m_ProgramHandle );
+
+        checkGlError( "end of BaseShader::CleanGLAllocations" );
 
         m_ProgramHandle = 0;
         m_VertexShaderHandle = 0;

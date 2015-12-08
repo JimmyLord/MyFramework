@@ -103,9 +103,13 @@ void ShaderGroup::DisableShadowCasting_AndDoItBadly_WillBeReplaced()
 
 ShaderGroup::~ShaderGroup()
 {
+    checkGlError( "start of ShaderGroup::~ShaderGroup" );
+
     this->Remove(); // remove this node from the shadergroupmanager's list
 
     SAFE_RELEASE( m_pFile );
+
+    checkGlError( "ShaderGroup::~ShaderGroup -> SAFE_RELEASE( m_pFile )" );
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
@@ -122,6 +126,8 @@ ShaderGroup::~ShaderGroup()
     if( g_pPanelMemory )
         g_pPanelMemory->RemoveShaderGroup( this );
 #endif
+
+    checkGlError( "end of ShaderGroup::~ShaderGroup" );
 }
 
 #if MYFW_USING_WX

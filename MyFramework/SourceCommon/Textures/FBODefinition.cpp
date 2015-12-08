@@ -250,19 +250,19 @@ bool FBODefinition::Create()
             }
         }
 
+        // any problems?
+        GLint status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+        checkGlError( "glCheckFramebufferStatus" );
+        if( status != GL_FRAMEBUFFER_COMPLETE )
+        {
+            LOGInfo( LOGTag, "CreateFBO - error\n" );
+            //MyAssert( false );
+            Invalidate( true );
+            return false;
+        }
+
         MyBindFramebuffer( GL_FRAMEBUFFER, 0, 0, 0 );
         checkGlError( "glBindFramebufferEXT" );
-    }
-
-    // any problems?
-    GLint status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-    checkGlError( "glCheckFramebufferStatus" );
-    if( status != GL_FRAMEBUFFER_COMPLETE )
-    {
-        LOGInfo( LOGTag, "CreateFBO - error\n" );
-        //MyAssert( false );
-        Invalidate( true );
-        return false;
     }
 
     LOGInfo( LOGTag, "CreateFBO - complete (%d, %d)\n", m_TextureWidth, m_TextureHeight );
@@ -300,9 +300,23 @@ void FBODefinition::Unbind(bool restorelastframebufferid)
 
 void FBODefinition::Invalidate(bool cleanglallocs)
 {
+    checkGlError( "start of FBODefinition::Invalidate" );
+
 #if !USE_D3D
     if( cleanglallocs )
     {
+        if( g_GLStats.m_CurrentFramebuffer == m_FrameBufferID )
+        {
+            Unbind( true );
+        }
+
+        if( g_GLStats.m_PreviousFramebuffer == m_FrameBufferID )
+        {
+            g_GLStats.m_PreviousFramebuffer = 0;
+            g_GLStats.m_PreviousFramebufferWidth = 0;
+            g_GLStats.m_PreviousFramebufferHeight = 0;
+        }
+
         if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
         {
             glDeleteTextures( 1, &m_pColorTexture->m_TextureID );
@@ -332,5 +346,7 @@ void FBODefinition::Invalidate(bool cleanglallocs)
     m_pColorTexture = 0;
     m_pDepthTexture = 0;
     m_FrameBufferID = 0;
+
+    checkGlError( "end of FBODefinition::Invalidate" );
 #endif
 }
