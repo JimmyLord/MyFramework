@@ -86,7 +86,8 @@ void NaCLFileObject::OnOpen(int32_t result)
         }
 
         LOGInfo( LOGTag, "OnOpen File Length -> %d\n", m_pFile->m_FileLength );
-        m_pFile->m_pBuffer = MyNew char[m_pFile->m_FileLength];
+        // 1 extra character for null terminator for cases where the file buffer is passed as a string, to Lua or glsl parser for example.
+        m_pFile->m_pBuffer = MyNew char[m_pFile->m_FileLength+1];
         m_pFile->m_BytesRead = 0;
     }
 
@@ -105,7 +106,8 @@ void NaCLFileObject::OnRead(int32_t result)
     {
         LOGInfo( LOGTag, "OnRead - File Load Complete\n" );
 
-        // Streaming the file is complete.
+        // Streaming the file is complete... null terminate the string stored in the file
+        m_pFile->m_pBuffer[m_pFile->m_FileLength] = 0;
         m_pFile->m_FileLoadStatus = FileLoadStatus_Success;
 
         //ReportResultAndDie(url_, url_response_body_, true);
