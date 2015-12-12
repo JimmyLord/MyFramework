@@ -577,28 +577,85 @@ void* PanelObjectList::GetObject(wxTreeItemId id)
     return pData->m_pObject;
 }
 
-void PanelObjectList::Tree_MoveObject(void* pParent, void* pObjectToMove, void* pPreviousObject)
+void* PanelObjectList::Tree_GetParentObject(void* pObject)
 {
-    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
-    wxTreeItemId idparent = FindObject( m_pTree_Objects, pParent, idroot );
-    wxTreeItemId idtomove = FindObject( m_pTree_Objects, pObjectToMove, idparent );
+    wxTreeItemId id = FindObject( pObject );
+    if( id.IsOk() )
+    {
+        wxTreeItemId parentid = m_pTree_Objects->GetItemParent( id );
+        if( id.IsOk() )
+        {
+            wxTreeItemData* pData = m_pTree_Objects->GetItemData( id );
+            if( pData )
+            {
+                return ((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
+            }
+        }
+    }
+
+    return 0;
+}
+
+wxTreeItemId PanelObjectList::Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemId idprevious, bool makechildofprevious)
+{
+    MyAssert( idtomove.IsOk() && idprevious.IsOk() );
 
     wxString itemname = m_pTree_Objects->GetItemText( idtomove );
     TreeItemDataGenericObjectInfo* olditemdata = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( idtomove );
     TreeItemDataGenericObjectInfo* itemdata = MyNew TreeItemDataGenericObjectInfo();
-    *itemdata = *olditemdata;
+    if( itemdata && olditemdata )
+        *itemdata = *olditemdata;
 
-    if( pPreviousObject != 0 )
+    wxTreeItemId idnew;
+    // make this object the first child of idprevious
+    if( makechildofprevious )
     {
-        wxTreeItemId idprevious = FindObject( m_pTree_Objects, pPreviousObject, idparent );
-        m_pTree_Objects->InsertItem( idparent, idprevious, itemname, -1, -1, itemdata );
+        idnew = m_pTree_Objects->InsertItem( idprevious, 0, itemname, -1, -1, itemdata );
     }
-    else
+    else // otherwise, move this object to the spot immediately after idprevious
     {
-        m_pTree_Objects->InsertItem( idparent, 0, itemname, -1, -1, itemdata );
+        wxTreeItemId idparentofprevious = m_pTree_Objects->GetItemParent( idprevious );
+        idnew = m_pTree_Objects->InsertItem( idparentofprevious, idprevious, itemname, -1, -1, itemdata );
+    }
+
+    // Move all the item's children
+    wxTreeItemId idpreviouschild;
+    while( true )
+    {
+        wxTreeItemIdValue cookie;
+        wxTreeItemId idchild = m_pTree_Objects->GetFirstChild( idtomove, cookie );
+        if( idchild.IsOk() == false )
+            break;
+
+        // move the child to be the first child of the new object, or move it after the last child moved.
+        if( idpreviouschild.IsOk() )
+        {
+            idpreviouschild = Tree_MoveObject( idchild, idpreviouschild, false );
+        }
+        else
+        {
+            idpreviouschild = Tree_MoveObject( idchild, idnew, true );
+        }
     }
 
     m_pTree_Objects->Delete( idtomove );
+
+    return idnew;
+}
+
+void PanelObjectList::Tree_MoveObject(void* pObjectToMove, void* pPreviousObject, bool makechildofprevious)
+{
+    MyAssert( pObjectToMove != 0 );
+
+    wxTreeItemId idtomove = FindObject( pObjectToMove );
+    MyAssert( idtomove.IsOk() );
+    if( idtomove.IsOk() == false ) return;
+
+    wxTreeItemId idprevious = FindObject( pPreviousObject );
+    MyAssert( idprevious.IsOk() );
+    if( idprevious.IsOk() == false ) return;
+
+    Tree_MoveObject( idtomove, idprevious, makechildofprevious );
 }
 
 wxString PanelObjectList::GetObjectName(void* pObject)
