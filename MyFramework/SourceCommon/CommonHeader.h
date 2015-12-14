@@ -151,6 +151,7 @@
 #include "JSON/cJSONHelpers.h"
 
 #include "DataTypes/CPPList.h"
+#include "Helpers/MessageLog.h"
 #include "Helpers/TypeInfo.h"
 #include "Helpers/RefCount.h"
 #include "Helpers/MyMemory.h"
@@ -437,7 +438,6 @@ typedef int socklen_t;
 #include "Random/mtrand.h"
 
 #include "Helpers/GlobalEnums.h"
-#include "Helpers/MessageLog.h"
 #include "Helpers/MyTweener.h"
 #include "Shaders/GLHelpers.h"
 #include "Shaders/VertexFormats.h"
