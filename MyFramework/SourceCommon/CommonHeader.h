@@ -151,7 +151,6 @@
 #include "JSON/cJSONHelpers.h"
 
 #include "DataTypes/CPPList.h"
-#include "Helpers/MessageLog.h"
 #include "Helpers/TypeInfo.h"
 #include "Helpers/RefCount.h"
 #include "Helpers/MyMemory.h"
@@ -162,7 +161,6 @@
 #include "DataTypes/Plane.h"
 #include "DataTypes/ColorStructs.h"
 #include "DataTypes/MyList.h"
-#include "DataTypes/MyActivePool.h"
 
 #if MYFW_WINDOWS
 #include <windows.h>
@@ -429,6 +427,8 @@ typedef int socklen_t;
 #define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
+#include "Helpers/MessageLog.h"
+#include "DataTypes/MyActivePool.h"
 #include "Helpers/MyFileObject.h"
 #include "Shaders/MyFileObjectShader.h"
 #include "Helpers/FileManager.h"
