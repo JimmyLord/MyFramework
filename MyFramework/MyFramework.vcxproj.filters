@@ -100,6 +100,9 @@
     <Filter Include="Source\DataTypes">
       <UniqueIdentifier>{3e16045f-d83e-471f-af34-db1a6a84c2f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Physics">
+      <UniqueIdentifier>{a25f0f56-2884-4717-a5ad-e9ee2c0250fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -557,6 +560,9 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp">
       <Filter>Source\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Physics\Box2DWorld.cpp">
+      <Filter>Source\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1198,6 +1204,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h">
       <Filter>Source\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Physics\Box2DWorld.h">
+      <Filter>Source\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

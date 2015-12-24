@@ -395,8 +395,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
@@ -413,8 +413,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
@@ -431,8 +431,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WxDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
@@ -674,7 +674,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;WIN32;_UNICODE;UNICODE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(SolutionDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -712,7 +712,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;WIN32;_UNICODE;UNICODE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(SolutionDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
@@ -748,7 +748,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_USING_WX;WIN32;wxMSVC_VERSION_AUTO;_UNICODE;UNICODE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(SolutionDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -1029,7 +1029,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;WIN32;_UNICODE;UNICODE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(SolutionDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -1075,7 +1075,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_USING_WX;WIN32;wxMSVC_VERSION_AUTO;_UNICODE;UNICODE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;../Box2D_v2.2.1;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(SolutionDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(SolutionDir)../wxWidgets/include/msvc;$(SolutionDir)../wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -2961,6 +2961,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Particles\ParticleRenderer.cpp" />
     <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp" />
+    <ClCompile Include="SourceCommon\Physics\Box2DWorld.cpp" />
     <ClCompile Include="SourceCommon\Random\mtrand.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -5246,6 +5247,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h" />
     <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h" />
+    <ClInclude Include="SourceCommon\Physics\Box2DWorld.h" />
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
