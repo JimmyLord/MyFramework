@@ -43,6 +43,7 @@ struct VertexFormat_Dynamic_Desc
 {
     int stride;
     
+    int num_position_components;
     int num_uv_channels;
     int num_bone_influences;
 
@@ -54,6 +55,25 @@ struct VertexFormat_Dynamic_Desc
     int offset_bitangent;
     int offset_boneindex; //[MAX_BONE_INFLUENCES];
     int offset_boneweight; //[MAX_BONE_INFLUENCES];
+
+    VertexFormat_Dynamic_Desc()
+    {
+        stride = 0;
+
+        num_position_components = 3;
+        num_uv_channels = 0;
+        num_bone_influences = 0;
+
+        offset_pos = 0;
+        for( int i=0; i<MAX_UV_CHANNELS; i++ )
+            offset_uv[i] = 0;
+        offset_normal = 0;
+        offset_color = 0;
+        offset_tangent = 0;
+        offset_bitangent = 0;
+        offset_boneindex = 0;
+        offset_boneweight = 0;
+    }
 };
 
 struct Vertex_Base

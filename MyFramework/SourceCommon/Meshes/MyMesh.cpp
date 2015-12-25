@@ -1450,7 +1450,9 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         if( pMaterial == 0 )
             return;
 
-        if( NumIndicesToDraw == 0 )
+        if( pIndexBuffer && NumIndicesToDraw == 0 )
+            return;
+        else if( pVertexBuffer && NumVertsToDraw == 0 )
             return;
 
         MyAssert( pVertexBuffer );
@@ -1584,7 +1586,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     if( pIndexBuffer )
                         MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
                     else
-                        MyDrawArrays( PrimitiveType, 0, NumIndicesToDraw );
+                        MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
 
                     checkGlError( "Drawing Mesh MyDrawElements()" );
 

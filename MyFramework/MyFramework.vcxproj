@@ -2961,6 +2961,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Particles\ParticleRenderer.cpp" />
     <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp" />
+    <ClCompile Include="SourceCommon\Physics\Box2DDebugDraw.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DWorld.cpp" />
     <ClCompile Include="SourceCommon\Random\mtrand.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -5247,6 +5248,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h" />
     <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h" />
+    <ClInclude Include="SourceCommon\Physics\Box2DDebugDraw.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DWorld.h" />
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />

@@ -10,14 +10,15 @@
 #include "CommonHeader.h"
 
 #include "Box2DWorld.h"
+#include "Box2DDebugDraw.h"
 
 Box2DWorld* g_pBox2DWorld = 0;
 
-Box2DWorld::Box2DWorld()
+Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj)
 {
     g_pBox2DWorld = this;
 
-    CreateWorld();
+    CreateWorld( debugdrawmaterial, matviewproj );
 }
 
 Box2DWorld::~Box2DWorld()
@@ -28,9 +29,16 @@ Box2DWorld::~Box2DWorld()
     Cleanup();
 }
 
-void Box2DWorld::CreateWorld()
+void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj)
 {
     m_pWorld = MyNew b2World( b2Vec2( 0, -10 ) );
+
+    m_pDebugDraw = new Box2DDebugDraw( debugdrawmaterial, matviewproj );
+
+    uint32 flags = b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit | b2Draw::e_aabbBit | b2Draw::e_pairBit;
+    m_pDebugDraw->SetFlags( flags );
+        
+    m_pWorld->SetDebugDraw( m_pDebugDraw );
 }
 
 void Box2DWorld::PhysicsStep()
@@ -40,6 +48,6 @@ void Box2DWorld::PhysicsStep()
 
 void Box2DWorld::Cleanup()
 {
-    // delete world
     delete m_pWorld;
+    delete m_pDebugDraw;
 }

@@ -110,11 +110,19 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
 
         //glBufferData( m_Target, sizeinbytes, 0, m_Usage );
         //glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
+        if( sizeinbytes > m_DataSize )
+        {
+            glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
+            m_DataSize = sizeinbytes;
+        }
+        else
+        {
 #if MYFW_IOS
-        glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
+            glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
 #else
-        glBufferSubData( m_Target, offset, sizeinbytes, m_pData );
+            glBufferSubData( m_Target, offset, sizeinbytes, m_pData );
 #endif
+        }
         checkGlError( "glBufferData or glBufferSubData" );
 
 #if _DEBUG && MYFW_WINDOWS

@@ -328,12 +328,13 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     }
     else if( vertformat == VertexFormat_Dynamic )
     {
-        InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_pos );
+        int components = pVertFormatDesc->num_position_components;
+        InitializeAttributeArray( m_aHandle_Position, components, GL_FLOAT,       GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_pos );
         
         for( int i=0; i<pVertFormatDesc->num_uv_channels; i++ )
         {
             if( pVertFormatDesc->offset_uv[i] )
-                InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_uv[i] );
+                InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,     GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_uv[i] );
             else
                 DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
         }
@@ -349,7 +350,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
 
         if( pVertFormatDesc->offset_boneindex )
-            InitializeAttributeArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_BYTE, GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_boneindex );
+            InitializeAttributeArray( m_aHandle_BoneIndex,  4, GL_UNSIGNED_BYTE,  GL_FALSE, pVertFormatDesc->stride, (void*)(unsigned long)pVertFormatDesc->offset_boneindex );
         else
             DisableAttributeArray( m_aHandle_BoneIndex, Vector4(0,0,0,0) );
 
