@@ -21,6 +21,7 @@ public:
     Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj);
     ~Box2DDebugDraw();
 
+    virtual void Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype);
     virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color); // CCW order.
     virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color); // CCW order.
     virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color);

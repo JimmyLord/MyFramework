@@ -58,6 +58,7 @@ public:
 public:
     BufferDefinition();
     virtual ~BufferDefinition();
+    void TempBufferData(unsigned int sizeinbytes, void* pData);
     void Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild = false);
     void Invalidate(bool cleanglallocs);
 

@@ -18,6 +18,7 @@ Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* 
     m_pMesh = MyNew MyMesh();
     m_pMesh->CreateSubmeshes( 1 );
     m_pMesh->SetMaterial( debugdrawmaterial, 0 );
+    m_pMesh->m_MeshReady = true;
 
     m_pVertexFormatDesc = MyNew VertexFormat_Dynamic_Desc; 
     m_pVertexFormatDesc->stride = sizeof(float) * 2; // just xy
@@ -36,29 +37,21 @@ Box2DDebugDraw::~Box2DDebugDraw()
     SAFE_DELETE( m_pVertexFormatDesc );
 }
 
-void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype)
 {
-}
-
-void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
-{
-    m_pMesh->m_SubmeshList[0]->m_pVertexBuffer->m_pData = (char*)vertices;
-    m_pMesh->m_SubmeshList[0]->m_pVertexBuffer->Rebuild( 0, vertexCount * sizeof(float)*2, true );
-    m_pMesh->m_SubmeshList[0]->m_pVertexBuffer->m_pData = 0;
-    m_pMesh->m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)vertexCount;
-    m_pMesh->m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_FAN;
-    m_pMesh->m_MeshReady = true;
-
     MaterialDefinition* pMat = m_pMesh->GetMaterial( 0 );
-    pMat->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), 128 ) );
+    MySubmesh* pSubmesh = m_pMesh->m_SubmeshList[0];
+
+    // copy the vertex data into the VBO.
+    pSubmesh->m_pVertexBuffer->TempBufferData( vertexCount * sizeof(float)*2, (void*)vertices );
+    pSubmesh->m_NumVertsToDraw = (unsigned short)vertexCount;
 
     glDisable( GL_CULL_FACE );
     glDisable( GL_DEPTH_TEST );
 
-    m_pMesh->Draw( m_pMatViewProj, 0, 0, 0, 0, 0, 0, 0 );
-
-    pMat->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), 255 ) );
-    m_pMesh->m_SubmeshList[0]->m_PrimitiveType = GL_LINE_LOOP;
+    // Set the material to the correct color and draw the outline of the shape.
+    pMat->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), alpha ) );
+    m_pMesh->m_SubmeshList[0]->m_PrimitiveType = primitivetype;
     glLineWidth( 1 );
     m_pMesh->Draw( m_pMatViewProj, 0, 0, 0, 0, 0, 0, 0 );
 
@@ -66,18 +59,62 @@ void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount,
     glEnable( GL_DEPTH_TEST );
 }
 
+void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+{
+    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP );
+}
+
+void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+{
+    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN );
+    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP );
+}
+
 void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
+    static const int vertexCount = 24;
+    float anglechange = 2.0f * PI / vertexCount;
+	
+    b2Vec2 vertices[vertexCount];
+    for( int i=0; i<vertexCount; i++ )
+    {
+        vertices[i].x = center.x + cos( i*anglechange ) * radius;
+        vertices[i].y = center.x + sin( i*anglechange ) * radius;
+    }
+	
+    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN );
 }
 
 void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
+    static const int vertexCount = 24;
+    float anglechange = 2.0f * PI / vertexCount;
+	
+    b2Vec2 vertices[vertexCount];
+    for( int i=0; i<vertexCount; i++ )
+    {
+        vertices[i].x = center.x + cos( i*anglechange ) * radius;
+        vertices[i].y = center.x + sin( i*anglechange ) * radius;
+    }
+	
+    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN );
+    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP );
 }
 
 void Box2DDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
+    b2Vec2 vertices[2] = { p1, p2 };
+
+    Draw( vertices, 2, color, 255, GL_LINES );
 }
 
 void Box2DDebugDraw::DrawTransform(const b2Transform& xf)
 {
+    b2Vec2 vertices[2] = { xf.p };
+
+    vertices[1] = xf.p + 0.5f * xf.q.GetXAxis();
+    Draw( vertices, 2, b2Color( 1, 0, 0 ), 255, GL_LINES );
+
+    vertices[1] = xf.p + 0.5f * xf.q.GetYAxis();
+    Draw( vertices, 2, b2Color( 0, 1, 0 ), 255, GL_LINES );
 }

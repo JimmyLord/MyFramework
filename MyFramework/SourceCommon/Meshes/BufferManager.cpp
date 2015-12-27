@@ -77,6 +77,17 @@ BufferDefinition::~BufferDefinition()
     this->Remove();
 }
 
+// copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
+void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
+{
+    MyAssert( pData != 0 && sizeinbytes != 0 );
+
+    MyBindBuffer( m_Target, m_BufferIDs[m_CurrentBufferIndex] );
+    glBufferData( m_Target, sizeinbytes, pData, m_Usage );
+
+    checkGlError( "BufferDefinition::TempBufferData" );
+}
+
 void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild)
 {
     checkGlError( "BufferDefinition::Rebuild" );
@@ -112,8 +123,9 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
         //glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
         if( sizeinbytes > m_DataSize )
         {
-            glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
             m_DataSize = sizeinbytes;
+
+            glBufferData( m_Target, m_DataSize, m_pData, m_Usage );
         }
         else
         {
