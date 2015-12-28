@@ -1450,10 +1450,16 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
         if( pMaterial == 0 )
             return;
 
-        if( pIndexBuffer && NumIndicesToDraw == 0 )
-            return;
-        else if( pVertexBuffer && NumVertsToDraw == 0 )
-            return;
+        if( pIndexBuffer )
+        {
+            if( NumIndicesToDraw == 0 )
+                return;
+        }
+        else if( pVertexBuffer )
+        {
+            if( NumVertsToDraw == 0 )
+                return;
+        }
 
         MyAssert( pVertexBuffer );
 

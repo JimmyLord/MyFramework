@@ -130,6 +130,8 @@ struct VariableProperties
 class PanelWatch : public wxScrolledWindow
 {
 public:
+    void* m_pObjectBeingWatched;
+
     wxTimer* m_pTimer;
 
     bool m_NeedsRefresh; // needed to avoid corruption if deleting controls while in that control's callback.
@@ -178,6 +180,9 @@ public:
 public:
     PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack);
     ~PanelWatch();
+
+    void* GetObjectBeingWatched() { return m_pObjectBeingWatched; }
+    void SetObjectBeingWatched(void* obj) { m_pObjectBeingWatched = obj; }
 
     void SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc);
     void ClearAllVariables();

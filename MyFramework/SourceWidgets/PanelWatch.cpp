@@ -129,6 +129,8 @@ void PanelWatch::SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCall
 
 void PanelWatch::ClearAllVariables()
 {
+    m_pObjectBeingWatched = 0;
+
     for( int i=0; i<MAX_PanelWatch_VARIABLES; i++ )
     {
         if( m_pVariables[i].m_Handle_StaticText != 0 )

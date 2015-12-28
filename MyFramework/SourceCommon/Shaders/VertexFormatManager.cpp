@@ -68,12 +68,12 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
     }
 
     pDesc = MyNew VertexFormat_Dynamic_Desc;
-    memset( pDesc, 0, sizeof( VertexFormat_Dynamic_Desc ) );
 
     m_pDynamicVertexFormatDesc.Add( pDesc );
 
     //int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences
 
+    pDesc->num_position_components = 3;
     pDesc->num_bone_influences = boneinfluences;
     pDesc->num_uv_channels = numuvs;
     
