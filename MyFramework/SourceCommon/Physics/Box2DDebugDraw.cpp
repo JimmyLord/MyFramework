@@ -79,7 +79,7 @@ void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Co
     for( int i=0; i<vertexCount; i++ )
     {
         vertices[i].x = center.x + cos( i*anglechange ) * radius;
-        vertices[i].y = center.x + sin( i*anglechange ) * radius;
+        vertices[i].y = center.y + sin( i*anglechange ) * radius;
     }
 	
     Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN );
@@ -94,7 +94,7 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const
     for( int i=0; i<vertexCount; i++ )
     {
         vertices[i].x = center.x + cos( i*anglechange ) * radius;
-        vertices[i].y = center.x + sin( i*anglechange ) * radius;
+        vertices[i].y = center.y + sin( i*anglechange ) * radius;
     }
 	
     Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN );
