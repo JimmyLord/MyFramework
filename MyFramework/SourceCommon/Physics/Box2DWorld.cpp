@@ -14,11 +14,11 @@
 
 Box2DWorld* g_pBox2DWorld = 0;
 
-Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj)
+Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
 {
     g_pBox2DWorld = this;
 
-    CreateWorld( debugdrawmaterial, matviewproj );
+    CreateWorld( debugdrawmaterial, matviewproj, pContactListener );
 }
 
 Box2DWorld::~Box2DWorld()
@@ -29,16 +29,28 @@ Box2DWorld::~Box2DWorld()
     Cleanup();
 }
 
-void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj)
+void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
 {
     m_pWorld = MyNew b2World( b2Vec2( 0, -10 ) );
 
-    m_pDebugDraw = new Box2DDebugDraw( debugdrawmaterial, matviewproj );
+    // Setup debug draw object.
+    {
+        m_pDebugDraw = new Box2DDebugDraw( debugdrawmaterial, matviewproj );
+        m_pWorld->SetDebugDraw( m_pDebugDraw );
 
-    uint32 flags = b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit | b2Draw::e_aabbBit | b2Draw::e_pairBit;
-    m_pDebugDraw->SetFlags( flags );
-        
-    m_pWorld->SetDebugDraw( m_pDebugDraw );
+        uint32 flags = b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit | b2Draw::e_aabbBit | b2Draw::e_pairBit;
+        m_pDebugDraw->SetFlags( flags );
+    }
+
+    // Setup contact listener object.
+    {
+        if( pContactListener == 0 )
+            m_pContactListener = new Box2DContactListener();
+        else
+            m_pContactListener = pContactListener;
+
+        m_pWorld->SetContactListener( m_pContactListener );
+    }
 }
 
 void Box2DWorld::PhysicsStep()
@@ -48,6 +60,7 @@ void Box2DWorld::PhysicsStep()
 
 void Box2DWorld::Cleanup()
 {
-    delete m_pWorld;
-    delete m_pDebugDraw;
+    SAFE_DELETE( m_pWorld );
+    SAFE_DELETE( m_pDebugDraw );
+    SAFE_DELETE( m_pContactListener );
 }

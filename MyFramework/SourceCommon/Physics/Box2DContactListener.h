@@ -7,29 +7,19 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __Box2DWorld_H__
-#define __Box2DWorld_H__
+#ifndef __Box2DContactListener_H__
+#define __Box2DContactListener_H__
 
-class Box2DWorld;
-class Box2DDebugDraw;
-class MaterialDefinition;
-
-extern Box2DWorld* g_pBox2DWorld;
-
-class Box2DWorld
+class Box2DContactListener : public b2ContactListener
 {
 public:
-    b2World* m_pWorld;
-    Box2DDebugDraw* m_pDebugDraw;
-    Box2DContactListener* m_pContactListener;
 
 public:
-    Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener);
-    ~Box2DWorld();
+    Box2DContactListener();
+    ~Box2DContactListener();
 
-    void CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener);
-    void PhysicsStep();
-    void Cleanup();
+	virtual void BeginContact(b2Contact* contact);
+	virtual void EndContact(b2Contact* contact);
 };
 
-#endif //__Box2DWorld_H__
+#endif //__Box2DContactListener_H__

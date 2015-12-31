@@ -163,6 +163,7 @@
 #include "DataTypes/MyList.h"
 
 #include "../../Libraries/Box2D/Box2D/Box2D/Box2D.h"
+#include "Physics/Box2DContactListener.h"
 #include "Physics/Box2DWorld.h"
 
 #if MYFW_WINDOWS

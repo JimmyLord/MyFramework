@@ -567,6 +567,9 @@
     <ClCompile Include="SourceCommon\Physics\Box2DDebugDraw.cpp">
       <Filter>Source\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Physics\Box2DContactListener.cpp">
+      <Filter>Source\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1212,6 +1215,9 @@
       <Filter>Source\Physics</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Physics\Box2DDebugDraw.h">
+      <Filter>Source\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Physics\Box2DContactListener.h">
       <Filter>Source\Physics</Filter>
     </ClInclude>
   </ItemGroup>
