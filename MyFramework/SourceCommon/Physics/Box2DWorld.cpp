@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -51,6 +51,15 @@ void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* ma
 
         m_pWorld->SetContactListener( m_pContactListener );
     }
+
+    // Create a static ground object
+    {
+        b2BodyDef bodydef;
+        bodydef.position = b2Vec2( 0, 0 );
+        bodydef.type = b2_staticBody;
+
+        m_pGround = m_pWorld->CreateBody( &bodydef );
+    }
 }
 
 void Box2DWorld::PhysicsStep()
@@ -60,6 +69,8 @@ void Box2DWorld::PhysicsStep()
 
 void Box2DWorld::Cleanup()
 {
+    m_pGround = 0;
+
     SAFE_DELETE( m_pWorld );
     SAFE_DELETE( m_pDebugDraw );
     SAFE_DELETE( m_pContactListener );
