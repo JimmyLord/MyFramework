@@ -506,6 +506,10 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
         pShader->ProgramPosition( matviewproj, &m_Position );
 
+        MyMatrix identitymat;
+        identitymat.SetIdentity();
+        pShader->ProgramBoneTransforms( &identitymat, 1 );
+
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer );
     }
