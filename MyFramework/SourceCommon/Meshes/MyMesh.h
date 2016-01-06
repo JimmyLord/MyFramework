@@ -106,6 +106,7 @@ public:
     void CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv);
     void CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles = true);
     void CreateIcosphere(float radius, unsigned int recursionlevel);
+    void Create2DCircle(float radius, unsigned int numberofsegments);
 
     void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
