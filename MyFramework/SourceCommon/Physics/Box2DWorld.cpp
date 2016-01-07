@@ -35,7 +35,7 @@ void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* ma
 
     // Setup debug draw object.
     {
-        m_pDebugDraw = new Box2DDebugDraw( debugdrawmaterial, matviewproj );
+        m_pDebugDraw = MyNew Box2DDebugDraw( debugdrawmaterial, matviewproj );
         m_pWorld->SetDebugDraw( m_pDebugDraw );
 
         uint32 flags = b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit | b2Draw::e_aabbBit | b2Draw::e_pairBit;
@@ -45,7 +45,7 @@ void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* ma
     // Setup contact listener object.
     {
         if( pContactListener == 0 )
-            m_pContactListener = new Box2DContactListener();
+            m_pContactListener = MyNew Box2DContactListener();
         else
             m_pContactListener = pContactListener;
 
