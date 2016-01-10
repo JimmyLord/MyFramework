@@ -12,20 +12,13 @@
 #include "Box2DWorld.h"
 #include "Box2DDebugDraw.h"
 
-Box2DWorld* g_pBox2DWorld = 0;
-
 Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
 {
-    g_pBox2DWorld = this;
-
     CreateWorld( debugdrawmaterial, matviewproj, pContactListener );
 }
 
 Box2DWorld::~Box2DWorld()
 {
-    if( g_pBox2DWorld == this )
-        g_pBox2DWorld = 0;
-
     Cleanup();
 }
 

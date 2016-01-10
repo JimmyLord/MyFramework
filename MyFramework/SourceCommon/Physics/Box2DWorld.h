@@ -14,8 +14,6 @@ class Box2DWorld;
 class Box2DDebugDraw;
 class MaterialDefinition;
 
-extern Box2DWorld* g_pBox2DWorld;
-
 class Box2DWorld
 {
 public:
