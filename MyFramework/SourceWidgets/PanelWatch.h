@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -27,6 +27,7 @@ enum PanelWatchControlTypes
     PanelWatchControlType_Button,
     PanelWatchControlType_ColourPicker,
     PanelWatchControlType_ChoiceBox,
+    PanelWatchControlType_CheckBox,
     PanelWatchControlType_NumTypes,
 };
 
@@ -102,6 +103,7 @@ struct VariableProperties
     wxButton* m_Handle_Button;
     wxColourPickerCtrl* m_Handle_ColourPicker;
     wxChoice* m_Handle_ChoiceBox;
+    wxCheckBox* m_Handle_CheckBox;
 
     void* m_Pointer;
     Vector2 m_Range;
@@ -158,6 +160,7 @@ public:
 
     void OnButtonPressed(wxCommandEvent& event);
     void OnChoiceBoxChanged(wxCommandEvent& event);
+    void OnCheckBoxChanged(wxCommandEvent& event);
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
     void OnEditBoxKillFocus(wxFocusEvent& event);

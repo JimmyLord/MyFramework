@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -24,7 +24,7 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_UnsignedInt,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Char,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,         0, }, //PanelWatchType_Bool,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Float,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0, }, //PanelWatchType_Double,
   //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,           0,         0, }, //PanelWatchType_Vector3,
@@ -47,6 +47,8 @@ void VariableProperties::Reset()
     m_Handle_Button = 0;
     m_Handle_ColourPicker = 0;
     m_Handle_ChoiceBox = 0;
+    m_Handle_CheckBox = 0;
+
     m_Pointer = 0;
     m_Range.Set( 0, 0 );
     m_Description = 0;
@@ -163,31 +165,12 @@ void PanelWatch::ClearAllVariables()
         {
             m_pVariables[i].m_Handle_ChoiceBox->Show( false );
         }
-
-        //if( m_pVariables[i].m_Handle_StaticText != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_StaticText );
-        //if( m_pVariables[i].m_Handle_StaticTextExtraLabel != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_StaticTextExtraLabel );
-        //if( m_pVariables[i].m_Handle_TextCtrl != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_TextCtrl );
-        //if( m_pVariables[i].m_Handle_Slider != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_Slider );
-        //if( m_pVariables[i].m_Handle_Button != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_Button );
-        //if( m_pVariables[i].m_Handle_ColourPicker != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_ColourPicker );
-        //if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
-        //    this->RemoveChild( m_pVariables[i].m_Handle_ChoiceBox );
+        if( m_pVariables[i].m_Handle_CheckBox != 0 )
+        {
+            m_pVariables[i].m_Handle_CheckBox->Show( false );
+        }
 
         SAFE_DELETE_ARRAY( m_pVariables[i].m_pEnumStrings );
-
-        //SAFE_DELETE( m_pVariables[i].m_Handle_StaticText );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_StaticTextExtraLabel );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_TextCtrl );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_Slider );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_Button );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_ColourPicker );
-        //SAFE_DELETE( m_pVariables[i].m_Handle_ChoiceBox );
 
         m_pVariables[i].Reset();
     }
@@ -592,6 +575,19 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
         }
         break;
 
+    case PanelWatchControlType_CheckBox:
+        {
+            pControlHandle = MyNew wxCheckBox( this, 0, wxEmptyString );
+
+            // if control gets focus, stop updates.
+            pControlHandle->Connect( wxEVT_CHECKBOX, wxCommandEventHandler(PanelWatch::OnCheckBoxChanged), 0, this );
+            pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
+            pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
+
+            pControlHandle->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(PanelWatch::OnRightClickVariable), 0, this );
+        }
+        break;
+
     case PanelWatchControlType_NumTypes:
         break;
     }
@@ -762,6 +758,28 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         }
     }
 
+    if( type == PanelWatchType_Bool )
+    {
+        m_pVariables[variablenum].m_Handle_CheckBox = (wxCheckBox*)GetControlOfType( PanelWatchControlType_CheckBox );
+        MyAssert( dynamic_cast<wxCheckBox*>( m_pVariables[variablenum].m_Handle_CheckBox ) != 0 );
+
+        m_pVariables[variablenum].m_Handle_CheckBox->SetId( variablenum );
+        m_pVariables[variablenum].m_Handle_CheckBox->SetPosition( wxPoint(PosX, PosY) );
+        //m_pVariables[variablenum].m_Handle_CheckBox->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        //m_pVariables[variablenum].m_Handle_CheckBox->SetWindowStyle( wxTE_PROCESS_ENTER );
+        m_pVariables[variablenum].m_Handle_CheckBox->Set3StateValue( *(bool*)m_pVariables[variablenum].m_Pointer ? wxCHK_CHECKED : wxCHK_UNCHECKED );
+
+        if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
+        {
+            PanelWatchDropTarget* pDropTarget = MyNew PanelWatchDropTarget;
+            pDropTarget->m_pCallbackObj = m_pVariables[variablenum].m_pCallbackObj;
+            pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
+            pDropTarget->m_ControlIndex = variablenum;
+
+            m_pVariables[variablenum].m_Handle_TextCtrl->SetDropTarget( pDropTarget );            
+        }
+    }
+
     if( g_PanelWatchControlInfo[type].choiceboxwidth != 0 )
     {
         // add a drop list for enum types.
@@ -886,6 +904,28 @@ void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
 
     int valueold = *(int*)m_pVariables[controlid].m_Pointer;
     int valuenew = event.GetSelection();
+
+    // call the parent object to say it's value changed.
+    if( valueold != valuenew )
+    {
+        // add the command to the undo stack and change the value at the same time.
+        m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
+            valuenew - valueold,
+            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid,
+            m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+    }
+}
+
+void PanelWatch::OnCheckBoxChanged(wxCommandEvent& event)
+{
+    //LOGInfo( LOGTag, "OnCheckBoxChanged\n" );
+
+    event.Skip();
+
+    int controlid = event.GetId();
+
+    bool valueold = *(bool*)m_pVariables[controlid].m_Pointer;
+    bool valuenew = event.IsChecked();
 
     // call the parent object to say it's value changed.
     if( valueold != valuenew )
@@ -1654,5 +1694,8 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 
         if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
             m_pVariables[i].m_Handle_ChoiceBox->SetSelection( slidervalue );
+
+        if( m_pVariables[i].m_Handle_CheckBox != 0 )
+            m_pVariables[i].m_Handle_CheckBox->SetValue( slidervalue != 0 ? true : false );
     }
 }
