@@ -13,7 +13,7 @@
 class Box2DDebugDraw : public b2Draw
 {
 public:
-    MyMesh* m_pMesh;
+    MaterialDefinition* m_pMaterial;
     MyMatrix* m_pMatViewProj;
     VertexFormat_Dynamic_Desc* m_pVertexFormatDesc;
 

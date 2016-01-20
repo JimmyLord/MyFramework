@@ -15,48 +15,44 @@ Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* 
 {
     m_pMatViewProj = matviewproj;
 
-    m_pMesh = MyNew MyMesh();
-    m_pMesh->CreateSubmeshes( 1 );
-    m_pMesh->SetMaterial( debugdrawmaterial, 0 );
-    m_pMesh->m_MeshReady = true;
-
-    m_pVertexFormatDesc = MyNew VertexFormat_Dynamic_Desc; 
-    m_pVertexFormatDesc->stride = sizeof(float) * 2; // just xy
-    m_pVertexFormatDesc->num_position_components = 2;
-    m_pVertexFormatDesc->offset_pos = 0;
-
-    m_pMesh->m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZ;
-    m_pMesh->m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
-    m_pMesh->m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer(
-        0, 0, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 1, VertexFormat_Dynamic, m_pVertexFormatDesc, "Box2DDebugDraw", "Verts" );
+    m_pMaterial = debugdrawmaterial;
+    m_pMaterial->AddRef();
 }
 
 Box2DDebugDraw::~Box2DDebugDraw()
 {
-    SAFE_RELEASE( m_pMesh );
+    SAFE_RELEASE( m_pMaterial );
     SAFE_DELETE( m_pVertexFormatDesc );
 }
 
 void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype)
 {
-    MaterialDefinition* pMat = m_pMesh->GetMaterial( 0 );
-    MySubmesh* pSubmesh = m_pMesh->m_SubmeshList[0];
+    // Set the material to the correct color and draw the shape.
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass( 0, 0 );
+    m_pMaterial->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), alpha ) );
 
-    // copy the vertex data into the VBO.
-    pSubmesh->m_pVertexBuffer->TempBufferData( vertexCount * sizeof(float)*2, (void*)vertices );
-    pSubmesh->m_NumVertsToDraw = (unsigned short)vertexCount;
+    // Setup our position attribute, pass in the array of verts, not using a VBO.
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    pShader->InitializeAttributeArray( pShader->m_aHandle_Position, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, (void*)vertices );
+
+    // Setup uniforms, mainly viewproj and tint.
+    glUseProgram( pShader->m_ProgramHandle );
+    pShader->ProgramBaseUniforms( m_pMatViewProj, 0, 0, m_pMaterial->m_ColorDiffuse, m_pMaterial->m_ColorSpecular, m_pMaterial->m_Shininess );
+
+    glLineWidth( 1 );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glDisable( GL_CULL_FACE );
     glDisable( GL_DEPTH_TEST );
 
-    // Set the material to the correct color and draw the outline of the shape.
-    pMat->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), alpha ) );
-    m_pMesh->m_SubmeshList[0]->m_PrimitiveType = primitivetype;
-    glLineWidth( 1 );
-    m_pMesh->Draw( m_pMatViewProj, 0, 0, 0, 0, 0, 0, 0 );
+    MyDrawArrays( primitivetype, 0, vertexCount );
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
+
+    glDisable( GL_BLEND );
 }
 
 void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
