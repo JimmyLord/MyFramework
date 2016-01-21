@@ -22,7 +22,6 @@ Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* 
 Box2DDebugDraw::~Box2DDebugDraw()
 {
     SAFE_RELEASE( m_pMaterial );
-    SAFE_DELETE( m_pVertexFormatDesc );
 }
 
 void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype)

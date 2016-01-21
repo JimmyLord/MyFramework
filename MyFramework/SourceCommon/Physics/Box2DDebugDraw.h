@@ -15,7 +15,6 @@ class Box2DDebugDraw : public b2Draw
 public:
     MaterialDefinition* m_pMaterial;
     MyMatrix* m_pMatViewProj;
-    VertexFormat_Dynamic_Desc* m_pVertexFormatDesc;
 
 public:
     Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj);
