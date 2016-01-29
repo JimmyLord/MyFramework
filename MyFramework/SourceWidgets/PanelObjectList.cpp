@@ -413,7 +413,7 @@ void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeft
     }
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex)
 {
     MyAssert( pObject != 0 );
 
@@ -434,17 +434,17 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
             idcategory = m_pTree_Objects->GetNextChild( idroot, cookie );
         }
     }
-    
+
     // insert the category if necessary
     if( idcategory.IsOk() == false )
     {
-        idcategory = m_pTree_Objects->AppendItem( idroot, category, -1, -1, 0 );
+        idcategory = m_pTree_Objects->AppendItem( idroot, category, iconindex, -1, 0 );
     }
 
-    return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc );
+    return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc, iconindex );
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex)
 {
     MyAssert( pObject != 0 );
 
@@ -461,7 +461,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
         pData->m_pLeftClickFunction = pLeftClickFunction;
         pData->m_pRightClickFunction = pRightClickFunction;
 
-        newid = m_pTree_Objects->AppendItem( parentid, desc, -1, -1, pData );
+        newid = m_pTree_Objects->AppendItem( parentid, desc, iconindex, -1, pData );
         MyAssert( newid.IsOk() );
 
         // if inserting the first item, then expand the tree.
@@ -601,6 +601,7 @@ wxTreeItemId PanelObjectList::Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemI
     MyAssert( idtomove.IsOk() && idprevious.IsOk() );
 
     wxString itemname = m_pTree_Objects->GetItemText( idtomove );
+    int imageindex = m_pTree_Objects->GetItemImage( idtomove );
     TreeItemDataGenericObjectInfo* olditemdata = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( idtomove );
     TreeItemDataGenericObjectInfo* itemdata = MyNew TreeItemDataGenericObjectInfo();
     if( itemdata && olditemdata )
@@ -610,12 +611,12 @@ wxTreeItemId PanelObjectList::Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemI
     // make this object the first child of idprevious
     if( makechildofprevious )
     {
-        idnew = m_pTree_Objects->InsertItem( idprevious, 0, itemname, -1, -1, itemdata );
+        idnew = m_pTree_Objects->InsertItem( idprevious, 0, itemname, imageindex, -1, itemdata );
     }
     else // otherwise, move this object to the spot immediately after idprevious
     {
         wxTreeItemId idparentofprevious = m_pTree_Objects->GetItemParent( idprevious );
-        idnew = m_pTree_Objects->InsertItem( idparentofprevious, idprevious, itemname, -1, -1, itemdata );
+        idnew = m_pTree_Objects->InsertItem( idparentofprevious, idprevious, itemname, imageindex, -1, itemdata );
     }
 
     // Move all the item's children
@@ -692,4 +693,9 @@ void PanelObjectList::RenameObject(void* pObject, const char* desc)
     }
 
     UpdateRootNodeObjectCount();
+}
+
+void PanelObjectList::AssignImageListToObjectTree(wxImageList* pImageList)
+{
+    m_pTree_Objects->AssignImageList( pImageList );
 }

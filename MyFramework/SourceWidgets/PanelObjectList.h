@@ -119,8 +119,8 @@ public:
     //void Refresh();
     wxTreeItemId GetTreeRoot();
     void SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
 
     void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction);
     void SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabelEditCallback pLabelEditFunction);
@@ -145,6 +145,8 @@ public:
     wxString GetObjectName(void* pObject);
     void RenameObject(wxTreeItemId id, const char* desc);
     void RenameObject(void* pObject, const char* desc);
+
+    void AssignImageListToObjectTree(wxImageList* pImageList);
 };
 
 #endif // __PanelObjectList_H__

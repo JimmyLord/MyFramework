@@ -195,6 +195,7 @@
 #include "wx/clrpicker.h"
 #include "wx/dnd.h"
 #include "wx/menu.h"
+#include "wx/artprov.h"
 #pragma warning( pop )
 #include <vector>
 #include <map>
