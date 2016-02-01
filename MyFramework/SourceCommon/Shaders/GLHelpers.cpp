@@ -23,7 +23,8 @@ bool checkGlErrorFunc(const char* op, const char* file, int line)
     int errorcount = 0;
     for( GLint error = glGetError(); error; error = glGetError() )
     {
-        LOGError( LOGTag, "GLError(error count %d) after \"%s\" glError (0x%x), file %s, line %d\n", errorcount+1, op, error, file, line );
+        //LOGError( LOGTag, "GLError(error count %d) after \"%s\" glError (0x%x), file %s, line %d\n", errorcount+1, op, error, file, line );
+        LOGError( LOGTag, "%s(%d):GLError(error count %d) after \"%s\" glError (0x%x)\n", file, line, errorcount+1, op, error );
 
         if( error == GL_INVALID_ENUM )
             LOGError( LOGTag, "GLError - GL_INVALID_ENUM\n" );

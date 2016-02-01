@@ -222,8 +222,8 @@ void PanelObjectList::OnKeyDown(wxTreeEvent& event)
     if( event.GetKeyCode() == WXK_F2 )
     {
         wxArrayTreeItemIds selecteditems;
-        unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
-    
+        unsigned int numselected = (unsigned int)m_pTree_Objects->GetSelections( selecteditems );
+
         if( numselected == 1 )
         {
             wxTreeItemId id = selecteditems[0].GetID();
@@ -231,6 +231,13 @@ void PanelObjectList::OnKeyDown(wxTreeEvent& event)
         }
 
         return;
+    }
+
+    if( event.GetKeyCode() == WXK_DELETE )
+    {
+        // TODO: send this event to the object/objects selected
+
+        //return;
     }
 
     event.Skip();

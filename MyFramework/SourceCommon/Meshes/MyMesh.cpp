@@ -1539,6 +1539,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
             pShader->SetupAttributes( pVertexBuffer, pIndexBuffer, false );
             pShader->ProgramPosition( matviewproj, &m_Transform );
+
             if( m_BoneFinalMatrices.Count() > 0 )
             {
                 pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
@@ -1550,6 +1551,8 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 pShader->ProgramBoneTransforms( &identitymat, 1 );
             }
 
+            checkGlError( "MyMesh::Draw() - if( pShaderOverride ) - after SetupAttributes" );
+
             // Enable blending if necessary. TODO: sort draws and only set this once.
             //if( pMaterial->IsTransparent( pShader ) )
             //{
@@ -1560,11 +1563,13 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
             if( pIndexBuffer )
                 MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
             else
-                MyDrawArrays( PrimitiveType, 0, NumIndicesToDraw );
+                MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
             //pShader->DeactivateShader( pVertexBuffer ); // disable attributes
 
             // always disable blending
             glDisable( GL_BLEND );
+
+            checkGlError( "end of MyMesh::Draw() - if( pShaderOverride )" );
         }
         else
         {

@@ -475,6 +475,8 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
 
 void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess)
 {
+    checkGlError( "Shader_Base::ProgramBaseUniforms start" );
+
 #if USE_D3D
     MyAssert( 0 );
     //MyMatrix temp = *worldmatrix;
@@ -485,7 +487,11 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
     //m_ShaderConstants.tint.Set( tint.r, tint.g, tint.b, tint.a );
     //g_pD3DContext->UpdateSubresource( m_pConstantsBuffer.Get(), 0, NULL, &m_ShaderConstants, 0, 0 );
 #else
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+
     ProgramPosition( viewprojmatrix, worldmatrix );
+
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
 
     if( m_uHandle_TextureColor != -1 && pTexture != 0 )
     {
@@ -505,13 +511,21 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
         }
     }
 
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+
     ProgramTint( tint );
+
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
 
     if( m_uHandle_TextureSpecColor != -1 )
         glUniform4f( m_uHandle_TextureSpecColor, speccolor.r / 255.0f, speccolor.g / 255.0f, speccolor.b / 255.0f, speccolor.a / 255.0f );
 
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+
     if( m_uHandle_Shininess != -1 )
         glUniform1f( m_uHandle_Shininess, shininess );
+
+    checkGlError( "Shader_Base::ProgramBaseUniforms" );
 
     if( m_uHandle_Time != -1 )
     {
@@ -519,7 +533,7 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
         glUniform1f( m_uHandle_Time, time );
     }
 
-    checkGlError( "Shader_Base::ActivateAndProgramShader" );
+    checkGlError( "Shader_Base::ProgramBaseUniforms end" );
 #endif //USE_D3D
 }
 
