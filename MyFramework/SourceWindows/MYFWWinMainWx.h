@@ -56,6 +56,7 @@ public:
     bool m_HasFocus;
 
 public:
+    MainApp();
     ~MainApp();
 
     virtual bool OnInit();
@@ -97,6 +98,8 @@ public:
     virtual bool UpdateAUIManagerAndLoadPerspective(); // returns true if valid window layout was set.
     virtual void OnPostInit() {}
     virtual bool OnClose();
+
+    virtual bool FilterGlobalEvents(wxEvent& event) { return false; }
     
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);

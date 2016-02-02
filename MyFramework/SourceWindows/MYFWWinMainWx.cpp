@@ -317,6 +317,8 @@ void MainFrame::OnKeyPressed(wxKeyEvent& event)
         keycode = MYKEYCODE_UP;
     if( keycode == 317 )
         keycode = MYKEYCODE_DOWN;
+    if( keycode == 127 )
+        keycode = MYKEYCODE_DELETE;
 
     if( g_pGameCore )
         g_pGameCore->OnKeyDown( keycode, keycode );
@@ -384,6 +386,12 @@ IMPLEMENT_APP( MainApp );
 
 MainApp* g_pMainApp = 0;
 
+MainApp::MainApp()
+{
+    m_pMainFrame = 0;
+    m_HasFocus = false;
+}
+
 MainApp::~MainApp()
 {
 }
@@ -439,7 +447,30 @@ bool MainApp::OnInit()
 
 int MainApp::FilterEvent(wxEvent& event)
 {
-    return wxApp::FilterEvent( event );
+    int ret = wxApp::FilterEvent( event );
+
+    if( event.GetEventType() == wxEVT_DESTROY )
+    {
+        wxWindowDestroyEvent& destroyevent = (wxWindowDestroyEvent&)event;
+        if( destroyevent.GetWindow() == m_pMainFrame )
+            m_pMainFrame = 0;
+    }
+
+    if( ret != Event_Processed )
+    {
+        // only pass events to the frame if a textctrl isn't in focus.
+        if( m_pMainFrame )
+        {
+            wxWindow* pWindowInFocus = m_pMainFrame->FindFocus();
+            if( dynamic_cast<wxTextCtrl*>(pWindowInFocus) == 0 )//|| dynamic_cast<wxStyledTextCtrl*>(pWindowInFocus) == 0 )
+            {
+                if( m_pMainFrame->FilterGlobalEvents( event ) )
+                    return Event_Processed;
+            }
+        }
+    }
+
+    return ret;
 }
 
 BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
