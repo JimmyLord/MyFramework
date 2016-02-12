@@ -10,8 +10,8 @@
 #include "CommonHeader.h"
 #include "PanelWatch.h"
 
-#include "../../Framework/MyFramework/SourceWidgets/EditorCommands.h"
-#include "../../Framework/MyFramework/SourceWidgets/CommandStack.h"
+#include "../SourceWidgets/EditorCommands.h"
+#include "../SourceWidgets/CommandStack.h"
 #include "expr_eval.h"
 
 PanelWatch* g_pPanelWatch = 0;
