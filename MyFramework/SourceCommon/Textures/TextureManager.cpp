@@ -91,11 +91,29 @@ TextureManager::~TextureManager()
 TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, int minfilter, int magfilter, int wraps, int wrapt)
 {
     MyAssert( texturefilename );
+    //LOGInfo( LOGTag, "CreateTexture - %s\n", texturefilename );
 
-    LOGInfo( LOGTag, "CreateTexture - %s\n", texturefilename );
+    TextureDefinition* pTextureDef = FindTexture( texturefilename );
+    if( pTextureDef != 0 )
+    {
+        pTextureDef->AddRef();
+        return pTextureDef;
+    }
+
+    MyFileObject* pFile = g_pFileManager->RequestFile( texturefilename );
+    pTextureDef = CreateTexture( pFile, minfilter, magfilter, wraps, wrapt );
+    pFile->Release(); // CreateTexture() will add a ref.
+
+    return pTextureDef;
+}
+
+TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfilter, int magfilter, int wraps, int wrapt)
+{
+    MyAssert( pFile );
+    LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->m_FullPath );
 
     // find the texture if it already exists:
-    TextureDefinition* pTextureDef = FindTexture( texturefilename );
+    TextureDefinition* pTextureDef = FindTexture( pFile );
     if( pTextureDef != 0 )
     {
         pTextureDef->AddRef();
@@ -105,7 +123,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
     // Create a new texture and add it to m_TexturesStillLoading
     pTextureDef = MyNew TextureDefinition();
     pTextureDef->m_ManagedByTextureManager = true;
-    strcpy_s( pTextureDef->m_Filename, MAX_PATH, texturefilename );
+    strcpy_s( pTextureDef->m_Filename, MAX_PATH, pFile->m_FullPath );
     pTextureDef->m_MinFilter = minfilter;
     pTextureDef->m_MagFilter = magfilter;
     pTextureDef->m_WrapS = wraps;
@@ -113,23 +131,15 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
 
     m_TexturesStillLoading.AddTail( pTextureDef );
 
-    // if the file load hasn't started... start the file load.
+    // assign the file to the texture def.  Add a ref to the file.
     MyAssert( pTextureDef->m_pFile == 0 );
-#if 0 //MYFW_ANDROID
-    //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
-    if( pTextureDef->m_pFile == 0 )
-    {
-        pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
-        //textureloaded = true;
-    }
-#else
-    if( pTextureDef->m_pFile == 0 && pTextureDef->m_Filename[0] != 0 )
-    {
-        //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
-        pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
-        //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
-    }
-#endif
+    if( pTextureDef->m_pFile != 0 )
+        pTextureDef->m_pFile->Release();
+
+    //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
+    pTextureDef->m_pFile = pFile;
+    pFile->AddRef();
+    //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
 
     return pTextureDef;
 }
@@ -333,6 +343,23 @@ TextureDefinition* TextureManager::FindTexture(const char* texturefilename)
     for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         if( strcmp( ((TextureDefinition*)pNode)->m_Filename, texturefilename ) == 0 )
+            return (TextureDefinition*)pNode;
+    }
+
+    return 0;
+}
+
+TextureDefinition* TextureManager::FindTexture(const MyFileObject* pFile)
+{
+    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( ((TextureDefinition*)pNode)->m_pFile == pFile )
+            return (TextureDefinition*)pNode;
+    }
+
+    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        if( ((TextureDefinition*)pNode)->m_pFile == pFile )
             return (TextureDefinition*)pNode;
     }
 

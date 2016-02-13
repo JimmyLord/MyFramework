@@ -46,7 +46,7 @@ FontDefinition* FontManager::CreateFont(const char* fontfilename)
     }
 
     pFontDef = MyNew FontDefinition();
-    pFontDef->m_pFile = RequestFile( fontfilename );
+    pFontDef->m_pFile = g_pFileManager->RequestFile( fontfilename );
 
     m_FontsStillLoading.AddTail( pFontDef );
 

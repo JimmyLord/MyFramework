@@ -81,7 +81,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
             if( result == 1 )
             {
-                MyFileObject* pIncludeFile = ::RequestFile( includefilename );
+                MyFileObject* pIncludeFile = g_pFileManager->RequestFile( includefilename );
                 MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pIncludeFile;
                 if( pShaderFile->IsA( "MyFileShader" ) == false )
                 {
