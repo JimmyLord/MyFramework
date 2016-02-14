@@ -18,7 +18,7 @@ ParticleRenderer::ParticleRenderer(bool creatematerial)
     
     if( creatematerial )
     {
-        g_pMaterialManager->CreateMaterial();
+        m_pMaterial = g_pMaterialManager->CreateMaterial();
     }
 
     m_NumVertsAllocated = 0;

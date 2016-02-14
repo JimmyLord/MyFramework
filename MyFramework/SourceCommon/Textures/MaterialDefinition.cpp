@@ -307,54 +307,76 @@ void MaterialDefinition::SaveMaterial()
 #endif
     sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, m_Name );
 
-    cJSON* root = cJSON_CreateObject();
-
-    cJSON* material = cJSON_CreateObject();
-    cJSON_AddItemToObject( root, "Material", material );
-
-    cJSON_AddStringToObject( material, "Name", m_Name );
-    if( m_pShaderGroup )
-        cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
-    if( m_pTextureColor )
-        cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
-
-    ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
-    cJSONExt_AddFloatArrayToObject( material, "ColorAmbient", &tempcolor.r, 4 );
-
-    tempcolor = m_ColorDiffuse.AsColorFloat();
-    cJSONExt_AddFloatArrayToObject( material, "ColorDiffuse", &tempcolor.r, 4 );
-
-    tempcolor = m_ColorSpecular.AsColorFloat();
-    cJSONExt_AddFloatArrayToObject( material, "ColorSpecular", &tempcolor.r, 4 );
-
-    //cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
-    //cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
-    cJSON_AddNumberToObject( material, "Shininess", m_Shininess );
-
-    cJSON_AddNumberToObject( material, "Blend", m_BlendType );
-
-    // dump animarray to disk
-    char* jsonstr = cJSON_Print( root );
-    cJSON_Delete( root );
-
-    FILE* pFile;
-#if MYFW_WINDOWS
-    fopen_s( &pFile, filename, "wb" );
-#else
-    pFile = fopen( filename, "wb" );
-#endif
-    if( pFile )
-    {
-        fprintf( pFile, "%s", jsonstr );
-        fclose( pFile );
-    }
-
-    cJSONExt_free( jsonstr );
-
+    // If this is a new file, check for filename conflict
     if( m_pFile == 0 )
     {
-        sprintf_s( filename, MAX_PATH, "Data/Materials/%s.mymaterial", m_Name );
-        m_pFile = g_pFileManager->RequestFile( filename );
+        unsigned int count = 0;
+        char newname[MAX_MATERIAL_NAME_LEN];
+        while( g_pFileManager->DoesFileExist( filename ) == true )
+        {
+            count++;
+
+            sprintf_s( newname, "%s(%d)", m_Name, count );
+            sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, newname );
+        }
+        strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );
+    }
+
+    // Create the json string to save into the material file
+    char* jsonstr = 0;
+    {
+        cJSON* root = cJSON_CreateObject();
+
+        cJSON* material = cJSON_CreateObject();
+        cJSON_AddItemToObject( root, "Material", material );
+
+        cJSON_AddStringToObject( material, "Name", m_Name );
+        if( m_pShaderGroup )
+            cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
+        if( m_pTextureColor )
+            cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
+
+        ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( material, "ColorAmbient", &tempcolor.r, 4 );
+
+        tempcolor = m_ColorDiffuse.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( material, "ColorDiffuse", &tempcolor.r, 4 );
+
+        tempcolor = m_ColorSpecular.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( material, "ColorSpecular", &tempcolor.r, 4 );
+
+        //cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
+        //cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
+        cJSON_AddNumberToObject( material, "Shininess", m_Shininess );
+
+        cJSON_AddNumberToObject( material, "Blend", m_BlendType );
+
+        // dump animarray to disk
+        jsonstr = cJSON_Print( root );
+        cJSON_Delete( root );
+    }
+
+    if( jsonstr != 0 )
+    {
+        FILE* pFile = 0;
+#if MYFW_WINDOWS
+        fopen_s( &pFile, filename, "wb" );
+#else
+        pFile = fopen( filename, "wb" );
+#endif
+        if( pFile )
+        {
+            fprintf( pFile, "%s", jsonstr );
+            fclose( pFile );
+        }
+
+        cJSONExt_free( jsonstr );
+
+        if( m_pFile == 0 )
+        {
+            sprintf_s( filename, MAX_PATH, "Data/Materials/%s.mymaterial", m_Name );
+            m_pFile = g_pFileManager->RequestFile( filename );
+        }
     }
 }
 
