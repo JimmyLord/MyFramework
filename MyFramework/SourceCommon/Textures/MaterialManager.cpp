@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -18,7 +18,8 @@ MaterialManager* g_pMaterialManager = 0;
 MaterialManager::MaterialManager()
 {
 #if MYFW_USING_WX
-    g_pPanelMemory->SetMaterialPanelCallbacks(this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag);
+    wxTreeItemId idroot = g_pPanelMemory->m_pTree_Materials->GetRootItem();
+    g_pPanelMemory->SetMaterialPanelCallbacks( idroot, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
 #endif
 
     m_pMaterialCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
@@ -49,6 +50,10 @@ void MaterialManager::Tick()
             g_pPanelMemory->RemoveMaterial( pMaterial );
             g_pPanelMemory->AddMaterial( pMaterial, foldername, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
             g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+
+            // Add right-click options to each material "folder".
+            wxTreeItemId treeid = g_pPanelMemory->FindMaterialCategory( foldername );
+            g_pPanelMemory->SetMaterialPanelCallbacks( treeid, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
 #endif
         }
 
@@ -90,7 +95,7 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
 
         //if( pMaterial->m_UnsavedChanges || saveunchanged )
         {
-            pMaterial->SaveMaterial();
+            pMaterial->SaveMaterial( 0 );
         }
     }
 }
@@ -108,19 +113,11 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
         strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
     }
 
-    for( unsigned int i=0; i<m_pMaterialCreatedCallbackList.Count(); i++ )
-        m_pMaterialCreatedCallbackList[i].pFunc( m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
-
 #if MYFW_USING_WX
-    if( name )
+    if( name != 0 )
     {
         g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
         g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-    }
-    else
-    {
-        //g_pPanelMemory->AddMaterial( pMaterial, "Temp materials", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
     }
 #endif
 
@@ -229,10 +226,12 @@ void MaterialManager::OnLeftClick(unsigned int count)
 {
 }
 
-void MaterialManager::OnRightClick()
+void MaterialManager::OnRightClick(wxTreeItemId treeid)
 {
  	wxMenu menu;
     menu.SetClientData( this );
+
+    m_TreeIDRightClicked = treeid;
 
     menu.Append( 1000, "Create new material" );
  	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialManager::OnPopupClick );
@@ -246,8 +245,28 @@ void MaterialManager::OnPopupClick(wxEvent &evt)
     int id = evt.GetId();
     if( id == 1000 )
     {
-        g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
+        MaterialDefinition* pMaterial = g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
         // TODO: this material will cause an assert on shutdown, unless released by some other code.
+
+#if MYFW_USING_WX
+        // find the selected folder and put the object into that folder.
+        wxString wxcategory = g_pPanelMemory->m_pTree_Materials->GetItemText( g_pMaterialManager->m_TreeIDRightClicked );
+        const char* category = wxcategory;
+
+        char tempstr[MAX_PATH];
+        if( strcmp( category, "Materials" ) == 0 )
+            sprintf_s( tempstr, MAX_PATH, "Data/Materials" );
+        else
+            sprintf_s( tempstr, MAX_PATH, "Data/Materials/%s", category );
+        pMaterial->SaveMaterial( tempstr );
+
+        g_pPanelMemory->RemoveMaterial( pMaterial );
+        g_pPanelMemory->AddMaterial( pMaterial, category, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+        g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+
+        for( unsigned int i=0; i<g_pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
+            g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
+#endif
     }
 }
 

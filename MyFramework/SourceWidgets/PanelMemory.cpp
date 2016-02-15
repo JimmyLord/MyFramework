@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -332,6 +332,27 @@ void PanelMemory::UpdateRootNodeTextureCount()
     m_pNotebook->SetPageText( PanelMemoryPage_Textures, tempstr );
 }
 
+wxTreeItemId PanelMemory::FindMaterialCategory(const char* category)
+{
+    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
+
+    // see if the category exists
+    wxTreeItemId idcategory;
+
+    wxTreeItemIdValue cookie;
+    idcategory = m_pTree_Materials->GetFirstChild( idroot, cookie );
+    while( idcategory.IsOk() )
+    {
+        wxString catstr = m_pTree_Materials->GetItemText( idcategory );
+        if( catstr == category )
+            break;
+
+        idcategory = m_pTree_Materials->GetNextChild( idroot, cookie );
+    }
+
+    return idcategory;
+}
+
 void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pMaterial != 0 );
@@ -342,19 +363,7 @@ void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* categor
     int count = (int)m_pTree_Materials->GetChildrenCount( idroot, false );
 
     // see if the category exists
-    wxTreeItemId idcategory;
-    {
-        wxTreeItemIdValue cookie;
-        idcategory = m_pTree_Materials->GetFirstChild( idroot, cookie );
-        while( idcategory.IsOk() )
-        {
-            wxString catstr = m_pTree_Materials->GetItemText( idcategory );
-            if( catstr == category )
-                break;
-
-            idcategory = m_pTree_Materials->GetNextChild( idroot, cookie );
-        }
-    }
+    wxTreeItemId idcategory = FindMaterialCategory( category );
     
     // insert the category if necessary
     if( idcategory.IsOk() == false )
@@ -403,23 +412,40 @@ void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
     }
 }
 
-void PanelMemory::SetMaterialPanelCallbacks(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
+void PanelMemory::SetMaterialPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pObject != 0 );
 
-    TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
-    pData->m_pObject = pObject;
-    pData->m_pLeftClickFunction = pLeftClickFunction;
-    pData->m_pRightClickFunction = pRightClickFunction;
-    pData->m_pDragFunction = pDragFunction;
+    if( treeid.IsOk() )
+    {
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Materials->GetItemData( treeid );
+        if( pData == 0 )
+            pData = MyNew TreeItemDataGenericObjectInfo();
 
-    wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
-    m_pTree_Materials->SetItemData( idroot, pData );
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_Materials->SetItemData( treeid, pData );
+    }
+}
+
+const char* PanelMemory::GetSelectedMaterialTreeItemText()
+{
+    wxTreeItemId id = m_pTree_Materials->GetSelection();
+
+    if( id.IsOk() )
+    {
+        wxString catstr = m_pTree_Materials->GetItemText( id );
+        return catstr;
+    }
+
+    return 0;
 }
 
 MaterialDefinition* PanelMemory::GetSelectedMaterial()
 {
-    m_pTree_Materials->GetSelection();
     wxTreeItemId id = m_pTree_Materials->GetSelection();
     wxTreeItemId idroot = m_pTree_Materials->GetRootItem();
 
@@ -429,7 +455,8 @@ MaterialDefinition* PanelMemory::GetSelectedMaterial()
         if( pData )
         {
             MaterialDefinition* objptr = (MaterialDefinition*)((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
-            return objptr;
+            if( (void*)objptr != g_pMaterialManager )
+                return objptr;
         }
     }
 

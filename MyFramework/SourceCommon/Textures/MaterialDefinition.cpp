@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -287,39 +287,52 @@ void MaterialDefinition::OnLabelEdit(wxString newlabel)
     }
 }
 
-void MaterialDefinition::SaveMaterial()
+void MaterialDefinition::SaveMaterial(const char* relativepath)
 {
     if( m_Name[0] == 0 )
         return;
 
     char filename[MAX_PATH];
-    char workingdir[MAX_PATH];
-#if MYFW_WINDOWS
-    _getcwd( workingdir, MAX_PATH * sizeof(char) );
-#else
-    getcwd( workingdir, MAX_PATH * sizeof(char) );
-#endif
-    sprintf_s( filename, MAX_PATH, "%s/Data/Materials/", workingdir );
-#if MYFW_WINDOWS
-    CreateDirectoryA( filename, 0 );
-#else
-    MyAssert( false );
-#endif
-    sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, m_Name );
 
-    // If this is a new file, check for filename conflict
-    if( m_pFile == 0 )
+    if( m_pFile != 0 )
     {
-        unsigned int count = 0;
-        char newname[MAX_MATERIAL_NAME_LEN];
-        while( g_pFileManager->DoesFileExist( filename ) == true )
-        {
-            count++;
+        // if a file exists, use the existing file's fullpath
+        strcpy_s( filename, MAX_PATH, m_pFile->m_FullPath );
+    }
+    else
+    {
+        // if a file doesn't exist, create the filename out of parts.
+        // TODO: move most of this block into generic system code.
+        MyAssert( relativepath != 0 );
 
-            sprintf_s( newname, "%s(%d)", m_Name, count );
-            sprintf_s( filename, MAX_PATH, "%s/Data/Materials/%s.mymaterial", workingdir, newname );
+        char workingdir[MAX_PATH];
+#if MYFW_WINDOWS
+        _getcwd( workingdir, MAX_PATH * sizeof(char) );
+#else
+        getcwd( workingdir, MAX_PATH * sizeof(char) );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
+#if MYFW_WINDOWS
+        CreateDirectoryA( filename, 0 );
+#else
+        MyAssert( false );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, m_Name );
+
+        // this is a new file, check for filename conflict
+        {
+            unsigned int count = 0;
+            char newname[MAX_MATERIAL_NAME_LEN];
+            strcpy_s( newname, MAX_MATERIAL_NAME_LEN, m_Name );
+            while( g_pFileManager->DoesFileExist( filename ) == true )
+            {
+                count++;
+
+                sprintf_s( newname, "%s(%d)", m_Name, count );
+                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, newname );
+            }
+            strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );
         }
-        strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );
     }
 
     // Create the json string to save into the material file
@@ -351,7 +364,7 @@ void MaterialDefinition::SaveMaterial()
 
         cJSON_AddNumberToObject( material, "Blend", m_BlendType );
 
-        // dump animarray to disk
+        // dump material json structure to disk
         jsonstr = cJSON_Print( root );
         cJSON_Delete( root );
     }
@@ -372,9 +385,10 @@ void MaterialDefinition::SaveMaterial()
 
         cJSONExt_free( jsonstr );
 
+        // if the file managed to save, request it.
         if( m_pFile == 0 )
         {
-            sprintf_s( filename, MAX_PATH, "Data/Materials/%s.mymaterial", m_Name );
+            sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
             m_pFile = g_pFileManager->RequestFile( filename );
         }
     }

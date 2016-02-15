@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -28,6 +28,9 @@ class MaterialManager
 #endif
 {
     static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
+
+private:
+    wxTreeItemId m_TreeIDRightClicked;
 
 public:
     CPPListHead m_Materials;
@@ -61,8 +64,8 @@ public:
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
     void OnLeftClick(unsigned int index);
     
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialManager*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialManager*)pObjectPtr)->OnRightClick( id ); }
+    void OnRightClick(wxTreeItemId treeid);
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
 
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnDrag(); }
