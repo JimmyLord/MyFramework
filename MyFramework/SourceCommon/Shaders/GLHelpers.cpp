@@ -124,7 +124,7 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
                     glGetShaderInfoLog( shaderid, infoLen, NULL, buf );
                     LOGError( LOGTag, "Could not compile shader %d:\n%s\n", shaderType, buf );
 
-                    MyAssert( false );
+                    //MyAssert( false );
 
                     printShaderSource( shaderid );
 
@@ -198,7 +198,7 @@ GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, c
                     LOGError( LOGTag, "Shader Pre-source: \n%s\n", pPreSource );
                     LOGError( LOGTag, "Shader source: \n%s\n", pSource );
 
-                    MyAssert( false );
+                    //MyAssert( false );
                     
                     free( buf );
                 }
@@ -264,7 +264,7 @@ GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreV
                     glGetProgramInfoLog( programid, bufLength, 0, buf );
                     LOGError( LOGTag, "Could not link program:\n%s\n", buf );
 
-                    MyAssert( false );
+                    //MyAssert( false );
 
                     printShaderSource( *vsid );
                     printShaderSource( *fsid );
@@ -352,7 +352,7 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
                     glGetProgramInfoLog( programid, bufLength, 0, buf );
                     LOGError( LOGTag, "Could not link program:\n%s\n", buf );
 
-                    MyAssert( false );
+                    //MyAssert( false );
 
                     printShaderSource( *vsid );
                     printShaderSource( *fsid );
@@ -419,7 +419,7 @@ GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char
                     glGetProgramInfoLog( programid, bufLength, 0, buf );
                     LOGError( LOGTag, "Could not link program:\n%s\n", buf );
 
-                    MyAssert( false );
+                    //MyAssert( false );
 
                     free(buf);
                 }

@@ -428,12 +428,12 @@ void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
     {
         BaseShader* pShader = (BaseShader*)pNode;
         pShader->Invalidate( cleanglallocs );
-#if MYFW_WINDOWS && _DEBUG
-        // force a reload from disk
-        if( pShader->m_pFile )
-        {
-            g_pFileManager->ReloadFile( pShader->m_pFile );
-        }
-#endif
+//#if MYFW_WINDOWS && _DEBUG
+//        // force a reload from disk
+//        if( pShader->m_pFile )
+//        {
+//            g_pFileManager->ReloadFile( pShader->m_pFile );
+//        }
+//#endif
     }
 }
