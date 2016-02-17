@@ -30,7 +30,9 @@ class MaterialManager
     static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
 
 private:
+#if MYFW_USING_WX
     wxTreeItemId m_TreeIDRightClicked;
+#endif
 
 public:
     CPPListHead m_Materials;
