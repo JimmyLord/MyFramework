@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -295,7 +295,7 @@ void operator delete(void* m)
 
     // will only work if the first allocation is also the last one freed... likely a static allocation.
     if( thisallocationcount == 1 )
-        delete g_pAllocationList;
+        SAFE_DELETE( g_pAllocationList );
 }
 
 void* operator new[](size_t size)
@@ -371,7 +371,7 @@ void operator delete[](void* m)
 
     // will only work if the first allocation is also the last one freed... likely a static allocation.
     if( thisallocationcount == 1 )
-        delete g_pAllocationList;
+        SAFE_DELETE( g_pAllocationList );
 }
 
 #endif //MYFW_WINDOWS
