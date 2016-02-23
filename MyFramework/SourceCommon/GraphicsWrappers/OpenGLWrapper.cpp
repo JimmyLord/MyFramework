@@ -125,8 +125,20 @@ void MyDrawArrays(GLenum mode, GLint first, GLsizei count)
 {
     g_GLStats.m_NumDrawCallsThisFrameSoFar++;
 
-    glDrawArrays( mode, first, count );
-    //checkGlError( "glDrawArrays" );
+#if MYFW_USING_WX
+    if( g_pPanelMemory->m_DrawCallIndexToDraw == -1 || g_pPanelMemory->m_DrawCallIndexToDraw == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+#endif
+    {
+        glDrawArrays( mode, first, count );
+        checkGlError( "glDrawArrays" );
+    }
+
+#if MYFW_USING_WX
+    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
+    {
+        g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
+    }
+#endif
 }
 
 void MyEnableVertexAttribArray(GLuint index)
