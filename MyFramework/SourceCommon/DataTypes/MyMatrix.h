@@ -75,6 +75,7 @@ public:
     // get values from matrix
     Vector3 GetTranslation() { return Vector3( m41, m42, m43 ); }
     Vector3 GetEulerAngles();
+    Vector3 GetScale();
     Vector3 GetUp();
     Vector3 GetRight();
     Vector3 GetAt();
@@ -196,6 +197,13 @@ public:
             -m41 * S3 + m42 * S1 - m43 * S0,  m31 * S3 - m32 * S1 + m33 * S0 ) * (1 / det);
 
         return true;
+    }
+
+    MyMatrix GetInverse(float tolerance = 0.0001f)
+    {
+        MyMatrix invmat = *this;
+        invmat.Inverse( tolerance );
+        return invmat;
     }
 };
 
