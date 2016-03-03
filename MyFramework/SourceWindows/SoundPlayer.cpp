@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -56,7 +56,7 @@ void SoundPlayer::OnFocusLost()
 
 void SoundPlayer::PlayMusic(char* path)
 {
-    m_Music = Mix_LoadWAV( "sound/Music.wav" );
+    m_Music = Mix_LoadWAV( path );//"sound/Music.wav" );
     Mix_PlayChannel( 0, m_Music, -1 );
 }
 
@@ -70,6 +70,7 @@ void SoundPlayer::UnpauseMusic()
 
 void SoundPlayer::StopMusic()
 {
+    Mix_HaltChannel( 0 );
 }
 
 int SoundPlayer::LoadSound(const char* path, const char* ext)
