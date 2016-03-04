@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -22,6 +22,7 @@ GameCore::GameCore()
     m_GLSurfaceIsValid = false;
 
     m_pSoundPlayer = 0;
+    m_pSoundManager = 0;
 #if MYFW_BLACKBERRY
     m_pMediaPlayer = 0;
 #endif
@@ -63,6 +64,7 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pShaderManager );
     SAFE_DELETE( g_pShaderGroupManager );
     SAFE_DELETE( m_pSoundPlayer );
+    SAFE_DELETE( m_pSoundManager );
     SAFE_DELETE( g_pGameServiceManager );
     SAFE_DELETE( g_pVertexFormatManager );
 
@@ -124,6 +126,7 @@ void GameCore::OneTimeInit()
     InitializeManagers();
 
     m_pSoundPlayer = MyNew SoundPlayer;
+    m_pSoundManager = MyNew SoundManager;
 
 #if MYFW_BLACKBERRY
     m_pMediaPlayer = MyNew MediaPlayer;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -478,6 +478,7 @@ typedef int socklen_t;
 #include "Networking/GameServiceManager.h"
 #include "Particles/ParticleRenderer.h"
 #include "Particles/ParticleRendererInstanced.h"
+#include "Sound/SoundManager.h"
 
 #include "GameCore.h"
 

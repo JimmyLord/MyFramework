@@ -2993,6 +2993,7 @@
     <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp" />
     <ClCompile Include="SourceCommon\Shaders\VertexFormatManager.cpp" />
     <ClCompile Include="SourceCommon\Shaders\VertexFormats.cpp" />
+    <ClCompile Include="SourceCommon\Sound\SoundManager.cpp" />
     <ClCompile Include="SourceCommon\Sound\SoundPlayerOpenAL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>
@@ -5261,6 +5262,7 @@
     <ClInclude Include="SourceCommon\Shaders\Shader_Base.h" />
     <ClInclude Include="SourceCommon\Shaders\VertexFormatManager.h" />
     <ClInclude Include="SourceCommon\Shaders\VertexFormats.h" />
+    <ClInclude Include="SourceCommon\Sound\SoundManager.h" />
     <ClInclude Include="SourceCommon\Sound\SoundPlayerOpenAL.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>

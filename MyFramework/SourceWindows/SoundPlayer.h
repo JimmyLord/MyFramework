@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,13 +12,24 @@
 
 struct Mix_Chunk;
 
+struct SoundObject : public CPPListNode
+{
+    Mix_Chunk* m_Sound;
+
+    SoundObject()
+    {
+        m_Sound = 0;
+    }
+};
+
 class SoundPlayer
 {
 protected:
 #define MAX_SOUNDS 255
 
-    Mix_Chunk* m_Sounds[MAX_SOUNDS];
-    Mix_Chunk* m_Music;
+    //MySimplePool<SoundObject> m_SoundObjectPool;
+    SoundObject m_Sounds[MAX_SOUNDS];
+    SoundObject m_Music;
 
 #define SoundGroup_Music    0
 #define SoundGroup_Effects  1
@@ -35,12 +46,14 @@ public:
     void UnpauseMusic();
     void StopMusic();
 
-    int LoadSound(const char* path, const char* ext);
+    SoundObject* LoadSound(const char* path, const char* ext);
+    SoundObject* LoadSound(const char* fullpath);
     void Shutdown();
-    void PlaySound(int soundid);
-    void StopSound(int soundid);
-    void PauseSound(int soundid);
-    void ResumeSound(int soundid);
+    int PlaySound(SoundObject* pSoundObject);
+    int PlaySound(int soundid);
+    void StopSound(int channel);
+    void PauseSound(int channel);
+    void ResumeSound(int channel);
     void PauseAll();
     void ResumeAll();
 };

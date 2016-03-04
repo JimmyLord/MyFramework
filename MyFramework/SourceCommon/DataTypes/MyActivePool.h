@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,6 +9,67 @@
 
 #ifndef __MyActivePool_H__
 #define __MyActivePool_H__
+
+template <class MyType> class MySimplePool
+{
+protected:
+    MyType* m_Objects;
+
+    unsigned int m_Length; // num elements allocated in list
+    unsigned int m_Count; // num elements used.
+
+public:
+    MySimplePool()
+    {
+        m_Objects = 0;
+
+        m_Length = 0;
+        m_Count = 0;
+    }
+
+    ~MySimplePool()
+    {
+        SAFE_DELETE_ARRAY( m_Objects );
+    }
+
+    bool IsInitialized()
+    {
+        return m_Length != 0 ? true : false;
+    }
+
+    void AllocateObjects(unsigned int length)
+    {
+        MyAssert( m_Objects == 0 );
+        
+        if( length > 0 )
+        {
+            m_Objects = MyNew MyType[length];
+        }
+
+        m_Length = length;
+        m_Count = length;
+    }
+
+    MyType* GetObject()
+    {
+        if( m_Count == 0 )
+        {
+            LOGInfo( LOGTag, "WARNING: MySimplePool is empty\n" );
+            return 0;
+        }
+
+        m_Count--;
+        return &m_Objects[m_Count];
+    }
+
+    void ReturnObject(MyType* object)
+    {
+        MyAssert( m_Count < m_Length );
+
+        m_Objects[m_Count] = &object;
+        m_Count++;
+    }
+};
 
 template <class MyType> class MyUnmanagedPool
 {

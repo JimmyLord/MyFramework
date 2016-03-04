@@ -32,12 +32,12 @@ SoundPlayer::SoundPlayer()
     Mix_GroupChannel( 0, SoundGroup_Music );
     Mix_GroupChannels( 1, numchannels-1, SoundGroup_Effects );
 
-    for( int i=0; i<MAX_SOUNDS; i++ )
-    {
-        m_Sounds[i] = 0;
-    }
+    //for( int i=0; i<MAX_SOUNDS; i++ )
+    //{
+    //    m_Sounds[i] = 0;
+    //}
 
-    m_Music = 0;
+    //m_Music = 0;
 }
 
 SoundPlayer::~SoundPlayer()
@@ -56,8 +56,9 @@ void SoundPlayer::OnFocusLost()
 
 void SoundPlayer::PlayMusic(char* path)
 {
-    m_Music = Mix_LoadWAV( path );//"sound/Music.wav" );
-    Mix_PlayChannel( 0, m_Music, -1 );
+    m_Music.m_Sound = Mix_LoadWAV( path );//"sound/Music.wav" );
+    //strcpy_s( m_Music.m_FullPath, MAX_PATH, path );
+    Mix_PlayChannel( 0, m_Music.m_Sound, -1 );
 }
 
 void SoundPlayer::PauseMusic()
@@ -73,12 +74,12 @@ void SoundPlayer::StopMusic()
     Mix_HaltChannel( 0 );
 }
 
-int SoundPlayer::LoadSound(const char* path, const char* ext)
+SoundObject* SoundPlayer::LoadSound(const char* path, const char* ext)
 {
     int i=0;
     for( i=0; i<MAX_SOUNDS; i++ )
     {
-        if( m_Sounds[i] == 0 )
+        if( m_Sounds[i].m_Sound == 0 )
             break;
     }
 
@@ -86,35 +87,69 @@ int SoundPlayer::LoadSound(const char* path, const char* ext)
     {
         char fullpath[MAX_PATH];
         sprintf_s( fullpath, MAX_PATH, "%s%s", path, ext );
-        m_Sounds[i] = Mix_LoadWAV( fullpath );
-        return i;
+        m_Sounds[i].m_Sound = Mix_LoadWAV( fullpath );
+        //strcpy_s( m_Sounds[i].m_FullPath, MAX_PATH, fullpath );
+        return &m_Sounds[i];
     }
 
-    return -1;
+    return 0;
+}
+
+SoundObject* SoundPlayer::LoadSound(const char* fullpath)
+{
+    int i=0;
+    for( i=0; i<MAX_SOUNDS; i++ )
+    {
+        if( m_Sounds[i].m_Sound == 0 )
+            break;
+    }
+
+    if( i < MAX_SOUNDS )
+    {
+        m_Sounds[i].m_Sound = Mix_LoadWAV( fullpath );
+        //strcpy_s( m_Sounds[i].m_FullPath, MAX_PATH, fullpath );
+        return &m_Sounds[i];
+    }
+
+    return 0;
 }
 
 void SoundPlayer::Shutdown()
 {
 }
 
-void SoundPlayer::PlaySound(int soundid)
+int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 {
     int channel = Mix_GroupAvailable( SoundGroup_Effects );
-    if(channel == -1)
+    if( channel == -1 )
         channel = Mix_GroupOldest( SoundGroup_Effects );
 
-    Mix_PlayChannel( channel, m_Sounds[soundid], 0 );
+    Mix_PlayChannel( channel, pSoundObject->m_Sound, 0 );
+
+    return channel;
 }
 
-void SoundPlayer::StopSound(int soundid)
+int SoundPlayer::PlaySound(int soundid)
+{
+    int channel = Mix_GroupAvailable( SoundGroup_Effects );
+    if( channel == -1 )
+        channel = Mix_GroupOldest( SoundGroup_Effects );
+
+    Mix_PlayChannel( channel, m_Sounds[soundid].m_Sound, 0 );
+
+    return channel;
+}
+
+void SoundPlayer::StopSound(int channel)
+{
+    Mix_HaltChannel( channel );
+}
+
+void SoundPlayer::PauseSound(int channel)
 {
 }
 
-void SoundPlayer::PauseSound(int soundid)
-{
-}
-
-void SoundPlayer::ResumeSound(int soundid)
+void SoundPlayer::ResumeSound(int channel)
 {
 }
 

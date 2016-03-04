@@ -378,9 +378,6 @@
     <ClCompile Include="SourceWindows\Screenshot.cpp">
       <Filter>Source-Platform\Source - Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\cJSON\cJSON.cpp">
-      <Filter>Source\JSON</Filter>
-    </ClCompile>
     <ClCompile Include="SourceWP8\SoundPlayer.cpp">
       <Filter>Source-Platform\Source - WP8</Filter>
     </ClCompile>
@@ -470,9 +467,6 @@
     </ClCompile>
     <ClCompile Include="SourceEmscripten\WebRequest.cpp">
       <Filter>Source-Platform\Source - Emscripten</Filter>
-    </ClCompile>
-    <ClCompile Include="..\LodePNG\lodepng.cpp">
-      <Filter>Source\LodePNG</Filter>
     </ClCompile>
     <ClCompile Include="SourceAndroid\JavaInterface.c">
       <Filter>Source-Platform\Source - Android</Filter>
@@ -569,6 +563,11 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Physics\Box2DContactListener.cpp">
       <Filter>Source\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\cJSON\cJSON.cpp" />
+    <ClCompile Include="..\Libraries\LodePNG\lodepng.cpp" />
+    <ClCompile Include="SourceCommon\Sound\SoundManager.cpp">
+      <Filter>Source\Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -766,9 +765,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h">
       <Filter>Source\Meshes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cJSON\cJSON.h">
-      <Filter>Source\JSON</Filter>
     </ClInclude>
     <ClInclude Include="SourceAndroid\SavedData.h">
       <Filter>Source-Platform\Source - Android</Filter>
@@ -1109,9 +1105,6 @@
     <ClInclude Include="SourceEmscripten\WebRequest.h">
       <Filter>Source-Platform\Source - Emscripten</Filter>
     </ClInclude>
-    <ClInclude Include="..\LodePNG\lodepng.h">
-      <Filter>Source\LodePNG</Filter>
-    </ClInclude>
     <ClInclude Include="SourceAndroid\JavaInterface.h">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClInclude>
@@ -1219,6 +1212,11 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Physics\Box2DContactListener.h">
       <Filter>Source\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\cJSON\cJSON.h" />
+    <ClInclude Include="..\Libraries\LodePNG\lodepng.h" />
+    <ClInclude Include="SourceCommon\Sound\SoundManager.h">
+      <Filter>Source\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
