@@ -25,6 +25,8 @@ SoundCue* SoundManager::CreateCue(const char* name)
     strcpy_s( pCue->m_Name, MAX_SOUND_CUE_NAME_LEN, name );
     m_Cues.AddTail( pCue );
 
+    g_pPanelMemory->AddSoundCue( pCue, "Default", name, 0 );
+
     return pCue;
 }
 
@@ -32,6 +34,8 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 {
     SoundObject* pSoundObject = g_pGameCore->m_pSoundPlayer->LoadSound( fullpath );
     pCue->m_SoundObjects.AddTail( pSoundObject );
+
+    g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );
 }
 
 SoundCue* SoundManager::FindCueByName(const char* name)

@@ -19,6 +19,7 @@ enum PanelMemoryPages
     PanelMemoryPage_Materials,
     PanelMemoryPage_Textures,
     PanelMemoryPage_ShaderGroups,
+    PanelMemoryPage_SoundCues,
     PanelMemoryPage_Files,
     PanelMemoryPage_Buffers,
     PanelMemoryPage_DrawCalls,
@@ -28,24 +29,26 @@ class PanelMemory : public wxPanel
 {
 public:
     wxNotebook* m_pNotebook;
-    wxTreeCtrl* m_pTree_Buffers;
-    wxTreeCtrl* m_pTree_Textures;
     wxTreeCtrl* m_pTree_Materials;
-    wxTreeCtrl* m_pTree_Files;
-    wxTreeCtrl* m_pTree_DrawCalls;
+    wxTreeCtrl* m_pTree_Textures;
     wxTreeCtrl* m_pTree_ShaderGroups;
+    wxTreeCtrl* m_pTree_SoundCues;
+    wxTreeCtrl* m_pTree_Files;
+    wxTreeCtrl* m_pTree_Buffers;
+    wxTreeCtrl* m_pTree_DrawCalls;
 
     bool m_DrawCallListDirty;
     int m_DrawCallIndexToDraw;
 
 protected:
     wxTreeItemId FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeItemId idroot);
-    void UpdateRootNodeBufferCount();
-    void UpdateRootNodeTextureCount();
     void UpdateRootNodeMaterialCount();
-    void UpdateRootNodeFileCount();
-    void UpdateRootNodeDrawCallCount();
+    void UpdateRootNodeTextureCount();
     void UpdateRootNodeShaderGroupCount();
+    void UpdateRootNodeSoundCueCount();
+    void UpdateRootNodeFileCount();
+    void UpdateRootNodeBufferCount();
+    void UpdateRootNodeDrawCallCount();
 
     void OnTabSelected(wxNotebookEvent& event);
     void OnTreeSelectionChanged(wxTreeEvent& event);
@@ -57,12 +60,6 @@ public:
     ~PanelMemory();
 
     //void Refresh();
-    void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
-    void UpdateBuffer(BufferDefinition* pBufferDef);
-    void RemoveBuffer(BufferDefinition* pBufferDef);
-
-    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
-    void RemoveTexture(TextureDefinition* pTextureDef);
 
     wxTreeItemId FindMaterialCategory(const char* category);
     void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
@@ -71,15 +68,27 @@ public:
     const char* GetSelectedMaterialTreeItemText();
     MaterialDefinition* GetSelectedMaterial();
 
+    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void RemoveTexture(TextureDefinition* pTextureDef);
+
+    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void RemoveShaderGroup(ShaderGroup* pShaderGroup);
+
+    void AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void RemoveSoundCue(SoundCue* pSoundCue);
+    void AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction);
+    void RemoveSoundObject(SoundObject* pSound);
+
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
+
+    void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
+    void UpdateBuffer(BufferDefinition* pBufferDef);
+    void RemoveBuffer(BufferDefinition* pBufferDef);
 
     void AddDrawCall(int index, const char* category, const char* desc);
     void RemoveAllDrawCalls();
     void RemoveDrawCall(int index);
-
-    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
-    void RemoveShaderGroup(ShaderGroup* pShaderGroup);
 
     void SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction);
     void OnTreeBeginLabelEdit(wxTreeEvent& event);

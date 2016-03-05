@@ -33,6 +33,10 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
     idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
     m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
 
+    m_pTree_SoundCues = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    idroot = m_pTree_SoundCues->AddRoot( "Sound Cues" );
+    m_pNotebook->AddPage( m_pTree_SoundCues, "Cues" );
+
     m_pTree_Files = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
     idroot = m_pTree_Files->AddRoot( "Files" );
     m_pNotebook->AddPage( m_pTree_Files, "Files" );
@@ -65,12 +69,13 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
 PanelMemory::~PanelMemory()
 {
-    SAFE_DELETE( m_pTree_Buffers );
-    SAFE_DELETE( m_pTree_Textures );
     SAFE_DELETE( m_pTree_Materials )
-    SAFE_DELETE( m_pTree_Files );
-    SAFE_DELETE( m_pTree_DrawCalls );
+    SAFE_DELETE( m_pTree_Textures );
     SAFE_DELETE( m_pTree_ShaderGroups );
+    SAFE_DELETE( m_pTree_SoundCues );
+    SAFE_DELETE( m_pTree_Files );
+    SAFE_DELETE( m_pTree_Buffers );
+    SAFE_DELETE( m_pTree_DrawCalls );
 }
 
 wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeItemId idroot)
@@ -818,6 +823,137 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
     sprintf_s( tempstr, 100, "Shaders(%d)",
         (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, true ) - (int)m_pTree_ShaderGroups->GetChildrenCount( idroot, false ) );
     m_pNotebook->SetPageText( PanelMemoryPage_ShaderGroups, tempstr );
+}
+
+void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
+{
+    MyAssert( pSoundCue != 0 );
+
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+    int count = (int)m_pTree_SoundCues->GetChildrenCount( idroot, false );
+
+    // see if the category exists
+    wxTreeItemId idcategory;
+    {
+        wxTreeItemIdValue cookie;
+        idcategory = m_pTree_SoundCues->GetFirstChild( idroot, cookie );
+        while( idcategory.IsOk() )
+        {
+            wxString catstr = m_pTree_SoundCues->GetItemText( idcategory );
+            if( catstr == category )
+                break;
+
+            idcategory = m_pTree_SoundCues->GetNextChild( idroot, cookie );
+        }
+    }
+    
+    // insert the category if necessary
+    if( idcategory.IsOk() == false )
+    {
+        idcategory = m_pTree_SoundCues->AppendItem( idroot, category, -1, -1, 0 );
+    }
+
+    int categorycount = (int)m_pTree_SoundCues->GetChildrenCount( idcategory );
+
+    // insert the SoundCue into it's category
+    {
+        sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pSoundCue;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_SoundCues->AppendItem( idcategory, tempstr, -1, -1, pData );
+
+        // if inserting the first item, then expand the tree.
+        if( count == 0 )
+            m_pTree_SoundCues->Expand( idroot );
+    }
+
+    UpdateRootNodeSoundCueCount();
+}
+
+void PanelMemory::RemoveSoundCue(SoundCue* pSoundCue)
+{
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_SoundCues, pSoundCue, idroot );
+
+    if( id.IsOk() )
+    {
+        // delete item and up to one parent... should be fully recursive up the chain(ignoring root) but it's not for now.
+        wxTreeItemId parentid = m_pTree_SoundCues->GetItemParent( id );
+
+        m_pTree_SoundCues->Delete( id );
+
+        if( m_pTree_SoundCues->GetChildrenCount( parentid ) == 0 )
+            m_pTree_SoundCues->Delete( parentid );
+
+        UpdateRootNodeSoundCueCount();
+    }
+}
+
+void PanelMemory::UpdateRootNodeSoundCueCount()
+{
+    char tempstr[100];
+
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+
+    // update root node memory usage count.
+    sprintf_s( tempstr, 100, "Cues" );
+    m_pTree_SoundCues->SetItemText( idroot, tempstr );
+
+    sprintf_s( tempstr, 100, "Cues(%d)",
+        (int)m_pTree_SoundCues->GetChildrenCount( idroot, true ) - (int)m_pTree_SoundCues->GetChildrenCount( idroot, false ) );
+    m_pNotebook->SetPageText( PanelMemoryPage_SoundCues, tempstr );
+}
+
+void PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction)
+{
+    MyAssert( pSound != 0 );
+    MyAssert( pSoundCue != 0 );
+
+    // Find the sound cue
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+    wxTreeItemId idcue = FindObject( m_pTree_SoundCues, pSoundCue, idroot );
+
+    // the cue should exist, we can't add a sound without one.
+    if( idcue.IsOk() == false )
+    {
+        MyAssert( false );
+        return;
+    }
+
+    // insert the SoundCue into it's category
+    {
+        char tempstr[MAX_PATH];
+        sprintf_s( tempstr, MAX_PATH, "%s", desc );
+
+        TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
+        pData->m_pObject = pSoundCue;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_SoundCues->AppendItem( idcue, tempstr, -1, -1, pData );
+    }
+
+    UpdateRootNodeSoundCueCount();
+}
+
+void PanelMemory::RemoveSoundObject(SoundObject* pSound)
+{
+    MyAssert( pSound != 0 );
+
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+
+    wxTreeItemId id = FindObject( m_pTree_SoundCues, pSound, idroot );
+
+    if( id.IsOk() )
+    {
+        m_pTree_SoundCues->Delete( id );
+
+        UpdateRootNodeSoundCueCount();
+    }
 }
 
 void PanelMemory::SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction)
