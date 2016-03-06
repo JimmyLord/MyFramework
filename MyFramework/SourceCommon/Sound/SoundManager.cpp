@@ -9,6 +9,12 @@
 
 #include "CommonHeader.h"
 
+void SoundCue::OnDrag()
+{
+    g_DragAndDropStruct.m_Type = DragAndDropType_SoundCuePointer;
+    g_DragAndDropStruct.m_Value = this;
+}
+
 SoundManager::SoundManager()
 {
     m_SoundCuePool.AllocateObjects( NUM_SOUND_CUES_TO_POOL );
@@ -25,7 +31,7 @@ SoundCue* SoundManager::CreateCue(const char* name)
     strcpy_s( pCue->m_Name, MAX_SOUND_CUE_NAME_LEN, name );
     m_Cues.AddTail( pCue );
 
-    g_pPanelMemory->AddSoundCue( pCue, "Default", name, 0 );
+    g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
 
     return pCue;
 }
@@ -58,9 +64,16 @@ int SoundManager::PlayCueByName(const char* name)
     SoundCue* pCue = FindCueByName( name );
     if( pCue )
     {
-        SoundObject* pSoundObject = (SoundObject*)pCue->m_SoundObjects.GetHead();
-        return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
+        return PlayCue( pCue );
     }
 
     return -1;
+}
+
+int SoundManager::PlayCue(SoundCue* pCue)
+{
+    MyAssert( pCue );
+
+    SoundObject* pSoundObject = (SoundObject*)pCue->m_SoundObjects.GetHead();
+    return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
 }

@@ -34,6 +34,12 @@ struct SoundCue : public CPPListNode
     {
         m_Name[0] = 0;
     }
+
+public:
+#if MYFW_USING_WX
+    static void StaticOnDrag(void* pObjectPtr) { ((SoundCue*)pObjectPtr)->OnDrag(); }
+    void OnDrag();
+#endif //MYFW_USING_WX
 };
 
 class SoundManager
@@ -51,6 +57,8 @@ public:
 
     SoundCue* FindCueByName(const char* name);
     int PlayCueByName(const char* name);
+
+    int PlayCue(SoundCue* pCue);
 };
 
 #endif //__SoundManager_H__
