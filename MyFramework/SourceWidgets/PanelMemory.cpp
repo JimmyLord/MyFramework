@@ -956,6 +956,25 @@ void PanelMemory::RemoveSoundObject(SoundObject* pSound)
     }
 }
 
+void PanelMemory::SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
+{
+    MyAssert( pObject != 0 );
+
+    if( treeid.IsOk() )
+    {
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_SoundCues->GetItemData( treeid );
+        if( pData == 0 )
+            pData = MyNew TreeItemDataGenericObjectInfo();
+
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_Materials->SetItemData( treeid, pData );
+    }
+}
+
 void PanelMemory::SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction)
 {
     wxTreeItemId idroot = pTree->GetRootItem();

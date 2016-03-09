@@ -78,6 +78,7 @@ public:
     void RemoveSoundCue(SoundCue* pSoundCue);
     void AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveSoundObject(SoundObject* pSound);
+    void SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
 
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);

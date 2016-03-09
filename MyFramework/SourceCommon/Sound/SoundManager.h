@@ -13,6 +13,8 @@
 static const int MAX_SOUND_CUE_NAME_LEN = 32;
 static const int NUM_SOUND_CUES_TO_POOL = 128;
 
+class SoundManager;
+
 //struct SoundDefinition
 //{
 //    SoundObject* m_Sound;
@@ -42,8 +44,31 @@ public:
 #endif //MYFW_USING_WX
 };
 
+#if MYFW_USING_WX
+class SoundManagerWxEventHandler : public wxEvtHandler
+{
+public:
+    SoundManager* m_pSoundManager;
+    SoundCue* m_pSoundCue;
+    SoundObject* m_pSoundObject;
+
+public:
+    SoundManagerWxEventHandler()
+    {
+        m_pSoundManager = 0;
+        m_pSoundCue = 0;
+        m_pSoundObject = 0;
+    };
+    void OnPopupClick(wxEvent &evt);
+};
+#endif
+
 class SoundManager
 {
+#if MYFW_USING_WX
+    wxTreeItemId m_TreeIDRightClicked;
+#endif
+
 protected:
     MySimplePool<SoundCue> m_SoundCuePool;
     CPPListHead m_Cues;
@@ -59,6 +84,16 @@ public:
     int PlayCueByName(const char* name);
 
     int PlayCue(SoundCue* pCue);
+
+#if MYFW_USING_WX
+    SoundManagerWxEventHandler m_WxEventHandler;
+
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }
+    void OnLeftClick(unsigned int count);
+
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClick( id ); }
+    void OnRightClick(wxTreeItemId treeid);
+#endif
 };
 
 #endif //__SoundManager_H__

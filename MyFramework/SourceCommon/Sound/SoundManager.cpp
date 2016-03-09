@@ -18,6 +18,11 @@ void SoundCue::OnDrag()
 SoundManager::SoundManager()
 {
     m_SoundCuePool.AllocateObjects( NUM_SOUND_CUES_TO_POOL );
+
+#if MYFW_USING_WX
+    wxTreeItemId idroot = g_pPanelMemory->m_pTree_SoundCues->GetRootItem();
+    g_pPanelMemory->SetSoundPanelCallbacks( idroot, this, SoundManager::StaticOnLeftClick, SoundManager::StaticOnRightClick, 0 );
+#endif
 }
 
 SoundManager::~SoundManager()
@@ -77,3 +82,38 @@ int SoundManager::PlayCue(SoundCue* pCue)
     SoundObject* pSoundObject = (SoundObject*)pCue->m_SoundObjects.GetHead();
     return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
 }
+
+#if MYFW_USING_WX
+void SoundManager::OnLeftClick(unsigned int count)
+{
+}
+
+void SoundManager::OnRightClick(wxTreeItemId treeid)
+{
+ 	wxMenu menu;
+    menu.SetClientData( &m_WxEventHandler );
+
+    m_WxEventHandler.m_pSoundManager = this;
+
+    m_TreeIDRightClicked = treeid;
+
+    menu.Append( 1000, "Load new sound" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
+{
+    SoundManagerWxEventHandler* pEvtHandler = (SoundManagerWxEventHandler*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+    SoundManager* pSoundManager = pEvtHandler->m_pSoundManager;
+    SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
+    SoundObject* m_pSoundObject = pEvtHandler->m_pSoundObject;
+
+    int id = evt.GetId();
+    if( id == 1000 )
+    {
+    }
+}
+#endif
