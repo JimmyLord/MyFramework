@@ -834,37 +834,14 @@ void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const c
     wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
     int count = (int)m_pTree_SoundCues->GetChildrenCount( idroot, false );
 
-    // see if the category exists
-    wxTreeItemId idcategory;
+    // insert the SoundCue
     {
-        wxTreeItemIdValue cookie;
-        idcategory = m_pTree_SoundCues->GetFirstChild( idroot, cookie );
-        while( idcategory.IsOk() )
-        {
-            wxString catstr = m_pTree_SoundCues->GetItemText( idcategory );
-            if( catstr == category )
-                break;
-
-            idcategory = m_pTree_SoundCues->GetNextChild( idroot, cookie );
-        }
-    }
-    
-    // insert the category if necessary
-    if( idcategory.IsOk() == false )
-    {
-        idcategory = m_pTree_SoundCues->AppendItem( idroot, category, -1, -1, 0 );
-    }
-
-    int categorycount = (int)m_pTree_SoundCues->GetChildrenCount( idcategory );
-
-    // insert the SoundCue into it's category
-    {
-        sprintf_s( tempstr, 100, "%s %d", desc, categorycount );
+        sprintf_s( tempstr, 100, "%s", desc );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pSoundCue;
         pData->m_pDragFunction = pDragFunction;
 
-        m_pTree_SoundCues->AppendItem( idcategory, tempstr, -1, -1, pData );
+        m_pTree_SoundCues->AppendItem( idroot, tempstr, -1, -1, pData );
 
         // if inserting the first item, then expand the tree.
         if( count == 0 )

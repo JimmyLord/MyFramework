@@ -14,6 +14,7 @@ const float FEQUALEPSILON = 0.00001f;
 
 const char* GetRelativePath(char* fullpath); // will replace backslashes with forward slashes in fullpath
 const char* GetRelativePath(const char* fullpath);
+void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, char* outExtension, int sizeExtension);
 
 inline bool fequal(const float a, const float b, const float epsilon = FEQUALEPSILON)
 {

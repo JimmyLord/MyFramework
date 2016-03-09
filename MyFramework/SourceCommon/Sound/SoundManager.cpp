@@ -97,8 +97,10 @@ void SoundManager::OnRightClick(wxTreeItemId treeid)
 
     m_TreeIDRightClicked = treeid;
 
-    menu.Append( 1000, "Load new sound" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
+    menu.Append( SoundManagerWxEventHandler::RightClick_LoadSoundFile, "Load new sound" );
+    menu.Append( SoundManagerWxEventHandler::RightClick_CreateNewCue, "Create new cue" );
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
 
     // blocking call.
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
@@ -112,8 +114,47 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
     SoundObject* m_pSoundObject = pEvtHandler->m_pSoundObject;
 
     int id = evt.GetId();
-    if( id == 1000 )
+    if( id == RightClick_LoadSoundFile )
     {
+        // multiple select file open dialog
+        wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data", "", "Sound files(*.wav)|*.wav", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
+    
+        if( FileDialog.ShowModal() == wxID_CANCEL )
+            return;
+    
+        // load the files chosen by the user
+        // TODO: typecasting will likely cause issues with multibyte names
+        wxArrayString patharray;
+        FileDialog.GetPaths( patharray );
+
+        char fullpath[MAX_PATH];
+        for( unsigned int filenum=0; filenum<patharray.Count(); filenum++ )
+        {
+            sprintf_s( fullpath, MAX_PATH, "%s", (const char*)patharray[filenum] );
+
+            // if the datafile is in our working directory, then load it... otherwise TODO: copy it in?
+            const char* relativepath = GetRelativePath( fullpath );
+            if( relativepath == 0 )
+            {
+                // File is not in our working directory.
+                // TODO: copy the file into our data folder?
+                LOGError( LOGTag, "file must be in working directory\n" );
+                //MyAssert( false );
+                return;
+            }
+
+            char filename[32];
+            char extension[10];
+            ParseFilename( fullpath, filename, 32, extension, 10 );
+    
+            SoundCue* pCue = pSoundManager->CreateCue( filename );
+            g_pGameCore->m_pSoundManager->AddSoundToCue( pCue, relativepath );
+        }
+    }
+
+    if( id == RightClick_CreateNewCue )
+    {
+        pSoundManager->CreateCue( "new cue" );
     }
 }
 #endif

@@ -48,6 +48,13 @@ public:
 class SoundManagerWxEventHandler : public wxEvtHandler
 {
 public:
+    enum RightClickOptions
+    {
+        RightClick_LoadSoundFile = 1000,
+        RightClick_CreateNewCue,
+    };
+
+public:
     SoundManager* m_pSoundManager;
     SoundCue* m_pSoundCue;
     SoundObject* m_pSoundObject;

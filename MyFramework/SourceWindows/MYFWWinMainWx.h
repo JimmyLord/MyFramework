@@ -16,6 +16,7 @@
 class MainFrame;
 class MainGLCanvas;
 class CommandStack;
+class MainApp;
 
 enum GLViewTypes
 {
@@ -46,6 +47,8 @@ void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
 
 extern unsigned int g_GLCanvasIDActive;
 extern wxDataFormat* g_pMyDataFormat;
+
+extern MainApp* g_pMainApp;
 
 // Main application class
 class MainApp : public wxApp

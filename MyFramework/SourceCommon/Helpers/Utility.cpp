@@ -56,3 +56,51 @@ const char* GetRelativePath(const char* fullpath)
 
     return 0;
 }
+
+void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, char* outExtension, int sizeExtension)
+{
+    int len = (int)strlen( fullpath );
+    MyAssert( len > 0 );
+    if( len <= 0 )
+        return;
+
+    int extensionstartlocation = len;
+    {
+        while( extensionstartlocation > 0 )
+        {
+            if( fullpath[extensionstartlocation] == '.' )
+            {
+                int extensionlen = len-extensionstartlocation;
+                strncpy_s( outExtension, sizeExtension, &fullpath[extensionstartlocation], extensionlen );
+                outExtension[extensionlen] = 0;
+                break;
+            }
+            extensionstartlocation--;
+        }
+
+        if( outExtension == 0 )
+        {
+            outExtension[0] = '.';
+            outExtension[1] = 0;
+
+            extensionstartlocation = len;
+        }
+    }
+
+    {
+        int i = extensionstartlocation;
+        while( i >= 0 )
+        {
+            if( i == 0 || fullpath[i] == '/' || fullpath[i] == '\\' )
+            {
+                if( fullpath[i] == '/' || fullpath[i] == '\\' )
+                    i++;
+                int namelen = extensionstartlocation-i;
+                strncpy_s( outFilename, sizeFilename, &fullpath[i], namelen );
+                outFilename[namelen] = 0;
+                break;
+            }
+            i--;
+        }
+    }
+}
