@@ -27,20 +27,22 @@ class SoundManager;
 //    }
 //};
 
-struct SoundCue : public CPPListNode
+class SoundCue : public CPPListNode
 {
-    char m_Name[MAX_SOUND_CUE_NAME_LEN];
+public:
+    char m_Name[MAX_SOUND_CUE_NAME_LEN]; // if [0] == 0, cue won't save to disk.
+    MyFileObject* m_pFile;
+
     CPPListHead m_SoundObjects;
 
-    SoundCue()
-    {
-        m_Name[0] = 0;
-    }
+    SoundCue();
 
 public:
 #if MYFW_USING_WX
     static void StaticOnDrag(void* pObjectPtr) { ((SoundCue*)pObjectPtr)->OnDrag(); }
     void OnDrag();
+
+    void SaveSoundCue(const char* relativepath);
 #endif //MYFW_USING_WX
 };
 
@@ -93,6 +95,8 @@ public:
     int PlayCue(SoundCue* pCue);
 
 #if MYFW_USING_WX
+    void SaveAllCues(bool saveunchanged = false);
+
     SoundManagerWxEventHandler m_WxEventHandler;
 
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }

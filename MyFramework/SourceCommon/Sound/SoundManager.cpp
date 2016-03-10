@@ -9,10 +9,115 @@
 
 #include "CommonHeader.h"
 
+SoundCue::SoundCue()
+{
+    m_Name[0] = 0;
+    m_pFile = 0;
+}
+
 void SoundCue::OnDrag()
 {
     g_DragAndDropStruct.m_Type = DragAndDropType_SoundCuePointer;
     g_DragAndDropStruct.m_Value = this;
+}
+
+void SoundCue::SaveSoundCue(const char* relativepath)
+{
+    if( m_Name[0] == 0 )
+        return;
+
+    char filename[MAX_PATH];
+
+    if( m_pFile != 0 )
+    {
+        // if a file exists, use the existing file's fullpath
+        strcpy_s( filename, MAX_PATH, m_pFile->m_FullPath );
+    }
+    else
+    {
+        // if a file doesn't exist, create the filename out of parts.
+        // TODO: move most of this block into generic system code.
+        //MyAssert( relativepath != 0 );
+        if( relativepath == 0 )
+            relativepath = "Data/Audio";
+
+        char workingdir[MAX_PATH];
+#if MYFW_WINDOWS
+        _getcwd( workingdir, MAX_PATH * sizeof(char) );
+#else
+        getcwd( workingdir, MAX_PATH * sizeof(char) );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
+#if MYFW_WINDOWS
+        CreateDirectoryA( filename, 0 );
+#else
+        MyAssert( false );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, m_Name );
+
+        // this is a new file, check for filename conflict
+        //{
+        //    unsigned int count = 0;
+        //    char newname[MAX_SOUND_CUE_NAME_LEN];
+        //    strcpy_s( newname, MAX_SOUND_CUE_NAME_LEN, m_Name );
+        //    while( g_pFileManager->DoesFileExist( filename ) == true )
+        //    {
+        //        count++;
+
+        //        sprintf_s( newname, "%s(%d)", m_Name, count );
+        //        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, newname );
+        //    }
+        //    strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newname );
+        //}
+    }
+
+    // Create the json string to save into the sound cue file
+    char* jsonstr = 0;
+    {
+        cJSON* root = cJSON_CreateObject();
+
+        cJSON* jCue = cJSON_CreateObject();
+        cJSON_AddItemToObject( root, "Cue", jCue );
+
+        cJSON_AddStringToObject( jCue, "Name", m_Name );
+
+        cJSON* jSoundArray = cJSON_CreateArray();
+        for( CPPListNode* pNode = m_SoundObjects.GetHead(); pNode; pNode = pNode->GetNext() )
+        {
+            SoundObject* pSound = (SoundObject*)pNode;
+            cJSON_AddItemToArray( jSoundArray, pSound->ExportAsJSONObject() );
+        }
+
+        cJSON_AddItemToObject( jCue, "Sounds", jSoundArray );
+
+        // dump sound cue json structure to disk
+        jsonstr = cJSON_Print( root );
+        cJSON_Delete( root );
+    }
+
+    if( jsonstr != 0 )
+    {
+        FILE* pFile = 0;
+#if MYFW_WINDOWS
+        fopen_s( &pFile, filename, "wb" );
+#else
+        pFile = fopen( filename, "wb" );
+#endif
+        if( pFile )
+        {
+            fprintf( pFile, "%s", jsonstr );
+            fclose( pFile );
+        }
+
+        cJSONExt_free( jsonstr );
+
+        // if the file managed to save, request it.
+        if( m_pFile == 0 )
+        {
+            sprintf_s( filename, MAX_PATH, "%s/%s.mycue", relativepath, m_Name );
+            m_pFile = g_pFileManager->RequestFile( filename );
+        }
+    }
 }
 
 SoundManager::SoundManager()
@@ -84,6 +189,19 @@ int SoundManager::PlayCue(SoundCue* pCue)
 }
 
 #if MYFW_USING_WX
+void SoundManager::SaveAllCues(bool saveunchanged)
+{
+    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        SoundCue* pCue = (SoundCue*)pNode;
+
+        //if( pCue->m_UnsavedChanges || saveunchanged )
+        {
+            pCue->SaveSoundCue( 0 );
+        }
+    }
+}
+
 void SoundManager::OnLeftClick(unsigned int count)
 {
 }

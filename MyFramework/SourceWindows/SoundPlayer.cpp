@@ -12,6 +12,15 @@
 #include "../SourceWindows/SDL-1.2.15/include/SDL.h"
 #include "../SourceWindows/SDL_mixer-1.2.12/include/SDL_mixer.h"
 
+cJSON* SoundObject::ExportAsJSONObject()
+{
+    cJSON* jSound = cJSON_CreateObject();
+
+    cJSON_AddStringToObject( jSound, "Path", m_FullPath );
+
+    return jSound;
+}
+
 SoundPlayer::SoundPlayer()
 {
     int audio_rate = 22050;
@@ -107,7 +116,7 @@ SoundObject* SoundPlayer::LoadSound(const char* fullpath)
     if( i < MAX_SOUNDS )
     {
         m_Sounds[i].m_Sound = Mix_LoadWAV( fullpath );
-        //strcpy_s( m_Sounds[i].m_FullPath, MAX_PATH, fullpath );
+        strcpy_s( m_Sounds[i].m_FullPath, MAX_PATH, fullpath );
         return &m_Sounds[i];
     }
 

@@ -14,12 +14,16 @@ struct Mix_Chunk;
 
 struct SoundObject : public CPPListNode
 {
+    char m_FullPath[MAX_PATH];
     Mix_Chunk* m_Sound;
 
     SoundObject()
     {
+        m_FullPath[0] = 0;
         m_Sound = 0;
     }
+
+    cJSON* ExportAsJSONObject();
 };
 
 class SoundPlayer
