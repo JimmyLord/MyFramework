@@ -14,6 +14,7 @@ static const int MAX_SOUND_CUE_NAME_LEN = 32;
 static const int NUM_SOUND_CUES_TO_POOL = 128;
 
 class SoundManager;
+class SoundCue;
 
 //struct SoundDefinition
 //{
@@ -27,15 +28,27 @@ class SoundManager;
 //    }
 //};
 
-class SoundCue : public CPPListNode
+typedef void (*SoundCueCreatedCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
+struct SoundCueCreatedCallbackStruct
+{
+    void* pObj;
+    SoundCueCreatedCallbackFunc pFunc;
+};
+
+class SoundCue : public CPPListNode, public RefCount
 {
 public:
     char m_Name[MAX_SOUND_CUE_NAME_LEN]; // if [0] == 0, cue won't save to disk.
     MyFileObject* m_pFile;
+    MySimplePool<SoundCue>* m_pSourcePool;
 
     CPPListHead m_SoundObjects;
 
+public:
     SoundCue();
+    virtual ~SoundCue();
+
+    virtual void Release();
 
 public:
 #if MYFW_USING_WX
@@ -74,7 +87,10 @@ public:
 
 class SoundManager
 {
+    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
+
 #if MYFW_USING_WX
+    friend class SoundManagerWxEventHandler;
     wxTreeItemId m_TreeIDRightClicked;
 #endif
 
@@ -82,17 +98,27 @@ protected:
     MySimplePool<SoundCue> m_SoundCuePool;
     CPPListHead m_Cues;
 
+    MyList<SoundCueCreatedCallbackStruct> m_pSoundCueCreatedCallbackList;
+
+protected:
+    SoundCue* GetCueFromPool();
+
 public:
     SoundManager();
     ~SoundManager();
 
     SoundCue* CreateCue(const char* name);
+    SoundCue* LoadCue(const char* fullpath);
     void AddSoundToCue(SoundCue* pCue, const char* fullpath);
 
     SoundCue* FindCueByName(const char* name);
+    SoundCue* FindCueByFilename(const char* fullpath);
     int PlayCueByName(const char* name);
 
     int PlayCue(SoundCue* pCue);
+
+    // Callbacks
+    void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCreatedCallbackFunc pCallback);
 
 #if MYFW_USING_WX
     void SaveAllCues(bool saveunchanged = false);

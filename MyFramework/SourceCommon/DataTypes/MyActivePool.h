@@ -13,7 +13,8 @@
 template <class MyType> class MySimplePool
 {
 protected:
-    MyType* m_Objects;
+    MyType* m_pObjects;
+    MyType** m_pObjectPtrs;
 
     unsigned int m_Length; // num elements allocated in list
     unsigned int m_Count; // num elements used.
@@ -21,7 +22,8 @@ protected:
 public:
     MySimplePool()
     {
-        m_Objects = 0;
+        m_pObjects = 0;
+        m_pObjectPtrs = 0;
 
         m_Length = 0;
         m_Count = 0;
@@ -29,7 +31,9 @@ public:
 
     ~MySimplePool()
     {
-        SAFE_DELETE_ARRAY( m_Objects );
+        MyAssert( m_Count == m_Length );
+        SAFE_DELETE_ARRAY( m_pObjects );
+        SAFE_DELETE_ARRAY( m_pObjectPtrs );
     }
 
     bool IsInitialized()
@@ -39,11 +43,17 @@ public:
 
     void AllocateObjects(unsigned int length)
     {
-        MyAssert( m_Objects == 0 );
+        MyAssert( m_pObjects == 0 );
         
         if( length > 0 )
         {
-            m_Objects = MyNew MyType[length];
+            m_pObjects = MyNew MyType[length];
+            m_pObjectPtrs = MyNew MyType*[length];
+        }
+
+        for( unsigned int i=0; i<length; i++ )
+        {
+            m_pObjectPtrs[i] = &m_pObjects[i];
         }
 
         m_Length = length;
@@ -59,16 +69,25 @@ public:
         }
 
         m_Count--;
-        return &m_Objects[m_Count];
+        return m_pObjectPtrs[m_Count];
     }
 
     void ReturnObject(MyType* object)
     {
         MyAssert( m_Count < m_Length );
 
-        m_Objects[m_Count] = &object;
+        m_pObjectPtrs[m_Count] = object;
         m_Count++;
     }
+
+#if _DEBUG
+    unsigned int Debug_GetLength() { return m_Length; }
+    MyType& operator[] (unsigned int i) const
+    {
+        MyAssert( i < m_Count );
+        return *m_pObjectPtrs[i];
+    }
+#endif
 };
 
 template <class MyType> class MyUnmanagedPool

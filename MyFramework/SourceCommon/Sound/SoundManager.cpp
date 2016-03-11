@@ -13,6 +13,26 @@ SoundCue::SoundCue()
 {
     m_Name[0] = 0;
     m_pFile = 0;
+    m_pSourcePool = 0;
+}
+
+SoundCue::~SoundCue()
+{
+}
+
+void SoundCue::Release()
+{
+    RefCount::Release();
+
+    // if removing the second to last ref, return it to the pool.
+    if( m_RefCount == 1 )
+    {
+        m_pSourcePool->ReturnObject( this );
+
+        m_Name[0] = 0;
+        m_pFile = 0;
+        m_pSourcePool = 0;
+    }
 }
 
 void SoundCue::OnDrag()
@@ -56,19 +76,19 @@ void SoundCue::SaveSoundCue(const char* relativepath)
         sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, m_Name );
 
         // this is a new file, check for filename conflict
-        //{
-        //    unsigned int count = 0;
-        //    char newname[MAX_SOUND_CUE_NAME_LEN];
-        //    strcpy_s( newname, MAX_SOUND_CUE_NAME_LEN, m_Name );
-        //    while( g_pFileManager->DoesFileExist( filename ) == true )
-        //    {
-        //        count++;
+        {
+            unsigned int count = 0;
+            char newname[MAX_SOUND_CUE_NAME_LEN];
+            strcpy_s( newname, MAX_SOUND_CUE_NAME_LEN, m_Name );
+            while( g_pFileManager->DoesFileExist( filename ) == true )
+            {
+                count++;
 
-        //        sprintf_s( newname, "%s(%d)", m_Name, count );
-        //        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, newname );
-        //    }
-        //    strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newname );
-        //}
+                sprintf_s( newname, "%s(%d)", m_Name, count );
+                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, newname );
+            }
+            strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newname );
+        }
     }
 
     // Create the json string to save into the sound cue file
@@ -123,6 +143,14 @@ void SoundCue::SaveSoundCue(const char* relativepath)
 SoundManager::SoundManager()
 {
     m_SoundCuePool.AllocateObjects( NUM_SOUND_CUES_TO_POOL );
+#if _DEBUG
+    for( unsigned int i=0; i<m_SoundCuePool.Debug_GetLength(); i++ )
+    {
+        m_SoundCuePool[i].Debug_SetBaseCount( 1 ); // assert refcount is 1 when returned to pool
+    }
+#endif //_DEBUG
+
+    m_pSoundCueCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
 
 #if MYFW_USING_WX
     wxTreeItemId idroot = g_pPanelMemory->m_pTree_SoundCues->GetRootItem();
@@ -132,16 +160,62 @@ SoundManager::SoundManager()
 
 SoundManager::~SoundManager()
 {
+    m_pSoundCueCreatedCallbackList.FreeAllInList();
+}
+
+SoundCue* SoundManager::GetCueFromPool()
+{
+    SoundCue* pCue = m_SoundCuePool.GetObject();
+    if( pCue == 0 )
+    {
+        LOGError( LOGTag, "SoundManager::GetCueFromPool(): Sound cue pool ran out of cues\n" );
+        return 0;
+    }
+
+    pCue->AddRef(); // add a ref if pulled from pool, assert refcount is 1 when returned to pool
+    pCue->m_pSourcePool = &m_SoundCuePool;
+
+    return pCue;
 }
 
 SoundCue* SoundManager::CreateCue(const char* name)
 {
-    SoundCue* pCue = m_SoundCuePool.GetObject();
+    SoundCue* pCue = GetCueFromPool();
+    if( pCue == 0 )
+        return 0;
 
     strcpy_s( pCue->m_Name, MAX_SOUND_CUE_NAME_LEN, name );
     m_Cues.AddTail( pCue );
 
     g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
+
+    return pCue;
+}
+
+SoundCue* SoundManager::LoadCue(const char* fullpath)
+{
+    MyAssert( fullpath );
+
+    SoundCue* pCue;
+
+    // check if this file was already loaded.
+    pCue = FindCueByFilename( fullpath );
+    if( pCue )
+    {
+        pCue->AddRef();
+        return pCue;
+    }
+
+    pCue = GetCueFromPool();
+    if( pCue )
+    {
+        pCue->m_pFile = g_pFileManager->RequestFile( fullpath );
+
+#if MYFW_USING_WX
+        //g_pPanelMemory->AddSoundCue( pSoundCue, "Loading", pSoundCue->m_pFile->m_FilenameWithoutExtension, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
+        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundCue, SoundCue::StaticOnLabelEdit );
+#endif
+    }
 
     return pCue;
 }
@@ -169,6 +243,21 @@ SoundCue* SoundManager::FindCueByName(const char* name)
     return 0;
 }
 
+SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
+{
+    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        SoundCue* pCue = (SoundCue*)pNode;
+
+        if( strcmp( pCue->m_pFile->m_FullPath, fullpath ) == 0 )
+        {
+            return pCue;
+        }
+    }
+
+    return 0;
+}
+
 int SoundManager::PlayCueByName(const char* name)
 {
     SoundCue* pCue = FindCueByName( name );
@@ -186,6 +275,18 @@ int SoundManager::PlayCue(SoundCue* pCue)
 
     SoundObject* pSoundObject = (SoundObject*)pCue->m_SoundObjects.GetHead();
     return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
+}
+
+void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCreatedCallbackFunc pCallback)
+{
+    MyAssert( pCallback != 0 );
+    MyAssert( m_pSoundCueCreatedCallbackList.Count() < MAX_REGISTERED_CALLBACKS );
+
+    SoundCueCreatedCallbackStruct callbackstruct;
+    callbackstruct.pObj = pObj;
+    callbackstruct.pFunc = pCallback;
+
+    m_pSoundCueCreatedCallbackList.Add( callbackstruct );
 }
 
 #if MYFW_USING_WX
@@ -267,12 +368,18 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
     
             SoundCue* pCue = pSoundManager->CreateCue( filename );
             g_pGameCore->m_pSoundManager->AddSoundToCue( pCue, relativepath );
+
+            for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+                pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
         }
     }
 
     if( id == RightClick_CreateNewCue )
     {
         pSoundManager->CreateCue( "new cue" );
+
+        for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+            pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
     }
 }
 #endif
