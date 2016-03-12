@@ -860,12 +860,12 @@ void PanelMemory::RemoveSoundCue(SoundCue* pSoundCue)
     if( id.IsOk() )
     {
         // delete item and up to one parent... should be fully recursive up the chain(ignoring root) but it's not for now.
-        wxTreeItemId parentid = m_pTree_SoundCues->GetItemParent( id );
+        //wxTreeItemId parentid = m_pTree_SoundCues->GetItemParent( id );
 
         m_pTree_SoundCues->Delete( id );
 
-        if( m_pTree_SoundCues->GetChildrenCount( parentid ) == 0 )
-            m_pTree_SoundCues->Delete( parentid );
+        //if( m_pTree_SoundCues->GetChildrenCount( parentid ) == 0 )
+        //    m_pTree_SoundCues->Delete( parentid );
 
         UpdateRootNodeSoundCueCount();
     }

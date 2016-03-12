@@ -158,6 +158,7 @@ double GameCore::Tick(double TimePassed)
     g_pFileManager->Tick();
     g_pTextureManager->Tick();
     g_pMaterialManager->Tick();
+    m_pSoundManager->Tick();
     g_pBufferManager->Tick();
     g_pFontManager->Tick();
 #if MYFW_BLACKBERRY10

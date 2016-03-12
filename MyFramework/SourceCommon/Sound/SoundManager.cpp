@@ -11,6 +11,8 @@
 
 SoundCue::SoundCue()
 {
+    m_FullyLoaded = false;
+
     m_Name[0] = 0;
     m_pFile = 0;
     m_pSourcePool = 0;
@@ -28,11 +30,50 @@ void SoundCue::Release()
     if( m_RefCount == 1 )
     {
         m_pSourcePool->ReturnObject( this );
+        SAFE_RELEASE( m_pFile );
 
+        m_FullyLoaded = false;
         m_Name[0] = 0;
-        m_pFile = 0;
         m_pSourcePool = 0;
     }
+}
+
+void SoundCue::ImportFromFile()
+{
+    MyAssert( m_pFile && m_pFile->m_FileLoadStatus == FileLoadStatus_Success );
+    if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
+        return;
+
+    cJSON* jRoot = cJSON_Parse( m_pFile->m_pBuffer );
+
+    cJSON* jCue = cJSON_GetObjectItem( jRoot, "Cue" );
+    if( jCue )
+    {
+        cJSONExt_GetString( jCue, "Name", m_Name, MAX_SOUND_CUE_NAME_LEN );
+
+        cJSON* jSoundArray = cJSON_GetObjectItem( jCue, "Sounds" );
+        if( jSoundArray )
+        {
+            int numwavs = cJSON_GetArraySize( jSoundArray );
+
+            for( int i=0; i<numwavs; i++ )
+            {
+                cJSON* jSound = cJSON_GetArrayItem( jSoundArray, i );
+                MyAssert( jSound != 0 );
+                if( jSound )
+                {
+                    cJSON* jPath = cJSON_GetObjectItem( jSound, "Path" );
+                    MyAssert( jPath->valuestring[0] != 0 );
+                    if( jPath )
+                        g_pGameCore->m_pSoundManager->AddSoundToCue( this, jPath->valuestring );
+                }
+            }
+        }
+
+        m_FullyLoaded = true;
+    }
+
+    cJSON_Delete( jRoot );
 }
 
 void SoundCue::OnDrag()
@@ -41,10 +82,12 @@ void SoundCue::OnDrag()
     g_DragAndDropStruct.m_Value = this;
 }
 
-void SoundCue::SaveSoundCue(const char* relativepath)
+void SoundCue::SaveSoundCue(const char* relativefolder)
 {
     if( m_Name[0] == 0 )
         return;
+
+    m_FullyLoaded = true;
 
     char filename[MAX_PATH];
 
@@ -58,8 +101,8 @@ void SoundCue::SaveSoundCue(const char* relativepath)
         // if a file doesn't exist, create the filename out of parts.
         // TODO: move most of this block into generic system code.
         //MyAssert( relativepath != 0 );
-        if( relativepath == 0 )
-            relativepath = "Data/Audio";
+        if( relativefolder == 0 )
+            relativefolder = "Data/Audio";
 
         char workingdir[MAX_PATH];
 #if MYFW_WINDOWS
@@ -67,13 +110,13 @@ void SoundCue::SaveSoundCue(const char* relativepath)
 #else
         getcwd( workingdir, MAX_PATH * sizeof(char) );
 #endif
-        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
+        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativefolder );
 #if MYFW_WINDOWS
         CreateDirectoryA( filename, 0 );
 #else
         MyAssert( false );
 #endif
-        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, m_Name );
+        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativefolder, m_Name );
 
         // this is a new file, check for filename conflict
         {
@@ -85,7 +128,7 @@ void SoundCue::SaveSoundCue(const char* relativepath)
                 count++;
 
                 sprintf_s( newname, "%s(%d)", m_Name, count );
-                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativepath, newname );
+                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativefolder, newname );
             }
             strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newname );
         }
@@ -134,7 +177,7 @@ void SoundCue::SaveSoundCue(const char* relativepath)
         // if the file managed to save, request it.
         if( m_pFile == 0 )
         {
-            sprintf_s( filename, MAX_PATH, "%s/%s.mycue", relativepath, m_Name );
+            sprintf_s( filename, MAX_PATH, "%s/%s.mycue", relativefolder, m_Name );
             m_pFile = g_pFileManager->RequestFile( filename );
         }
     }
@@ -161,6 +204,46 @@ SoundManager::SoundManager()
 SoundManager::~SoundManager()
 {
     m_pSoundCueCreatedCallbackList.FreeAllInList();
+}
+
+void SoundManager::Tick()
+{
+    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        SoundCue* pCue = (SoundCue*)pNode;
+
+        if( pCue->m_pFile && pCue->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        {
+            pCue->ImportFromFile();
+
+#if MYFW_USING_WX
+            //const char* foldername = "Unknown";
+            //if( pCue->m_pFile )
+            //    foldername = pCue->m_pFile->GetNameOfDeepestFolderPath();
+
+            g_pPanelMemory->RemoveSoundCue( pCue );
+            g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
+
+            // Add all the sounds to the tree.
+            for( CPPListNode* pSoundNode = pCue->m_SoundObjects.GetHead(); pSoundNode; pSoundNode = pNode->GetNext() )
+            {
+                SoundObject* pSoundObject = (SoundObject*)pSoundNode;
+                g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->m_FullPath, 0 );
+            }
+
+            //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
+
+            // Add right-click options to each cue "folder".
+            //wxTreeItemId treeid = g_pPanelMemory->FindSoundCueCategory( foldername );
+            //g_pPanelMemory->SetSoundCuePanelCallbacks( treeid, this, SoundManager::StaticOnLeftClick, SoundManager::StaticOnRightClick, SoundManager::StaticOnDrag );
+#endif
+        }
+
+        if( pCue->m_FullyLoaded )
+        {
+            m_Cues.MoveTail( pCue );
+        }
+    }
 }
 
 SoundCue* SoundManager::GetCueFromPool()
@@ -211,9 +294,11 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     {
         pCue->m_pFile = g_pFileManager->RequestFile( fullpath );
 
+        m_CuesStillLoading.AddTail( pCue );
+
 #if MYFW_USING_WX
-        //g_pPanelMemory->AddSoundCue( pSoundCue, "Loading", pSoundCue->m_pFile->m_FilenameWithoutExtension, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
-        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundCue, SoundCue::StaticOnLabelEdit );
+        g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->m_FilenameWithoutExtension, SoundCue::StaticOnDrag );
+        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 #endif
     }
 
