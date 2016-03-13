@@ -76,6 +76,7 @@ void SoundCue::ImportFromFile()
     cJSON_Delete( jRoot );
 }
 
+#if MYFW_USING_WX
 void SoundCue::OnDrag()
 {
     g_DragAndDropStruct.m_Type = DragAndDropType_SoundCuePointer;
@@ -182,6 +183,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         }
     }
 }
+#endif //MYFW_USING_WX
 
 SoundManager::SoundManager()
 {
@@ -270,7 +272,9 @@ SoundCue* SoundManager::CreateCue(const char* name)
     strcpy_s( pCue->m_Name, MAX_SOUND_CUE_NAME_LEN, name );
     m_Cues.AddTail( pCue );
 
+#if MYFW_USING_WX
     g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
+#endif //MYFW_USING_WX
 
     return pCue;
 }
@@ -310,11 +314,24 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
     SoundObject* pSoundObject = g_pGameCore->m_pSoundPlayer->LoadSound( fullpath );
     pCue->m_SoundObjects.AddTail( pSoundObject );
 
+#if MYFW_USING_WX
     g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );
+#endif //MYFW_USING_WX
 }
 
 SoundCue* SoundManager::FindCueByName(const char* name)
 {
+    // name shouldn't be set until file is loaded
+    //for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    //{
+    //    SoundCue* pCue = (SoundCue*)pNode;
+
+    //    if( strcmp( pCue->m_Name, name ) == 0 )
+    //    {
+    //        return pCue;
+    //    }
+    //}
+
     for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         SoundCue* pCue = (SoundCue*)pNode;
@@ -330,6 +347,16 @@ SoundCue* SoundManager::FindCueByName(const char* name)
 
 SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
 {
+    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        SoundCue* pCue = (SoundCue*)pNode;
+
+        if( strcmp( pCue->m_pFile->m_FullPath, fullpath ) == 0 )
+        {
+            return pCue;
+        }
+    }
+
     for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         SoundCue* pCue = (SoundCue*)pNode;
