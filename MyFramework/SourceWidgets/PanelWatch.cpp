@@ -32,6 +32,7 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0, }, //PanelWatchType_ColorByte,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0, }, //PanelWatchType_PointerWithDesc,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,        75, }, //PanelWatchType_Enum,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,        75, }, //PanelWatchType_Flags,
     {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0, }, //PanelWatchType_SpaceWithLabel,
     {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0, }, //PanelWatchType_Button,
     {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0, }, //PanelWatchType_String
@@ -271,6 +272,43 @@ int PanelWatch::AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, v
     return m_NumVariables-1;
 }
 
+int PanelWatch::AddVariableOfTypeFlags(PanelWatch_Types type, const char* name, void* pVar, int min, int max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols)
+{
+    MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
+    if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
+        return -1;
+
+    int numtypes = (int)max;
+
+    wxString* wxstrings = MyNew wxString[numtypes];
+    for( int i=0; i<numtypes; i++ )
+    {
+        wxstrings[i] = ppStrings[i];
+    }
+
+    m_pVariables[m_NumVariables].m_Pointer = pVar;
+    m_pVariables[m_NumVariables].m_Range.Set( (float)min, (float)max ); // turning our ints to floats, not ideal.
+    m_pVariables[m_NumVariables].m_Description = 0;
+    m_pVariables[m_NumVariables].m_NumEnumTypes = numtypes;
+    m_pVariables[m_NumVariables].m_pEnumStrings = wxstrings;
+    m_pVariables[m_NumVariables].m_Type = type;
+    m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
+    m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = 0;
+    m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = 0;
+    m_pVariables[m_NumVariables].m_pOnValueChangedCallbackFunc = pOnValueChangedCallBackFunc;
+    m_pVariables[m_NumVariables].m_pRightClickCallbackFunc = pRightClickCallbackFunc;
+
+    if( addcontrols )
+    {
+        AddControlsForVariable( name, m_NumVariables, -1, 0 );
+        UpdatePanel();
+    }
+
+    m_NumVariables++;
+
+    return m_NumVariables-1;
+}
+
 int PanelWatch::AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
     return AddVariableOfTypeRange( PanelWatchType_Int, name, pInt, min, max, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, true );
@@ -394,6 +432,11 @@ int PanelWatch::AddPointerWithDescription(const char* name, void* pPointer, cons
 int PanelWatch::AddEnum(const char* name, int* pInt, int numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
     return AddVariableOfTypeEnum( PanelWatchType_Enum, name, pInt, 0, numtypes, ppStrings, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, true );
+}
+
+int PanelWatch::AddFlags(const char* name, unsigned int* pUInt, int numtypes, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
+{
+    return AddVariableOfTypeFlags( PanelWatchType_Flags, name, pUInt, 0, numtypes, ppStrings, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, true );
 }
 
 int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
@@ -1204,6 +1247,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
+    case PanelWatchType_Flags:
         //if( isblank == false )
         {
             *valueold = *(int*)m_pVariables[controlid].m_Pointer;
@@ -1300,6 +1344,7 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
+    case PanelWatchType_Flags:
         *((int*)m_pVariables[controlid].m_Pointer) = (int)valuenew;
         break;
 
@@ -1456,6 +1501,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
+    case PanelWatchType_Flags:
         *((int*)m_pVariables[controlid].m_Pointer) = value;
         break;
 
@@ -1664,6 +1710,13 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             break;
 
         case PanelWatchType_Enum:
+            {
+                int valueint = *(int*)m_pVariables[i].m_Pointer;
+                slidervalue = valueint;
+            }
+            break;
+
+        case PanelWatchType_Flags:
             {
                 int valueint = *(int*)m_pVariables[i].m_Pointer;
                 slidervalue = valueint;

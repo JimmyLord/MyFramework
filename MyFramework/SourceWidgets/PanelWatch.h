@@ -58,6 +58,7 @@ enum PanelWatch_Types
     PanelWatchType_ColorByte,
     PanelWatchType_PointerWithDesc,
     PanelWatchType_Enum,
+    PanelWatchType_Flags,
     PanelWatchType_SpaceWithLabel,
     PanelWatchType_Button,
     PanelWatchType_String,
@@ -196,6 +197,7 @@ public:
     int AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols);
     int AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc);
     int AddVariableOfTypeEnum(PanelWatch_Types type, const char* name, void* pVar, int min, int max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols);
+    int AddVariableOfTypeFlags(PanelWatch_Types type, const char* name, void* pVar, int min, int max, const char** ppStrings, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols);
 
     int AddInt(const char* name, int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddUnsignedInt(const char* name, unsigned int* pInt, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
@@ -212,6 +214,7 @@ public:
     int AddColorByte(const char* name, ColorByte* pColorByte, float min, float max, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddPointerWithDescription(const char* name, void* pPointer, const char* pDescription, void* pCallbackObj = 0, PanelWatchCallbackDropTarget pOnDropCallBackFunc = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddEnum(const char* name, int* pInt, int numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
+    int AddFlags(const char* name, unsigned int* pUInt, int numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc);
     int AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
