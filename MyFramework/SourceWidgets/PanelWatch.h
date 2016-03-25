@@ -229,6 +229,8 @@ public:
     void ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription);
     void ChangeStaticTextFontStyle(int controlid, wxFontStyle style, wxFontWeight weight);
     void ChangeStaticTextBGColor(int controlid, wxColour colour);
+
+    wxString GetFlagsAsString(int variablenum);
 };
 
 #endif // __PanelWatch_H__
