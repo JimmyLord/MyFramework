@@ -15,6 +15,7 @@ class CommandStack;
 #include "wx/stattext.h"
 #include "wx/slider.h"
 #include "wx/choice.h"
+#include "wx/combo.h"
 
 #define MAX_PanelWatch_VARIABLES        400
 #define WXSlider_Float_Multiplier       10000.0f
@@ -27,6 +28,7 @@ enum PanelWatchControlTypes
     PanelWatchControlType_Button,
     PanelWatchControlType_ColourPicker,
     PanelWatchControlType_ChoiceBox,
+    PanelWatchControlType_ComboBox,
     PanelWatchControlType_CheckBox,
     PanelWatchControlType_NumTypes,
 };
@@ -42,6 +44,7 @@ struct PanelWatchControlInfo
     int editboxwidth;
     int colorpickerwidth;
     int choiceboxwidth;
+    int comboboxwidth;
 };
 
 enum PanelWatch_Types
@@ -104,6 +107,7 @@ struct VariableProperties
     wxButton* m_Handle_Button;
     wxColourPickerCtrl* m_Handle_ColourPicker;
     wxChoice* m_Handle_ChoiceBox;
+    wxComboCtrl* m_Handle_ComboBox;
     wxCheckBox* m_Handle_CheckBox;
 
     void* m_Pointer;
@@ -161,6 +165,7 @@ public:
 
     void OnButtonPressed(wxCommandEvent& event);
     void OnChoiceBoxChanged(wxCommandEvent& event);
+    void OnComboBoxChanged(wxCommandEvent& event);
     void OnCheckBoxChanged(wxCommandEvent& event);
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);
