@@ -28,7 +28,7 @@ enum PanelWatchControlTypes
     PanelWatchControlType_Button,
     PanelWatchControlType_ColourPicker,
     PanelWatchControlType_ChoiceBox,
-    PanelWatchControlType_ComboBox,
+    PanelWatchControlType_ComboCtrl,
     PanelWatchControlType_CheckBox,
     PanelWatchControlType_NumTypes,
 };
@@ -44,7 +44,7 @@ struct PanelWatchControlInfo
     int editboxwidth;
     int colorpickerwidth;
     int choiceboxwidth;
-    int comboboxwidth;
+    int comboctrlwidth;
 };
 
 enum PanelWatch_Types
@@ -107,7 +107,7 @@ struct VariableProperties
     wxButton* m_Handle_Button;
     wxColourPickerCtrl* m_Handle_ColourPicker;
     wxChoice* m_Handle_ChoiceBox;
-    wxComboCtrl* m_Handle_ComboBox;
+    wxComboCtrl* m_Handle_ComboCtrl;
     wxCheckBox* m_Handle_CheckBox;
 
     void* m_Pointer;
@@ -165,7 +165,7 @@ public:
 
     void OnButtonPressed(wxCommandEvent& event);
     void OnChoiceBoxChanged(wxCommandEvent& event);
-    void OnComboBoxChanged(wxCommandEvent& event);
+    void OnComboCtrlChanged(wxCommandEvent& event);
     void OnCheckBoxChanged(wxCommandEvent& event);
     void OnSetFocus(wxFocusEvent& event);
     void OnKillFocus(wxFocusEvent& event);

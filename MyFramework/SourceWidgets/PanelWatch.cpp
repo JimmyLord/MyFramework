@@ -84,25 +84,25 @@ END_EVENT_TABLE()
 
 PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDING_NEW_WatchVariableType
 { // control    label                                          widths
-  // height, font,wdt,pdg, style                   slider, editbox, colorpicker, choicebox, combobox,
+  // height, font,wdt,pdg, style                   slider, editbox, colorpicker, choicebox, comboctrl,
   //          hgt     bot,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_Int,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_UnsignedInt,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_Char,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_UnsignedChar,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,         0,        0, }, //PanelWatchType_Bool,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_Float,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,        0, }, //PanelWatchType_Double,
-  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,           0,         0,        0, }, //PanelWatchType_Vector3,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0,        0, }, //PanelWatchType_ColorFloat,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0,        0, }, //PanelWatchType_ColorByte,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0,        0, }, //PanelWatchType_PointerWithDesc,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,        75,        0, }, //PanelWatchType_Enum,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,         0,      125, }, //PanelWatchType_Flags,
-    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0,        0, }, //PanelWatchType_SpaceWithLabel,
-    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0,        0, }, //PanelWatchType_Button,
-    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0,        0, }, //PanelWatchType_String
-    {    -1,  -1,  -1, -1, -1,                          0,       0,           0,         0,        0, }, //PanelWatchType_Unknown,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_Int,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_UnsignedInt,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_Char,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_UnsignedChar,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,         0,         0, }, //PanelWatchType_Bool,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_Float,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,      45,           0,         0,         0, }, //PanelWatchType_Double,
+  //{    20,   8, 100,  0, wxALIGN_LEFT,              120,      45,           0,         0,         0, }, //PanelWatchType_Vector3,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0,         0, }, //PanelWatchType_ColorFloat,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,          85,         0,         0, }, //PanelWatchType_ColorByte,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0,         0, }, //PanelWatchType_PointerWithDesc,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,        75,         0, }, //PanelWatchType_Enum,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,       0,           0,         0,       125, }, //PanelWatchType_Flags,
+    {     8,   6, 300,  2, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0,         0, }, //PanelWatchType_SpaceWithLabel,
+    {    20,   8, 150,  0, wxALIGN_CENTRE_HORIZONTAL,   0,       0,           0,         0,         0, }, //PanelWatchType_Button,
+    {    20,   8, 100,  0, wxALIGN_LEFT,                0,     170,           0,         0,         0, }, //PanelWatchType_String
+    {    -1,  -1,  -1, -1, -1,                          0,       0,           0,         0,         0, }, //PanelWatchType_Unknown,
 };
 
 void VariableProperties::Reset()
@@ -114,7 +114,7 @@ void VariableProperties::Reset()
     m_Handle_Button = 0;
     m_Handle_ColourPicker = 0;
     m_Handle_ChoiceBox = 0;
-    m_Handle_ComboBox = 0;
+    m_Handle_ComboCtrl = 0;
     m_Handle_CheckBox = 0;
 
     m_Pointer = 0;
@@ -233,9 +233,9 @@ void PanelWatch::ClearAllVariables()
         {
             m_pVariables[i].m_Handle_ChoiceBox->Show( false );
         }
-        if( m_pVariables[i].m_Handle_ComboBox != 0 )
+        if( m_pVariables[i].m_Handle_ComboCtrl != 0 )
         {
-            m_pVariables[i].m_Handle_ComboBox->Show( false );
+            m_pVariables[i].m_Handle_ComboCtrl->Show( false );
         }
         if( m_pVariables[i].m_Handle_CheckBox != 0 )
         {
@@ -689,7 +689,7 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
         }
         break;
 
-    case PanelWatchControlType_ComboBox:
+    case PanelWatchControlType_ComboCtrl:
         {
             pControlHandle = MyNew wxComboCtrl( this, wxID_ANY, wxEmptyString );
 
@@ -697,7 +697,7 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
             ((wxComboCtrl*)pControlHandle)->SetPopupControl( pCheckListComboPopup );
     
             // if control gets focus, stop updates.
-            pControlHandle->Connect( wxEVT_CHECKLISTBOX, wxCommandEventHandler(PanelWatch::OnComboBoxChanged), 0, this );
+            pControlHandle->Connect( wxEVT_CHECKLISTBOX, wxCommandEventHandler(PanelWatch::OnComboCtrlChanged), 0, this );
             pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
             pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
@@ -932,16 +932,16 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         PosX += g_PanelWatchControlInfo[type].choiceboxwidth;
     }
 
-    if( g_PanelWatchControlInfo[type].comboboxwidth != 0 )
+    if( g_PanelWatchControlInfo[type].comboctrlwidth != 0 )
     {
         // add a checkbox drop list for flag types.
-        m_pVariables[variablenum].m_Handle_ComboBox = (wxComboCtrl*)GetControlOfType( PanelWatchControlType_ComboBox );
-        wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboBox;
+        m_pVariables[variablenum].m_Handle_ComboCtrl = (wxComboCtrl*)GetControlOfType( PanelWatchControlType_ComboCtrl );
+        wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboCtrl;
         MyAssert( dynamic_cast<wxComboCtrl*>( pComboCtrl ) != 0 );
 
         pComboCtrl->SetId( variablenum );
         pComboCtrl->SetPosition( wxPoint(PosX, PosY) );
-        pComboCtrl->SetInitialSize( wxSize(g_PanelWatchControlInfo[type].comboboxwidth, TextCtrlHeight) );
+        pComboCtrl->SetInitialSize( wxSize(g_PanelWatchControlInfo[type].comboctrlwidth, TextCtrlHeight) );
         pComboCtrl->SetWindowStyle( wxTE_PROCESS_ENTER );
 
         wxCheckListComboPopup* pCheckListComboPopup = (wxCheckListComboPopup*)pComboCtrl->GetPopupControl();
@@ -962,7 +962,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         wxString string = GetFlagsAsString( variablenum );
         pComboCtrl->SetText( string );
 
-        PosX += g_PanelWatchControlInfo[type].comboboxwidth;
+        PosX += g_PanelWatchControlInfo[type].comboctrlwidth;
     }
 
     // Button
@@ -1079,9 +1079,9 @@ void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
     }
 }
 
-void PanelWatch::OnComboBoxChanged(wxCommandEvent& event)
+void PanelWatch::OnComboCtrlChanged(wxCommandEvent& event)
 {
-    //LOGInfo( LOGTag, "OnComboBoxChanged\n" );
+    //LOGInfo( LOGTag, "OnComboCtrlChanged\n" );
 
     event.Skip();
 
@@ -1104,7 +1104,7 @@ void PanelWatch::OnComboBoxChanged(wxCommandEvent& event)
         }
 
         wxString string = GetFlagsAsString( controlid );
-        m_pVariables[controlid].m_Handle_ComboBox->SetText( string );
+        m_pVariables[controlid].m_Handle_ComboCtrl->SetText( string );
 
         // add the command to the undo stack and change the value at the same time.
         m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
@@ -1897,7 +1897,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         if( m_pVariables[i].m_Handle_ChoiceBox == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
             m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
 
-        if( m_pVariables[i].m_Handle_ComboBox == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
+        if( m_pVariables[i].m_Handle_ComboCtrl == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
             m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
 
         if( m_pVariables[i].m_Handle_Slider != 0 )
@@ -1913,18 +1913,24 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 
 wxString PanelWatch::GetFlagsAsString(int variablenum)
 {
-    wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboBox;
+    wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboCtrl;
     wxCheckListComboPopup* pCheckListComboPopup = (wxCheckListComboPopup*)pComboCtrl->GetPopupControl();
 
+    wxString string;
+
     int count = 0;
-    for( int i=0; i<32; i++ )
+    for( int i=0; i<m_pVariables[variablenum].m_NumEnumTypes; i++ )
     {
         if( pCheckListComboPopup->IsChecked( i ) )
         {
+            if( count != 0 )
+                string.append( "," );
+
+            string.append( m_pVariables[variablenum].m_pEnumStrings[i] );
+
             count++;
         }
     }
 
-    return wxString::Format( wxT("%i selected"), count );
-    //return wxEmptyString;
+    return string;
 }
