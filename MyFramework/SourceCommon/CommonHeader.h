@@ -59,7 +59,7 @@
 #pragma warning( 3 : 4312 ) // 'operation' : conversion from 'type1' to 'type2' of greater size
 #pragma warning( 3 : 4339 ) // 'type' : use of undefined type detected in CLR meta-data - use of this type may lead to a runtime exception
 #pragma warning( 3 : 4342 ) // behavior change: 'function' called, but a member operator was called in previous versions
-#pragma warning( 3 : 4350 ) // behavior change: 'member1' called instead of 'member2'
+//vs2013 #pragma warning( 3 : 4350 ) // behavior change: 'member1' called instead of 'member2'
 #pragma warning( 3 : 4355 ) // 'this' : used in base member initializer list
 //vcincludes #pragma warning( 3 : 4365 ) // 'action': conversion from 'type_1' to 'type_2', signed/unsigned mismatch
 #pragma warning( 3 : 4370 ) // layout of class has changed from a previous version of the compiler due to better packing
