@@ -951,7 +951,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         pCheckListComboPopup->Set( m_pVariables[variablenum].m_NumEnumTypes, m_pVariables[variablenum].m_pEnumStrings );
 
         unsigned int flags = *(int*)m_pVariables[variablenum].m_Pointer;
-        for( int i=0; i<32; i++ )
+        for( int i=0; i<m_pVariables[variablenum].m_NumEnumTypes; i++ )
         {
             if( flags & (1<<i) )
                 pCheckListComboPopup->Check( i, true );
