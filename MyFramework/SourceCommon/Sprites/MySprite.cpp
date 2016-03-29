@@ -497,6 +497,11 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
     if( pShaderOverride )
     {
         // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
+        // always use 4 bone version.
+        // TODO: this might fail with 1-3 bones,
+        //       but should work with 0 bones since bone attribs are set to 100% weight on bone 0
+        //       and bone 0 transform uniform is set to identity.
+        //       This doesn't seem to work on some(AMD?) cards ATM.
         pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
 
         MyAssert( pShader );
