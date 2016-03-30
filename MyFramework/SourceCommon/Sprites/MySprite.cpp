@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -477,7 +477,7 @@ void MySprite::DeactivateShader()
     if( pShader == 0 )
         return;
 
-    pShader->DeactivateShader( m_pVertexBuffer );
+    pShader->DeactivateShader( m_pVertexBuffer, true );
 }
 
 void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
@@ -516,7 +516,7 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
         pShader->ProgramBoneTransforms( &identitymat, 1 );
 
         MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
-        pShader->DeactivateShader( m_pVertexBuffer );
+        //pShader->DeactivateShader( m_pVertexBuffer, false );
     }
     else
     {
@@ -540,7 +540,7 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 
             MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
-            pShader->DeactivateShader( m_pVertexBuffer );
+            pShader->DeactivateShader( m_pVertexBuffer, true );
         }
 
         // always disable blending

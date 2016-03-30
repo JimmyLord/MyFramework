@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -216,7 +216,7 @@ GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, c
     return shaderid;
 }
 
-GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths)
+GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths, GLuint premadeprogramhandle)
 {
     checkGlError( "createProgram" );
 
@@ -238,7 +238,9 @@ GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreV
         return 0;
     }
 
-    GLuint programid = glCreateProgram();
+    GLuint programid = premadeprogramhandle;
+    if( programid == 0 )
+        programid = glCreateProgram();
     if( programid )
     {
         glAttachShader( programid, *vsid );
@@ -287,7 +289,7 @@ GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreV
     return programid;
 }
 
-GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths)
+GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths, GLuint premadeprogramhandle)
 {
     checkGlError( "createProgram" );
 
@@ -323,7 +325,9 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
         return 0;
     }
 
-    GLuint programid = glCreateProgram();
+    GLuint programid = premadeprogramhandle;
+    if( programid == 0 )
+        programid = glCreateProgram();
     if( programid )
     {
         glAttachShader( programid, *vsid );
@@ -375,7 +379,7 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
     return programid;
 }
 
-GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, const char* pPassDefine)
+GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, const char* pPassDefine, GLuint premadeprogramhandle)
 {
     checkGlError( "createProgram" );
 
@@ -393,7 +397,9 @@ GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char
         return 0;
     }
 
-    GLuint programid = glCreateProgram();
+    GLuint programid = premadeprogramhandle;
+    if( programid == 0 )
+        programid = glCreateProgram();
     if( programid )
     {
         glAttachShader( programid, *vsid );

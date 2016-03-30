@@ -1571,7 +1571,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                 MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
             else
                 MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
-            //pShader->DeactivateShader( pVertexBuffer ); // disable attributes
+            //pShader->DeactivateShader( pVertexBuffer, false ); // disable attributes
 
             // always disable blending
             glDisable( GL_BLEND );
@@ -1655,7 +1655,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
                     checkGlError( "Drawing Mesh MyDrawElements()" );
 
-                    pShader->DeactivateShader( pVertexBuffer );
+                    pShader->DeactivateShader( pVertexBuffer, true );
                     checkGlError( "Drawing Mesh DeactivateShader()" );
 
                     // always disable blending

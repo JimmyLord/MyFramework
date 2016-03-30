@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -61,14 +61,14 @@ public:
 
     virtual void LoadFromFile(const char* filename);
     virtual void LoadFromFile();
-    virtual bool LoadAndCompile();
+    virtual bool LoadAndCompile(GLuint premadeprogramhandle = 0);
 
     void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
     void DisableAttributeArray(GLint index, Vector3 value);
     void DisableAttributeArray(GLint index, Vector4 value);
 
-    virtual void DeactivateShader(BufferDefinition* vbo = 0);
+    virtual void DeactivateShader(BufferDefinition* vbo = 0, bool usevaosifavailable = true);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };

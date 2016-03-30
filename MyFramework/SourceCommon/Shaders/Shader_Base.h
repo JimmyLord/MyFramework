@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -69,9 +69,9 @@ public:
     void Init_Shader_Base();
     virtual ~Shader_Base();
 
-    virtual bool LoadAndCompile();
+    virtual bool LoadAndCompile(GLuint premadeprogramhandle = 0);
 
-    virtual void DeactivateShader(BufferDefinition* vbo = 0);
+    virtual void DeactivateShader(BufferDefinition* vbo = 0, bool usevaosifavailable = true);
 
     bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial);
     bool ActivateAndProgramShader();

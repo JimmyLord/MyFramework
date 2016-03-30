@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -187,7 +187,7 @@ void MySprite9::Draw(MyMatrix* matviewproj)
 #else
         MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0 );
 #endif
-        pShader->DeactivateShader( m_pVertexBuffer );
+        pShader->DeactivateShader( m_pVertexBuffer, true );
     }
 
     // always disable blending

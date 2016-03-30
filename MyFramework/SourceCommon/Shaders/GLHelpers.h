@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -41,8 +41,8 @@ GLint GetUniformLocation(GLuint programhandle, const char* name, ...);
 
 GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* pLengths);
 GLuint loadShader(GLenum shaderType, const char* pPreSource, int presourcelen, const char* pSource, int sourcelen, const char* pPassDefine);
-GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths);
-GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths);
-GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen = strlen(VERTEXPREDEFINES), const char* pPreVertexSource = VERTEXPREDEFINES, int prefslen = strlen(FRAGMENTPREDEFINES), const char* pPreFragmentSource = FRAGMENTPREDEFINES, const char* pPassDefine = 0);
+GLuint createProgram(GLuint* vsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths, GLuint premadeprogramhandle = 0);
+GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, const char* pPreVertexSource, int pregslen, const char* pPreGeometrySource, int prefslen, const char* pPreFragmentSource, int numchunks, const char** ppChunks, int* pLengths, GLuint premadeprogramhandle = 0);
+GLuint createProgram(int vslen, const char* pVertexSource, int fslen, const char* pFragmentSource, GLuint* vsid, GLuint* fsid, int prevslen = strlen(VERTEXPREDEFINES), const char* pPreVertexSource = VERTEXPREDEFINES, int prefslen = strlen(FRAGMENTPREDEFINES), const char* pPreFragmentSource = FRAGMENTPREDEFINES, const char* pPassDefine = 0, GLuint premadeprogramhandle = 0);
 
 #endif //__GLHelpers_H__

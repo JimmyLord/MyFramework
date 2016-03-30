@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -197,7 +197,7 @@ void BaseShader::LoadFromFile()
 #endif
 }
 
-bool BaseShader::LoadAndCompile()
+bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 {
     MyAssert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
 
@@ -296,13 +296,13 @@ bool BaseShader::LoadAndCompile()
     {
         m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
                                          VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
-                                         numchunks, pStrings, pLengths );
+                                         numchunks, pStrings, pLengths, premadeprogramhandle );
     }
     else
     {
         m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
                                          VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                         numchunks, pStrings, pLengths );
+                                         numchunks, pStrings, pLengths, premadeprogramhandle );
     }
 
     if( m_ProgramHandle == 0 )
@@ -321,13 +321,13 @@ bool BaseShader::LoadAndCompile()
 //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
 //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
 //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-//                                         0 );
+//                                         0, premadeprogramhandle );
 //#else
 //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
 //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
 //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
 //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-//                                         g_ShaderPassDefines[m_PassType] );
+//                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
 //#endif
 //    }
 //    else
@@ -337,13 +337,13 @@ bool BaseShader::LoadAndCompile()
 //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
 //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
 //                                         0, 0, 0, 0,
-//                                         0 );
+//                                         0, premadeprogramhandle );
 //#else
 //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
 //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
 //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
 //                                         0, 0, 0, 0,
-//                                         g_ShaderPassDefines[m_PassType] );
+//                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
 //#endif
 //    }
 
@@ -406,7 +406,7 @@ void BaseShader::DisableAttributeArray(GLint index, Vector4 value)
     }
 }
 
-void BaseShader::DeactivateShader(BufferDefinition* vbo)
+void BaseShader::DeactivateShader(BufferDefinition* vbo, bool usevaosifavailable)
 {
 }
 

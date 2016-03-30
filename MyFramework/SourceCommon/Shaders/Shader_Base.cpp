@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -73,9 +73,23 @@ Shader_Base::~Shader_Base()
 {
 }
 
-bool Shader_Base::LoadAndCompile()
+bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
 {
-    if( BaseShader::LoadAndCompile() == false )
+    // Manually create a shader program here, so we can bind the attribute locations
+    GLuint programhandle = premadeprogramhandle;
+    if( premadeprogramhandle == 0 )
+        programhandle = glCreateProgram();
+
+    // Explicit binding of locations,
+    // skipping location 0 for AMD drivers that don't like glVertexAttrib4f() calls on location 0
+    glBindAttribLocation( programhandle, 1, "a_Position" );
+    glBindAttribLocation( programhandle, 2, "a_UVCoord" );
+    glBindAttribLocation( programhandle, 3, "a_Normal" );
+    glBindAttribLocation( programhandle, 4, "a_VertexColor" );
+    glBindAttribLocation( programhandle, 5, "a_BoneIndex" );
+    glBindAttribLocation( programhandle, 6, "a_BoneWeight" );
+
+    if( BaseShader::LoadAndCompile( programhandle ) == false )
         return false;
 
     m_aHandle_Position =    GetAttributeLocation( m_ProgramHandle, "a_Position" );
@@ -125,7 +139,7 @@ bool Shader_Base::LoadAndCompile()
     return true;
 }
 
-void Shader_Base::DeactivateShader(BufferDefinition* vbo)
+void Shader_Base::DeactivateShader(BufferDefinition* vbo, bool usevaosifavailable)
 {
     if( vbo && vbo->m_CurrentVAOHandle[g_ActiveShaderPass] )
     {
