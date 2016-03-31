@@ -42,12 +42,12 @@ public:
     virtual void AllocateVertices(unsigned int numpoints, const char* category);
     virtual void Reset() { m_ParticleCount = 0; }
 
-    virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
-    virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
+    virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size, MyMatrix matrot);
+    virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size, MyMatrix matrot);
 
     virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void Draw(MyMatrix* matviewproj, Vector3* camrot);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };

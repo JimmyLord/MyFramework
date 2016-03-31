@@ -1602,11 +1602,11 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
                     //if( didinverse == false )
                     //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
-                    pShader->ProgramCamera( campos, &invworld );
+                    pShader->ProgramCamera( campos, 0, &invworld );
                     checkGlError( "Drawing Mesh ProgramCamera()" );
 
                     pShader->ProgramLights( lights, numlights, &invworld );
-                    checkGlError( "Drawing Mesh ProgramCamera()" );
+                    checkGlError( "Drawing Mesh ProgramLights()" );
 
                     if( PrimitiveType == GL_POINTS )
                         pShader->ProgramPointSize( (float)PointSize );

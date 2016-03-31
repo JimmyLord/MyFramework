@@ -125,6 +125,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
 
     m_uHandle_WSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
     m_uHandle_LSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
+    m_uHandle_CameraRotation =      GetUniformLocation( m_ProgramHandle, "u_CameraRotation" );
 
     for( int i=0; i<4; i++ )
     {
@@ -603,7 +604,7 @@ void Shader_Base::ProgramPointSize(float pointsize)
         glUniform1f( m_uHandle_PointSize, pointsize );
 }
 
-void Shader_Base::ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix)
+void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inverseworldmatrix)
 {
 #if USE_D3D
     MyAssert( 0 );
@@ -621,6 +622,14 @@ void Shader_Base::ProgramCamera(Vector3* campos, MyMatrix* inverseworldmatrix)
 
         Vector3 LScampos = *inverseworldmatrix * *campos;
         glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
+    }
+
+    if( m_uHandle_CameraRotation != -1 )
+    {
+        MyMatrix matcamrot;
+        Vector3 invcamrot = *camrot;
+        matcamrot.CreateSRT( Vector3(1), invcamrot, Vector3(0) );
+        glUniformMatrix4fv( m_uHandle_CameraRotation, 1, false, (GLfloat*)&matcamrot.m11 );
     }
 #endif
 
