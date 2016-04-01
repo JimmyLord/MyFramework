@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -40,14 +40,15 @@ public:
     virtual ~ParticleRenderer();
 
     virtual void AllocateVertices(unsigned int numpoints, const char* category);
+    virtual void RebuildParticleQuad(MyMatrix* matrot);
     virtual void Reset() { m_ParticleCount = 0; }
 
-    virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size, MyMatrix matrot);
-    virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size, MyMatrix matrot);
+    virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
+    virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
 
     virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void Draw(MyMatrix* matviewproj, Vector3* camrot);
+    virtual void Draw(MyMatrix* matviewproj);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };

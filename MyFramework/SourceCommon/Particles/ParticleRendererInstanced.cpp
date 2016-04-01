@@ -16,16 +16,20 @@
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
 {
-    m_pParticleData = 0;
-
     m_ParticleDataBuffer = 0;
     m_NumParticlesAllocated = 0;
+
+    m_pParticleData = 0;
+
+    m_pParticleQuadVerts = 0;
 }
 
 ParticleRendererInstanced::~ParticleRendererInstanced()
 {
     delete[] m_pParticleData;
     glDeleteBuffers( 1, &m_ParticleDataBuffer );
+
+    // m_pParticleQuadVerts; // will be deleted by VBO.
 }
 
 void ParticleRendererInstanced::AllocateVertices(unsigned int numpoints, const char* category)
@@ -41,6 +45,7 @@ void ParticleRendererInstanced::AllocateVertices(unsigned int numpoints, const c
     glGenBuffers( 1, &m_ParticleDataBuffer );
 
     Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
+    m_pParticleQuadVerts = pVerts;
     float halfsize = 0.5;
     pVerts[0].x = -halfsize; pVerts[0].y = +halfsize; pVerts[0].z = 0; pVerts[0].u = 0; pVerts[0].v = 0;
     pVerts[1].x = +halfsize; pVerts[1].y = +halfsize; pVerts[1].z = 0; pVerts[1].u = 1; pVerts[1].v = 0;
@@ -49,6 +54,46 @@ void ParticleRendererInstanced::AllocateVertices(unsigned int numpoints, const c
     m_NumVertsAllocated = numverts;
 
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
+}
+
+void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
+{
+    static const unsigned int numverts = 4;
+
+    MyAssert( m_NumVertsAllocated == numverts );
+
+    Vertex_XYZUV_RGBA* pVerts = m_pParticleQuadVerts;
+    float halfsize = 0.5;
+    
+    if( true ) // billboard the quad
+    {
+        Vector3 pos;
+    
+        pos.Set( -halfsize, +halfsize, 0 );
+        pos = *matrot * pos;
+        pVerts[0].x = pos.x; pVerts[0].y = pos.y; pVerts[0].z = pos.z; pVerts[0].u = 0; pVerts[0].v = 0;
+
+        pos.Set( +halfsize, +halfsize, 0 );
+        pos = *matrot * pos;
+        pVerts[1].x = pos.x; pVerts[1].y = pos.y; pVerts[1].z = pos.z; pVerts[1].u = 1; pVerts[1].v = 0;
+
+        pos.Set( -halfsize, -halfsize, 0 );
+        pos = *matrot * pos;
+        pVerts[2].x = pos.x; pVerts[2].y = pos.y; pVerts[2].z = pos.z; pVerts[2].u = 0; pVerts[2].v = 1;
+
+        pos.Set( +halfsize, -halfsize, 0 );
+        pos = *matrot * pos;
+        pVerts[3].x = pos.x; pVerts[3].y = pos.y; pVerts[3].z = pos.z; pVerts[3].u = 1; pVerts[3].v = 1;
+    }
+    else
+    {
+        pVerts[0].x = -halfsize; pVerts[0].y = +halfsize; pVerts[0].z = 0; pVerts[0].u = 0; pVerts[0].v = 0;
+        pVerts[1].x = +halfsize; pVerts[1].y = +halfsize; pVerts[1].z = 0; pVerts[1].u = 1; pVerts[1].v = 0;
+        pVerts[2].x = -halfsize; pVerts[2].y = -halfsize; pVerts[2].z = 0; pVerts[2].u = 0; pVerts[2].v = 1;
+        pVerts[3].x = +halfsize; pVerts[3].y = -halfsize; pVerts[3].z = 0; pVerts[3].u = 1; pVerts[3].v = 1;
+    }
+
+    m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize, true );
 }
 
 void ParticleRendererInstanced::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
@@ -74,6 +119,8 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
         return;
+
+    checkGlError( "start of ParticleRenderInstanced::Draw()" );
 
     if( m_Additive )
     {
@@ -138,20 +185,34 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
             }
         }
 
+        checkGlError( "before glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
+
         glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4, m_ParticleCount );
         pShader->DeactivateShader( m_pVertexBuffer, true );
 
-        glDisableVertexAttribArray( aiposloc );
-        glDisableVertexAttribArray( aiscaleloc );
-        glDisableVertexAttribArray( aicolorloc );
+        checkGlError( "after glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
 
-        glVertexAttribDivisor( aiposloc, 0 );
-        glVertexAttribDivisor( aiscaleloc, 0 );
-        glVertexAttribDivisor( aicolorloc, 0 );
+        if( aiposloc != -1 )
+            glDisableVertexAttribArray( aiposloc );
+        if( aiscaleloc != -1 )
+            glDisableVertexAttribArray( aiscaleloc );
+        if( aicolorloc != -1 )
+            glDisableVertexAttribArray( aicolorloc );
+
+        if( aiposloc != -1 )
+            glVertexAttribDivisor( aiposloc, 0 );
+        if( aiscaleloc != -1 )
+            glVertexAttribDivisor( aiscaleloc, 0 );
+        if( aicolorloc != -1 )
+            glVertexAttribDivisor( aicolorloc, 0 );
+
+        checkGlError( "after glVertexAttribDivisor() in ParticleRenderInstanced::Draw()" );
     }
 
     // always disable blending
     glDisable( GL_BLEND );
+
+    checkGlError( "after glDisable( GL_BLEND ) in ParticleRenderInstanced::Draw()" );
 
     //glEnable( GL_BLEND );
     if( m_Additive ) // revert back to regular enabled alpha blending.
@@ -162,6 +223,8 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);
 #endif
     }
+
+    checkGlError( "end of ParticleRenderInstanced::Draw()" );
 
     return;
 }

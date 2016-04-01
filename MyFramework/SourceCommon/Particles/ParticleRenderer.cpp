@@ -93,12 +93,16 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
     //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
-void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float size, MyMatrix matrot)
+void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
 {
-    AddPoint( Vector3( pos.x, pos.y, 0 ), rot, color, size, matrot );
 }
 
-void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float size, MyMatrix matrot)
+void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
+{
+    AddPoint( Vector3( pos.x, pos.y, 0 ), rot, color, size );
+}
+
+void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float size)
 {
     //MyAssert( m_ParticleCount < m_NumVertsAllocated );
     unsigned int vertexnum = m_ParticleCount;
@@ -141,33 +145,33 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
             float halfsize = size / 2;
 
             // customize the positions for each vertex, calculated differently if billboarded vs. not billboarded
-            if( true ) // billboard the particles
+            if( false ) // billboard the particles
             {
-                Vector3 halfsizerotated;
+                //Vector3 halfsizerotated;
 
-                halfsizerotated.Set( -halfsize, halfsize, 0 );
-                halfsizerotated = matrot * halfsizerotated;
-                pVerts[vertexnum+0].x += halfsizerotated.x;
-                pVerts[vertexnum+0].y += halfsizerotated.y;
-                pVerts[vertexnum+0].z += halfsizerotated.z;
+                //halfsizerotated.Set( -halfsize, halfsize, 0 );
+                //halfsizerotated = matrot * halfsizerotated;
+                //pVerts[vertexnum+0].x += halfsizerotated.x;
+                //pVerts[vertexnum+0].y += halfsizerotated.y;
+                //pVerts[vertexnum+0].z += halfsizerotated.z;
 
-                halfsizerotated.Set( halfsize, halfsize, 0 );
-                halfsizerotated = matrot * halfsizerotated;
-                pVerts[vertexnum+1].x += halfsizerotated.x;
-                pVerts[vertexnum+1].y += halfsizerotated.y;
-                pVerts[vertexnum+1].z += halfsizerotated.z;
+                //halfsizerotated.Set( halfsize, halfsize, 0 );
+                //halfsizerotated = matrot * halfsizerotated;
+                //pVerts[vertexnum+1].x += halfsizerotated.x;
+                //pVerts[vertexnum+1].y += halfsizerotated.y;
+                //pVerts[vertexnum+1].z += halfsizerotated.z;
 
-                halfsizerotated.Set( -halfsize, -halfsize, 0 );
-                halfsizerotated = matrot * halfsizerotated;
-                pVerts[vertexnum+2].x += halfsizerotated.x;
-                pVerts[vertexnum+2].y += halfsizerotated.y;
-                pVerts[vertexnum+2].z += halfsizerotated.z;
+                //halfsizerotated.Set( -halfsize, -halfsize, 0 );
+                //halfsizerotated = matrot * halfsizerotated;
+                //pVerts[vertexnum+2].x += halfsizerotated.x;
+                //pVerts[vertexnum+2].y += halfsizerotated.y;
+                //pVerts[vertexnum+2].z += halfsizerotated.z;
 
-                halfsizerotated.Set( halfsize, -halfsize, 0 );
-                halfsizerotated = matrot * halfsizerotated;
-                pVerts[vertexnum+3].x += halfsizerotated.x;
-                pVerts[vertexnum+3].y += halfsizerotated.y;
-                pVerts[vertexnum+3].z += halfsizerotated.z;
+                //halfsizerotated.Set( halfsize, -halfsize, 0 );
+                //halfsizerotated = matrot * halfsizerotated;
+                //pVerts[vertexnum+3].x += halfsizerotated.x;
+                //pVerts[vertexnum+3].y += halfsizerotated.y;
+                //pVerts[vertexnum+3].z += halfsizerotated.z;
             }
             else
             {
@@ -234,7 +238,7 @@ void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
         m_pVertexBuffer->ResetVAOs();
 }
 
-void ParticleRenderer::Draw(MyMatrix* matviewproj, Vector3* camrot)
+void ParticleRenderer::Draw(MyMatrix* matviewproj)
 {
 #if MY_SHITTY_LAPTOP
     //return;
@@ -296,8 +300,6 @@ void ParticleRenderer::Draw(MyMatrix* matviewproj, Vector3* camrot)
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, 0, m_pMaterial ) )
     {
-        pShader->ProgramCamera( 0, camrot, 0 );
-
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }
