@@ -1894,10 +1894,9 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         if( strcmp( tempstring, "not set" ) == 0 )
             int bp = 1;
 
-        if( m_pVariables[i].m_Handle_ChoiceBox == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
-            m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
-
-        if( m_pVariables[i].m_Handle_ComboCtrl == 0 && m_pVariables[i].m_Handle_TextCtrl != 0 )
+        if( m_pVariables[i].m_Handle_ChoiceBox == 0 &&
+            m_pVariables[i].m_Handle_ComboCtrl == 0 &&
+            m_pVariables[i].m_Handle_TextCtrl != 0 )
             m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
 
         if( m_pVariables[i].m_Handle_Slider != 0 )

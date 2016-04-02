@@ -95,6 +95,41 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
 void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
 {
+    float halfsize = 0.5f;
+
+    Vector3 halfsizerotated;
+
+    halfsizerotated.Set( -halfsize, +halfsize, 0 );
+    halfsizerotated = *matrot * halfsizerotated;
+    m_pRotatedQuadVerts[0].x = halfsizerotated.x;
+    m_pRotatedQuadVerts[0].y = halfsizerotated.y;
+    m_pRotatedQuadVerts[0].z = halfsizerotated.z;
+    m_pRotatedQuadVerts[0].u = 0;
+    m_pRotatedQuadVerts[0].v = 0;
+
+    halfsizerotated.Set( +halfsize, +halfsize, 0 );
+    halfsizerotated = *matrot * halfsizerotated;
+    m_pRotatedQuadVerts[1].x = halfsizerotated.x;
+    m_pRotatedQuadVerts[1].y = halfsizerotated.y;
+    m_pRotatedQuadVerts[1].z = halfsizerotated.z;
+    m_pRotatedQuadVerts[1].u = 1;
+    m_pRotatedQuadVerts[1].v = 0;
+
+    halfsizerotated.Set( -halfsize, -halfsize, 0 );
+    halfsizerotated = *matrot * halfsizerotated;
+    m_pRotatedQuadVerts[2].x = halfsizerotated.x;
+    m_pRotatedQuadVerts[2].y = halfsizerotated.y;
+    m_pRotatedQuadVerts[2].z = halfsizerotated.z;
+    m_pRotatedQuadVerts[2].u = 0;
+    m_pRotatedQuadVerts[2].v = 1;
+
+    halfsizerotated.Set( +halfsize, -halfsize, 0 );
+    halfsizerotated = *matrot * halfsizerotated;
+    m_pRotatedQuadVerts[3].x = halfsizerotated.x;
+    m_pRotatedQuadVerts[3].y = halfsizerotated.y;
+    m_pRotatedQuadVerts[3].z = halfsizerotated.z;
+    m_pRotatedQuadVerts[3].u = 1;
+    m_pRotatedQuadVerts[3].v = 1;
 }
 
 void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
@@ -118,74 +153,18 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
     {
 #if USE_INDEXED_TRIANGLES
         {
-            pVerts[vertexnum].x = pos.x;
-            pVerts[vertexnum].y = pos.y;
-            pVerts[vertexnum].z = pos.z;
-            pVerts[vertexnum].u = 0;
-            pVerts[vertexnum].v = 0;
-
-            pVerts[vertexnum].r = color.r;
-            pVerts[vertexnum].g = color.g;
-            pVerts[vertexnum].b = color.b;
-            pVerts[vertexnum].a = color.a;
-
-            //pVerts[vertexnum].size = size * m_2DCameraZoom;
-
             // copy the basic info from the first vertex.
-            pVerts[vertexnum+1] = pVerts[vertexnum];
-            pVerts[vertexnum+2] = pVerts[vertexnum];
-            pVerts[vertexnum+3] = pVerts[vertexnum];
-
-            // customize the UVs for each vertex
-            pVerts[vertexnum+1].u = 1;
-            pVerts[vertexnum+2].v = 1;
-            pVerts[vertexnum+3].u = 1;
-            pVerts[vertexnum+3].v = 1;
-
-            float halfsize = size / 2;
-
-            // customize the positions for each vertex, calculated differently if billboarded vs. not billboarded
-            if( false ) // billboard the particles
+            for( int i=0; i<4; i++ )
             {
-                //Vector3 halfsizerotated;
-
-                //halfsizerotated.Set( -halfsize, halfsize, 0 );
-                //halfsizerotated = matrot * halfsizerotated;
-                //pVerts[vertexnum+0].x += halfsizerotated.x;
-                //pVerts[vertexnum+0].y += halfsizerotated.y;
-                //pVerts[vertexnum+0].z += halfsizerotated.z;
-
-                //halfsizerotated.Set( halfsize, halfsize, 0 );
-                //halfsizerotated = matrot * halfsizerotated;
-                //pVerts[vertexnum+1].x += halfsizerotated.x;
-                //pVerts[vertexnum+1].y += halfsizerotated.y;
-                //pVerts[vertexnum+1].z += halfsizerotated.z;
-
-                //halfsizerotated.Set( -halfsize, -halfsize, 0 );
-                //halfsizerotated = matrot * halfsizerotated;
-                //pVerts[vertexnum+2].x += halfsizerotated.x;
-                //pVerts[vertexnum+2].y += halfsizerotated.y;
-                //pVerts[vertexnum+2].z += halfsizerotated.z;
-
-                //halfsizerotated.Set( halfsize, -halfsize, 0 );
-                //halfsizerotated = matrot * halfsizerotated;
-                //pVerts[vertexnum+3].x += halfsizerotated.x;
-                //pVerts[vertexnum+3].y += halfsizerotated.y;
-                //pVerts[vertexnum+3].z += halfsizerotated.z;
-            }
-            else
-            {
-                pVerts[vertexnum+0].x -= halfsize;
-                pVerts[vertexnum+0].y += halfsize;
-
-                pVerts[vertexnum+1].x += halfsize;
-                pVerts[vertexnum+1].y += halfsize;
-
-                pVerts[vertexnum+2].x -= halfsize;
-                pVerts[vertexnum+2].y -= halfsize;
-
-                pVerts[vertexnum+3].x += halfsize;
-                pVerts[vertexnum+3].y -= halfsize;
+                pVerts[vertexnum+i].x = pos.x + m_pRotatedQuadVerts[i].x * size;
+                pVerts[vertexnum+i].y = pos.y + m_pRotatedQuadVerts[i].y * size;
+                pVerts[vertexnum+i].z = pos.z + m_pRotatedQuadVerts[i].z * size;
+                pVerts[vertexnum+i].u = m_pRotatedQuadVerts[i].u;
+                pVerts[vertexnum+i].v = m_pRotatedQuadVerts[i].v;
+                pVerts[vertexnum+i].r = color.r;
+                pVerts[vertexnum+i].g = color.g;
+                pVerts[vertexnum+i].b = color.b;
+                pVerts[vertexnum+i].a = color.a;
             }
         }
 #else

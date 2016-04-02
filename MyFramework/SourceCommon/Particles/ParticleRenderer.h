@@ -18,6 +18,8 @@ protected:
 
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
+
+    Vertex_XYZUV m_pRotatedQuadVerts[4];
     
     unsigned int m_ParticleCount;
 

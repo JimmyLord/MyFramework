@@ -627,8 +627,7 @@ void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inve
     if( m_uHandle_CameraRotation != -1 )
     {
         MyMatrix matcamrot;
-        Vector3 invcamrot = *camrot;
-        matcamrot.CreateSRT( Vector3(1), invcamrot, Vector3(0) );
+        matcamrot.CreateSRT( Vector3(1), *camrot, Vector3(0) );
         glUniformMatrix4fv( m_uHandle_CameraRotation, 1, false, (GLfloat*)&matcamrot.m11 );
     }
 #endif
