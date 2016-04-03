@@ -117,7 +117,7 @@ void ParticleRendererInstanced::AddPoint(Vector3 pos, float rot, ColorByte color
 
 void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
 {
-    if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
+    if( m_pMaterial == 0 || m_pMaterial->GetShaderInstanced() == 0 || m_ParticleCount == 0 )
         return;
 
     checkGlError( "start of ParticleRenderInstanced::Draw()" );
@@ -137,7 +137,7 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
     MyAssert( m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShaderInstanced()->GlobalPass();
     if( pShader == 0 )
         return;
 

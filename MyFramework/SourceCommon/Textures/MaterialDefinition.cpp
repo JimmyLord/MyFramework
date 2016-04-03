@@ -55,13 +55,20 @@ void MaterialDefinition::Init()
     m_pFile = 0;
 
     m_pShaderGroup = 0;
+    m_pShaderGroupInstanced = 0;
     m_pTextureColor = 0;
+
+    m_BlendType = MaterialBlendType_UseShaderValue;
+
     m_ColorAmbient = ColorByte(255,255,255,255);
     m_ColorDiffuse = ColorByte(255,255,255,255);
     m_ColorSpecular = ColorByte(255,255,255,255);
     m_Shininess = 200;
 
-    m_BlendType = MaterialBlendType_UseShaderValue;
+#if MYFW_USING_WX
+    m_ControlID_Shader = -1;
+    m_ControlID_ShaderInstanced = -1;
+#endif
 }
 
 MaterialDefinition::~MaterialDefinition()
@@ -77,6 +84,7 @@ MaterialDefinition::~MaterialDefinition()
     SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureColor );
     SAFE_RELEASE( m_pShaderGroup );
+    SAFE_RELEASE( m_pShaderGroupInstanced );
 }
 
 void MaterialDefinition::ImportFromFile()
@@ -110,6 +118,32 @@ void MaterialDefinition::ImportFromFile()
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
                     pShaderGroup = MyNew ShaderGroup( pShaderFile );
                     SetShader( pShaderGroup );
+                    pShaderGroup->Release();
+                }
+                else
+                {
+                    MyAssert( false );
+                }
+                pFile->Release();
+            }
+        }
+
+        shaderstringobj = cJSON_GetObjectItem( material, "ShaderInstanced" );
+        if( shaderstringobj )
+        {
+            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( shaderstringobj->valuestring );
+            if( pShaderGroup != 0 )
+            {
+                SetShaderInstanced( pShaderGroup );
+            }
+            else
+            {
+                MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
+                if( pFile->IsA( "MyFileShader" ) )
+                {
+                    MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
+                    pShaderGroup = MyNew ShaderGroup( pShaderFile );
+                    SetShaderInstanced( pShaderGroup );
                     pShaderGroup->Release();
                 }
                 else
@@ -160,6 +194,9 @@ void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
     if( m_pShaderGroup )
         g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroup->GetFile() );
 
+    if( m_pShaderGroupInstanced )
+        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroupInstanced->GetFile() );
+
     if( m_pTextureColor )
         g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->m_pFile );
 }
@@ -195,6 +232,14 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
         pShader->AddRef();
     SAFE_RELEASE( m_pShaderGroup );
     m_pShaderGroup = pShader;
+}
+
+void MaterialDefinition::SetShaderInstanced(ShaderGroup* pShader)
+{
+    if( pShader )
+        pShader->AddRef();
+    SAFE_RELEASE( m_pShaderGroupInstanced );
+    m_pShaderGroupInstanced = pShader;
 }
 
 void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
@@ -252,7 +297,12 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
             const char* desc = "no shader";
             if( pMaterial->m_pShaderGroup && pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
                 desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
-            g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
+            pMaterial->m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
+
+            desc = "no shader";
+            if( pMaterial->m_pShaderGroupInstanced && pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
+                desc = pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+            pMaterial->m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
 
             desc = "no color texture";
             if( pMaterial->m_pTextureColor )
@@ -262,9 +312,6 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
             g_pPanelWatch->AddColorByte( "Color-Ambient", &pMaterial->m_ColorAmbient, 0, 255 );
             g_pPanelWatch->AddColorByte( "Color-Diffuse", &pMaterial->m_ColorDiffuse, 0, 255 );
             g_pPanelWatch->AddColorByte( "Color-Specular", &pMaterial->m_ColorSpecular, 0, 255 );
-            //ColorFloat pMaterial->m_ColorAmbient;
-            //ColorFloat pMaterial->m_ColorDiffuse;
-            //ColorFloat pMaterial->m_ColorSpecular;
 
             g_pPanelWatch->AddFloat( "Shininess", &pMaterial->m_Shininess, 1, 300 );
         }
@@ -346,6 +393,8 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         cJSON_AddStringToObject( material, "Name", m_Name );
         if( m_pShaderGroup )
             cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
+        if( m_pShaderGroupInstanced )
+            cJSON_AddStringToObject( material, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->m_FullPath );
         if( m_pTextureColor )
             cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
 
@@ -402,7 +451,18 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
         MyAssert( pShaderGroup );
         //MyAssert( m_pMesh );
 
-        SetShader( pShaderGroup );
+        if( controlid == m_ControlID_Shader )
+        {
+            SetShader( pShaderGroup );
+        }
+        else if( controlid == m_ControlID_ShaderInstanced )
+        {
+            SetShaderInstanced( pShaderGroup );
+        }
+        else
+        {
+            MyAssert( false );
+        }
 
         // update the panel so new Shader name shows up.
         g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
@@ -429,7 +489,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
             SetTextureColor( g_pTextureManager->FindTexture( pFile->m_FullPath ) );
         }
 
-        // update the panel so new Shader name shows up.
+        // update the panel so new texture name shows up.
         g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
     }
 
@@ -437,7 +497,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
     {
         SetTextureColor( (TextureDefinition*)g_DragAndDropStruct.m_Value );
 
-        // update the panel so new Shader name shows up.
+        // update the panel so new texture name shows up.
         g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
     }
 }

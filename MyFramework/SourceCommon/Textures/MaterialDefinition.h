@@ -29,6 +29,7 @@ public: // for now.
 
 protected:
     ShaderGroup* m_pShaderGroup;
+    ShaderGroup* m_pShaderGroupInstanced;
     TextureDefinition* m_pTextureColor;
 
     MaterialBlendType m_BlendType;
@@ -59,6 +60,9 @@ public:
     void SetShader(ShaderGroup* pShader);
     ShaderGroup* GetShader() { return m_pShaderGroup; }
 
+    void SetShaderInstanced(ShaderGroup* pShader);
+    ShaderGroup* GetShaderInstanced() { return m_pShaderGroupInstanced; }    
+
     void SetTextureColor(TextureDefinition* pTexture);
     TextureDefinition* GetTextureColor() { return m_pTextureColor; }
 
@@ -79,6 +83,9 @@ public:
     {
         RightClick_ViewInWatchWindow = 1000,
     };
+
+    int m_ControlID_Shader;
+    int m_ControlID_ShaderInstanced;
 
     // Memory panel callbacks
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
