@@ -65,7 +65,7 @@ void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
     Vertex_XYZUV_RGBA* pVerts = m_pParticleQuadVerts;
     float halfsize = 0.5;
     
-    if( true ) // billboard the quad
+    if( matrot ) // billboard the quad
     {
         Vector3 pos;
     

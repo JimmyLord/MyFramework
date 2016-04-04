@@ -97,39 +97,51 @@ void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
 {
     float halfsize = 0.5f;
 
-    Vector3 halfsizerotated;
+    Vertex_XYZUV* pVerts = m_pRotatedQuadVerts;
 
-    halfsizerotated.Set( -halfsize, +halfsize, 0 );
-    halfsizerotated = *matrot * halfsizerotated;
-    m_pRotatedQuadVerts[0].x = halfsizerotated.x;
-    m_pRotatedQuadVerts[0].y = halfsizerotated.y;
-    m_pRotatedQuadVerts[0].z = halfsizerotated.z;
-    m_pRotatedQuadVerts[0].u = 0;
-    m_pRotatedQuadVerts[0].v = 0;
+    if( matrot )
+    {
+        Vector3 halfsizerotated;
 
-    halfsizerotated.Set( +halfsize, +halfsize, 0 );
-    halfsizerotated = *matrot * halfsizerotated;
-    m_pRotatedQuadVerts[1].x = halfsizerotated.x;
-    m_pRotatedQuadVerts[1].y = halfsizerotated.y;
-    m_pRotatedQuadVerts[1].z = halfsizerotated.z;
-    m_pRotatedQuadVerts[1].u = 1;
-    m_pRotatedQuadVerts[1].v = 0;
+        halfsizerotated.Set( -halfsize, +halfsize, 0 );
+        halfsizerotated = *matrot * halfsizerotated;
+        pVerts[0].x = halfsizerotated.x;
+        pVerts[0].y = halfsizerotated.y;
+        pVerts[0].z = halfsizerotated.z;
+        pVerts[0].u = 0;
+        pVerts[0].v = 0;
 
-    halfsizerotated.Set( -halfsize, -halfsize, 0 );
-    halfsizerotated = *matrot * halfsizerotated;
-    m_pRotatedQuadVerts[2].x = halfsizerotated.x;
-    m_pRotatedQuadVerts[2].y = halfsizerotated.y;
-    m_pRotatedQuadVerts[2].z = halfsizerotated.z;
-    m_pRotatedQuadVerts[2].u = 0;
-    m_pRotatedQuadVerts[2].v = 1;
+        halfsizerotated.Set( +halfsize, +halfsize, 0 );
+        halfsizerotated = *matrot * halfsizerotated;
+        pVerts[1].x = halfsizerotated.x;
+        pVerts[1].y = halfsizerotated.y;
+        pVerts[1].z = halfsizerotated.z;
+        pVerts[1].u = 1;
+        pVerts[1].v = 0;
 
-    halfsizerotated.Set( +halfsize, -halfsize, 0 );
-    halfsizerotated = *matrot * halfsizerotated;
-    m_pRotatedQuadVerts[3].x = halfsizerotated.x;
-    m_pRotatedQuadVerts[3].y = halfsizerotated.y;
-    m_pRotatedQuadVerts[3].z = halfsizerotated.z;
-    m_pRotatedQuadVerts[3].u = 1;
-    m_pRotatedQuadVerts[3].v = 1;
+        halfsizerotated.Set( -halfsize, -halfsize, 0 );
+        halfsizerotated = *matrot * halfsizerotated;
+        pVerts[2].x = halfsizerotated.x;
+        pVerts[2].y = halfsizerotated.y;
+        pVerts[2].z = halfsizerotated.z;
+        pVerts[2].u = 0;
+        pVerts[2].v = 1;
+
+        halfsizerotated.Set( +halfsize, -halfsize, 0 );
+        halfsizerotated = *matrot * halfsizerotated;
+        pVerts[3].x = halfsizerotated.x;
+        pVerts[3].y = halfsizerotated.y;
+        pVerts[3].z = halfsizerotated.z;
+        pVerts[3].u = 1;
+        pVerts[3].v = 1;
+    }
+    else
+    {
+        pVerts[0].x = -halfsize; pVerts[0].y = +halfsize; pVerts[0].z = 0; pVerts[0].u = 0; pVerts[0].v = 0;
+        pVerts[1].x = +halfsize; pVerts[1].y = +halfsize; pVerts[1].z = 0; pVerts[1].u = 1; pVerts[1].v = 0;
+        pVerts[2].x = -halfsize; pVerts[2].y = -halfsize; pVerts[2].z = 0; pVerts[2].u = 0; pVerts[2].v = 1;
+        pVerts[3].x = +halfsize; pVerts[3].y = -halfsize; pVerts[3].z = 0; pVerts[3].u = 1; pVerts[3].v = 1;
+    }
 }
 
 void ParticleRenderer::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
