@@ -53,7 +53,7 @@ public:
 
     //virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };

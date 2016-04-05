@@ -216,7 +216,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     if( m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
     {
-        LOGInfo( LOGTag, "Shader failed to load\n" );
+        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->m_FullPath );
         return false;
     }
 

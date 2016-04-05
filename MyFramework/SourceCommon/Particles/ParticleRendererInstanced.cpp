@@ -65,7 +65,8 @@ void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
     Vertex_XYZUV_RGBA* pVerts = m_pParticleQuadVerts;
     float halfsize = 0.5;
     
-    if( matrot ) // billboard the quad
+    //if( matrot ) // billboard the quad
+    if( 0 ) // billboarding in shader so particles will work in shadowmaps.
     {
         Vector3 pos;
     
@@ -115,7 +116,7 @@ void ParticleRendererInstanced::AddPoint(Vector3 pos, float rot, ColorByte color
     }
 }
 
-void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
+void ParticleRendererInstanced::Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShaderInstanced() == 0 || m_ParticleCount == 0 )
         return;
@@ -184,6 +185,8 @@ void ParticleRendererInstanced::Draw(MyMatrix* matviewproj)
                 glVertexAttribDivisor( aicolorloc, 1 );
             }
         }
+
+        pShader->ProgramCamera( 0, &camrot, 0 );
 
         checkGlError( "before glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
 

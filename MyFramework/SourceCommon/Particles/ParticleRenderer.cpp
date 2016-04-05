@@ -229,7 +229,7 @@ void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
         m_pVertexBuffer->ResetVAOs();
 }
 
-void ParticleRenderer::Draw(MyMatrix* matviewproj)
+void ParticleRenderer::Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
 {
 #if MY_SHITTY_LAPTOP
     //return;
