@@ -1012,9 +1012,10 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //}
     }
 
-    int height = PaddingTop + (variablenum+1)*ControlHeight + PaddingBottom;
+    int height = PosY + ControlHeight;
 
     SetScrollbars( 1, 1, PosX+10, height, 0, 0 );
+    SetScrollRate( 1, 20 );
 }
 
 PanelWatchDropTarget::PanelWatchDropTarget()
