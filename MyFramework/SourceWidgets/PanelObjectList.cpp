@@ -206,15 +206,18 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
 
 void PanelObjectList::OnActivate(wxTreeEvent& event)
 {
-    // ATM, activating an item will allow user to rename it.
-    wxArrayTreeItemIds selecteditems;
-    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
-    
-    if( numselected == 1 )
-    {
-        wxTreeItemId id = selecteditems[0].GetID();
-        m_pTree_Objects->EditLabel( id );
-    }
+    //// ATM, activating an item will allow user to rename it.
+    //wxArrayTreeItemIds selecteditems;
+    //unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
+    //
+    //if( numselected == 1 )
+    //{
+    //    wxTreeItemId id = selecteditems[0].GetID();
+    //    m_pTree_Objects->EditLabel( id );
+    //}
+
+    // do the default action for activating which should be expand/collapse tree
+    event.Skip();
 }
 
 void PanelObjectList::OnKeyDown(wxTreeEvent& event)
