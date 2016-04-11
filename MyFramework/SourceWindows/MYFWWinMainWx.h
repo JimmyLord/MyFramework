@@ -27,11 +27,25 @@ enum GLViewTypes
     GLView_NumTypes,
 };
 
+enum EditorWindowTypes
+{
+    EditorWindow_Game,
+    EditorWindow_PanelObjectList,
+    EditorWindow_PanelWatch,
+    EditorWindow_PanelMemory,
+    EditorWindow_NumTypes,
+};
+
 enum MenuIDs
 {
     myID_View_SavePerspective = wxID_HIGHEST + 1,
     myID_View_LoadPerspective,
     myID_View_ResetPerspective,
+    myID_View_EditorWindows,
+    myID_EditorWindow_Game,
+    myID_EditorWindow_PanelObjectList,
+    myID_EditorWindow_PanelWatch,
+    myID_EditorWindow_PanelMemory,
     myID_GLViewType_Fill,
     myID_GLViewType_Tall,
     myID_GLViewType_Square,
@@ -75,6 +89,9 @@ public:
     wxMenu* m_Edit;
     wxMenu* m_View;
     wxMenu* m_Aspect;
+
+    wxMenu* m_EditorWindows;
+    wxMenuItem* m_EditorWindowOptions[EditorWindow_NumTypes];
 
     wxMenuItem* m_AspectMenuItems[GLView_NumTypes];
 

@@ -24,6 +24,14 @@ wxDataFormat* g_pMyDataFormat = 0;
 
 GLViewTypes g_CurrentGLViewType;
 
+const char* g_DefaultEditorWindowTypeMenuLabels[EditorWindow_NumTypes] =
+{
+    "&Game",
+    "&Object List Panel",
+    "&Watch Panel",
+    "&Files Panel",
+};
+
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, "wxWindow Title", wxPoint( -1, -1 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {
@@ -88,6 +96,13 @@ void MainFrame::InitFrame()
         m_View->Append( myID_View_SavePerspective, wxT("&Save window layout") );
         m_View->Append( myID_View_LoadPerspective, wxT("&Load window layout") );
         m_View->Append( myID_View_ResetPerspective, wxT("&Reset window layout") );
+        m_EditorWindows = MyNew wxMenu;
+        for( int i=0; i<EditorWindow_NumTypes; i++ )
+        {
+            m_EditorWindowOptions[i] = m_EditorWindows->Append( myID_EditorWindow_Game + i, g_DefaultEditorWindowTypeMenuLabels[i], wxEmptyString );
+            Connect( myID_EditorWindow_Game + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+        }
+        m_View->Append( myID_View_EditorWindows, "Editor Windows", m_EditorWindows );
 
         m_Aspect = MyNew wxMenu;
         m_AspectMenuItems[GLView_Full] = m_Aspect->AppendCheckItem( myID_GLViewType_Fill, wxT("&Fill\tAlt-1") );
@@ -275,6 +290,38 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 
     case myID_View_ResetPerspective:
         m_AUIManager.LoadPerspective( m_DefaultPerspectiveString );
+        break;
+
+    case myID_EditorWindow_Game:
+        {
+            wxAuiPaneInfo& paneinfo = m_AUIManager.GetPane( m_pGLCanvas );
+            paneinfo.Show( !paneinfo.IsShown() );
+            m_AUIManager.Update();
+        }
+        break;
+
+    case myID_EditorWindow_PanelWatch:
+        {
+            wxAuiPaneInfo& paneinfo = m_AUIManager.GetPane( g_pPanelWatch );
+            paneinfo.Show( !paneinfo.IsShown() );
+            m_AUIManager.Update();
+        }
+        break;
+
+    case myID_EditorWindow_PanelMemory:
+        {
+            wxAuiPaneInfo& paneinfo = m_AUIManager.GetPane( g_pPanelMemory );
+            paneinfo.Show( !paneinfo.IsShown() );
+            m_AUIManager.Update();
+        }
+        break;
+
+    case myID_EditorWindow_PanelObjectList:
+        {
+            wxAuiPaneInfo& paneinfo = m_AUIManager.GetPane( g_pPanelObjectList );
+            paneinfo.Show( !paneinfo.IsShown() );
+            m_AUIManager.Update();
+        }
         break;
 
     case myID_GLViewType_Fill:
