@@ -370,7 +370,7 @@ void MyMesh::LoadAnimationControlFile(char* buffer)
         {
             MyAnimation* pAnim = MyNew MyAnimation;
             
-            pAnim->SetName( m_pAnimationTimelines[0]->m_Name );
+            pAnim->SetName( m_pAnimationTimelines[i]->m_Name );
             pAnim->m_TimelineIndex = i;
             pAnim->m_StartTime = 0;
             pAnim->m_Duration = m_pAnimationTimelines[i]->m_Duration;
