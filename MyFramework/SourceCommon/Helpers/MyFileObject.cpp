@@ -145,6 +145,9 @@ void MyFileObject::OnRightClick()
     menu.Append( RightClick_OpenFile, "Open file" );
  	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
 
+    menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+
     // blocking call.
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
 }
@@ -172,6 +175,29 @@ void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
 #endif
 }
 
+void MyFileObject::OSOpenContainingFolder()
+{
+#if MYFW_WINDOWS
+    char params[MAX_PATH];
+    char workingdir[MAX_PATH];
+    _getcwd( workingdir, MAX_PATH * sizeof(char) );
+    sprintf_s( params, MAX_PATH, "\"%s/%s\"", workingdir, m_FullPath );
+
+    int endoffolderoffset = (int)( strlen(params) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) - 1);
+    params[endoffolderoffset] = '"';
+    params[endoffolderoffset+1] = 0;
+    for( int i=0; i<endoffolderoffset; i++ )
+    {
+        if( params[i] == '/' )
+        {
+            params[i] = '\\';
+        }
+    }
+
+    ShellExecuteA( 0, 0, "explorer.exe", params, 0, SW_SHOWNORMAL );
+#endif
+}
+
 void MyFileObject::OnPopupClick(wxEvent &evt)
 {
     MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
@@ -182,6 +208,12 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
     case RightClick_OpenFile:
         {
             pFileObject->OSLaunchFile( true );
+        }
+        break;
+
+    case RightClick_OpenContainingFolder:
+        {
+            pFileObject->OSOpenContainingFolder();
         }
         break;
 

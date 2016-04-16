@@ -83,9 +83,11 @@ public:
     {
         RightClick_ViewInWatchWindow = 1000,
         RightClick_OpenFile,
+        RightClick_OpenContainingFolder,
     };
 
     void OSLaunchFile(bool createfileifdoesntexist);
+    void OSOpenContainingFolder();
 
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);

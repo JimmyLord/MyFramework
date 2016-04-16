@@ -953,6 +953,8 @@ void MainGLCanvas::Draw()
 
         //if( m_GLCanvasID == 0 )
         {
+            MyAssert( g_GLCanvasIDActive == m_GLCanvasID );
+
             g_pGameCore->OnDrawFrame( m_GLCanvasID );
             g_pGameCore->OnDrawFrameDone();
         }
