@@ -142,7 +142,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
 
 void Shader_Base::DeactivateShader(BufferDefinition* vbo, bool usevaosifavailable)
 {
-    if( vbo && vbo->m_CurrentVAOHandle[g_ActiveShaderPass] )
+    if( vbo && vbo->m_CurrentVAOHandle )
     {
         glBindVertexArray( 0 );
     }
@@ -453,19 +453,18 @@ bool Shader_Base::ActivateAndProgramShader()
 
 void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable)
 {
-    if( usevaosifavailable == false || vbo->m_CurrentVAOInitialized[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == false )
+    if( usevaosifavailable == false || vbo->m_VAOInitialized[vbo->m_CurrentBufferIndex] == false )
     {
         if( usevaosifavailable && glBindVertexArray != 0 )
         {
-            vbo->m_CurrentVAOInitialized[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] = true;
+            vbo->m_VAOInitialized[vbo->m_CurrentBufferIndex] = true;
 
             // First time using this VAO, so we create a VAO and set up all the attributes.
             vbo->CreateAndBindVAO();
 #if _DEBUG && MYFW_WINDOWS
-            vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] = this;
-            vbo->m_DEBUG_VBOUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] = vbo->m_CurrentBufferID;
+            vbo->m_DEBUG_VBOUsedOnCreation[vbo->m_CurrentBufferIndex] = vbo->m_CurrentBufferID;
             if( ibo )
-                vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] = ibo->m_CurrentBufferID;
+                vbo->m_DEBUG_IBOUsedOnCreation[ibo->m_CurrentBufferIndex] = ibo->m_CurrentBufferID;
 #endif
         }
 
@@ -476,15 +475,11 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
     else
     {
 #if _DEBUG && MYFW_WINDOWS
-        MyAssert( vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == this ||
-                this->DoVAORequirementsMatch( vbo->m_DEBUG_ShaderUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] ) );
-        MyAssert( vbo->m_DEBUG_VBOUsedOnCreation[g_ActiveShaderPass][vbo->m_CurrentBufferIndex] == vbo->m_CurrentBufferID );
+        MyAssert( vbo->m_DEBUG_VBOUsedOnCreation[vbo->m_CurrentBufferIndex] == vbo->m_CurrentBufferID );
         if( ibo )
-            MyAssert( vbo->m_DEBUG_IBOUsedOnCreation[g_ActiveShaderPass][ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
-        // TODO: find a better way to handle on the fly shader changes.
-        vbo->ResetVAOs();
+            MyAssert( vbo->m_DEBUG_IBOUsedOnCreation[ibo->m_CurrentBufferIndex] == ibo->m_CurrentBufferID );
 #endif
-        glBindVertexArray( vbo->m_CurrentVAOHandle[g_ActiveShaderPass] );
+        glBindVertexArray( vbo->m_CurrentVAOHandle );
     }
 }
 

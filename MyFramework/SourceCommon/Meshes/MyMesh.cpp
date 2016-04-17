@@ -42,10 +42,6 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
         pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
-
-    // rebuild the vaos in case the attributes required for the shader are different than the last material assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
 }
 
 MyMesh::MyMesh()
@@ -232,8 +228,6 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
         unsigned short* pIndices = MyNew unsigned short[numindices];
         m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, 2, "MyMesh", "Verts" );
     }
-
-    //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
 void MyMesh::CreateFromOBJFile(MyFileObject* pFile)

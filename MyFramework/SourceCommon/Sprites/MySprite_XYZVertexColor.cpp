@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -44,8 +44,6 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
             m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-StaticVerts" );
         else
             m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-Verts" );
-
-        //m_pVAO = g_pBufferManager->CreateVAO();
     }
 
     if( m_pIndexBuffer == 0 )

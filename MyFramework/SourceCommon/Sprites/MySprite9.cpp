@@ -73,8 +73,6 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
     {
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[16];
         m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 16*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, "MySprite9", "Verts" );
-
-        //m_pVAO = g_pBufferManager->CreateVAO();
     }
 
     // allocate and fill 24 indices for a triangle strip

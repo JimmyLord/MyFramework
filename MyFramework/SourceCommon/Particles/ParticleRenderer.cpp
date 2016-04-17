@@ -89,8 +89,6 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, 2, category, "Particles-Indices" );
     }
-
-    //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
 void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
@@ -224,9 +222,6 @@ void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
         pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
-
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
 }
 
 void ParticleRenderer::Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)

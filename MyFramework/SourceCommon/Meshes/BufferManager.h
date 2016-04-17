@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -25,23 +25,23 @@ class BufferDefinition : public CPPListNode, public RefCount
 
 protected:
     GLuint m_BufferIDs[3]; // up to 3 buffers created for double/triple buffering data.
-    GLuint m_VAOHandles[ShaderPass_NumTypes][3]; // used only for vbo's ATM.
+    GLuint m_VAOHandles[3]; // used only for vbo's ATM.
+    bool m_VAOInitialized[3];
+
     unsigned int m_NumBuffersToUse;
     unsigned int m_CurrentBufferIndex;
     unsigned int m_NextBufferIndex;
 
 public:
 #if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX
-    Shader_Base* m_DEBUG_ShaderUsedOnCreation[ShaderPass_NumTypes][3];
-    int m_DEBUG_CurrentVAOIndex[ShaderPass_NumTypes];
-    GLuint m_DEBUG_VBOUsedOnCreation[ShaderPass_NumTypes][3];
-    GLuint m_DEBUG_IBOUsedOnCreation[ShaderPass_NumTypes][3];
+    int m_DEBUG_CurrentVAOIndex;
+    GLuint m_DEBUG_VBOUsedOnCreation[3];
+    GLuint m_DEBUG_IBOUsedOnCreation[3];
     int m_DEBUG_LastFrameUpdated;
 #endif
 
     GLuint m_CurrentBufferID;
-    bool m_CurrentVAOInitialized[ShaderPass_NumTypes][3];
-    GLuint m_CurrentVAOHandle[ShaderPass_NumTypes];
+    GLuint m_CurrentVAOHandle;
 
     char* m_pData; // only using char* because android compiler doesn't like deleting void*(warning : deleting 'void*' is undefined)
     unsigned int m_DataSize;
@@ -113,9 +113,6 @@ public:
     void Tick();
 
     void InvalidateAllBuffers(bool cleanglallocs);
-#if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX
-    void ResetAllVBOsUsingShader(ShaderGroup* pShaderGroup);
-#endif
 
     unsigned int CalculateTotalMemoryUsedByBuffers();
 

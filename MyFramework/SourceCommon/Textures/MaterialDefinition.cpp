@@ -466,10 +466,6 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
 
         // update the panel so new Shader name shows up.
         g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
-
-//#if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX // MYFW_USING_WX should already be defined.
-        g_pBufferManager->ResetAllVBOsUsingShader( pShaderGroup );
-//#endif
     }
 }
 

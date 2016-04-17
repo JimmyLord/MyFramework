@@ -18,7 +18,6 @@ SpriteBatch::SpriteBatch()
     m_SpritesAllocated = 0;
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    //m_pVAO = 0;
 }
 
 SpriteBatch::~SpriteBatch()
@@ -27,7 +26,6 @@ SpriteBatch::~SpriteBatch()
     SAFE_RELEASE( m_pIndexBuffer );
 
     SAFE_RELEASE( m_pMaterial );
-    //SAFE_RELEASE( m_pVAO );
 }
 
 void SpriteBatch::SetMaterial(MaterialDefinition* pMaterial)
@@ -64,8 +62,6 @@ void SpriteBatch::AllocateVertices(int numsprites)
     }
 
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch", "Indices" );
-
-    //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
 void SpriteBatch::AddSprite(MySprite* pSprite)

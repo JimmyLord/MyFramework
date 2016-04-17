@@ -39,7 +39,6 @@ MySprite::MySprite(bool creatematerial)
 
     m_pVertexBuffer = 0;
     m_pIndexBuffer = 0;
-    m_pVAO = 0;
 
     m_Position.SetIdentity();
 
@@ -63,7 +62,6 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
     memcpy( pVerts, pSprite->m_pVertexBuffer->m_pData, sizeof(Vertex_Sprite)*4);
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
-    //m_pVAO = g_pBufferManager->CreateVAO();
 
     m_pIndexBuffer->AddRef();
 }
@@ -74,7 +72,6 @@ MySprite::~MySprite()
     SAFE_RELEASE( m_pIndexBuffer );
 
     SAFE_RELEASE( m_pMaterial );
-    //SAFE_RELEASE( m_pVAO );
 }
 
 void MySprite::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
@@ -108,8 +105,6 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
                 m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, category, "MySprite-Static Verts" );
             else
                 m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
-
-            //m_pVAO = g_pBufferManager->CreateVAO();
         }
 
         if( m_pIndexBuffer == 0 )
@@ -410,10 +405,6 @@ void MySprite::SetMaterial(MaterialDefinition* pMaterial)
         pMaterial->AddRef();
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
-
-    // rebuild the vaos in case the attributes required for the shader are different than the last shader assigned.
-    if( m_pVertexBuffer )
-        m_pVertexBuffer->ResetVAOs();
 }
 
 bool MySprite::Setup(MyMatrix* matviewproj)

@@ -44,8 +44,6 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
     }
 
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
-
-    //m_pVAO = g_pBufferManager->CreateVAO();
 }
 
 void SpriteBatch_XYZVertexColor::AddSprite(MySprite* pSprite)

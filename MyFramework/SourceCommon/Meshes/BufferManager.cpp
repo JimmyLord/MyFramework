@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -19,38 +19,27 @@ BufferDefinition::BufferDefinition()
     for( int i=0; i<3; i++ )
     {
         m_BufferIDs[i] = 0; // up to 3 buffers created for double/triple buffering data.
-        for( int p=0; p<ShaderPass_NumTypes; p++ )
-        {
-            m_VAOHandles[p][i] = 0;
-        }
+        m_VAOHandles[i] = 0;
     }
     m_NumBuffersToUse = 0;
     m_CurrentBufferIndex = 0;
     m_NextBufferIndex = 0;
 
 #if _DEBUG && MYFW_WINDOWS
+    m_DEBUG_CurrentVAOIndex = 0;
     for( int i=0; i<3; i++ )
     {
-        for( int p=0; p<ShaderPass_NumTypes; p++ )
-        {
-            m_DEBUG_ShaderUsedOnCreation[p][i] = 0;
-            m_DEBUG_CurrentVAOIndex[p] = 0; // not using [i].
-
-            m_DEBUG_VBOUsedOnCreation[p][i] = 0;
-            m_DEBUG_IBOUsedOnCreation[p][i] = 0;
-        }
+        m_DEBUG_VBOUsedOnCreation[i] = 0;
+        m_DEBUG_IBOUsedOnCreation[i] = 0;
     }
     m_DEBUG_LastFrameUpdated = -1;
 #endif
 
     m_CurrentBufferID = 0;
+    m_CurrentVAOHandle = 0;
     for( int i=0; i<3; i++ )
     {
-        for( int p=0; p<ShaderPass_NumTypes; p++ )
-        {
-            m_CurrentVAOInitialized[p][i] = false;
-            m_CurrentVAOHandle[p] = 0; // not using [i].
-        }
+        m_VAOInitialized[i] = false;
     }
 
     m_pData = 0;
@@ -155,9 +144,9 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
     }
 
     m_CurrentBufferID = m_BufferIDs[m_NextBufferIndex];
-    m_CurrentVAOHandle[g_ActiveShaderPass] = m_VAOHandles[g_ActiveShaderPass][m_NextBufferIndex];
+    m_CurrentVAOHandle = m_VAOHandles[m_NextBufferIndex];
 #if _DEBUG && MYFW_WINDOWS
-    m_DEBUG_CurrentVAOIndex[g_ActiveShaderPass] = m_NextBufferIndex;
+    m_DEBUG_CurrentVAOIndex = m_NextBufferIndex;
 #endif
 
     m_CurrentBufferIndex = m_NextBufferIndex;
@@ -184,13 +173,10 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
             if( glDeleteVertexArrays )
 #endif
             {
-                for( int p=0; p<ShaderPass_NumTypes; p++ )
+                if( m_VAOHandles[i] != 0 )
                 {
-                    if( m_VAOHandles[p][i] != 0 )
-                    {
-                        glDeleteVertexArrays( 1, &m_VAOHandles[p][i] );
-                        m_VAOHandles[p][i] = 0;
-                    }
+                    glDeleteVertexArrays( 1, &m_VAOHandles[i] );
+                    m_VAOHandles[i] = 0;
                 }
             }
         }
@@ -199,10 +185,7 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
     for( int i=0; i<3; i++ )
     {
         m_BufferIDs[i] = 0;
-        for( int p=0; p<ShaderPass_NumTypes; p++ )
-        {
-            m_VAOHandles[p][i] = 0;
-        }
+        m_VAOHandles[i] = 0;
     }
 
     m_CurrentBufferID = 0;
@@ -213,15 +196,15 @@ void BufferDefinition::CreateAndBindVAO()
 {
     MyAssert( glBindVertexArray != 0 );
 
-    if( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] == 0 )
+    if( m_VAOHandles[m_CurrentBufferIndex] == 0 )
 	{
-        glGenVertexArrays( 1, &m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] );
+        glGenVertexArrays( 1, &m_VAOHandles[m_CurrentBufferIndex] );
 	}
-    MyAssert( m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex] != 0 );
+    MyAssert( m_VAOHandles[m_CurrentBufferIndex] != 0 );
 
-    m_CurrentVAOHandle[g_ActiveShaderPass] = m_VAOHandles[g_ActiveShaderPass][m_CurrentBufferIndex];
+    m_CurrentVAOHandle = m_VAOHandles[m_CurrentBufferIndex];
 
-    glBindVertexArray( m_CurrentVAOHandle[g_ActiveShaderPass] );
+    glBindVertexArray( m_CurrentVAOHandle );
 
     // HACK: Since MyBindBuffer doesn't rebind the buffer if it's the same as the currently bound buffer...
     //       bind the 2 buffers to zero, so the InitializeAttributeArrays will bind the correct ones to the VAO.
@@ -235,10 +218,7 @@ void BufferDefinition::ResetVAOs()
 {
     for( int i=0; i<3; i++ )
     {
-        for( int p=0; p<ShaderPass_NumTypes; p++ )
-        {
-            m_CurrentVAOInitialized[p][i] = false;
-        }
+        m_VAOInitialized[i] = false;
     }
 }
 
@@ -462,40 +442,6 @@ void BufferManager::InvalidateAllBuffers(bool cleanglallocs)
     //    pVAODef->Invalidate( cleanglallocs );
     //}
 }
-
-#if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX
-void BufferManager::ResetAllVBOsUsingShader(ShaderGroup* pShaderGroup)
-{
-    for( CPPListNode* pNode = m_Buffers.GetHead(); pNode; )
-    {
-        BufferDefinition* pBufferDef = (BufferDefinition*)pNode;
-        pNode = pNode->GetNext();
-
-        // if this is a vertex buffer
-        if( pBufferDef->m_Target == GL_ARRAY_BUFFER )
-        {
-            for( int i=0; i<3; i++ )
-            {
-                for( int p=0; p<ShaderPass_NumTypes; p++ )
-                {
-                    BaseShader* pShader = pShaderGroup->GetShader( (ShaderPassTypes)p, 0, 0 );
-
-                    // does this shader have the same attributes as the old one.
-                    // if not reset the VAO.
-                    if( pShader )
-                    {
-                        if( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] != pShader ||
-                            pShader->DoVAORequirementsMatch( pBufferDef->m_DEBUG_ShaderUsedOnCreation[p][i] ) )
-                        {
-                            pBufferDef->ResetVAOs();
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-#endif
 
 unsigned int BufferManager::CalculateTotalMemoryUsedByBuffers()
 {
