@@ -3998,6 +3998,7 @@
     <ClInclude Include="SourceCommon\CommonHeader.h" />
     <ClInclude Include="SourceCommon\DataTypes\ColorStructs.h" />
     <ClInclude Include="SourceCommon\DataTypes\CPPList.h" />
+    <ClInclude Include="SourceCommon\DataTypes\MyAABounds.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyActivePool.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyList.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyMatrix.h" />

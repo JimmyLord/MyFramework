@@ -65,6 +65,8 @@ class MyMesh : public CPPListNode, public RefCount
 protected:
     float m_InitialScale;
 
+    MyAABounds m_AABounds;
+
     MyList<char*> m_BoneNames;
     MyList<MyMatrix> m_BoneOffsetMatrices;
     MyList<MyMatrix> m_BoneFinalMatrices;

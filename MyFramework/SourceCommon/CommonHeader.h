@@ -161,6 +161,7 @@
 #include "DataTypes/Plane.h"
 #include "DataTypes/ColorStructs.h"
 #include "DataTypes/MyList.h"
+#include "DataTypes/MyAABounds.h"
 
 #include "../../Libraries/Box2D/Box2D/Box2D/Box2D.h"
 #include "Physics/Box2DContactListener.h"

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -21,6 +21,9 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
     unsigned int totalbones = 0;
     unsigned int totalnodes = 0;
     unsigned int totalanimtimelines = 0;
+
+    Vector3 minvert;
+    Vector3 maxvert;
 
     cJSON* root = cJSON_Parse( buffer );
 
@@ -182,6 +185,16 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
                         }
                     }
 
+                    for( unsigned int i=0; i<totalverts; i++ )
+                    {
+                        if( ((float*)(&(verts[pDesc->stride * i])))[0] < minvert.x || i == 0 ) minvert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[1] < minvert.y || i == 0 ) minvert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[2] < minvert.z || i == 0 ) minvert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[0] > maxvert.x || i == 0 ) maxvert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[1] > maxvert.y || i == 0 ) maxvert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[2] > maxvert.z || i == 0 ) maxvert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
+                    }
+
                     // read index buffer bytes
                     memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
                     rawbyteoffset += indexbuffersize;
@@ -265,6 +278,9 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
     }
 
     cJSON_Delete( root );
+
+    Vector3 center = (minvert + maxvert) / 2;
+    m_AABounds.Set( center, maxvert - center );
 
     m_MeshReady = true;
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,16 +7,32 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __OBJLoader_H__
-#define __OBJLoader_H__
+#ifndef __MyAABounds_H__
+#define __MyAABounds_H__
 
-class MySubmesh;
+class MyAABounds
+{
+protected:
+    Vector3 m_Center;
+    Vector3 m_HalfSize;
+    float m_Radius; // Largest half-size
 
-#if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
-#endif
+public:
+    MyAABounds() {}
 
-// return 2 BufferDefinition pointers.
-void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
+    Vector3 GetCenter() { return m_Center; }
+    Vector3 GetHalfSize() { return m_HalfSize; }
+    float GetRadius() { return m_Radius; }
 
-#endif //__OBJLoader_H__
+    void Set(Vector3 c, Vector3 h)
+    {
+        m_Center = c;
+        m_HalfSize = h;
+        if( m_HalfSize.x > m_HalfSize.y )
+            m_Radius = m_HalfSize.x > m_HalfSize.z ? m_HalfSize.x : m_HalfSize.z;
+        else
+            m_Radius = m_HalfSize.y > m_HalfSize.z ? m_HalfSize.y : m_HalfSize.z;
+    }
+};
+
+#endif //__MyAABounds_H__

@@ -50,6 +50,8 @@ MyMesh::MyMesh()
     m_ForceCheckForAnimationFile = false;
     m_MeshReady = false;
 
+    m_AABounds.Set( Vector3(0), Vector3(0) );
+
     m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
 
     m_Transform.SetIdentity();
@@ -240,7 +242,7 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
 
     if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f );
+        LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f, &m_AABounds );
 
         // TODO: fix if obj loader ever supports submeshes.
         if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
@@ -356,6 +358,7 @@ void MyMesh::GuessAndAssignAppropriateShader()
     {
         if( m_SubmeshList[i]->m_pMaterial->GetShader() == 0 )
         {
+            // TODO: actually write code here...
             m_SubmeshList[i]->m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
         }
     }
@@ -491,6 +494,9 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
             pIndices[6*side + 4] = 4*side + 2;
             pIndices[6*side + 5] = 4*side + 3;
         }
+
+        Vector3 center( (xleft + xright) / 2, (ytop + ybottom) / 2, (zfront + zback) / 2 );
+        m_AABounds.Set( center, Vector3(boxw/2, boxh/2, boxh/2) );
     }
 
     m_MeshReady = true;
@@ -634,6 +640,9 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
             pIndices[6*side + 4] = 4*side + 2;
             pIndices[6*side + 5] = 4*side + 3;
         }
+
+        Vector3 center( (xleft + xright) / 2, (ytop + ybottom) / 2, (zfront + zback) / 2 );
+        m_AABounds.Set( center, Vector3(boxw/2, boxh/2, boxh/2) );
     }
 
     m_MeshReady = true;
@@ -965,6 +974,9 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
         }
     }
 
+    Vector3 center( 0, height/2, 0 );
+    m_AABounds.Set( center, Vector3(radius, height/2, radius) );
+
     m_MeshReady = true;
 }
 
@@ -1068,6 +1080,9 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         }
     }
 
+    Vector3 center( (topleftpos.x + size.x) / 2, topleftpos.y, (topleftpos.x + size.y) / 2 );
+    m_AABounds.Set( center, Vector3(size.x/2, 0, size.y/2) );
+
     m_MeshReady = true;
 };
 
@@ -1156,6 +1171,8 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 
     for( int i=0; i<60; i++ )
         pIndices[i] = indexlist[i];
+
+    m_AABounds.Set( Vector3(0), Vector3(radius) );
 
     m_MeshReady = true;
 
@@ -1351,6 +1368,8 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberofsegments)
         pVerts[i].uv.y = sin( i*anglechange );
     }
 
+    m_AABounds.Set( Vector3(0), Vector3(radius, radius, 0) );
+
     m_MeshReady = true;
 }
 
@@ -1419,6 +1438,8 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
         vertnum++;
         indexnum++;
     }
+
+    m_AABounds.Set( center, Vector3(halfnumbars*spacing, 0, halfnumbars*spacing) );
 
     m_MeshReady = true;
 }

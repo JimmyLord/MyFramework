@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2014-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -237,7 +237,7 @@ int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
 {
     MyAssert( pSubmeshList );
 
@@ -246,7 +246,7 @@ void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, pSubmeshList, removeduplicatevertices, scale );
+    LoadBasicOBJ( buffer, pSubmeshList, removeduplicatevertices, scale, pAABB );
 
     delete[] buffer;
 }
@@ -268,7 +268,7 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale)
+void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
 {
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
@@ -282,6 +282,9 @@ void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removedup
 
     MyAssert( ppVBO );
     MyAssert( ppIBO );
+
+    Vector3 minvert;
+    Vector3 maxvert;
 
     // count the number of faces and each type of vertex attribute.
     int facecount = 0;
@@ -347,6 +350,13 @@ void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removedup
                     VertexUVs[vertuvcount++] = ParseVertex( buffer, index ).XY();
                 else if( buffer[index+1] == 'n' )
                     VertexNormals[vertnormalcount++] = ParseVertex( buffer, index );
+
+                if( VertexPositions[vertposcount].x < minvert.x || vertposcount == 0 ) minvert.x = VertexPositions[vertposcount].x;
+                if( VertexPositions[vertposcount].y < minvert.y || vertposcount == 0 ) minvert.y = VertexPositions[vertposcount].y;
+                if( VertexPositions[vertposcount].z < minvert.z || vertposcount == 0 ) minvert.z = VertexPositions[vertposcount].z;
+                if( VertexPositions[vertposcount].x > maxvert.x || vertposcount == 0 ) maxvert.x = VertexPositions[vertposcount].x;
+                if( VertexPositions[vertposcount].y > maxvert.y || vertposcount == 0 ) maxvert.y = VertexPositions[vertposcount].y;
+                if( VertexPositions[vertposcount].z > maxvert.z || vertposcount == 0 ) maxvert.z = VertexPositions[vertposcount].z;
             }
 
             if( buffer[index] == 'f' )
@@ -555,6 +565,12 @@ foundduplicate_skiptonextvert:
     if( *ppIBO == 0 )
     {
         *ppIBO = g_pBufferManager->CreateBuffer();
+    }
+
+    if( pAABB )
+    {
+        Vector3 center = (minvert + maxvert) / 2;
+        pAABB->Set( center, maxvert - center );
     }
 
     // The buffer will delete the allocated arrays of verts/indices

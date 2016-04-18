@@ -1218,6 +1218,9 @@
     <ClInclude Include="SourceCommon\Sound\SoundManager.h">
       <Filter>Source\Sound</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyAABounds.h">
+      <Filter>Source\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SourceIOS\ExternalToolsIOS.mm">
