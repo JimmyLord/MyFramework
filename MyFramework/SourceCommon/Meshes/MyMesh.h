@@ -113,6 +113,7 @@ public:
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
 
     virtual MaterialDefinition* GetMaterial(int submeshindex);
+    MyAABounds* GetBounds() { return &m_AABounds; }
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
     void SetPosition(float x, float y, float z);
     void SetTransform(MyMatrix& matrix);

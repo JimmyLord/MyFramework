@@ -1080,7 +1080,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         }
     }
 
-    Vector3 center( (topleftpos.x + size.x) / 2, topleftpos.y, (topleftpos.x + size.y) / 2 );
+    Vector3 center( topleftpos.x + size.x/2, topleftpos.y, topleftpos.z + size.y/ 2 );
     m_AABounds.Set( center, Vector3(size.x/2, 0, size.y/2) );
 
     m_MeshReady = true;
