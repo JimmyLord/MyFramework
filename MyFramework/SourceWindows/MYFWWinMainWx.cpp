@@ -415,7 +415,7 @@ IMPLEMENT_APP_NO_MAIN( MainApp );
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    MarkAllExistingAllocationsAsStatic();
+    MyMemory_MarkAllExistingAllocationsAsStatic();
 
     wxDISABLE_DEBUG_SUPPORT();
 
