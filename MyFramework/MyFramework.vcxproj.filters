@@ -103,6 +103,9 @@
     <Filter Include="Source\Physics">
       <UniqueIdentifier>{a25f0f56-2884-4717-a5ad-e9ee2c0250fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Memory">
+      <UniqueIdentifier>{d2da7e06-8405-4bf7-9df8-6aebaa1b8b83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -568,6 +571,9 @@
     <ClCompile Include="..\Libraries\LodePNG\lodepng.cpp" />
     <ClCompile Include="SourceCommon\Sound\SoundManager.cpp">
       <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Memory\MyStackAllocator.cpp">
+      <Filter>Source\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1220,6 +1226,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\MyAABounds.h">
       <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Memory\MyStackAllocator.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

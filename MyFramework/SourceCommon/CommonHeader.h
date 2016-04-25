@@ -145,6 +145,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include "Memory/MyStackAllocator.h"
+
 #include "Helpers/MyAssert.h"
 
 #include "../../cJSON/cJSON.h"
