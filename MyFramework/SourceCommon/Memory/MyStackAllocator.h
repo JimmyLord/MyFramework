@@ -33,6 +33,8 @@ public:
     void Clear();
 
     void* AllocateBlock(unsigned int byteswanted, MyStackPointer* pStartLocation = 0);
+
+    unsigned int GetBytesUsed();
 };
 
 #endif //__StackAllocator_H__

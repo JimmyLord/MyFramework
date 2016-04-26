@@ -66,3 +66,8 @@ void* MyStackAllocator::AllocateBlock(unsigned int byteswanted, MyStackPointer* 
 
     return pPointer;
 }
+
+unsigned int MyStackAllocator::GetBytesUsed()
+{
+    return m_pCurrentPointer - m_pMemory;
+}
