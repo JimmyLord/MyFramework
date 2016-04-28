@@ -49,6 +49,24 @@ void LOGError(const char* tag, const char* message, ...)
     }
 }
 
+void LOGDebug(const char* tag, const char* message, ...)
+{
+#define MAX_MESSAGE 10024
+    char szBuff[MAX_MESSAGE];
+    va_list arg;
+    va_start(arg, message);
+    vsnprintf_s( szBuff, sizeof(szBuff), _TRUNCATE, message, arg );
+    va_end(arg);
+
+    szBuff[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
+    OutputDebugStringA( szBuff );
+
+    if( g_pMessageLogCallbackFunction != 0 )
+    {
+        g_pMessageLogCallbackFunction( 2, tag, szBuff );
+    }
+}
+
 #elif MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
 
 #if MYFW_NACL
@@ -108,6 +126,34 @@ void LOGError(const char* tag, const char* message, ...)
     if( g_pMessageLogCallbackFunction != 0 )
     {
         g_pMessageLogCallbackFunction( 1, tag, szBuff );
+    }
+}
+
+void LOGDebug(const char* tag, const char* message, ...)
+{
+    // TODO: watch for buffer overruns... NaCL doesn't have the _s version of vsnprintf
+#define MAX_MESSAGE 10024
+    char szBuff[MAX_MESSAGE];
+    va_list arg;
+    va_start(arg, message);
+    vsnprintf( szBuff, sizeof(szBuff), message, arg );
+    va_end(arg);
+
+    szBuff[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
+#if MYFW_EMSCRIPTEN
+    printf( szBuff );
+#elif MYFW_NACL && !MYFW_PPAPI
+    fprintf( stdout, "%s", szBuff );
+    //g_pInstance->PostMessage( pp::Var( szBuff ) );
+#elif MYFW_BLACKBERRY
+    fprintf( stderr, "%s", szBuff ); // stdout doesn't go to console on BB10, so put this here.
+#else
+    fprintf( stdout, "%s", szBuff );
+#endif
+
+    if( g_pMessageLogCallbackFunction != 0 )
+    {
+        g_pMessageLogCallbackFunction( 2, tag, szBuff );
     }
 }
 
