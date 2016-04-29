@@ -2245,6 +2245,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|PNaCl'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp" />
+    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
     <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp" />
     <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
@@ -4095,6 +4097,8 @@
     <ClInclude Include="SourceCommon\Physics\Box2DDebugDraw.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DWorld.h" />
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
+    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Base.h" />
+    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
     <ClInclude Include="SourceCommon\Shaders\GLHelpers.h" />
