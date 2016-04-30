@@ -7,7 +7,8 @@ class MaterialDefinition;
 struct RenderableObject
 {
     MyMatrix* m_pTransform;
-    MyMesh* m_pMesh;
+    MyMesh* m_pMesh; // used for final bone transforms ATM
+    MySubmesh* m_pSubmesh;
     MaterialDefinition* m_pMaterial;
 };
 
@@ -20,8 +21,8 @@ public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MaterialDefinition* pMaterial) = 0;
-    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MaterialDefinition* pMaterial) = 0;
+    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial) = 0;
+    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial) = 0;
 
     virtual void Draw() = 0;
 };

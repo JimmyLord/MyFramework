@@ -56,10 +56,14 @@ public:
 public:
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     void SetMaterial(MaterialDefinition* pMaterial);
+
+    void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 };
 
 class MyMesh : public CPPListNode, public RefCount
 {
+    friend class MySubmesh;
+
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
 
 protected:
@@ -84,7 +88,7 @@ public:
     bool m_MeshReady;
 
 protected:
-    MyMatrix m_Transform;
+    //MyMatrix m_Transform;
 
 public:
     MyMesh();
@@ -115,9 +119,9 @@ public:
     virtual MaterialDefinition* GetMaterial(int submeshindex);
     MyAABounds* GetBounds() { return &m_AABounds; }
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
-    void SetPosition(float x, float y, float z);
-    void SetTransform(MyMatrix& matrix);
-    void Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    //void SetPosition(float x, float y, float z);
+    //void SetTransform(MyMatrix& matrix);
+    void Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 
     void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
     void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);

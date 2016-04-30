@@ -16,7 +16,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     }
 }
 
-void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MaterialDefinition* pMaterial)
+void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial)
 {
     MyAssert( pTransform != 0 && pMesh != 0 );
 
@@ -28,6 +28,7 @@ void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, M
 
         pObject->m_pTransform = pTransform;
         pObject->m_pMesh = pMesh;
+        pObject->m_pSubmesh = pSubmesh;
         pObject->m_pMaterial = pMaterial;
 
         m_pRenderables[m_NumRenderables] = pObject;
@@ -39,7 +40,7 @@ void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, M
     }
 }
 
-void SceneGraph_Flat::RemoveRenderableObject(MyMatrix* m_pTransform, MyMesh* m_pMesh, MaterialDefinition* m_pMaterial)
+void SceneGraph_Flat::RemoveRenderableObject(MyMatrix* m_pTransform, MyMesh* m_pMesh, MySubmesh* pSubmesh, MaterialDefinition* m_pMaterial)
 {
 }
 

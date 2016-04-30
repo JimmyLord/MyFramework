@@ -11,8 +11,8 @@ public:
     SceneGraph_Flat();
     virtual ~SceneGraph_Flat();
 
-    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MaterialDefinition* pMaterial);
-    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MaterialDefinition* pMaterial);
+    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
+    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
 
     virtual void Draw();
 };

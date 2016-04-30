@@ -44,6 +44,191 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
     m_pMaterial = pMaterial;
 }
 
+void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+{
+    BufferDefinition* pVertexBuffer = m_pVertexBuffer;
+    BufferDefinition* pIndexBuffer = m_pIndexBuffer;
+    MaterialDefinition* pMaterial = m_pMaterial;
+    int NumVertsToDraw = m_NumVertsToDraw;
+    int NumIndicesToDraw = m_NumIndicesToDraw;
+    int VertexFormat = m_VertexFormat;
+    int PrimitiveType = m_PrimitiveType;
+    int PointSize = m_PointSize;        
+
+    if( pMaterial == 0 )
+        return;
+
+    if( pIndexBuffer )
+    {
+        if( NumIndicesToDraw == 0 )
+            return;
+    }
+    else if( pVertexBuffer )
+    {
+        if( NumVertsToDraw == 0 )
+            return;
+    }
+
+    MyMatrix identity;
+    if( matworld == 0 )
+    {
+        identity.SetIdentity();
+        matworld = &identity;
+    }
+
+    MyAssert( pVertexBuffer );
+
+    if( pVertexBuffer->m_Dirty )
+        pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
+    if( pIndexBuffer && pIndexBuffer->m_Dirty )
+        pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
+    MyAssert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
+
+    checkGlError( "Drawing Mesh Rebuild()" );
+
+    if( pShaderOverride )
+    {
+        int indexbuffertype = GL_UNSIGNED_BYTE;
+        if( pIndexBuffer != 0 )
+        {
+            int bytesperindex = pIndexBuffer->m_BytesPerIndex;
+            if( bytesperindex == 2 )
+                indexbuffertype = GL_UNSIGNED_SHORT;
+            else if( bytesperindex == 4 )
+                indexbuffertype = GL_UNSIGNED_INT;
+        }
+
+        //int numboneinfluences = 0;
+        //if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
+        //    numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
+
+        // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
+        // always use 4 bone version.
+        // TODO: this might fail with 1-3 bones,
+        //       but should work with 0 bones since bone attribs are set to 100% weight on bone 0
+        //       and bone 0 transform uniform is set to identity.
+        Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
+        pShader->SetupAttributes( pVertexBuffer, pIndexBuffer, false );
+        pShader->ProgramPosition( matviewproj, matworld ); //&m_Transform );
+
+        if( pMesh->m_BoneFinalMatrices.Count() > 0 )
+        {
+            pShader->ProgramBoneTransforms( &pMesh->m_BoneFinalMatrices[0], pMesh->m_BoneFinalMatrices.Count() );
+        }
+        else
+        {
+            MyMatrix identitymat;
+            identitymat.SetIdentity();
+            pShader->ProgramBoneTransforms( &identitymat, 1 );
+        }
+
+        checkGlError( "MyMesh::Draw() - if( pShaderOverride ) - after SetupAttributes" );
+
+        // Enable blending if necessary. TODO: sort draws and only set this once.
+        //if( pMaterial->IsTransparent( pShader ) )
+        //{
+        //    glEnable( GL_BLEND );
+        //    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        //}
+
+        if( pIndexBuffer )
+            MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+        else
+            MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
+        //pShader->DeactivateShader( pVertexBuffer, false ); // disable attributes
+
+        // always disable blending
+        glDisable( GL_BLEND );
+
+        checkGlError( "end of MyMesh::Draw() - if( pShaderOverride )" );
+    }
+    else
+    {
+        int numboneinfluences = 0;
+        if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
+            numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
+
+        if( pMaterial->GetShader() == 0 )
+            return;
+
+        Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numlights, numboneinfluences );
+        if( pShader )
+        {
+            if( pShader->ActivateAndProgramShader(
+                pVertexBuffer, pIndexBuffer, GL_UNSIGNED_SHORT,
+                matviewproj, matworld, pMaterial ) ) //&m_Transform, pMaterial ) )
+            {
+                checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
+
+                MyMatrix invworld = *matworld; //m_Transform;
+                invworld.Inverse();
+                //bool didinverse = invworld.Inverse();
+                //if( didinverse == false )
+                //    LOGError( LOGTag, "Matrix inverse failed\n" );
+
+                pShader->ProgramCamera( campos, 0, &invworld );
+                checkGlError( "Drawing Mesh ProgramCamera()" );
+
+                pShader->ProgramLights( lights, numlights, &invworld );
+                checkGlError( "Drawing Mesh ProgramLights()" );
+
+                if( PrimitiveType == GL_POINTS )
+                    pShader->ProgramPointSize( (float)PointSize );
+
+                if( shadowlightVP && pShadowTex != 0 )
+                {
+                    MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
+                    MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * *matworld; //m_Transform;
+                    pShader->ProgramShadowLight( &shadowWVPT, pShadowTex );
+                }
+
+                if( pLightmapTex != 0 )
+                {
+                    pShader->ProgramLightmap( pLightmapTex );
+                    checkGlError( "Drawing Mesh ProgramLightmap()" );
+                }
+
+                if( pMesh->m_BoneFinalMatrices.Count() > 0 )
+                {
+                    pShader->ProgramBoneTransforms( &pMesh->m_BoneFinalMatrices[0], pMesh->m_BoneFinalMatrices.Count() );
+                }
+
+                int indexbuffertype = GL_UNSIGNED_BYTE;
+                if( pIndexBuffer != 0 )
+                {
+                    int bytesperindex = pIndexBuffer->m_BytesPerIndex;
+                    if( bytesperindex == 2 )
+                        indexbuffertype = GL_UNSIGNED_SHORT;
+                    else if( bytesperindex == 4 )
+                        indexbuffertype = GL_UNSIGNED_INT;
+                }
+
+                pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
+
+                // Enable blending if necessary. TODO: sort draws and only set this once.
+                if( pMaterial->IsTransparent( pShader ) )
+                {
+                    glEnable( GL_BLEND );
+                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                }
+
+                if( pIndexBuffer )
+                    MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+                else
+                    MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
+
+                checkGlError( "Drawing Mesh MyDrawElements()" );
+
+                pShader->DeactivateShader( pVertexBuffer, true );
+                checkGlError( "Drawing Mesh DeactivateShader()" );
+
+                // always disable blending
+                glDisable( GL_BLEND );
+            }
+        }
+    }
+}
+
 MyMesh::MyMesh()
 {
     m_pSourceFile = 0;
@@ -54,7 +239,7 @@ MyMesh::MyMesh()
 
     m_InitialScale = 1.0f; // TODO: make this changable through interface somehow... reload/recreate mesh when changed?
 
-    m_Transform.SetIdentity();
+    //m_Transform.SetIdentity();
 
     g_pMeshManager->AddMesh( this );
 
@@ -1476,15 +1661,15 @@ void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
     }
 }
 
-void MyMesh::SetPosition(float x, float y, float z)
-{
-    m_Transform.SetTranslation( x, y, z );
-}
-
-void MyMesh::SetTransform(MyMatrix& matrix)
-{
-    m_Transform = matrix;
-}
+//void MyMesh::SetPosition(float x, float y, float z)
+//{
+//    m_Transform.SetTranslation( x, y, z );
+//}
+//
+//void MyMesh::SetTransform(MyMatrix& matrix)
+//{
+//    m_Transform = matrix;
+//}
 
 void MyMesh::RebuildIndices()
 {
@@ -1492,7 +1677,7 @@ void MyMesh::RebuildIndices()
         m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "start of MyMesh::Draw()" );
 
@@ -1503,180 +1688,7 @@ void MyMesh::Draw(MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int n
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        BufferDefinition* pVertexBuffer = m_SubmeshList[meshindex]->m_pVertexBuffer;
-        BufferDefinition* pIndexBuffer = m_SubmeshList[meshindex]->m_pIndexBuffer;
-        MaterialDefinition* pMaterial = m_SubmeshList[meshindex]->m_pMaterial;
-        int NumVertsToDraw = m_SubmeshList[meshindex]->m_NumVertsToDraw;
-        int NumIndicesToDraw = m_SubmeshList[meshindex]->m_NumIndicesToDraw;
-        int VertexFormat = m_SubmeshList[meshindex]->m_VertexFormat;
-        int PrimitiveType = m_SubmeshList[meshindex]->m_PrimitiveType;
-        int PointSize = m_SubmeshList[meshindex]->m_PointSize;        
-
-        if( pMaterial == 0 )
-            return;
-
-        if( pIndexBuffer )
-        {
-            if( NumIndicesToDraw == 0 )
-                return;
-        }
-        else if( pVertexBuffer )
-        {
-            if( NumVertsToDraw == 0 )
-                return;
-        }
-
-        MyAssert( pVertexBuffer );
-
-        if( pVertexBuffer->m_Dirty )
-            pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
-        if( pIndexBuffer && pIndexBuffer->m_Dirty )
-            pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
-        MyAssert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
-
-        checkGlError( "Drawing Mesh Rebuild()" );
-
-        if( pShaderOverride )
-        {
-            int indexbuffertype = GL_UNSIGNED_BYTE;
-            if( pIndexBuffer != 0 )
-            {
-                int bytesperindex = pIndexBuffer->m_BytesPerIndex;
-                if( bytesperindex == 2 )
-                    indexbuffertype = GL_UNSIGNED_SHORT;
-                else if( bytesperindex == 4 )
-                    indexbuffertype = GL_UNSIGNED_INT;
-            }
-
-            //int numboneinfluences = 0;
-            //if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
-            //    numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
-
-            // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
-            // always use 4 bone version.
-            // TODO: this might fail with 1-3 bones,
-            //       but should work with 0 bones since bone attribs are set to 100% weight on bone 0
-            //       and bone 0 transform uniform is set to identity.
-            Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
-            pShader->SetupAttributes( pVertexBuffer, pIndexBuffer, false );
-            pShader->ProgramPosition( matviewproj, &m_Transform );
-
-            if( m_BoneFinalMatrices.Count() > 0 )
-            {
-                pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
-            }
-            else
-            {
-                MyMatrix identitymat;
-                identitymat.SetIdentity();
-                pShader->ProgramBoneTransforms( &identitymat, 1 );
-            }
-
-            checkGlError( "MyMesh::Draw() - if( pShaderOverride ) - after SetupAttributes" );
-
-            // Enable blending if necessary. TODO: sort draws and only set this once.
-            //if( pMaterial->IsTransparent( pShader ) )
-            //{
-            //    glEnable( GL_BLEND );
-            //    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            //}
-
-            if( pIndexBuffer )
-                MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
-            else
-                MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
-            //pShader->DeactivateShader( pVertexBuffer, false ); // disable attributes
-
-            // always disable blending
-            glDisable( GL_BLEND );
-
-            checkGlError( "end of MyMesh::Draw() - if( pShaderOverride )" );
-        }
-        else
-        {
-            int numboneinfluences = 0;
-            if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
-                numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
-
-            if( pMaterial->GetShader() == 0 )
-                return;
-
-            Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numlights, numboneinfluences );
-            if( pShader )
-            {
-                if( pShader->ActivateAndProgramShader(
-                    pVertexBuffer, pIndexBuffer, GL_UNSIGNED_SHORT,
-                    matviewproj, &m_Transform, pMaterial ) )
-                {
-                    checkGlError( "Drawing Mesh ActivateAndProgramShader()" );
-
-                    MyMatrix invworld = m_Transform;
-                    invworld.Inverse();
-                    //bool didinverse = invworld.Inverse();
-                    //if( didinverse == false )
-                    //    LOGError( LOGTag, "Matrix inverse failed\n" );
-
-                    pShader->ProgramCamera( campos, 0, &invworld );
-                    checkGlError( "Drawing Mesh ProgramCamera()" );
-
-                    pShader->ProgramLights( lights, numlights, &invworld );
-                    checkGlError( "Drawing Mesh ProgramLights()" );
-
-                    if( PrimitiveType == GL_POINTS )
-                        pShader->ProgramPointSize( (float)PointSize );
-
-                    if( shadowlightVP && pShadowTex != 0 )
-                    {
-                        MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
-                        MyMatrix shadowWVPT = textureoffsetmat * *shadowlightVP * m_Transform;
-                        pShader->ProgramShadowLight( &shadowWVPT, pShadowTex );
-                    }
-
-                    if( pLightmapTex != 0 )
-                    {
-                        pShader->ProgramLightmap( pLightmapTex );
-                        checkGlError( "Drawing Mesh ProgramLightmap()" );
-                    }
-
-                    if( m_BoneFinalMatrices.Count() > 0 )
-                    {
-                        pShader->ProgramBoneTransforms( &m_BoneFinalMatrices[0], m_BoneFinalMatrices.Count() );
-                    }
-
-                    int indexbuffertype = GL_UNSIGNED_BYTE;
-                    if( pIndexBuffer != 0 )
-                    {
-                        int bytesperindex = pIndexBuffer->m_BytesPerIndex;
-                        if( bytesperindex == 2 )
-                            indexbuffertype = GL_UNSIGNED_SHORT;
-                        else if( bytesperindex == 4 )
-                            indexbuffertype = GL_UNSIGNED_INT;
-                    }
-
-                    pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
-
-                    // Enable blending if necessary. TODO: sort draws and only set this once.
-                    if( pMaterial->IsTransparent( pShader ) )
-                    {
-                        glEnable( GL_BLEND );
-                        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                    }
-
-                    if( pIndexBuffer )
-                        MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
-                    else
-                        MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
-
-                    checkGlError( "Drawing Mesh MyDrawElements()" );
-
-                    pShader->DeactivateShader( pVertexBuffer, true );
-                    checkGlError( "Drawing Mesh DeactivateShader()" );
-
-                    // always disable blending
-                    glDisable( GL_BLEND );
-                }
-            }
-        }
+        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, lights, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
     }
 
     checkGlError( "end of MyMesh::Draw()" );
