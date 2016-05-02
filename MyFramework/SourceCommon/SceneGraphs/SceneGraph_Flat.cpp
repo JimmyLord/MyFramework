@@ -25,11 +25,11 @@ SceneGraph_Flat::~SceneGraph_Flat()
     }
 }
 
-void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial)
+SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial)
 {
     MyAssert( pTransform != 0 && pMesh != 0 );
 
-    RenderableObject* pObject = m_pObjectPool.GetObject();
+    SceneGraphObject* pObject = m_pObjectPool.GetObject();
 
     if( pObject )
     {
@@ -47,17 +47,30 @@ void SceneGraph_Flat::AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, M
     {
         LOGInfo( "Scene Graph", "Not enough renderable objects in list\n" );
     }
+
+    return pObject;
 }
 
-void SceneGraph_Flat::RemoveRenderableObject(MyMatrix* m_pTransform, MyMesh* m_pMesh, MySubmesh* pSubmesh, MaterialDefinition* m_pMaterial)
+void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
 {
+    for( unsigned int i=0; i<m_NumRenderables; i++ )
+    {
+        if( m_pRenderables[i] == pObject )
+        {
+            m_pRenderables[i] = m_pRenderables[m_NumRenderables-1];
+            m_NumRenderables--;
+            break;
+        }
+    }
+
+    m_pObjectPool.ReturnObject( pObject );
 }
 
 void SceneGraph_Flat::Draw(Vector3 campos, MyMatrix* pMatViewProj, ShaderGroup* pShaderOverride)
 {
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
-        RenderableObject* pObject = m_pRenderables[i];
+        SceneGraphObject* pObject = m_pRenderables[i];
         MyAssert( pObject->m_pMesh );
         MyAssert( pObject->m_pSubmesh );
         MyAssert( pObject->m_pMaterial );

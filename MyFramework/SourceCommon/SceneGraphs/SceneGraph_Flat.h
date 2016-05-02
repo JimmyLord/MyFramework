@@ -13,15 +13,15 @@
 class SceneGraph_Flat : public SceneGraph_Base
 {
 protected:
-    RenderableObject* m_pRenderables[10000];
+    SceneGraphObject* m_pRenderables[10000];
     unsigned int m_NumRenderables;
 
 public:
     SceneGraph_Flat();
     virtual ~SceneGraph_Flat();
 
-    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
-    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
+    virtual void RemoveObject(SceneGraphObject* pObject);
 
     virtual void Draw(Vector3 campos, MyMatrix* pMatViewProj, ShaderGroup* pShaderOverride);
 };

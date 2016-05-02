@@ -36,6 +36,10 @@ public:
         SAFE_DELETE_ARRAY( m_pObjectPtrs );
     }
 
+    unsigned int GetLength() { return m_Length; }
+    unsigned int GetCount() { return m_Count; }
+    unsigned int GetNumUsed() { return m_Length - m_Count; }
+
     bool IsInitialized()
     {
         return m_Length != 0 ? true : false;

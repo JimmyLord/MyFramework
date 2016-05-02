@@ -13,8 +13,11 @@
 class MyMesh;
 class MaterialDefinition;
 
-struct RenderableObject
+class SceneGraphObject
 {
+public:
+    // none of these hold references
+    // so if the object is free without removing the SceneGraphObject, bad things will happen.
     MyMatrix* m_pTransform;
     MyMesh* m_pMesh; // used for final bone transforms ATM
     MySubmesh* m_pSubmesh;
@@ -24,14 +27,14 @@ struct RenderableObject
 class SceneGraph_Base
 {
 public:
-    MySimplePool<RenderableObject> m_pObjectPool;
+    MySimplePool<SceneGraphObject> m_pObjectPool;
 
 public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual void AddRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial) = 0;
-    virtual void RemoveRenderableObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial) = 0;
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial) = 0;
+    virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
     virtual void Draw(Vector3 campos, MyMatrix* pMatViewProj, ShaderGroup* pShaderOverride) = 0;
 };
