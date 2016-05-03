@@ -10,14 +10,14 @@
 #ifndef __ParticleRenderer_H__
 #define __ParticleRenderer_H__
 
-class ParticleRenderer
+class ParticleRenderer : public MySubmesh
 {
 protected:
-    MaterialDefinition* m_pMaterial;
     unsigned int m_NumVertsAllocated;
 
-    BufferDefinition* m_pVertexBuffer;
-    BufferDefinition* m_pIndexBuffer;
+    //MaterialDefinition* m_pMaterial;
+    //BufferDefinition* m_pVertexBuffer;
+    //BufferDefinition* m_pIndexBuffer;
 
     Vertex_XYZUV m_pRotatedQuadVerts[4];
     
@@ -48,9 +48,10 @@ public:
     virtual void AddPoint(Vector2 pos, float rot, ColorByte color, float size);
     virtual void AddPoint(Vector3 pos, float rot, ColorByte color, float size);
 
-    virtual void SetMaterial(MaterialDefinition* pMaterial);
+    //virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    virtual void DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };

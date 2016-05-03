@@ -20,10 +20,10 @@ public:
     SceneGraph_Flat();
     virtual ~SceneGraph_Flat();
 
-    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial);
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize);
     virtual void RemoveObject(SceneGraphObject* pObject);
 
-    virtual void Draw(Vector3 campos, MyMatrix* pMatViewProj, ShaderGroup* pShaderOverride);
+    virtual void Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride);
 };
 
 #endif //__SceneGraph_Flat_H__

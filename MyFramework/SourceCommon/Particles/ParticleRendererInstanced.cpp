@@ -116,7 +116,7 @@ void ParticleRendererInstanced::AddPoint(Vector3 pos, float rot, ColorByte color
     }
 }
 
-void ParticleRendererInstanced::Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
+void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShaderInstanced() == 0 || m_ParticleCount == 0 )
         return;

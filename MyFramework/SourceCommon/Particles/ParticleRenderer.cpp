@@ -14,17 +14,17 @@
 
 ParticleRenderer::ParticleRenderer(bool creatematerial)
 {
-    m_pMaterial = 0;
+    //m_pMaterial = 0;
     
-    if( creatematerial )
-    {
-        m_pMaterial = g_pMaterialManager->CreateMaterial();
-    }
+    //if( creatematerial )
+    //{
+    //    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    //}
 
     m_NumVertsAllocated = 0;
 
-    m_pVertexBuffer = 0;
-    m_pIndexBuffer = 0;
+    //m_pVertexBuffer = 0;
+    //m_pIndexBuffer = 0;
 
     m_ParticleCount = 0;
 
@@ -45,10 +45,10 @@ ParticleRenderer::ParticleRenderer(bool creatematerial)
 
 ParticleRenderer::~ParticleRenderer()
 {
-    SAFE_RELEASE( m_pVertexBuffer );
-    SAFE_RELEASE( m_pIndexBuffer );
+    //SAFE_RELEASE( m_pVertexBuffer );
+    //SAFE_RELEASE( m_pIndexBuffer );
 
-    SAFE_RELEASE( m_pMaterial );
+    //SAFE_RELEASE( m_pMaterial );
 }
 
 void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category)
@@ -216,15 +216,20 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
     }
 }
 
-void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
+//void ParticleRenderer::SetMaterial(MaterialDefinition* pMaterial)
+//{
+//    //if( pMaterial )
+//    //    pMaterial->AddRef();
+//    //SAFE_RELEASE( m_pMaterial );
+//    //m_pMaterial = pMaterial;
+//}
+
+void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
-    if( pMaterial )
-        pMaterial->AddRef();
-    SAFE_RELEASE( m_pMaterial );
-    m_pMaterial = pMaterial;
+    DrawParticles( *campos, *camrot, matviewproj );
 }
 
-void ParticleRenderer::Draw(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
+void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
 {
 #if MY_SHITTY_LAPTOP
     //return;

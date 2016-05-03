@@ -25,7 +25,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     }
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial)
+SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize)
 {
     MyAssert( pTransform != 0 && pMesh != 0 );
 
@@ -39,6 +39,9 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
         pObject->m_pMesh = pMesh;
         pObject->m_pSubmesh = pSubmesh;
         pObject->m_pMaterial = pMaterial;
+
+        pObject->m_GLPrimitiveType = primitive;
+        pObject->m_PointSize = pointsize;
 
         m_pRenderables[m_NumRenderables] = pObject;
         m_NumRenderables++;
@@ -66,140 +69,91 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObject( pObject );
 }
 
-void SceneGraph_Flat::Draw(Vector3 campos, MyMatrix* pMatViewProj, ShaderGroup* pShaderOverride)
+void SceneGraph_Flat::Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride)
 {
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
         SceneGraphObject* pObject = m_pRenderables[i];
+        
         MyAssert( pObject->m_pMesh );
         MyAssert( pObject->m_pSubmesh );
         MyAssert( pObject->m_pMaterial );
 
-        if( pObject->m_pMesh && pObject->m_pSubmesh && pObject->m_pMaterial )
+        if( pObject->m_pMesh == 0 || pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
+            continue;
+
+        MyMatrix worldtransform = *pObject->m_pTransform;
+        MyMesh* pMesh = pObject->m_pMesh;
+        MySubmesh* pSubmesh = pObject->m_pSubmesh;
+        MaterialDefinition* pMaterial = pObject->m_pMaterial;
+
+        // simple frustum check
         {
-            MyMatrix worldtransform = *pObject->m_pTransform;//*m_pComponentTransform->GetWorldTransform();
-            MyMesh* pMesh = pObject->m_pMesh;
-            MySubmesh* pSubmesh = pObject->m_pSubmesh;
-            MaterialDefinition* pMaterial = pObject->m_pMaterial;
+            MyAABounds* bounds = pMesh->GetBounds();
+            Vector3 center = bounds->GetCenter();
+            Vector3 half = bounds->GetHalfSize();
 
-            // simple frustum check
+            MyMatrix wvp = *pMatViewProj * worldtransform;
+
+            Vector4 clippos[8];
+
+            // transform AABB extents into clip space.
+            clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
+            clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
+            clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
+            clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
+            clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
+            clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
+            clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
+            clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
+
+            // check visibility two planes at a time
+            bool visible;
+            for( int component=0; component<3; component++ ) // loop through x/y/z
             {
-                MyAABounds* bounds = pMesh->GetBounds();
-                Vector3 center = bounds->GetCenter();
-                Vector3 half = bounds->GetHalfSize();
-
-                MyMatrix wvp = *pMatViewProj * worldtransform;
-
-                Vector4 clippos[8];
-
-                // transform AABB extents into clip space.
-                clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
-                clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
-                clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
-                clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
-                clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
-                clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
-                clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
-                clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
-
-                // check visibility two planes at a time
-                bool visible;
-                for( int component=0; component<3; component++ ) // loop through x/y/z
+                // check if all 8 points are less than the -w extent of it's axis
+                visible = false;
+                for( int i=0; i<8; i++ )
                 {
-                    // check if all 8 points are less than the -w extent of it's axis
-                    visible = false;
-                    for( int i=0; i<8; i++ )
+                    if( clippos[i][component] >= -clippos[i].w )
                     {
-                        if( clippos[i][component] >= -clippos[i].w )
-                        {
-                            visible = true; // this point is on the visible side of the plane, skip to next plane
-                            break;
-                        }
-                    }
-                    if( visible == false ) // all points are on outside of plane, don't draw object
+                        visible = true; // this point is on the visible side of the plane, skip to next plane
                         break;
-
-                    // check if all 8 points are greater than the -w extent of it's axis
-                    visible = false;
-                    for( int i=0; i<8; i++ )
-                    {
-                        if( clippos[i][component] <= clippos[i].w )
-                        {
-                            visible = true; // this point is on the visible side of the plane, skip to next plane
-                            break;
-                        }
                     }
-                    if( visible == false ) // all points are on outside of plane, don't draw object
-                        break;
                 }
+                if( visible == false ) // all points are on outside of plane, don't draw object
+                    break;
 
-                // if all points are on outside of frustum, don't draw mesh.
-                if( visible == false )
-                    return;
+                // check if all 8 points are greater than the -w extent of it's axis
+                visible = false;
+                for( int i=0; i<8; i++ )
+                {
+                    if( clippos[i][component] <= clippos[i].w )
+                    {
+                        visible = true; // this point is on the visible side of the plane, skip to next plane
+                        break;
+                    }
+                }
+                if( visible == false ) // all points are on outside of plane, don't draw object
+                    break;
             }
 
-            for( unsigned int i=0; i<pMesh->m_SubmeshList.Count(); i++ )
-            {
-                pSubmesh->SetMaterial( pMaterial );
-                // TODO: fix
-                //pSubmesh->m_PrimitiveType = m_GLPrimitiveType;
-                //pSubmesh->m_PointSize = m_PointSize;
-            }
-
-            //m_pMesh->SetTransform( worldtransform );
-
-            // Find nearest lights.
-            MyLight* lights;
-            int numlights = g_pLightManager->FindNearestLights( 4, worldtransform.GetTranslation(), &lights );
-
-            // TODO: fix
-            // Find nearest shadow casting light.
-    //        MyMatrix* pShadowVP = 0;
-    //        TextureDefinition* pShadowTex = 0;
-    //        if( g_ActiveShaderPass == ShaderPass_Main )
-    //        {
-    //            GameObject* pObject = g_pComponentSystemManager->FindGameObjectByName( "Shadow Light" );
-    //            if( pObject )
-    //            {
-    //                ComponentBase* pComponent = pObject->GetFirstComponentOfBaseType( BaseComponentType_Camera );
-    //                ComponentCameraShadow* pShadowCam = pComponent->IsA( "CameraShadowComponent" ) ? (ComponentCameraShadow*)pComponent : 0;
-    //                if( pShadowCam )
-    //                {
-    //                    pShadowVP = &pShadowCam->m_matViewProj;
-    //#if 1
-    //                    pShadowTex = pShadowCam->m_pDepthFBO->m_pDepthTexture;
-    //#else
-    //                    pShadowTex = pShadowCam->m_pDepthFBO->m_pColorTexture;
-    //#endif
-    //                }
-    //            }
-    //        }
-
-    //        Vector3 campos;
-    //#if MYFW_USING_WX
-    //        if( g_pEngineCore->m_EditorMode )
-    //        {
-    //            ComponentCamera* pCamera = g_pEngineCore->m_pEditorState->GetEditorCamera();
-
-    //            campos = pCamera->m_pComponentTransform->GetLocalPosition();
-    //        }
-    //        else
-    //#endif
-    //        {
-    //            ComponentCamera* pCamera = g_pComponentSystemManager->GetFirstCamera();
-    //            if( pCamera )
-    //            {
-    //                campos = pCamera->m_pComponentTransform->GetLocalPosition();
-    //            }
-    //            else
-    //            {
-    //                campos.Set( 0, 0, 0 );
-    //            }
-    //        }
-
-            // TODO: fix shadows.
-            //pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, &campos, lights, numlights, pShadowVP, pShadowTex, 0, pShaderOverride );
-            pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, &campos, lights, numlights, 0, 0, 0, pShaderOverride );
+            // if all points are on outside of frustum, don't draw mesh.
+            if( visible == false )
+                continue;
         }
+
+        for( unsigned int i=0; i<pMesh->m_SubmeshList.Count(); i++ )
+        {
+            pSubmesh->SetMaterial( pMaterial );
+            pSubmesh->m_PrimitiveType = pObject->m_GLPrimitiveType;
+            pSubmesh->m_PointSize = pObject->m_PointSize;
+        }
+
+        // Find nearest lights.
+        MyLight* lights;
+        int numlights = g_pLightManager->FindNearestLights( 4, worldtransform.GetTranslation(), &lights );
+
+        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
     }
 }

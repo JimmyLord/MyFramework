@@ -44,7 +44,7 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
     m_pMaterial = pMaterial;
 }
 
-void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     BufferDefinition* pVertexBuffer = m_pVertexBuffer;
     BufferDefinition* pIndexBuffer = m_pIndexBuffer;
@@ -1677,7 +1677,7 @@ void MyMesh::RebuildIndices()
         m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "start of MyMesh::Draw()" );
 
@@ -1688,7 +1688,7 @@ void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, My
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, lights, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
+        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
     }
 
     checkGlError( "end of MyMesh::Draw()" );
