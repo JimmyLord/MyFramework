@@ -27,7 +27,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
 
 SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize)
 {
-    MyAssert( pTransform != 0 && pMesh != 0 );
+    MyAssert( pTransform != 0 );
 
     SceneGraphObject* pObject = m_pObjectPool.GetObject();
 
@@ -75,11 +75,10 @@ void SceneGraph_Flat::Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewP
     {
         SceneGraphObject* pObject = m_pRenderables[i];
         
-        MyAssert( pObject->m_pMesh );
         MyAssert( pObject->m_pSubmesh );
         MyAssert( pObject->m_pMaterial );
 
-        if( pObject->m_pMesh == 0 || pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
+        if( pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
             continue;
 
         MyMatrix worldtransform = *pObject->m_pTransform;
@@ -88,6 +87,7 @@ void SceneGraph_Flat::Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewP
         MaterialDefinition* pMaterial = pObject->m_pMaterial;
 
         // simple frustum check
+        if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
         {
             MyAABounds* bounds = pMesh->GetBounds();
             Vector3 center = bounds->GetCenter();
@@ -143,12 +143,9 @@ void SceneGraph_Flat::Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewP
                 continue;
         }
 
-        for( unsigned int i=0; i<pMesh->m_SubmeshList.Count(); i++ )
-        {
-            pSubmesh->SetMaterial( pMaterial );
-            pSubmesh->m_PrimitiveType = pObject->m_GLPrimitiveType;
-            pSubmesh->m_PointSize = pObject->m_PointSize;
-        }
+        pSubmesh->SetMaterial( pMaterial );
+        pSubmesh->m_PrimitiveType = pObject->m_GLPrimitiveType;
+        pSubmesh->m_PointSize = pObject->m_PointSize;
 
         // Find nearest lights.
         MyLight* lights;
