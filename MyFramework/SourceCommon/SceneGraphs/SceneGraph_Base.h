@@ -17,11 +17,12 @@ class SceneGraphObject
 {
 public:
     // none of these hold references
-    // so if the object is free without removing the SceneGraphObject, bad things will happen.
+    // so if the object is free'd without removing the SceneGraphObject, bad things will happen.
     MyMatrix* m_pTransform;
     MyMesh* m_pMesh; // used for final bone transforms ATM
     MySubmesh* m_pSubmesh;
     MaterialDefinition* m_pMaterial;
+    bool m_Visible;
 
     int m_GLPrimitiveType;
     int m_PointSize;

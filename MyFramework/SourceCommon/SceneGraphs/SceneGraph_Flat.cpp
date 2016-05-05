@@ -39,6 +39,7 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
         pObject->m_pMesh = pMesh;
         pObject->m_pSubmesh = pSubmesh;
         pObject->m_pMaterial = pMaterial;
+        pObject->m_Visible = true;
 
         pObject->m_GLPrimitiveType = primitive;
         pObject->m_PointSize = pointsize;
@@ -79,6 +80,9 @@ void SceneGraph_Flat::Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewP
         MyAssert( pObject->m_pMaterial );
 
         if( pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
+            continue;
+
+        if( pObject->m_Visible == false )
             continue;
 
         MyMatrix worldtransform = *pObject->m_pTransform;
