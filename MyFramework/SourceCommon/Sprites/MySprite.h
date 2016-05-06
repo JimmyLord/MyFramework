@@ -21,11 +21,11 @@ typedef MySprite* MySpritePtr;
 
 extern char g_SpriteVertexIndices[6];
 
-class MySprite : public RefCount
+class MySprite : public MySubmesh, public RefCount
 {
 protected:
     bool m_SpriteIsStatic;
-    MaterialDefinition* m_pMaterial;
+    //MaterialDefinition* m_pMaterial;
 
 public:
     // store up the current size and texcoords, if these change we need to rebuild sprite
@@ -34,11 +34,11 @@ public:
     Vector2 m_SpriteUVEnd;
     unsigned char m_SpriteJustification;
 
-    BufferDefinition* m_pVertexBuffer;
-    BufferDefinition* m_pIndexBuffer;
+    //BufferDefinition* m_pVertexBuffer;
+    //BufferDefinition* m_pIndexBuffer;
 
-    MyMatrix m_Position;
-    MyMatrix* m_pParentMatrix;
+    //MyMatrix m_Position;
+    //MyMatrix* m_pParentMatrix;
     ColorByte m_Tint; // doesn't work anymore... use materials.
 
 public:
@@ -47,28 +47,29 @@ public:
     virtual ~MySprite();
 
     virtual MaterialDefinition* GetMaterial() { return m_pMaterial; }
-    virtual void SetMaterial(MaterialDefinition* pMaterial);
+    //virtual void SetMaterial(MaterialDefinition* pMaterial);
 
     virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
     virtual void Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
     virtual void CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx = 0, float epx = 1, float spy = 0, float epy = 1, bool staticverts = false, bool facepositivez = false);
     virtual void CreateInPlace(const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
-    MyMatrix GetPosition();
-    void SetPosition(Vector3 pos, bool setindentity = true);
-    void SetPosition(float x, float y, float z, bool setindentity = true);
-    void SetPosition(MyMatrix* mat);
-    void SetZRotation(float rotation);
-    void SetZRotationWithPivot(float rotation, bool preserveposition = true, Vector3* localpivot = 0);
-    void SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity = true);
-    void SetTransform(MyMatrix& mat);
+    //MyMatrix GetPosition();
+    //void SetPosition(Vector3 pos, bool setindentity = true);
+    //void SetPosition(float x, float y, float z, bool setindentity = true);
+    //void SetPosition(MyMatrix* mat);
+    //void SetZRotation(float rotation);
+    //void SetZRotationWithPivot(float rotation, bool preserveposition = true, Vector3* localpivot = 0);
+    //void SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity = true);
+    //void SetTransform(MyMatrix& mat);
     ColorByte* GetTintPointer() { return &m_Tint; }
     void SetTint(ColorByte tintcolor);
     virtual void FlipX();
 
-    virtual bool Setup(MyMatrix* matviewproj);
+    virtual bool Setup(MyMatrix* matworld, MyMatrix* matviewproj);
     virtual void DrawNoSetup();
     virtual void DeactivateShader();
-    virtual void Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    virtual void Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
 
     Vertex_Base* GetVerts(bool markdirty);
 

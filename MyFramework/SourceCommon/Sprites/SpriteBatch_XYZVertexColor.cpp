@@ -46,12 +46,12 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
 }
 
-void SpriteBatch_XYZVertexColor::AddSprite(MySprite* pSprite)
+void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite* pSprite)
 {
-    AddSprite( (MySprite_XYZVertexColor*)pSprite );
+    AddSprite( matworld, (MySprite_XYZVertexColor*)pSprite );
 }
 
-void SpriteBatch_XYZVertexColor::AddSprite(MySprite_XYZVertexColor* pSprite)
+void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite_XYZVertexColor* pSprite)
 {
     Vertex_XYZUV_RGBA* pSpriteVerts = (Vertex_XYZUV_RGBA*)pSprite->GetVerts( false );
     //MyMatrix spriteTransform = pSprite->GetPosition();
@@ -71,7 +71,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MySprite_XYZVertexColor* pSprite)
         Vertex_XYZUV_RGBA* vertorig = &pBatchVerts[m_NumSprites*4 + i];
         Vector3 vertcopy = Vector3( vertorig->x, vertorig->y, vertorig->z );
 
-        Vector3 rotatedvert = pSprite->GetPosition() * vertcopy;
+        Vector3 rotatedvert = *matworld * vertcopy;
 
         pBatchVerts[m_NumSprites*4 + i].x = rotatedvert.x;
         pBatchVerts[m_NumSprites*4 + i].y = rotatedvert.y;

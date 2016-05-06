@@ -1,18 +1,10 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -453,10 +445,13 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     float alpha = m_pAnimDef->GetAlpha( m_TimeFromStart );
     Vector3 rotation = m_pAnimDef->GetRotation( m_TimeFromStart );
 
-    MyMatrix temp = m_BaseTransform;
     if( m_pParentMatrix )
     {
-        temp = *m_pParentMatrix * temp;
+        m_WorldTransform = *m_pParentMatrix * m_BaseTransform;
+    }
+    else
+    {
+        m_WorldTransform = m_BaseTransform;
     }
 
     MySprite* pSprite;
@@ -469,8 +464,8 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     if( pSprite == 0 )
         return 0;
 
-    pSprite->SetTransform( temp );
-    pSprite->SetRST( rotation, scale, position, false );
+    //pSprite->SetTransform( temp );
+    //pSprite->SetRST( rotation, scale, position, false );
     //pSprite->SetTint( ColorByte(255,255,255,(unsigned char)(alpha*255)) );
 
     return pSprite;
@@ -479,7 +474,7 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
 void AnimatedSpriteInstance::Draw(MyMatrix* matviewproj)
 {
     MySprite* pSprite = SetupSpriteForDrawing( 0 );
-    pSprite->Draw( matviewproj );
+    pSprite->Draw( &m_WorldTransform, matviewproj );
 }
 
 void AnimatedSpriteInstance::SetTime(double time)

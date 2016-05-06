@@ -29,7 +29,7 @@ MySprite::MySprite(bool creatematerial)
 {
     m_SpriteIsStatic = false;
 
-    m_pMaterial = 0;
+    //m_pMaterial = 0;
 
     if( creatematerial )
     {
@@ -37,12 +37,12 @@ MySprite::MySprite(bool creatematerial)
         m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
     }
 
-    m_pVertexBuffer = 0;
-    m_pIndexBuffer = 0;
+    //m_pVertexBuffer = 0;
+    //m_pIndexBuffer = 0;
 
-    m_Position.SetIdentity();
+    //m_Position.SetIdentity();
 
-    m_pParentMatrix = 0;
+    //m_pParentMatrix = 0;
 
     m_SpriteSize.Set( 0, 0 );
     m_SpriteUVStart.Set( 0, 0 );
@@ -54,10 +54,14 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 {
     MyAssert( pSprite != 0 );
 
+    MyAssert( false );
+
     *this = *pSprite;
 
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
-    m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
+    m_pMaterial = 0;
+    SetMaterial( pSprite->GetMaterial() );
+    //m_pMaterial = g_pMaterialManager->CreateMaterial();
+    //m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
 
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
     memcpy( pVerts, pSprite->m_pVertexBuffer->m_pData, sizeof(Vertex_Sprite)*4);
@@ -68,10 +72,10 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 
 MySprite::~MySprite()
 {
-    SAFE_RELEASE( m_pVertexBuffer );
-    SAFE_RELEASE( m_pIndexBuffer );
+    //SAFE_RELEASE( m_pVertexBuffer );
+    //SAFE_RELEASE( m_pIndexBuffer );
 
-    SAFE_RELEASE( m_pMaterial );
+    //SAFE_RELEASE( m_pMaterial );
 }
 
 void MySprite::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
@@ -312,71 +316,71 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
     }
 }
 
-MyMatrix MySprite::GetPosition()
-{
-    MyMatrix pos = m_Position;
-    if( m_pParentMatrix )
-        pos = *m_pParentMatrix * pos;
-
-    return pos;
-}
-
-void MySprite::SetPosition(Vector3 pos, bool setindentity)
-{
-    if( setindentity )
-        m_Position.SetIdentity();
-    m_Position.SetTranslation( pos );
-}
-
-void MySprite::SetPosition(float x, float y, float z, bool setindentity)
-{
-    if( setindentity )
-        m_Position.SetIdentity();
-    m_Position.SetTranslation( x, y, z );
-}
-
-void MySprite::SetPosition(MyMatrix* mat)
-{
-    m_Position = *mat;
-}
-
-void MySprite::SetZRotation(float rotation)
-{
-    SetZRotationWithPivot( rotation );
-}
-
-void MySprite::SetZRotationWithPivot(float rotation, bool preserveposition, Vector3* localpivot)
-{
-    Vector3 oldpos;
-    if( preserveposition )
-        oldpos = Vector3( m_Position.m41, m_Position.m42, m_Position.m43 );
-
-    m_Position.SetIdentity();
-    if( localpivot )
-        m_Position.SetTranslation( *localpivot * -1 );
-    m_Position.Rotate( rotation, 0, 0, 1 );
-    if( localpivot )
-        m_Position.Translate( *localpivot );
-
-    if( preserveposition )
-        m_Position.Translate( oldpos );
-}
-
-void MySprite::SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity)
-{
-    if( setindentity )
-        m_Position.SetIdentity();
-    m_Position.Rotate( rot.x, 1, 0, 0 );
-    m_Position.Rotate( rot.y, 0, 1, 0 );
-    m_Position.Rotate( rot.z, 0, 0, 1 );
-    m_Position.Scale( scale.x, scale.y, scale.z );
-    m_Position.Translate( pos.x, pos.y, pos.z );
-}
-
-void MySprite::SetTransform(MyMatrix& mat)
-{
-    m_Position = mat;
-}
+//MyMatrix MySprite::GetPosition()
+//{
+//    MyMatrix pos = m_Position;
+//    if( m_pParentMatrix )
+//        pos = *m_pParentMatrix * pos;
+//
+//    return pos;
+//}
+//
+//void MySprite::SetPosition(Vector3 pos, bool setindentity)
+//{
+//    if( setindentity )
+//        m_Position.SetIdentity();
+//    m_Position.SetTranslation( pos );
+//}
+//
+//void MySprite::SetPosition(float x, float y, float z, bool setindentity)
+//{
+//    if( setindentity )
+//        m_Position.SetIdentity();
+//    m_Position.SetTranslation( x, y, z );
+//}
+//
+//void MySprite::SetPosition(MyMatrix* mat)
+//{
+//    m_Position = *mat;
+//}
+//
+//void MySprite::SetZRotation(float rotation)
+//{
+//    SetZRotationWithPivot( rotation );
+//}
+//
+//void MySprite::SetZRotationWithPivot(float rotation, bool preserveposition, Vector3* localpivot)
+//{
+//    Vector3 oldpos;
+//    if( preserveposition )
+//        oldpos = Vector3( m_Position.m41, m_Position.m42, m_Position.m43 );
+//
+//    m_Position.SetIdentity();
+//    if( localpivot )
+//        m_Position.SetTranslation( *localpivot * -1 );
+//    m_Position.Rotate( rotation, 0, 0, 1 );
+//    if( localpivot )
+//        m_Position.Translate( *localpivot );
+//
+//    if( preserveposition )
+//        m_Position.Translate( oldpos );
+//}
+//
+//void MySprite::SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity)
+//{
+//    if( setindentity )
+//        m_Position.SetIdentity();
+//    m_Position.Rotate( rot.x, 1, 0, 0 );
+//    m_Position.Rotate( rot.y, 0, 1, 0 );
+//    m_Position.Rotate( rot.z, 0, 0, 1 );
+//    m_Position.Scale( scale.x, scale.y, scale.z );
+//    m_Position.Translate( pos.x, pos.y, pos.z );
+//}
+//
+//void MySprite::SetTransform(MyMatrix& mat)
+//{
+//    m_Position = mat;
+//}
 
 void MySprite::SetTint(ColorByte tintcolor)
 {
@@ -399,15 +403,15 @@ void MySprite::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite::SetMaterial(MaterialDefinition* pMaterial)
-{
-    if( pMaterial )
-        pMaterial->AddRef();
-    SAFE_RELEASE( m_pMaterial );
-    m_pMaterial = pMaterial;
-}
+//void MySprite::SetMaterial(MaterialDefinition* pMaterial)
+//{
+//    if( pMaterial )
+//        pMaterial->AddRef();
+//    SAFE_RELEASE( m_pMaterial );
+//    m_pMaterial = pMaterial;
+//}
 
-bool MySprite::Setup(MyMatrix* matviewproj)
+bool MySprite::Setup(MyMatrix* matworld, MyMatrix* matviewproj)
 {
     if( m_pMaterial == 0 )
         return false;
@@ -438,7 +442,7 @@ bool MySprite::Setup(MyMatrix* matviewproj)
 
     bool activated = pShader->ActivateAndProgramShader(
                         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                        matviewproj, &m_Position, m_pMaterial );
+                        matviewproj, matworld, m_pMaterial );
 
     // always disable blending
     glDisable( GL_BLEND );
@@ -471,7 +475,12 @@ void MySprite::DeactivateShader()
     pShader->DeactivateShader( m_pVertexBuffer, true );
 }
 
-void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+{
+    Draw( matworld, matviewproj, pShaderOverride );
+}
+
+void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
@@ -499,7 +508,7 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
             return;
 
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
-        pShader->ProgramPosition( matviewproj, &m_Position );
+        pShader->ProgramPosition( matviewproj, matworld );
 
         MyMatrix identitymat;
         identitymat.SetIdentity();
@@ -525,7 +534,7 @@ void MySprite::Draw(MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 
         if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, &m_Position, m_pMaterial ) )
+                matviewproj, matworld, m_pMaterial ) )
         {
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 

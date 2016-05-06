@@ -64,10 +64,10 @@ void SpriteBatch::AllocateVertices(int numsprites)
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch", "Indices" );
 }
 
-void SpriteBatch::AddSprite(MySprite* pSprite)
+void SpriteBatch::AddSprite(MyMatrix* matworld, MySprite* pSprite)
 {
     Vertex_Sprite* pSpriteVerts = (Vertex_Sprite*)pSprite->GetVerts( false );
-    MyMatrix spriteTransform = pSprite->GetPosition();
+    MyMatrix spriteTransform = *matworld; //pSprite->GetPosition();
     Vertex_Sprite* pBatchVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
     MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
