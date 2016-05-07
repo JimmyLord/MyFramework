@@ -447,6 +447,7 @@ typedef int socklen_t;
 
 #include "Helpers/GlobalEnums.h"
 #include "Helpers/MyTweener.h"
+
 #include "Shaders/GLHelpers.h"
 #include "Shaders/VertexFormats.h"
 #include "Shaders/VertexFormatManager.h"
@@ -454,6 +455,7 @@ typedef int socklen_t;
 #include "Shaders/ShaderManager.h"
 #include "Shaders/Shader_Base.h"
 #include "Shaders/ListOfShaders.h"
+
 #include "Meshes/MeshManager.h"
 #include "Meshes/OBJLoader.h"
 #include "Meshes/MyAnimation.h"
@@ -462,6 +464,7 @@ typedef int socklen_t;
 #include "Meshes/BufferManager.h"
 #include "Meshes/MyLight.h"
 #include "Meshes/LightManager.h"
+
 #include "Sprites/MySprite.h"
 #include "Sprites/MySprite_XYZVertexColor.h"
 //#include "Sprites/MySprite9.h"
@@ -471,16 +474,23 @@ typedef int socklen_t;
 #include "Sprites/AnimationKeys.h"
 #include "Sprites/SpriteSheet.h"
 #include "Sprites/SpriteSheet_XYZVertexColor.h"
+
+#include "SceneGraphs/SceneGraph_Base.h"
+
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"
+
 #include "Textures/TextureManager.h"
 #include "Textures/MaterialDefinition.h"
 #include "Textures/MaterialManager.h"
 #include "Textures/FBODefinition.h"
+
 #include "Networking/StunClient.h"
 #include "Networking/GameServiceManager.h"
+
 #include "Particles/ParticleRenderer.h"
 #include "Particles/ParticleRendererInstanced.h"
+
 #include "Sound/SoundManager.h"
 
 #include "GameCore.h"

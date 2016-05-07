@@ -13,11 +13,18 @@
 class MyMesh;
 class MaterialDefinition;
 
+enum SceneGraphFlags
+{
+    SceneGraphFlag_Opaque       = 0x01,
+    SceneGraphFlag_Transparent  = 0x02,
+};
+
 class SceneGraphObject
 {
 public:
     // none of these hold references
     // so if the object is free'd without removing the SceneGraphObject, bad things will happen.
+    SceneGraphFlags m_Flags;
     MyMatrix* m_pTransform;
     MyMesh* m_pMesh; // used for final bone transforms ATM
     MySubmesh* m_pSubmesh;
@@ -37,10 +44,10 @@ public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize) = 0;
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
-    virtual void Draw(Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride) = 0;
+    virtual void Draw(SceneGraphFlags flags, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride) = 0;
 };
 
 #endif //__SceneGraph_Base_H__

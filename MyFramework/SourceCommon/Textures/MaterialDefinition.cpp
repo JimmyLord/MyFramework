@@ -250,7 +250,7 @@ void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
     m_pTextureColor = pTexture;
 }
 
-bool MaterialDefinition::IsTransparent(Shader_Base* pShader)
+bool MaterialDefinition::IsTransparent(BaseShader* pShader)
 {
     if( m_BlendType == MaterialBlendType_On )
         return true;
@@ -260,6 +260,25 @@ bool MaterialDefinition::IsTransparent(Shader_Base* pShader)
         return pShader->m_BlendType == MaterialBlendType_On ? true : false;
 
     return false;
+}
+
+bool MaterialDefinition::IsTransparent()
+{
+    // if shader from any pass is opaque, consider entire object opaque.
+    if( m_pShaderGroup )
+    {
+        for( int i=0; i<ShaderPass_NumTypes; i++ )
+        {
+            BaseShader* pShader = m_pShaderGroup->GetShader( (ShaderPassTypes)i );
+            if( pShader )
+            {
+                if( IsTransparent( pShader ) == false )
+                    return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 #if MYFW_USING_WX

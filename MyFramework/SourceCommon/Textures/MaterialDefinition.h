@@ -75,7 +75,8 @@ public:
 
     void SetBlendType(MaterialBlendType transparenttype) { m_BlendType = transparenttype; }
     MaterialBlendType GetBlendType() { return m_BlendType; }
-    bool IsTransparent(Shader_Base* pShader);
+    bool IsTransparent(BaseShader* pShader);
+    bool IsTransparent();
 
 public:
 #if MYFW_USING_WX
