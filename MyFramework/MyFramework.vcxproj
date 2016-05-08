@@ -2143,6 +2143,9 @@
     <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Plane.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Vector.cpp" />
+    <ClCompile Include="SourceCommon\Events\EventManager.cpp" />
+    <ClCompile Include="SourceCommon\Events\EventTypeManager.cpp" />
+    <ClCompile Include="SourceCommon\Events\MyEvent.cpp" />
     <ClCompile Include="SourceCommon\Fonts\BMFont.cpp" />
     <ClCompile Include="SourceCommon\Fonts\FontManager.cpp" />
     <ClCompile Include="SourceCommon\GameCore.cpp" />
@@ -4008,6 +4011,9 @@
     <ClInclude Include="SourceCommon\DataTypes\MyQuaternion.h" />
     <ClInclude Include="SourceCommon\DataTypes\Plane.h" />
     <ClInclude Include="SourceCommon\DataTypes\Vector.h" />
+    <ClInclude Include="SourceCommon\Events\EventManager.h" />
+    <ClInclude Include="SourceCommon\Events\EventTypeManager.h" />
+    <ClInclude Include="SourceCommon\Events\MyEvent.h" />
     <ClInclude Include="SourceCommon\Fonts\BMFont.h" />
     <ClInclude Include="SourceCommon\Fonts\FontManager.h" />
     <ClInclude Include="SourceCommon\GameCore.h" />

@@ -109,6 +109,9 @@
     <Filter Include="Source\SceneGraphs">
       <UniqueIdentifier>{375e65cc-77be-4ef4-8595-2fcc2a5483d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Events">
+      <UniqueIdentifier>{5803e1d8-cc4e-4dcb-b790-536ca3322646}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -583,6 +586,15 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp">
       <Filter>Source\SceneGraphs</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Events\EventManager.cpp">
+      <Filter>Source\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Events\MyEvent.cpp">
+      <Filter>Source\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Events\EventTypeManager.cpp">
+      <Filter>Source\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1244,6 +1256,15 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h">
       <Filter>Source\SceneGraphs</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Events\EventManager.h">
+      <Filter>Source\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Events\MyEvent.h">
+      <Filter>Source\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Events\EventTypeManager.h">
+      <Filter>Source\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

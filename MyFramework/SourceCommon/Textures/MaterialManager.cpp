@@ -42,6 +42,9 @@ void MaterialManager::Tick()
         {
             pMaterial->ImportFromFile();
 
+            MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_MaterialFinishedLoading );
+            g_pEventManager->SendEventNow( pEvent );
+
 #if MYFW_USING_WX
             const char* foldername = "Unknown";
             if( pMaterial->m_pFile )

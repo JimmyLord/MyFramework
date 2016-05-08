@@ -79,7 +79,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, Vector3* campos, Vector3* camr
         SceneGraphObject* pObject = m_pRenderables[i];
 
         if( (pObject->m_Flags & flags) == 0 )
-            return;
+            continue;
         
         MyAssert( pObject->m_pSubmesh );
         MyAssert( pObject->m_pMaterial );

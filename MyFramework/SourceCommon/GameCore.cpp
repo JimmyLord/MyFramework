@@ -70,6 +70,9 @@ GameCore::~GameCore()
 
     SAFE_DELETE( g_pFileManager ); // will assert if all files aren't free, so delete last.
 
+    SAFE_DELETE( g_pEventManager );
+    SAFE_DELETE( g_pEventTypeManager );
+
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
 #endif
@@ -81,6 +84,10 @@ GameCore::~GameCore()
 
 void GameCore::InitializeManagers()
 {
+    if( g_pEventTypeManager == 0 )
+        g_pEventTypeManager = MyNew EventTypeManager;
+    if( g_pEventManager == 0 )
+        g_pEventManager = MyNew EventManager;
     if( g_pFileManager == 0 )
         g_pFileManager = MyNew FileManager;
     if( g_pTextureManager == 0 )
@@ -157,6 +164,7 @@ double GameCore::Tick(double TimePassed)
     //if( m_GLSurfaceIsValid == false )
     //    return;
 
+    g_pEventManager->Tick();
     g_pFileManager->Tick();
     g_pTextureManager->Tick();
     g_pMaterialManager->Tick();

@@ -267,7 +267,8 @@ bool MaterialDefinition::IsTransparent()
     // if shader from any pass is opaque, consider entire object opaque.
     if( m_pShaderGroup )
     {
-        for( int i=0; i<ShaderPass_NumTypes; i++ )
+        //for( int i=0; i<ShaderPass_NumTypes; i++ )
+        int i = ShaderPass_Main;
         {
             BaseShader* pShader = m_pShaderGroup->GetShader( (ShaderPassTypes)i );
             if( pShader )

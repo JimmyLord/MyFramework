@@ -354,6 +354,9 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         return false;
     }
 
+    MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );
+    g_pEventManager->SendEventNow( pEvent );
+
     return true;
 }
 

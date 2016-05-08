@@ -112,6 +112,8 @@ public:
     virtual void OnDrawFrameDone();
     virtual void OnFileRenamed(const char* fullpathbefore, const char* fullpathafter);
 
+    virtual bool OnEvent(MyEvent* pEvent) = 0;
+
     virtual bool OnTouch(int action, int id, float x, float y, float pressure, float size);
     virtual bool OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);
     virtual bool OnKeys(GameCoreButtonActions action, int keycode, int unicodechar);

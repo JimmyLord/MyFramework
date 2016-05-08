@@ -437,6 +437,11 @@ typedef int socklen_t;
 
 #include "Helpers/MessageLog.h"
 #include "DataTypes/MyActivePool.h"
+
+#include "Events/EventTypeManager.h"
+#include "Events/MyEvent.h"
+#include "Events/EventManager.h"
+
 #include "Helpers/MyFileObject.h"
 #include "Shaders/MyFileObjectShader.h"
 #include "Helpers/FileManager.h"
