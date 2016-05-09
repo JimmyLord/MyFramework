@@ -17,6 +17,10 @@ EventManager* g_pEventManager = 0;
 EventManager::EventManager()
 {
     m_pEventPool.AllocateObjects( MAX_EVENTS );
+    m_pEventHandlerPool.AllocateObjects( MAX_EVENT_HANDLERS );
+
+    m_NumEvents = 0;
+    m_NumEventHandlers = 0;
 }
 
 EventManager::~EventManager()
@@ -24,6 +28,11 @@ EventManager::~EventManager()
     for( unsigned int i=0; i<m_NumEvents; i++ )
     {
         m_pEventPool.ReturnObject( m_pEvents[i] );
+    }
+
+    for( unsigned int i=0; i<m_NumEventHandlers; i++ )
+    {
+        m_pEventHandlerPool.ReturnObject( m_pEventHandlers[i] );
     }
 }
 
@@ -44,7 +53,57 @@ void EventManager::ReleaseEvent(MyEvent* pEvent)
     m_pEventPool.ReturnObject( pEvent );
 }
 
+void EventManager::RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
+{
+    MyEventHandler* pEventHandler = m_pEventHandlerPool.GetObject();
+    
+    pEventHandler->m_EventType = type;
+    pEventHandler->m_pObject = pObject;
+    pEventHandler->m_pOnEventFunction = pOnEventFunction;
+
+    if( m_NumEventHandlers < MAX_EVENT_HANDLERS )
+    {
+        m_pEventHandlers[m_NumEventHandlers] = pEventHandler;
+        m_NumEventHandlers++;
+    }
+    else
+    {
+        LOGError( LOGTag, "Too many event handlers!\n" );
+    }
+}
+
+void EventManager::UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
+{
+    for( unsigned int i=0; i<m_NumEventHandlers; i++ )
+    {
+        MyAssert( m_pEventHandlers[i] );
+
+        if( m_pEventHandlers[i]->m_EventType == type &&
+            m_pEventHandlers[i]->m_pObject == pObject &&
+            m_pEventHandlers[i]->m_pOnEventFunction == pOnEventFunction )
+        {
+            m_pEventHandlerPool.ReturnObject( m_pEventHandlers[i] );
+
+            m_pEventHandlers[i] = m_pEventHandlers[m_NumEventHandlers-1];
+            m_pEventHandlers[m_NumEventHandlers-1] = 0;
+            m_NumEventHandlers--;
+            return;
+        }
+    }
+}
+
 void EventManager::SendEventNow(MyEvent* pEvent)
 {
-    g_pGameCore->OnEvent( pEvent );
+    for( unsigned int i=0; i<m_NumEventHandlers; i++ )
+    {
+        MyAssert( m_pEventHandlers[i] );
+
+        if( m_pEventHandlers[i]->m_EventType == pEvent->GetType() )
+        {
+            (m_pEventHandlers[i]->m_pOnEventFunction)( m_pEventHandlers[i]->m_pObject, pEvent );
+        }
+    }
+    //g_pGameCore->OnEvent( pEvent );
+
+    ReleaseEvent( pEvent );
 }

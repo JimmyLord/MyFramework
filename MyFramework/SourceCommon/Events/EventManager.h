@@ -14,14 +14,39 @@ class EventManager;
 
 extern EventManager* g_pEventManager;
 
+typedef bool (*EventCallbackFunc)(void* pObjectPtr, MyEvent* pEvent);
+
+class MyEventHandler
+{
+public:
+    EventTypes m_EventType;
+    void* m_pObject;
+    EventCallbackFunc m_pOnEventFunction;
+
+public:
+    MyEventHandler()
+    {
+        m_EventType = Event_Undefined;
+
+        m_pObject = 0;
+        m_pOnEventFunction = 0;
+    }
+};
+
 class EventManager
 {
     static const unsigned int MAX_EVENTS = 10000;
+    static const unsigned int MAX_EVENT_HANDLERS = 1000;
 
 protected:
     MySimplePool<MyEvent> m_pEventPool;
-    MyEvent* m_pEvents[MAX_EVENTS];
+    MySimplePool<MyEventHandler> m_pEventHandlerPool;
+
+    MyEvent* m_pEvents[MAX_EVENTS]; // list of all active events, TODO: make linked list
     unsigned int m_NumEvents;
+
+    MyEventHandler* m_pEventHandlers[MAX_EVENT_HANDLERS]; // list of all active event handlers, TODO: make linked list, one per type?
+    unsigned int m_NumEventHandlers;
 
 public:
     EventManager();
@@ -31,6 +56,9 @@ public:
 
     MyEvent* CreateNewEvent(EventTypes type);
     void ReleaseEvent(MyEvent* pEvent);
+
+    void RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
+    void UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
 
     void SendEventNow(MyEvent* pEvent);
 };
