@@ -28,11 +28,6 @@ EventTypeManager::~EventTypeManager()
 {
 }
 
-MyEvent* EventTypeManager::CreateEvent(int type)
-{
-    return 0;
-}
-
 unsigned int EventTypeManager::GetNumberOfEventTypes()
 {
     return 0;

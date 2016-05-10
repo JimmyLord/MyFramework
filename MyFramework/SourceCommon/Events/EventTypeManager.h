@@ -36,7 +36,6 @@ public:
     EventTypeManager();
     virtual ~EventTypeManager();
 
-    virtual MyEvent* CreateEvent(int type);
     virtual unsigned int GetNumberOfEventTypes();
 
     virtual const char* GetTypeCategory(int type);

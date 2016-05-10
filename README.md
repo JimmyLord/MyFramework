@@ -14,7 +14,7 @@ Currently supports the following platforms:
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:
 
 Windows
-- Visual Studio 2010
+- Visual Studio 2010+
     
 Android
 - vs-android (http://code.google.com/p/vs-android/) to compile c++ code in Visual Studio 2010
@@ -24,8 +24,8 @@ Android
 - android-ndk-r10e-windows-x86_64.exe
 - apache-ant-1.9.3-bin.zip
 - setx ANDROID_NDK_ROOT E:\Apps\android-ndk-r10e
-- setx ANDROID_HOME E:\Apps\Android\sdk <- to allow vs-android can build apk
-- setx ANT_HOME E:\Apps\apache-ant-1.9.3 <- to allow vs-android can build apk
+- setx ANDROID_HOME E:\Apps\Android\sdk <- to allow vs-android to build apk
+- setx ANT_HOME E:\Apps\apache-ant-1.9.3 <- to allow vs-android to build apk
 - mklink /d C:\Users\Me\.android E:\AppData\.android
 
 BlackBerry 10/Playbook
@@ -34,13 +34,6 @@ BlackBerry 10/Playbook
     
 iOS
 - Xcode 6.1
-    
-WxWidgets (debug tools on Windows build)
-- wxMSW-3.0.0_vc100_Dev.7z
-- wxMSW-3.0.0_vc100_ReleaseDLL.7z
-- wxWidgets-3.0.0.7z <- for the include dir, there might be a sep header only download.
-- Unzip all to E:\Apps\wxWidgets-3.0.0
-- setx wxwin E:\Apps\wxWidgets-3.0.0
     
 Emscripten
 - emsdk-1.16.0-web-64bit
