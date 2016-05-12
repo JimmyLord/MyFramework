@@ -61,6 +61,8 @@ public:
     void CreateScale(float scale);
     void CreateScale(float x, float y, float z);
     void CreateScale(Vector3 scale);
+    void CreateTranslation(float x, float y, float z);
+    void CreateTranslation(Vector3 pos);
     void CreateSRT(float scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, MyQuat rot, Vector3 pos);
