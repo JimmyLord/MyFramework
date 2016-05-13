@@ -92,12 +92,12 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     if( BaseShader::LoadAndCompile( programhandle ) == false )
         return false;
 
-    m_aHandle_Position =    GetAttributeLocation( m_ProgramHandle, "a_Position" );
-    m_aHandle_UVCoord =     GetAttributeLocation( m_ProgramHandle, "a_UVCoord" );
-    m_aHandle_Normal =      GetAttributeLocation( m_ProgramHandle, "a_Normal" );
-    m_aHandle_VertexColor = GetAttributeLocation( m_ProgramHandle, "a_VertexColor" );
-    m_aHandle_BoneIndex =   GetAttributeLocation( m_ProgramHandle, "a_BoneIndex" );
-    m_aHandle_BoneWeight =  GetAttributeLocation( m_ProgramHandle, "a_BoneWeight" );
+    m_aHandle_Position =    1; //GetAttributeLocation( m_ProgramHandle, "a_Position" );
+    m_aHandle_UVCoord =     2; //GetAttributeLocation( m_ProgramHandle, "a_UVCoord" );
+    m_aHandle_Normal =      3; //GetAttributeLocation( m_ProgramHandle, "a_Normal" );
+    m_aHandle_VertexColor = 4; //GetAttributeLocation( m_ProgramHandle, "a_VertexColor" );
+    m_aHandle_BoneIndex =   5; //GetAttributeLocation( m_ProgramHandle, "a_BoneIndex" );
+    m_aHandle_BoneWeight =  6; //GetAttributeLocation( m_ProgramHandle, "a_BoneWeight" );
 
     m_uHandle_World =         GetUniformLocation( m_ProgramHandle, "u_World" );
     m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );

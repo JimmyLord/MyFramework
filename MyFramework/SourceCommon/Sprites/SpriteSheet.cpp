@@ -53,6 +53,7 @@ void SpriteSheet::Create(MaterialDefinition* pMaterial)
     TextureDefinition* pTextureDef = pMaterial->GetTextureColor();
 
     MyAssert( pMaterial && pTextureDef && pTextureDef->m_pFile );
+    MyAssert( m_pMaterial == 0 );
     if( pMaterial == 0 || pTextureDef == 0 || pTextureDef->m_pFile == 0 )
         return;
 

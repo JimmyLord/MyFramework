@@ -140,6 +140,9 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 
 int SoundPlayer::PlaySound(int soundid)
 {
+    if( soundid == -1 )
+        return -1;
+
     int channel = Mix_GroupAvailable( SoundGroup_Effects );
     if( channel == -1 )
         channel = Mix_GroupOldest( SoundGroup_Effects );
