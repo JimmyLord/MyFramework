@@ -940,33 +940,51 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     float uvclamplow = 0.01f;
     float uvclamphigh = 1 - uvclamplow;// 0.98f;
 
+    //               TOP                      BOTTOM - 17+
+    //z=1        /----6----\                /----6----\
+    //          /           \              /           \
+    //         8   /--5--\   4            8   /--5--\   4
+    //        /   7       3   \          /   7       3   \
+    //       /   /         \   \        /   /         \   \
+    //z=0   10  9     0     1   2      10  9     0     1   2
+    //       \   \         /   /        \   \         /   /
+    //        \   11      15  /          \   11      15  /
+    //         12  \--13-/   16           12  \--13-/   16
+    //          \           /              \           /
+    //z=-1       \----14---/                \----14---/
+
+    int flipz = 1;
+#if MYFW_RIGHTHANDED
+    flipz = -1;
+#endif
+
     // create top inner and outer(edge) circle verts
     for( int i=0; i<numsegments; i++ )
     {
-        float angle = 360.0f/numsegments * i;
-        //float nextangle = 360.0f/numsegments * (i+1);
+        float radianspersegment = PI*2/numsegments;
+        float radians = radianspersegment * i;
 
         // inner vert
-        pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
-        pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
+        pVerts[vertnum].pos.x = cos( radians ) * (radius - edgeradius);
+        pVerts[vertnum].pos.z = sin( radians ) * (radius - edgeradius) * flipz;
         pVerts[vertnum].pos.y = height;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
         MyClamp( uperc, uvclamplow, uvclamphigh );
-        vperc = (pVerts[vertnum].pos.z + radius) / (radius*2);
+        vperc = 1 - (pVerts[vertnum].pos.z + radius) / (radius*2);
         MyClamp( vperc, uvclamplow, uvclamphigh );
         pVerts[vertnum].uv.Set( topstartu + topsizeu * uperc, topstartv + topsizev * vperc );
         pVerts[vertnum].normal.Set( 0, 1, 0 );
         vertnum++;
 
         // outer vert
-        pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius);
-        pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius);
+        pVerts[vertnum].pos.x = cos( radians ) * (radius);
+        pVerts[vertnum].pos.z = sin( radians ) * (radius) * flipz;
         pVerts[vertnum].pos.y = height;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
         MyClamp( uperc, uvclamplow, uvclamphigh );
-        vperc = (pVerts[vertnum].pos.z + radius) / (radius*2);
+        vperc = 1 - (pVerts[vertnum].pos.z + radius) / (radius*2);
         MyClamp( vperc, uvclamplow, uvclamphigh );
         pVerts[vertnum].uv.Set( topstartu + topsizeu * uperc, topstartv + topsizev * vperc );
         //pVerts[vertnum].normal.Set( 0, 1, 0 );
@@ -984,30 +1002,30 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     // create bottom inner and outer(edge) circle verts
     for( int i=0; i<numsegments; i++ )
     {
-        float angle = 360.0f/numsegments * i;
-        //float nextangle = 360.0f/numsegments * (i+i);
+        float radianspersegment = PI*2/numsegments;
+        float radians = radianspersegment * i;
 
         // inner vert
-        pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
-        pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius - edgeradius);
+        pVerts[vertnum].pos.x = cos( radians ) * (radius - edgeradius);
+        pVerts[vertnum].pos.z = sin( radians ) * (radius - edgeradius) * flipz;
         pVerts[vertnum].pos.y = 0;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
         MyClamp( uperc, uvclamplow, uvclamphigh );
-        vperc = (pVerts[vertnum].pos.z + radius) / (radius*2);
+        vperc = 1 - (pVerts[vertnum].pos.z + radius) / (radius*2);
         MyClamp( vperc, uvclamplow, uvclamphigh );
         pVerts[vertnum].uv.Set( topendu - topsizeu * uperc, topstartv + topsizev * vperc );
         pVerts[vertnum].normal.Set( 0, -1, 0 );
         vertnum++;
 
         // outer vert
-        pVerts[vertnum].pos.x = sin( angle/360 * 3.1415927f*2 ) * (radius);
-        pVerts[vertnum].pos.z = cos( angle/360 * 3.1415927f*2 ) * (radius);
+        pVerts[vertnum].pos.x = cos( radians ) * (radius);
+        pVerts[vertnum].pos.z = sin( radians ) * (radius) * flipz;
         pVerts[vertnum].pos.y = 0;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
         MyClamp( uperc, uvclamplow, uvclamphigh );
-        vperc = (pVerts[vertnum].pos.z + radius) / (radius*2);
+        vperc = 1 - (pVerts[vertnum].pos.z + radius) / (radius*2);
         MyClamp( vperc, uvclamplow, uvclamphigh );
         pVerts[vertnum].uv.Set( topendu - topsizeu * uperc, topstartv + topsizev * vperc );
         //pVerts[vertnum].normal.Set( 0, -1, 0 );
@@ -1057,12 +1075,13 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
         GLushort baseindex = 0;
         for( GLushort i=0; i<numsegments; i++ )
         {
+            // 0,3,1,   0,5,3,   0,7,5...
             pIndices[indexnum + 0] = 0;
-            pIndices[indexnum + 1] = baseindex + i*2 + 1;
+            pIndices[indexnum + 2] = baseindex + i*2 + 1;
             if( i != numsegments-1 )
-                pIndices[indexnum + 2] = baseindex + (i+1)*2 + 1;
+                pIndices[indexnum + 1] = baseindex + (i+1)*2 + 1;
             else
-                pIndices[indexnum + 2] = baseindex + 1;
+                pIndices[indexnum + 1] = baseindex + 1;
 
             indexnum += 3;
         }
@@ -1073,24 +1092,25 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     {
         for( GLushort i=0; i<numsegments; i++ )
         {
+            // 1,3,2,   2,3,4,   3,5,4...
             pIndices[indexnum + 0] = i*2 + 1;
-            pIndices[indexnum + 1] = i*2 + 2;
+            pIndices[indexnum + 2] = i*2 + 2;
             if( i != numsegments-1 )
-                pIndices[indexnum + 2] = (i+1)*2 + 1;
+                pIndices[indexnum + 1] = (i+1)*2 + 1;
             else
-                pIndices[indexnum + 2] = 0*2 + 1;
+                pIndices[indexnum + 1] = 0*2 + 1;
             indexnum += 3;
 
             pIndices[indexnum + 0] = (i)*2 + 2;
             if( i != numsegments-1 )
             {
-                pIndices[indexnum + 1] = (i+1)*2 + 2;
-                pIndices[indexnum + 2] = (i+1)*2 + 1;
+                pIndices[indexnum + 2] = (i+1)*2 + 2;
+                pIndices[indexnum + 1] = (i+1)*2 + 1;
             }
             else
             {
-                pIndices[indexnum + 1] = (0)*2 + 2;
-                pIndices[indexnum + 2] = (0)*2 + 1;
+                pIndices[indexnum + 2] = (0)*2 + 2;
+                pIndices[indexnum + 1] = (0)*2 + 1;
             }
             indexnum += 3;
         }
@@ -1102,13 +1122,13 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
         for( GLushort i=0; i<numsegments; i++ )
         {
             pIndices[indexnum + 0] = firstsidevert + i*2;
-            pIndices[indexnum + 1] = firstsidevert + i*2 + 1;
-            pIndices[indexnum + 2] = firstsidevert + i*2 + 2; //(i*2 + 2)%(numsegments*2);
+            pIndices[indexnum + 2] = firstsidevert + i*2 + 1;
+            pIndices[indexnum + 1] = firstsidevert + i*2 + 2; //(i*2 + 2)%(numsegments*2);
             indexnum += 3;
 
             pIndices[indexnum + 0] = firstsidevert + i*2 + 1;
-            pIndices[indexnum + 1] = firstsidevert + i*2 + 3; //(i*2 + 3)%(numsegments*2);
-            pIndices[indexnum + 2] = firstsidevert + i*2 + 2; //(i*2 + 2)%(numsegments*2);
+            pIndices[indexnum + 2] = firstsidevert + i*2 + 3; //(i*2 + 3)%(numsegments*2);
+            pIndices[indexnum + 1] = firstsidevert + i*2 + 2; //(i*2 + 2)%(numsegments*2);
             indexnum += 3;
         }
     }
@@ -1120,11 +1140,11 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
         for( GLushort i=0; i<numsegments; i++ )
         {
             pIndices[indexnum + 0] = baseindex + 0;
-            pIndices[indexnum + 2] = baseindex + i*2 + 1;
+            pIndices[indexnum + 1] = baseindex + i*2 + 1;
             if( i != numsegments-1 )
-                pIndices[indexnum + 1] = baseindex + (i+1)*2 + 1;
+                pIndices[indexnum + 2] = baseindex + (i+1)*2 + 1;
             else
-                pIndices[indexnum + 1] = baseindex + 1;
+                pIndices[indexnum + 2] = baseindex + 1;
 
             indexnum += 3;
         }
@@ -1137,23 +1157,23 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
         for( GLushort i=0; i<numsegments; i++ )
         {
             pIndices[indexnum + 0] = baseindex + i*2 + 1;
-            pIndices[indexnum + 2] = baseindex + i*2 + 2;
+            pIndices[indexnum + 1] = baseindex + i*2 + 2;
             if( i != numsegments-1 )
-                pIndices[indexnum + 1] = baseindex + (i+1)*2 + 1;
+                pIndices[indexnum + 2] = baseindex + (i+1)*2 + 1;
             else
-                pIndices[indexnum + 1] = baseindex + 0*2 + 1;
+                pIndices[indexnum + 2] = baseindex + 0*2 + 1;
             indexnum += 3;
 
             pIndices[indexnum + 0] = baseindex + (i)*2 + 2;
             if( i != numsegments-1 )
             {
-                pIndices[indexnum + 2] = baseindex + (i+1)*2 + 2;
-                pIndices[indexnum + 1] = baseindex + (i+1)*2 + 1;
+                pIndices[indexnum + 1] = baseindex + (i+1)*2 + 2;
+                pIndices[indexnum + 2] = baseindex + (i+1)*2 + 1;
             }
             else
             {
-                pIndices[indexnum + 2] = baseindex + (0)*2 + 2;
-                pIndices[indexnum + 1] = baseindex + (0)*2 + 1;
+                pIndices[indexnum + 1] = baseindex + (0)*2 + 2;
+                pIndices[indexnum + 2] = baseindex + (0)*2 + 1;
             }
             indexnum += 3;
         }
