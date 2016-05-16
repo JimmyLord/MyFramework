@@ -521,7 +521,8 @@ void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pSha
     {
         pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
 
-        MyAssert( pShader );
+        // pShader will be 0 if the current pass isn't supported/needed by the shader, i.e. doesn't render to shadow buffer.
+        //MyAssert( pShader );
         if( pShader == 0 )
             return;
 
