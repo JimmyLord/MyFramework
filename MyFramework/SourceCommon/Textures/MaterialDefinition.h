@@ -40,6 +40,9 @@ public:
     ColorByte m_ColorSpecular;
     float m_Shininess;
 
+    Vector2 m_UVScale;
+    Vector2 m_UVOffset;
+
 public:
     bool m_FullyLoaded;
 

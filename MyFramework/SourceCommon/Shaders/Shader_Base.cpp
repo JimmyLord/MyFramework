@@ -39,6 +39,9 @@ void Shader_Base::Init_Shader_Base()
 
     m_uHandle_PointSize = -1;
 
+    m_uHandle_UVScale = -1;
+    m_uHandle_UVOffset = -1;
+
     m_uHandle_ShadowLightWVPT = -1;
     m_uHandle_ShadowTexture = -1;
 
@@ -104,6 +107,9 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     m_uHandle_WorldViewProj = GetUniformLocation( m_ProgramHandle, "u_WorldViewProj" );
 
     m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
+
+    m_uHandle_UVScale =       GetUniformLocation( m_ProgramHandle, "u_UVScale" );
+    m_uHandle_UVOffset =      GetUniformLocation( m_ProgramHandle, "u_UVOffset" );
 
     m_uHandle_ShadowLightWVPT = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVPT" );
     m_uHandle_ShadowTexture =   GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
@@ -430,6 +436,8 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->GetTextureColor(),
         pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
 
+    ProgramUVScaleAndOffset( pMaterial->m_UVScale, pMaterial->m_UVOffset );
+
     return true;
 }
 
@@ -597,6 +605,15 @@ void Shader_Base::ProgramPointSize(float pointsize)
 {
     if( m_uHandle_PointSize != -1 )
         glUniform1f( m_uHandle_PointSize, pointsize );
+}
+
+void Shader_Base::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
+{
+    if( m_uHandle_UVScale != -1 )
+        glUniform2f( m_uHandle_UVScale, scale.x, scale.y );
+    
+    if( m_uHandle_UVOffset != -1 )
+        glUniform2f( m_uHandle_UVOffset, offset.x, offset.y );
 }
 
 void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inverseworldmatrix)

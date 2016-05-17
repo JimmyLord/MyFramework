@@ -65,6 +65,9 @@ void MaterialDefinition::Init()
     m_ColorSpecular = ColorByte(255,255,255,255);
     m_Shininess = 200;
 
+    m_UVScale.Set( 1, 1 );
+    m_UVOffset.Set( 0, 0 );
+
 #if MYFW_USING_WX
     m_ControlID_Shader = -1;
     m_ControlID_ShaderInstanced = -1;

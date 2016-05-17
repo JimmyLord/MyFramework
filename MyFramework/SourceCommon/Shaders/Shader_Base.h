@@ -31,6 +31,9 @@ public:
 
     GLint m_uHandle_PointSize;
 
+    GLint m_uHandle_UVScale;
+    GLint m_uHandle_UVOffset;
+
     GLint m_uHandle_ShadowLightWVPT; // in 0 to 1 space(texture/uv? space), not -1 to 1
     GLint m_uHandle_ShadowTexture;
 
@@ -82,6 +85,7 @@ public:
     void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
     void ProgramTint(ColorByte tint);
     void ProgramPointSize(float pointsize);
+    void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset);
     void ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inverseworldmatrix);
     void ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix);
     void ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pShadowTex);
