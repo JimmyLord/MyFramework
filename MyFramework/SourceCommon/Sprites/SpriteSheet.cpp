@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -20,6 +20,8 @@ SpriteSheet::SpriteSheet()
     m_pSpriteUVs = 0;
 
     m_pSprites = 0;
+    m_pMaterialList = 0;
+
     m_NumSprites = 0;
     m_pJSONFile = 0;
     m_pMaterial = 0;
@@ -30,6 +32,9 @@ SpriteSheet::SpriteSheet()
     m_SubspriteEndX = 1;
     m_SubspriteStartY = 0;
     m_SubspriteEndY = 1;
+
+    m_CreateSprites = false;
+    m_CreateMaterials = false;
 }
 
 SpriteSheet::~SpriteSheet()
@@ -40,31 +45,68 @@ SpriteSheet::~SpriteSheet()
 
     for( int i=0; i<m_NumSprites; i++ )
     {
-        m_pSprites[i]->Release();
+        if( m_pSprites && m_pSprites[i] )
+        {
+            m_pSprites[i]->Release();
+        }
+
+        if( m_pMaterialList && m_pMaterialList[i] )
+        {
+            m_pMaterialList[i]->Release();
+        }
     }
 
     SAFE_DELETE_ARRAY( m_pSprites );
+    SAFE_DELETE_ARRAY( m_pMaterialList );
     SAFE_RELEASE( m_pJSONFile );
     SAFE_RELEASE( m_pMaterial );
 }
 
-void SpriteSheet::Create(MaterialDefinition* pMaterial)
+void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials)
 {
-    TextureDefinition* pTextureDef = pMaterial->GetTextureColor();
-
-    MyAssert( pMaterial && pTextureDef && pTextureDef->m_pFile );
     MyAssert( m_pMaterial == 0 );
-    if( pMaterial == 0 || pTextureDef == 0 || pTextureDef->m_pFile == 0 )
-        return;
+    MyAssert( m_pSprites == 0 );
+    MyAssert( m_pMaterialList == 0 );
 
-    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pTextureDef->m_pFile->m_FilenameWithoutExtension );
+    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", fullpath );
 
-    char jsonpath[MAX_PATH];
-    pTextureDef->m_pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".json", jsonpath, MAX_PATH );
-    m_pJSONFile = RequestFile( jsonpath );
+    MyFileObject* pJSONFile = 0;
+    MyFileObject* pTextureFile = 0;
 
-    pMaterial->AddRef();
-    m_pMaterial = pMaterial;
+    MyFileObject* pFile = RequestFile( fullpath );
+
+    if( strcmp( pFile->m_ExtensionWithDot, ".json" ) == 0 )
+    {
+        pJSONFile = pFile;
+
+        char otherpath[MAX_PATH];
+        pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".png", otherpath, MAX_PATH );
+        pTextureFile = RequestFile( otherpath );
+    }
+    else if( strcmp( pFile->m_ExtensionWithDot, ".png" ) == 0 )
+    {
+        pTextureFile = pFile;
+
+        char otherpath[MAX_PATH];
+        pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".json", otherpath, MAX_PATH );
+        pJSONFile = RequestFile( otherpath );
+    }
+    else
+    {
+        MyAssert( false );
+    }
+
+    m_pJSONFile = pJSONFile;
+
+    TextureDefinition* pTextureDef = g_pTextureManager->CreateTexture( pTextureFile, minfilter, magfilter );
+    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial->SetTextureColor( pTextureDef );
+    m_pMaterial->SetShader( pShader );
+
+    m_CreateSprites = createsprites;
+    m_CreateMaterials = creatematerials;
+
+    pFile->Release();
 }
 
 void SpriteSheet::Tick(double TimePassed)
@@ -107,7 +149,11 @@ void SpriteSheet::Tick(double TimePassed)
                 {
                     m_pSpriteNames = MyNew char[numfiles * 64];
                     m_pSpriteUVs = MyNew Vector4[numfiles];
-                    CreateSprites( numfiles, m_pMaterial );
+
+                    m_NumSprites = numfiles;
+
+                    CreateSprites();
+                    CreateMaterials();
 
                     for( int i=0; i<numfiles; i++ )
                     {
@@ -158,25 +204,29 @@ void SpriteSheet::Tick(double TimePassed)
                             m_pSpriteUVs[i].z = startv + vheight * m_SubspriteStartY;
                             m_pSpriteUVs[i].w = endv - vheight * (1 - m_SubspriteEndY);
 
-                            //m_pSprites[i].CreateSubsection(
-                            //                (float)trimw * m_SpriteScale, (float)trimh * m_SpriteScale,
-                            //                (posx+offset)/sheetw, (posx+trimw-offset)/sheetw,
-                            //                (posy+offset)/sheeth, (posy+trimh-offset)/sheeth,
-                            //                Justify_CenterX|Justify_CenterY,
-                            //                m_SubspriteStartX,
-                            //                m_SubspriteEndX,
-                            //                m_SubspriteStartY,
-                            //                m_SubspriteEndY );
+                            if( m_CreateSprites )
+                            {
+                                MyAssert( m_pSprites[i] );
 
-                            m_pSprites[i]->CreateSubsection( "SpriteSheet",
-                                            (float)origw * m_SpriteScale, (float)origh * m_SpriteScale,
-                                            (posx-trimx+offset)/sheetw, (posx-trimx+origw-offset)/sheetw,
-                                            (posy-trimy+offset)/sheeth, (posy-trimy+origh-offset)/sheeth,
-                                            Justify_CenterX|Justify_CenterY,
-                                            m_SubspriteStartX > trimx/(float)origw ? m_SubspriteStartX : trimx/(float)origw,
-                                            m_SubspriteEndX < (trimx+trimw)/(float)origw ? m_SubspriteEndX : (trimx+trimw)/(float)origw,
-                                            m_SubspriteStartY > trimy/(float)origh ? m_SubspriteStartY : trimy/(float)origh,
-                                            m_SubspriteEndY < (trimy+trimh)/(float)origh ? m_SubspriteEndY : (trimy+trimh)/(float)origh );
+                                m_pSprites[i]->CreateSubsection( "SpriteSheet",
+                                                (float)origw * m_SpriteScale, (float)origh * m_SpriteScale,
+                                                (posx-trimx+offset)/sheetw, (posx-trimx+origw-offset)/sheetw,
+                                                (posy-trimy+offset)/sheeth, (posy-trimy+origh-offset)/sheeth,
+                                                Justify_CenterX|Justify_CenterY,
+                                                m_SubspriteStartX > trimx/(float)origw ? m_SubspriteStartX : trimx/(float)origw,
+                                                m_SubspriteEndX < (trimx+trimw)/(float)origw ? m_SubspriteEndX : (trimx+trimw)/(float)origw,
+                                                m_SubspriteStartY > trimy/(float)origh ? m_SubspriteStartY : trimy/(float)origh,
+                                                m_SubspriteEndY < (trimy+trimh)/(float)origh ? m_SubspriteEndY : (trimy+trimh)/(float)origh );
+                            }
+
+                            if( m_CreateMaterials )
+                            {
+                                MyAssert( m_pMaterialList[i] );
+
+                                Vector4 uvs = m_pSpriteUVs[i];
+                                m_pMaterialList[i]->m_UVScale.Set( uvs.y - uvs.x, uvs.w - uvs.z );
+                                m_pMaterialList[i]->m_UVOffset.Set( uvs.x, uvs.z );
+                            }
                         }
                     }
                 }
@@ -216,7 +266,11 @@ void SpriteSheet::Tick(double TimePassed)
                     {
                         m_pSpriteNames = MyNew char[numframes * 64];
                         m_pSpriteUVs = MyNew Vector4[numframes];
-                        CreateSprites( numframes, m_pMaterial );
+
+                        m_NumSprites = numframes;
+
+                        CreateSprites();
+                        CreateMaterials();
 
                         for( int i=0; i<numframes; i++ )
                         {
@@ -263,13 +317,16 @@ void SpriteSheet::Tick(double TimePassed)
                                     m_pSpriteUVs[i].z = startv + vheight * m_SubspriteStartY;
                                     m_pSpriteUVs[i].w = endv - vheight * (1 - m_SubspriteEndY);
 
-                                    m_pSprites[i]->CreateSubsection( "SpriteSheet",
-                                                    (float)w * m_SpriteScale, (float)h * m_SpriteScale,
-                                                    (x+offset)/sheetw, (x+w-offset)/sheetw,
-                                                    (y+offset)/sheeth, (y+h-offset)/sheeth,
-                                                    Justify_CenterX|Justify_CenterY,
-                                                    m_SubspriteStartX, m_SubspriteEndX, 
-                                                    m_SubspriteStartY, m_SubspriteEndY );
+                                    if( m_CreateSprites )
+                                    {
+                                        m_pSprites[i]->CreateSubsection( "SpriteSheet",
+                                                        (float)w * m_SpriteScale, (float)h * m_SpriteScale,
+                                                        (x+offset)/sheetw, (x+w-offset)/sheetw,
+                                                        (y+offset)/sheeth, (y+h-offset)/sheeth,
+                                                        Justify_CenterX|Justify_CenterY,
+                                                        m_SubspriteStartX, m_SubspriteEndX, 
+                                                        m_SubspriteStartY, m_SubspriteEndY );
+                                    }
                                 }
                             }
                         }
@@ -284,15 +341,34 @@ void SpriteSheet::Tick(double TimePassed)
     }
 }
 
-void SpriteSheet::CreateSprites(int numsprites, MaterialDefinition* pMaterial)
+void SpriteSheet::CreateSprites()
 {
-    m_pSprites = MyNew MySprite*[numsprites];
-    for( int i=0; i<numsprites; i++ )
+    if( m_CreateSprites == false )
+        return;
+
+    MyAssert( m_pSprites == 0 );
+
+    m_pSprites = MyNew MySprite*[m_NumSprites];
+    for( int i=0; i<m_NumSprites; i++ )
     {
         m_pSprites[i] = MyNew MySprite( false );
-        m_pSprites[i]->SetMaterial( pMaterial );
+        m_pSprites[i]->SetMaterial( m_pMaterial );
     }
-    m_NumSprites = numsprites;
+}
+
+void SpriteSheet::CreateMaterials()
+{
+    if( m_CreateMaterials == false )
+        return;
+
+    MyAssert( m_pSprites == 0 );
+
+    m_pMaterialList = MyNew MaterialDefinition*[m_NumSprites];
+    for( int i=0; i<m_NumSprites; i++ )
+    {
+        m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( "SpriteSheet" );
+        *m_pMaterialList[i] = *m_pMaterial;
+    }
 }
 
 int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
@@ -321,6 +397,10 @@ int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
 
 MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
 {
+    MyAssert( m_pSprites != 0 );
+    if( m_pSprites == 0 )
+        return 0;
+
 #define MAX_MESSAGE 1024
     char buffer[MAX_MESSAGE];
     va_list arg;
@@ -340,10 +420,18 @@ MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
 
 void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float sx, float ex, float sy, float ey)
 {
+    if( m_pJSONFile )
+        m_pJSONFile->Release();
     m_pJSONFile = sourcesheet->m_pJSONFile;
+    m_pJSONFile->AddRef();
 
+    if( m_pMaterial )
+        m_pMaterial->Release();
     m_pMaterial = sourcesheet->m_pMaterial;
     m_pMaterial->AddRef();
+
+    m_CreateSprites = sourcesheet->m_CreateSprites;
+    m_CreateMaterials = sourcesheet->m_CreateMaterials;
 
     m_SpriteScale = sourcesheet->m_SpriteScale;
 
@@ -354,6 +442,4 @@ void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float
 
     // actually create the sprites... everything should be loaded, so one tick should be enough.
     Tick( 0 );
-
-    m_pJSONFile = 0;
 }

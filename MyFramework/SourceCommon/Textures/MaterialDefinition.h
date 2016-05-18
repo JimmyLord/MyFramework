@@ -54,6 +54,8 @@ public:
 
     virtual ~MaterialDefinition();
 
+    MaterialDefinition& operator=(const MaterialDefinition& other);
+
     void ImportFromFile();
     void MoveAssociatedFilesToFrontOfFileList();
 
@@ -61,13 +63,13 @@ public:
     void SetName(const char* name);
 
     void SetShader(ShaderGroup* pShader);
-    ShaderGroup* GetShader() { return m_pShaderGroup; }
+    ShaderGroup* GetShader() const { return m_pShaderGroup; }
 
     void SetShaderInstanced(ShaderGroup* pShader);
-    ShaderGroup* GetShaderInstanced() { return m_pShaderGroupInstanced; }    
+    ShaderGroup* GetShaderInstanced() const { return m_pShaderGroupInstanced; }    
 
     void SetTextureColor(TextureDefinition* pTexture);
-    TextureDefinition* GetTextureColor() { return m_pTextureColor; }
+    TextureDefinition* GetTextureColor() const { return m_pTextureColor; }
 
     void SetColorAmbient(ColorByte color) { m_ColorAmbient = color; }
     ColorByte GetColorAmbient() { return m_ColorAmbient; }

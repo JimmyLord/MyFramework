@@ -90,6 +90,34 @@ MaterialDefinition::~MaterialDefinition()
     SAFE_RELEASE( m_pShaderGroupInstanced );
 }
 
+MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& other)
+{
+    MyAssert( &other != this );
+
+    // Doesn't copy variables associated with file on disk.
+    // m_UnsavedChanges
+    // m_Name
+    // m_pFile
+
+    this->SetShader( other.GetShader() );
+    this->SetShaderInstanced( other.GetShaderInstanced() );
+    this->SetTextureColor( other.GetTextureColor() );
+
+    this->m_BlendType = other.m_BlendType;
+
+    this->m_ColorAmbient = other.m_ColorAmbient;
+    this->m_ColorDiffuse = other.m_ColorDiffuse;
+    this->m_ColorSpecular = other.m_ColorSpecular;
+    this->m_Shininess = other.m_Shininess;
+    this->m_UVScale = other.m_UVScale;
+    this->m_UVOffset = other.m_UVOffset;
+
+    // fully loaded flag isn't copied.
+    //m_FullyLoaded
+
+    return *this;
+}
+
 void MaterialDefinition::ImportFromFile()
 {
     // TODO: replace asserts: if a shader or texture isn't found, load it.
