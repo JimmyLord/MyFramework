@@ -305,11 +305,6 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                                          numchunks, pStrings, pLengths, premadeprogramhandle );
     }
 
-    if( m_ProgramHandle == 0 )
-    {
-        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->m_FullPath );
-    }
-
     delete[] pStrings;
     delete[] pLengths;
 
@@ -349,7 +344,10 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     if( m_ProgramHandle == 0 )
     {
-        LOGError( LOGTag, "Could not create program.\n");
+        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->m_FullPath );
+        LOGError( LOGTag, "\n" );
+
+        //LOGError( LOGTag, "Could not create program.\n");
         m_ShaderFailedToCompile = true;
         return false;
     }

@@ -159,7 +159,9 @@ double GameCore::Tick(double TimePassed)
 
     GenerateKeyHeldMessages();
 
+#if MYFW_WINDOWS
     MyMemory_GetNumberOfBytesAllocated();
+#endif
 
     //if( m_GLSurfaceIsValid == false )
     //    return;

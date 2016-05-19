@@ -113,6 +113,18 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
         glGetShaderiv( shaderid, GL_COMPILE_STATUS, &compiled );
         if( !compiled )
         {
+            LOGError( LOGTag, "============================\n" );
+            if( shaderType == GL_VERTEX_SHADER )
+                LOGError( LOGTag, "Could not compile vertex shader:\n" );
+#if USE_GEOMETRY_SHADER
+            else if( shaderType == GL_GEOMETRY_SHADER )
+                LOGError( LOGTag, "Could not compile geometry shader:\n" );
+#endif //USE_GEOMETRY_SHADER
+            else if( shaderType == GL_FRAGMENT_SHADER )
+                LOGError( LOGTag, "Could not compile fragment shader:\n" );
+            else 
+                LOGError( LOGTag, "Could not compile unknown shader type:\n" );
+
 #if !USE_D3D
             GLint infoLen = 0;
             glGetShaderiv( shaderid, GL_INFO_LOG_LENGTH, &infoLen );
@@ -122,7 +134,7 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
                 if( buf )
                 {
                     glGetShaderInfoLog( shaderid, infoLen, NULL, buf );
-                    LOGError( LOGTag, "Could not compile shader %d:\n%s\n", shaderType, buf );
+                    LOGError( LOGTag, "%s\n", buf );
 
                     //MyAssert( false );
 
@@ -132,8 +144,6 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
                 }
             }
 #endif
-            LOGError( LOGTag, "============================\n" );
-            LOGError( LOGTag, "Could not compile shader %d:\n", shaderType );
             LOGError( LOGTag, "============================\n" );
 
             glDeleteShader( shaderid );

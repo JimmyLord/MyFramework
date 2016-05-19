@@ -15,7 +15,7 @@
 
 #pragma warning( push )
 #pragma warning( disable : 4996 )
-#include "../../../LodePNG/lodepng.h"
+#include "../../Libraries/LodePNG/lodepng.h"
 #pragma warning( pop )
 
 FileManager* g_pFileManager = 0;

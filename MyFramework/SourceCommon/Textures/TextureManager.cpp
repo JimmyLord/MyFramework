@@ -325,7 +325,7 @@ void TextureManager::Tick()
 
 GLuint TextureManager::CreateTextureFromBuffer(TextureDefinition* texturedef)
 {
-#if MYFW_ANDROID
+#if 0 //MYFW_ANDROID
     return 0;
 #else
     return LoadTextureFromMemory( texturedef );

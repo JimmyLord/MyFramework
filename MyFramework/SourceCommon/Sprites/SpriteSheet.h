@@ -56,7 +56,7 @@ public:
 
     void CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float sx, float ex, float sy, float ey);
 
-    Vector4 GetSpriteUVs(int index) const { return m_pSpriteUVs[index]; }
+    Vector4* GetSpriteUVs(int index) const { return &m_pSpriteUVs[index]; }
 
     MaterialDefinition* GetSheetMaterial() { return m_pMaterial; }
     MaterialDefinition* GetSpriteMaterial(int index) { MyAssert( m_pMaterialList ); return m_pMaterialList[index]; }
