@@ -101,6 +101,7 @@ extern char g_TextToShare_Subject[1000];
 extern char g_TextToShare_Body[1000];
 #endif
 
+void SetExitOnBackButton(bool exit);
 void SetMusicVolume(float volume);
 void LaunchURL(const char* url);
 void ShareString(const char* subject, const char* body);

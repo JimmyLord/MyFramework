@@ -39,7 +39,7 @@ public:
 
     //MyMatrix m_Position;
     //MyMatrix* m_pParentMatrix;
-    ColorByte m_Tint; // doesn't work anymore... use materials.
+    //ColorByte m_Tint; // doesn't work anymore... use materials.
 
 public:
     MySprite(bool creatematerial);
@@ -61,8 +61,8 @@ public:
     //void SetZRotationWithPivot(float rotation, bool preserveposition = true, Vector3* localpivot = 0);
     //void SetRST(Vector3 rot, Vector3 scale, Vector3 pos, bool setindentity = true);
     //void SetTransform(MyMatrix& mat);
-    ColorByte* GetTintPointer() { return &m_Tint; }
-    void SetTint(ColorByte tintcolor);
+    //ColorByte* GetTintPointer() { return &m_Tint; }
+    //void SetTint(ColorByte tintcolor);
     virtual void FlipX();
 
     virtual bool Setup(MyMatrix* matworld, MyMatrix* matviewproj);
@@ -74,7 +74,7 @@ public:
     Vertex_Base* GetVerts(bool markdirty);
 
     TextureDefinition* GetTexture();
-    ColorByte GetTint() { return m_Tint; }
+    //ColorByte GetTint() { return m_Tint; }
 };
 
 #endif //__MySprite_H__

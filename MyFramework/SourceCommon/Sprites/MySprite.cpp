@@ -25,7 +25,7 @@ char g_SpriteVertexIndices[6] = {  0,  1,  2,    2,  1,  3 }; // clockwise windi
 #endif
 
 MySprite::MySprite(bool creatematerial)
-: m_Tint(255, 255, 255, 255)
+//: m_Tint(255, 255, 255, 255)
 {
     m_SpriteIsStatic = false;
 
@@ -72,10 +72,6 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 
 MySprite::~MySprite()
 {
-    //SAFE_RELEASE( m_pVertexBuffer );
-    //SAFE_RELEASE( m_pIndexBuffer );
-
-    //SAFE_RELEASE( m_pMaterial );
 }
 
 void MySprite::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
@@ -382,11 +378,11 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
 //    m_Position = mat;
 //}
 
-void MySprite::SetTint(ColorByte tintcolor)
-{
-    //LOGError( LOGTag, "SetTint is obsolete, use materials.\n" );
-    m_Tint = tintcolor;
-}
+//void MySprite::SetTint(ColorByte tintcolor)
+//{
+//    //LOGError( LOGTag, "SetTint is obsolete, use materials.\n" );
+//    m_Tint = tintcolor;
+//}
 
 void MySprite::FlipX()
 {

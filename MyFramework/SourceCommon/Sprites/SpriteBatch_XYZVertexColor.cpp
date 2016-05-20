@@ -80,10 +80,12 @@ void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite_XYZVerte
         //pBatchVerts[m_NumSprites*4 + i].y += spriteTransform.m42;
         //pBatchVerts[m_NumSprites*4 + i].z += spriteTransform.m43;
 
-        pBatchVerts[m_NumSprites*4 + i].r = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].r * pSprite->m_Tint.r / 255.0f);
-        pBatchVerts[m_NumSprites*4 + i].g = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].g * pSprite->m_Tint.g / 255.0f);
-        pBatchVerts[m_NumSprites*4 + i].b = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].b * pSprite->m_Tint.b / 255.0f);
-        pBatchVerts[m_NumSprites*4 + i].a = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].a * pSprite->m_Tint.a / 255.0f);
+        ColorByte color = pSprite->GetMaterial()->GetColorDiffuse();
+
+        pBatchVerts[m_NumSprites*4 + i].r = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].r * color.r / 255.0f);
+        pBatchVerts[m_NumSprites*4 + i].g = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].g * color.g / 255.0f);
+        pBatchVerts[m_NumSprites*4 + i].b = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].b * color.b / 255.0f);
+        pBatchVerts[m_NumSprites*4 + i].a = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].a * color.a / 255.0f);
     }
 
     m_pVertexBuffer->m_Dirty = true;
