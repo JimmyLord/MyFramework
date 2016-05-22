@@ -83,6 +83,21 @@ public class MYFWActivity extends Activity
 
 	private Boolean m_ShowAds = false;
 
+	IInAppBillingService m_Service; // IAP
+
+	ServiceConnection m_ServiceConn = new ServiceConnection() // IAP
+	{
+		@Override public void onServiceDisconnected(ComponentName name)
+		{
+			m_Service = null;
+		}
+
+		@Override public void onServiceConnected(ComponentName name, IBinder service)
+		{
+			m_Service = IInAppBillingService.Stub.asInterface( service );
+		}
+	};
+
 	public AssetManager GetAssetManager()
 	{
 		return m_AssetManager;
@@ -287,6 +302,11 @@ public class MYFWActivity extends Activity
 				Global.m_Activity.GetBMPFactoryLoader(),
 				Global.m_Activity.GetSoundPlayer(),
 				GetDeviceName() );
+
+		// Setup the IAP service
+		Intent serviceIntent = new Intent( "com.android.vending.billing.InAppBillingService.BIND" ); // IAP
+		serviceIntent.setPackage( "com.android.vending" );
+		bindService( serviceIntent, m_ServiceConn, Context.BIND_AUTO_CREATE );
 	}
 
 	@Override public void onUserInteraction()
@@ -494,6 +514,12 @@ public class MYFWActivity extends Activity
 		}
 
 		super.onDestroy();
+
+		// Destroy the IAP service
+		if( m_Service != null ) // IAP
+		{
+			unbindService( m_ServiceConn );
+		}
 	}
 
 	private static native void NativeOnCreate(Object activity, Object assetmgr,
