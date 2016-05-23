@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,10 +9,13 @@
 
 package com.flathead.MYFWPackage;
 
+import android.annotation.TargetApi;
 import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
 import android.media.SoundPool;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.os.Build;
 //import android.util.Log;
 
 public class SoundPlayer
@@ -24,6 +27,45 @@ public class SoundPlayer
     //http://developer.android.com/reference/android/media/SoundPool.html#SoundPool%28int,%20int,%20int%29
 
     public SoundPlayer()
+    {
+        CreateSoundPool();
+
+        //m_SoundPool = new SoundPool( 4, AudioManager.STREAM_MUSIC, 0 );
+        //AudioAttributes audioAttributes = new AudioAttributes.Builder()
+        //        .setContentType( AudioAttributes.CONTENT_TYPE_MUSIC )
+        //        .setUsage( AudioAttributes.USAGE_GAME )
+        //        .build();
+
+        //m_SoundPool = new SoundPool.Builder()
+        //        .setMaxStreams( 4 )
+        //        .setAudioAttributes( audioAttributes )
+        //        .build();
+    }
+
+    protected void CreateSoundPool()
+    {
+        if( Build.VERSION.SDK_INT >= 21 ) //Build.VERSION_CODES.LOLLIPOP
+            CreateNewSoundPool();
+        else
+            CreateOldSoundPool();
+    }
+
+    @TargetApi( 21 ) //Build.VERSION_CODES.LOLLIPOP
+    protected void CreateNewSoundPool()
+    {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType( AudioAttributes.CONTENT_TYPE_MUSIC )
+                .setUsage( AudioAttributes.USAGE_GAME )
+                .build();
+
+        m_SoundPool = new SoundPool.Builder()
+                .setMaxStreams( 4 )
+                .setAudioAttributes( audioAttributes )
+                .build();
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void CreateOldSoundPool()
     {
         // 4 streams, music is what the docs suggest, sample-rate converter quality is 0 for default(no effect ATM).
         m_SoundPool = new SoundPool( 4, AudioManager.STREAM_MUSIC, 0 );
