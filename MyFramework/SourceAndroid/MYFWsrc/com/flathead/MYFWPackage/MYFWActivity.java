@@ -59,8 +59,6 @@ import android.widget.LinearLayout;
 // has the following type signature:
 // (ILjava/lang/String;[I)J
 
-// NOTE TO SELF: I fixed all brackets/spacing in this file.. if it reverts, find way to turn it off.
-
 public class MYFWActivity extends Activity
 {
     private LinearLayout m_MainLayout;
@@ -87,14 +85,8 @@ public class MYFWActivity extends Activity
 
     public AudioManager GetAudioManager() { return m_AudioManager; }
     public AssetManager GetAssetManager() { return m_AssetManager; }
-    public BMPFactoryLoader GetBMPFactoryLoader()
-    {
-        return m_BMPFactoryLoader;
-    }
-    public SoundPlayer GetSoundPlayer()
-    {
-        return m_SoundPlayer;
-    }
+    public BMPFactoryLoader GetBMPFactoryLoader() { return m_BMPFactoryLoader; }
+    public SoundPlayer GetSoundPlayer() { return m_SoundPlayer; }
     public IAPManager GetIAPManager() { return m_IAPManager; }
 
     public File GetFilesDir() // ()Ljava/io/File;
@@ -328,8 +320,7 @@ public class MYFWActivity extends Activity
 
         if( m_ExitOnBackButton )
         {
-            m_IAPManager.BuyItem();
-//            finish();
+            finish();
             // super.onBackPressed(); // calling this will kill the app...
             Log.v( "Flathead", "Java - [Flow] - attempting to kill app" );
         }

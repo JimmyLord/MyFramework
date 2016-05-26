@@ -31,19 +31,17 @@ void IAPManager::Purchase(const char* IAPProductID)
     if( m_Initialized == false )
         return;
 
+    // retrieve the MYFWActivity::GetIAPManager() method
     jclass jclassMainActivity = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
-    LOGInfo( LOGTag, "jclassMainActivity %p", jclassMainActivity );
+    jmethodID jfuncGetIAPManager = g_pJavaEnvironment->GetMethodID( jclassMainActivity, "GetIAPManager", "()Lcom/flathead/MYFWPackage/IAPManager;" );
 
-    jmethodID jfuncGetIAPManager = g_pJavaEnvironment->GetMethodID( jclassMainActivity, "GetIAPManager", "()Ljava/lang/Object;" );
-    LOGInfo( LOGTag, "jfuncGetIAPManager %p", jfuncGetIAPManager );
+    // call MYFWActivity::GetIAPManager()
     jobject jobjIAPManager = g_pJavaEnvironment->CallObjectMethod( g_pMainActivity, jfuncGetIAPManager );
-    LOGInfo( LOGTag, "jobjIAPManager %p", jobjIAPManager );
     jclass jclassIAPManager = g_pJavaEnvironment->GetObjectClass( jobjIAPManager );
-    LOGInfo( LOGTag, "jclassIAPManager %p", jclassIAPManager );
 
+    // call IAPManager::BuyItem()
     jmethodID jfuncBuyItem = g_pJavaEnvironment->GetMethodID( jclassIAPManager, "BuyItem", "()V" );
-    LOGInfo( LOGTag, "jfuncBuyItem %p", jfuncBuyItem );
-    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, jfuncBuyItem );
+    g_pJavaEnvironment->CallVoidMethod( jobjIAPManager, jfuncBuyItem );
 }
 
 // Request existing purchases from the payment service.

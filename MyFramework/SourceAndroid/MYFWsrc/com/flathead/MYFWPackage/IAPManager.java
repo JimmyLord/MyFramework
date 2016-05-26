@@ -66,6 +66,8 @@ public class IAPManager
 
     public void BuyItem()
     {
+        //Log.v( "Flathead", "[JAVA] BuyItem()" );
+
         try
         {
             InternalBuyItem();
