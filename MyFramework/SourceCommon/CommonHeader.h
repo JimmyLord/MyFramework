@@ -284,6 +284,7 @@ using namespace Osp::Graphics::Opengl;
 #include <GLES2/gl2ext.h>
 #include <EGL/egl.h>
 #include "../SourceAndroid/GLExtensions.h"
+#include "../SourceAndroid/IAPManagerAndroid.h"
 #include "../SourceAndroid/TextureLoader.h"
 #include "../SourceAndroid/SoundPlayer.h"
 #include "../SourceAndroid/UnthoughtOutAndroidHeader.h"

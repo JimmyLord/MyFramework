@@ -72,7 +72,7 @@ public class IAPManager
         }
         catch( Exception e )
         {
-            Log.v( "Flathead", "Failed to parse purchase data." );
+            Log.v( "Flathead", "Failed to purchase item." );
         }
     }
 

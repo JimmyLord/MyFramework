@@ -966,6 +966,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp" />
     <ClCompile Include="SourceAndroid\JavaInterfaceCPP.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
@@ -2087,6 +2088,7 @@
   <ItemGroup>
     <ClInclude Include="..\Libraries\cJSON\cJSON.h" />
     <ClInclude Include="..\Libraries\LodePNG\lodepng.h" />
+    <ClInclude Include="SourceAndroid\IAPManagerAndroid.h" />
     <ClInclude Include="SourceAndroid\JavaInterfaceCPP.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
@@ -3879,6 +3881,7 @@
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\BMPFactoryLoader.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\Global.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\HTTPLayer.java" />
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\IAPManager.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\MYFWActivity.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\SoundPlayer.java" />
     <None Include="SourceIOS\AppController.mm">

@@ -27,7 +27,7 @@ GameCore::GameCore()
     m_pMediaPlayer = 0;
 #endif
 
-#if MYFW_IOS
+#if MYFW_IOS || MYFW_ANDROID
     g_pIAPManager = MyNew IAPManager;
 #endif
 

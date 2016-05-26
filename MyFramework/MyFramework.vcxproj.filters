@@ -471,6 +471,9 @@
     <ClCompile Include="..\Libraries\cJSON\cJSON.cpp">
       <Filter>Libraries\cJSON</Filter>
     </ClCompile>
+    <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1007,6 +1010,9 @@
     <ClInclude Include="..\Libraries\cJSON\cJSON.h">
       <Filter>Libraries\cJSON</Filter>
     </ClInclude>
+    <ClInclude Include="SourceAndroid\IAPManagerAndroid.h">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SourceIOS\ExternalToolsIOS.mm">
@@ -1040,6 +1046,9 @@
       <Filter>Source-Platform\Source - Android\Java</Filter>
     </None>
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\SoundPlayer.java">
+      <Filter>Source-Platform\Source - Android\Java</Filter>
+    </None>
+    <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\IAPManager.java">
       <Filter>Source-Platform\Source - Android\Java</Filter>
     </None>
   </ItemGroup>
