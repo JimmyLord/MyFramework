@@ -12,6 +12,9 @@
 
 class GamepadManagerXInput : public GamepadManager
 {
+protected:
+    void NormalizeStick(Vector2 stick, float deadzone, Vector2* stickout);
+
 public:
     GamepadManagerXInput();
     virtual ~GamepadManagerXInput();

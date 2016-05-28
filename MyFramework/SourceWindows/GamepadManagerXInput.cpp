@@ -34,6 +34,47 @@ void GamepadManagerXInput::Tick(double TimePassed)
 
         if( dwResult == ERROR_SUCCESS )
         {
+            m_OldGamepadStates[i] = m_CurrentGamepadStates[i];
+
+            Vector2 leftstick = Vector2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+            NormalizeStick( leftstick, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, &m_CurrentGamepadStates[i].leftstick );
+
+            Vector2 rightstick = Vector2(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
+            NormalizeStick( rightstick, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, &m_CurrentGamepadStates[i].rightstick );
+
+            //float lefttrigger = state.Gamepad.bLeftTrigger;
+            //NormalizeTrigger( lefttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].lefttrigger );
+
+            //float righttrigger = state.Gamepad.bRightTrigger;
+            //NormalizeTrigger( righttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].righttrigger );
         }
+    }
+}
+
+void GamepadManagerXInput::NormalizeStick(Vector2 stick, float deadzone, Vector2* stickout)
+{
+    //           deadzone
+    //-32k     -8k      8k       32k <- values in
+    //  (--------(      )--------)
+    // -1        0      0        1   <- values out
+
+    // calculate how far the stick is pushed, in 0-32k range
+    float magnitude = stick.Length();
+
+    // if we're inside the deadzone, zero out the input
+    if( magnitude < deadzone )
+    {
+        stickout->Set( 0, 0 );
+    }
+    else // normalize the input to match image above
+    {
+        // clamp the magnitude to its expected range
+        if( magnitude > 32767 )
+            magnitude = 32767;
+
+        float normalizedmagnitude = (magnitude - deadzone) / (32767 - deadzone);
+        Vector2 normalizedstick = stick / magnitude;
+
+        *stickout = normalizedstick * normalizedmagnitude;
     }
 }
