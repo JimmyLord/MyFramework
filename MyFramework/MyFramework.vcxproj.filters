@@ -118,6 +118,9 @@
     <Filter Include="Libraries\LodePNG">
       <UniqueIdentifier>{6383b092-a33c-4435-b9ce-76c3ded403df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{9f6e2177-bf84-4827-8452-04d329dde9ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -473,6 +476,12 @@
     </ClCompile>
     <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\GamepadManagerXInput.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Input\GamepadManager.cpp">
+      <Filter>Source\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1012,6 +1021,12 @@
     </ClInclude>
     <ClInclude Include="SourceAndroid\IAPManagerAndroid.h">
       <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\GamepadManagerXInput.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Input\GamepadManager.h">
+      <Filter>Source\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

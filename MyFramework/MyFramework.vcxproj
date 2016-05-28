@@ -966,7 +966,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='WxRelease|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp" />
+    <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PNaCl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="SourceAndroid\JavaInterfaceCPP.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
@@ -1423,6 +1435,7 @@
     <ClCompile Include="SourceCommon\Helpers\MyTweener.cpp" />
     <ClCompile Include="SourceCommon\Helpers\TypeInfo.cpp" />
     <ClCompile Include="SourceCommon\Helpers\Utility.cpp" />
+    <ClCompile Include="SourceCommon\Input\GamepadManager.cpp" />
     <ClCompile Include="SourceCommon\JSON\cJSONHelpers.cpp" />
     <ClCompile Include="SourceCommon\Memory\MyStackAllocator.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyAnimation.cpp" />
@@ -1924,6 +1937,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SourceWindows\GamepadManagerXInput.cpp" />
     <ClCompile Include="SourceWindows\GLExtensions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>
@@ -2088,7 +2102,19 @@
   <ItemGroup>
     <ClInclude Include="..\Libraries\cJSON\cJSON.h" />
     <ClInclude Include="..\Libraries\LodePNG\lodepng.h" />
-    <ClInclude Include="SourceAndroid\IAPManagerAndroid.h" />
+    <ClInclude Include="SourceAndroid\IAPManagerAndroid.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|PNaCl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="SourceAndroid\JavaInterfaceCPP.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
@@ -2513,6 +2539,7 @@
     <ClInclude Include="SourceCommon\Helpers\RefCount.h" />
     <ClInclude Include="SourceCommon\Helpers\TypeInfo.h" />
     <ClInclude Include="SourceCommon\Helpers\Utility.h" />
+    <ClInclude Include="SourceCommon\Input\GamepadManager.h" />
     <ClInclude Include="SourceCommon\JSON\cJSONHelpers.h" />
     <ClInclude Include="SourceCommon\Memory\MyStackAllocator.h" />
     <ClInclude Include="SourceCommon\Meshes\MyAnimation.h" />
@@ -3184,6 +3211,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SourceWindows\GamepadManagerXInput.h" />
     <ClInclude Include="SourceWindows\glext.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>
