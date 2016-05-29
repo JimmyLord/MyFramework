@@ -14,6 +14,7 @@ class GamepadManagerXInput : public GamepadManager
 {
 protected:
     void NormalizeStick(Vector2 stick, float deadzone, Vector2* stickout);
+    void NormalizeTrigger(float trigger, float deadzone, float* triggerout);
 
 public:
     GamepadManagerXInput();

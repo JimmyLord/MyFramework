@@ -36,17 +36,34 @@ void GamepadManagerXInput::Tick(double TimePassed)
         {
             m_OldGamepadStates[i] = m_CurrentGamepadStates[i];
 
+            m_CurrentGamepadStates[i].Reset();
+
             Vector2 leftstick = Vector2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
             NormalizeStick( leftstick, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, &m_CurrentGamepadStates[i].leftstick );
 
             Vector2 rightstick = Vector2(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
             NormalizeStick( rightstick, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, &m_CurrentGamepadStates[i].rightstick );
 
-            //float lefttrigger = state.Gamepad.bLeftTrigger;
-            //NormalizeTrigger( lefttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].lefttrigger );
+            float lefttrigger = state.Gamepad.bLeftTrigger;
+            NormalizeTrigger( lefttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].lefttrigger );
 
-            //float righttrigger = state.Gamepad.bRightTrigger;
-            //NormalizeTrigger( righttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].righttrigger );
+            float righttrigger = state.Gamepad.bRightTrigger;
+            NormalizeTrigger( righttrigger, XINPUT_GAMEPAD_TRIGGER_THRESHOLD, &m_CurrentGamepadStates[i].righttrigger );
+
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP )           m_CurrentGamepadStates[i].buttons |= MyGamePad_DPadUp;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN )         m_CurrentGamepadStates[i].buttons |= MyGamePad_DPadDown;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT )         m_CurrentGamepadStates[i].buttons |= MyGamePad_DPadLeft;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT )        m_CurrentGamepadStates[i].buttons |= MyGamePad_DPadRight;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_START )             m_CurrentGamepadStates[i].buttons |= MyGamePad_Start;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK )              m_CurrentGamepadStates[i].buttons |= MyGamePad_Back;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )        m_CurrentGamepadStates[i].buttons |= MyGamePad_LeftStick;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB )       m_CurrentGamepadStates[i].buttons |= MyGamePad_RightStick;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER )     m_CurrentGamepadStates[i].buttons |= MyGamePad_LeftBumper;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER )    m_CurrentGamepadStates[i].buttons |= MyGamePad_RightBumper;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_A )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_A;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_B )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_B;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_X )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_X;
+            if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_Y;
         }
     }
 }
@@ -76,5 +93,27 @@ void GamepadManagerXInput::NormalizeStick(Vector2 stick, float deadzone, Vector2
         Vector2 normalizedstick = stick / magnitude;
 
         *stickout = normalizedstick * normalizedmagnitude;
+    }
+}
+
+void GamepadManagerXInput::NormalizeTrigger(float trigger, float deadzone, float* triggerout)
+{
+    // deadzone
+    //     30       255 <- values in
+    // |   )--------)
+    //     0        1   <- values out
+
+    // if we're inside the deadzone, zero out the input
+    if( trigger < deadzone )
+    {
+        triggerout = 0;
+    }
+    else // normalize the input to match image above
+    {
+        // clamp the magnitude to its expected range
+        if( trigger > 255 )
+            trigger = 255;
+
+        *triggerout = (trigger - deadzone) / (255 - deadzone);
     }
 }

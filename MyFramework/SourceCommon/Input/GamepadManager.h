@@ -10,14 +10,31 @@
 #ifndef __GamepadManager_H__
 #define __GamepadManager_H__
 
+enum MyGamepadButtons
+{
+    MyGamePad_DPadUp          = 0x00000001,
+    MyGamePad_DPadDown        = 0x00000002,
+    MyGamePad_DPadLeft        = 0x00000004,
+    MyGamePad_DPadRight       = 0x00000008,
+    MyGamePad_A               = 0x00000010,
+    MyGamePad_B               = 0x00000020,
+    MyGamePad_X               = 0x00000040,
+    MyGamePad_Y               = 0x00000080,
+    MyGamePad_LeftBumper      = 0x00000100,
+    MyGamePad_RightBumper     = 0x00000200,
+    MyGamePad_Start           = 0x00000400,
+    MyGamePad_Back            = 0x00000800,
+    MyGamePad_LeftStick       = 0x00001000,
+    MyGamePad_RightStick      = 0x00002000,
+};
+
 struct GamepadState
 {
-    static const int NUM_BUTTONS = 10;
-
     bool connected;
+
     Vector2 leftstick;
     Vector2 rightstick;
-    bool buttons[NUM_BUTTONS];
+    int buttons; // stores up to 32 MyGamepadButtons
     float lefttrigger;
     float righttrigger;
 
@@ -27,12 +44,7 @@ struct GamepadState
 
         leftstick.Set( 0, 0 );
         rightstick.Set( 0, 0 );
-
-        for( int i=0; i<NUM_BUTTONS; i++ )
-        {
-            buttons[i] = false;
-        }
-
+        buttons = 0;
         lefttrigger = 0;
         righttrigger = 0;
     }
