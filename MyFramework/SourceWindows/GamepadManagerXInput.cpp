@@ -17,6 +17,10 @@ GamepadManagerXInput::GamepadManagerXInput()
 {
 }
 
+GamepadManagerXInput::~GamepadManagerXInput()
+{
+}
+
 void GamepadManagerXInput::Initialize()
 {
     GamepadManager::Initialize();
@@ -64,6 +68,12 @@ void GamepadManagerXInput::Tick(double TimePassed)
             if( state.Gamepad.wButtons & XINPUT_GAMEPAD_B )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_B;
             if( state.Gamepad.wButtons & XINPUT_GAMEPAD_X )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_X;
             if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y )                 m_CurrentGamepadStates[i].buttons |= MyGamePad_Y;
+
+            //LOGInfo( LOGTag, "Left stick: %f, %f\n", m_CurrentGamepadStates[i].leftstick.x, m_CurrentGamepadStates[i].leftstick.y );
+            //LOGInfo( LOGTag, "Right stick: %f, %f\n", m_CurrentGamepadStates[i].rightstick.x, m_CurrentGamepadStates[i].rightstick.y );
+            //LOGInfo( LOGTag, "Left trigger: %f\n", m_CurrentGamepadStates[i].lefttrigger );
+            //LOGInfo( LOGTag, "Right trigger: %f\n", m_CurrentGamepadStates[i].righttrigger );
+            //LOGInfo( LOGTag, "Buttons: %d\n", m_CurrentGamepadStates[i].buttons );
         }
     }
 }

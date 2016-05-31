@@ -50,6 +50,10 @@ struct GamepadState
     }
 };
 
+class GamepadManager;
+
+extern GamepadManager* g_pGamepadManager;
+
 class GamepadManager
 {
 public:

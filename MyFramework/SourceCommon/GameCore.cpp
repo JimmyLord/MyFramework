@@ -10,6 +10,8 @@
 #include "CommonHeader.h"
 
 #include "GameCore.h"
+#include "../SourceCommon/Input/GamepadManager.h"
+#include "../SourceWindows/GamepadManagerXInput.h"
 
 GameCore* g_pGameCore = 0;
 
@@ -55,6 +57,7 @@ GameCore::~GameCore()
 
     g_pFontManager->FreeAllFonts();
 
+    SAFE_DELETE( g_pGamepadManager );
     SAFE_DELETE( g_pMaterialManager );
     SAFE_DELETE( g_pTextureManager );
     SAFE_DELETE( g_pFontManager );
@@ -110,6 +113,12 @@ void GameCore::InitializeManagers()
         g_pGameServiceManager = MyNew GameServiceManager;
     if( g_pVertexFormatManager == 0 )
         g_pVertexFormatManager = MyNew VertexFormatManager;
+#if MYFW_WINDOWS
+    if( g_pGamepadManager == 0 )
+        g_pGamepadManager = MyNew GamepadManagerXInput;
+#endif
+    if( g_pGamepadManager )
+        g_pGamepadManager->Initialize();
 }
 
 void GameCore::OneTimeInit()
@@ -192,6 +201,8 @@ double GameCore::Tick(double TimePassed)
         m_KeyboardCloseRequested = false;
         ShowKeyboard( false );
     }
+
+    g_pGamepadManager->Tick( TimePassed );
 
 #if MYFW_USING_WX
     if( g_pPanelWatch->m_NeedsRefresh )
