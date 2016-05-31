@@ -1,23 +1,23 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-//#include "../../SourceCommon/CommonHeader.h"
 #include "WaveLoader.h"
+
+cJSON* SoundObject::ExportAsJSONObject()
+{
+    cJSON* jSound = cJSON_CreateObject();
+
+    cJSON_AddStringToObject( jSound, "Path", m_FullPath );
+
+    return jSound;
+}
 
 bool CheckForOpenALErrors(const char* description)
 {
@@ -61,15 +61,15 @@ bool CheckForALUTErrors(const char* description)
 ALvoid  alBufferDataStaticProc(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq)
 {
     static alBufferDataStaticProcPtr proc = 0;
-    
+
     if( proc == 0 )
     {
         proc = (alBufferDataStaticProcPtr)alGetProcAddress( (const ALCchar*)"alBufferDataStatic" );
     }
-    
+
     if( proc )
         proc( bid, format, data, size, freq );
-    
+
     return;
 }
 #endif
@@ -113,7 +113,8 @@ SoundPlayer::SoundPlayer()
     }
 
     // Generate the sources
-    alGenSources( NUM_SOURCES, m_Sources );
+    for( int i=0; i<NUM_SOURCES; i++ )
+        alGenSources( 1, &m_Sources[i].m_Sound );
     CheckForOpenALErrors( "alGenSources" );
 }
 
@@ -122,7 +123,8 @@ SoundPlayer::~SoundPlayer()
     if( m_pDevice == 0 )
         return;
 
-    alDeleteSources( NUM_SOURCES, m_Sources );
+    for( int i=0; i<NUM_SOURCES; i++ )
+        alDeleteSources( 1, &m_Sources[i].m_Sound );
     alDeleteBuffers( MAX_BUFFERS, m_Buffers );
 
 #if USE_ALUT
@@ -163,9 +165,9 @@ void SoundPlayer::OnFocusGained()
     for( int i=0; i<NUM_SOURCES; i++ )
     {
         int value;
-        alGetSourcei( m_Sources[i], AL_SOURCE_STATE, &value );
+        alGetSourcei( m_Sources[i].m_Sound, AL_SOURCE_STATE, &value );
         if( value == AL_PAUSED )
-            PlaySound( i );
+            PlaySound( &m_Sources[i] );
     }
 
     //alcMakeContextCurrent( m_pContext );
@@ -183,7 +185,7 @@ void SoundPlayer::OnFocusLost()
     for( int i=0; i<NUM_SOURCES; i++ )
     {
         int value;
-        alGetSourcei( m_Sources[i], AL_SOURCE_STATE, &value );
+        alGetSourcei( m_Sources[i].m_Sound, AL_SOURCE_STATE, &value );
         if( value == AL_PLAYING )
             PauseSound( i );
     }
@@ -198,10 +200,10 @@ void SoundPlayer::OnFocusLost()
     //CheckForOpenALCErrors( m_pDevice, "alcSuspendContext( m_pContext )" );
 }
 
-int SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
+SoundObject* SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 {
     if( m_pDevice == 0 )
-        return -1;
+        return 0;
 
 #if USE_ALUT
     LOGInfo( LOGTag, "LoadSound %s\n", path );
@@ -214,51 +216,66 @@ int SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
         return -1;
 #else
     ALuint index = 0;
-    
+
     index = WaveLoader::LoadFromMemoryIntoOpenALBuffer( buffer, buffersize );
 #endif
 
     m_Buffers[m_NextID] = index;
 
     // make a single source for each sound buffer... not very general usage, but works for what I need.
-    alSourcei( m_Sources[m_NextID], AL_BUFFER, m_Buffers[m_NextID] );
+    alSourcei( m_Sources[m_NextID].m_Sound, AL_BUFFER, m_Buffers[m_NextID] );
     if( CheckForOpenALErrors( "alSourcei" ) )
     {
         alDeleteBuffers( 1, &m_Buffers[m_NextID] );
         m_Buffers[m_NextID] = 0;
-        return -1;
+        return 0;
     }
 
     // set the source to 0,0,0 for 2d again, same as listener.
-    alSourcef( m_Sources[m_NextID], AL_PITCH, 1 );
-    CheckForOpenALErrors( "alSourcef( m_Sources[m_NextID], AL_PITCH" );
-    alSourcef( m_Sources[m_NextID], AL_GAIN, 1 );
-    CheckForOpenALErrors( "alSourcef( m_Sources[m_NextID], AL_GAIN" );
-    alSource3f( m_Sources[m_NextID], AL_POSITION, 0, 0, 0 );
-    CheckForOpenALErrors( "alSourcef( m_Sources[m_NextID], AL_POSITION" );
-    alSource3f( m_Sources[m_NextID], AL_VELOCITY, 0, 0, 0 );
-    CheckForOpenALErrors( "alSourcef( m_Sources[m_NextID], AL_VELOCITY" );
-    alSourcei( m_Sources[m_NextID], AL_LOOPING, AL_FALSE );
-    CheckForOpenALErrors( "alSourcef( m_Sources[m_NextID], AL_LOOPING" );
+    alSourcef( m_Sources[m_NextID].m_Sound, AL_PITCH, 1 );
+    CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_PITCH" );
+    alSourcef( m_Sources[m_NextID].m_Sound, AL_GAIN, 1 );
+    CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_GAIN" );
+    alSource3f( m_Sources[m_NextID].m_Sound, AL_POSITION, 0, 0, 0 );
+    CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_POSITION" );
+    alSource3f( m_Sources[m_NextID].m_Sound, AL_VELOCITY, 0, 0, 0 );
+    CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_VELOCITY" );
+    alSourcei( m_Sources[m_NextID].m_Sound, AL_LOOPING, AL_FALSE );
+    CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_LOOPING" );
 
     int soundid = m_NextID;
 
     m_NextID++;
 
-    return soundid;
+    return &m_Sources[soundid];
+}
+
+SoundObject* SoundPlayer::LoadSound(const char* fullpath)
+{
+    if( m_pDevice == 0 )
+        return 0;
+
+    int length = 0;
+    // TODO: sounds should load through fileobjects like any other thing.
+    char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* file, unsigned long line);
+    char* buffer = PlatformSpecific_LoadFile( fullpath, &length, fullpath, __LINE__ );
+
+    return LoadSound( buffer, length );
 }
 
 void SoundPlayer::Shutdown()
 {
 }
 
-void SoundPlayer::PlaySound(int soundid)
+int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 {
     if( m_pDevice == 0 )
-        return;
+        return -1; // return value not used ATM
 
-    alSourcePlay( m_Sources[soundid] );
+    alSourcePlay( pSoundObject->m_Sound ); //m_Sources[soundid] );
     CheckForOpenALErrors( "alSourcePlay" );
+
+    return -1; // return value not used ATM
 }
 
 void SoundPlayer::StopSound(int soundid)
@@ -266,7 +283,7 @@ void SoundPlayer::StopSound(int soundid)
     if( m_pDevice == 0 )
         return;
 
-    alSourceStop( m_Sources[soundid] );
+    alSourceStop( m_Sources[soundid].m_Sound );
     CheckForOpenALErrors( "alSourceStop" );
 }
 
@@ -275,7 +292,7 @@ void SoundPlayer::PauseSound(int soundid)
     if( m_pDevice == 0 )
         return;
 
-    alSourcePause( m_Sources[soundid] );
+    alSourcePause( m_Sources[soundid].m_Sound );
     CheckForOpenALErrors( "alSourcePause" );
 }
 
@@ -284,7 +301,7 @@ void SoundPlayer::ResumeSound(int soundid)
     if( m_pDevice == 0 )
         return;
 
-    alSourcePlay( m_Sources[soundid] );
+    alSourcePlay( m_Sources[soundid].m_Sound );
     CheckForOpenALErrors( "alSourcePlay" );
 }
 

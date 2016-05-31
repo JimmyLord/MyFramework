@@ -202,7 +202,8 @@ double GameCore::Tick(double TimePassed)
         ShowKeyboard( false );
     }
 
-    g_pGamepadManager->Tick( TimePassed );
+    if( g_pGamepadManager )
+        g_pGamepadManager->Tick( TimePassed );
 
 #if MYFW_USING_WX
     if( g_pPanelWatch->m_NeedsRefresh )
@@ -284,7 +285,7 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
 #if !MYFW_IOS
     LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
 #endif
-    
+
     m_WindowStartX = (float)startx;
     m_WindowStartY = (float)starty;
     m_WindowWidth = (float)width;
