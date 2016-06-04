@@ -170,7 +170,11 @@
 #include "Physics/Box2DWorld.h"
 
 #if MYFW_WINDOWS
-#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <WinSock.h>
+#include <ShellAPI.h>
+typedef unsigned char byte;
 #include <gl/GL.h>
 #include <gl/GLU.h>
 //#define GLEW_STATIC
