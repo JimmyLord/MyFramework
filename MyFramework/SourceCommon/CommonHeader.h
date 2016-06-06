@@ -87,12 +87,12 @@
 #pragma warning( 3 : 4574 ) // 'identifier' is defined to be '0': did you mean to use '#if identifier'?
 #pragma warning( 3 : 4608 ) // 'symbol1' has already been initialized by another union member in the initializer list, 'symbol2'
 //#pragma warning( 3 : 4610 ) // class 'type' can never be instantiated - user defined constructor required
-#pragma warning( 3 : 4619 ) // #pragma warning: there is no warning number 'number'
+//#pragma warning( 3 : 4619 ) // #pragma warning: there is no warning number 'number'
 #pragma warning( 3 : 4623 ) // 'derived class': default constructor could not be generated because a base class default constructor is inaccessible
 //vcincludes #pragma warning( 3 : 4625 ) // 'derived class': copy constructor could not be generated because a base class copy constructor is inaccessible
 //vcincludes #pragma warning( 3 : 4626 ) // 'derived class': assignment operator could not be generated because a base class assignment operator is inaccessible
 #pragma warning( 3 : 4628 ) // digraphs not supported with -Ze. Character sequence 'digraph' not interpreted as alternate token for 'char'
-#pragma warning( 3 : 4640 ) // 'instance': construction of local static object is not thread-safe
+//triggered by imgui, not critical for now #pragma warning( 3 : 4640 ) // 'instance': construction of local static object is not thread-safe
 //#pragma warning( 3 : 4668 ) // 'symbol' is not defined as a preprocessor macro, replacing with '0' for 'directives'
 #pragma warning( 3 : 4682 ) // 'symbol' : no directional parameter attribute specified, defaulting to [in]
 #pragma warning( 3 : 4686 ) // 'user-defined type': possible change in behavior, change in UDT return calling convention
@@ -191,6 +191,7 @@ typedef unsigned char byte;
 
 #if MYFW_USING_WX
 #pragma warning( push )
+#pragma warning( disable : 4191 )
 #pragma warning( disable : 4265 )
 #pragma warning( disable : 4574 )
 #pragma warning( disable : 4996 )

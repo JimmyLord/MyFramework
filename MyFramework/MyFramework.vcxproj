@@ -568,8 +568,6 @@
       <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
