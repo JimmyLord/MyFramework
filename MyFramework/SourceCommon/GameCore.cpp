@@ -350,24 +350,33 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
 {
     // TODO: don't ignore the unicode characters.
 
-    // if the key is mapped to a button, then call the button handler.
-    if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+#if MYFW_USING_WX
+    if( g_GLCanvasIDActive == 0 )
+#endif
     {
-        return OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
+        // if the key is mapped to a button, then call the button handler.
+        if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+        {
+            return OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
+        }
+        else
+        {
+            m_LastInputMethodUsed = InputMethod_Keyboard;
+        }
     }
-    else
-    {
-        m_LastInputMethodUsed = InputMethod_Keyboard;
 
-        if( keycode >= 0 && keycode < 255 )
-            m_KeysHeld[keycode] = true;
+    if( keycode >= 0 && keycode < 255 )
+        m_KeysHeld[keycode] = true;
 
 #if MYFW_WINDOWS || MYFW_OSX
-        if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
-            return OnKeys( GCBA_Down, keycode, keycode+32 );
-        else
+    if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+    {
+        return OnKeys( GCBA_Down, keycode, keycode+32 );
+    }
+    else
 #endif
-            return OnKeys( GCBA_Down, keycode, keycode );
+    {
+        return OnKeys( GCBA_Down, keycode, keycode );
     }
 
     return false;
@@ -377,24 +386,33 @@ bool GameCore::OnKeyUp(int keycode, int unicodechar)
 {
     // TODO: don't ignore the unicode characters.
 
-    // if the key is mapped to a button, then call the button handler.
-    if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+#if MYFW_USING_WX
+    if( g_GLCanvasIDActive == 0 )
+#endif
     {
-        return OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
+        // if the key is mapped to a button, then call the button handler.
+        if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
+        {
+            return OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
+        }
+        else
+        {
+            m_LastInputMethodUsed = InputMethod_Keyboard;
+        }
     }
-    else
-    {
-        m_LastInputMethodUsed = InputMethod_Keyboard;
 
-        if( keycode >= 0 && keycode < 255 )
-            m_KeysHeld[keycode] = false;
+    if( keycode >= 0 && keycode < 255 )
+        m_KeysHeld[keycode] = false;
 
 #if MYFW_WINDOWS || MYFW_OSX
-        if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
-            return OnKeys( GCBA_Up, keycode, keycode+32 );
-        else
+    if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+    {
+        return OnKeys( GCBA_Up, keycode, keycode+32 );
+    }
+    else
 #endif
-            return OnKeys( GCBA_Up, keycode, keycode );
+    {
+        return OnKeys( GCBA_Up, keycode, keycode );
     }
 
     return false;

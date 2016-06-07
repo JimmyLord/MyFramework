@@ -207,6 +207,7 @@ typedef unsigned char byte;
 #pragma warning( pop )
 #include <vector>
 #include <map>
+#include <list>
 #endif
 
 #if MYFW_NACL

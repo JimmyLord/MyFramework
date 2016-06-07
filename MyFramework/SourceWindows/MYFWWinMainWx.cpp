@@ -148,6 +148,11 @@ void MainFrame::InitFrame()
     m_AUIManager.SetFlags( m_AUIManager.GetFlags() | wxAUI_MGR_ALLOW_ACTIVE_PANE );
 }
 
+void MainFrame::ProcessAllGLCanvasInputEventQueues()
+{
+    m_pGLCanvas->ProcessInputEventQueue();
+}
+
 void MainFrame::AddPanes()
 {
     // create the opengl canvas
@@ -352,45 +357,12 @@ void MainFrame::OnMenu(wxCommandEvent& event)
 
 void MainFrame::OnKeyPressed(wxKeyEvent& event)
 {
-    int keycode = (int)event.m_keyCode;
-
-    if( keycode == 8 )
-        keycode = MYKEYCODE_BACKSPACE;
-    if( keycode == 314 )
-        keycode = MYKEYCODE_LEFT;
-    if( keycode == 316 )
-        keycode = MYKEYCODE_RIGHT;
-    if( keycode == 315 )
-        keycode = MYKEYCODE_UP;
-    if( keycode == 317 )
-        keycode = MYKEYCODE_DOWN;
-    if( keycode == 127 )
-        keycode = MYKEYCODE_DELETE;
-
-    if( g_pGameCore )
-        g_pGameCore->OnKeyDown( keycode, keycode );
+    LOGInfo( "wxEvents", "MainFrame::OnKeyPressed() was hit" );
 }
 
 void MainFrame::OnKeyReleased(wxKeyEvent& event)
 {
-    int keycode = (int)event.m_keyCode;
-
-    if( keycode == 8 )
-        keycode = MYKEYCODE_BACKSPACE;
-    if( keycode == 314 )
-        keycode = MYKEYCODE_LEFT;
-    if( keycode == 316 )
-        keycode = MYKEYCODE_RIGHT;
-    if( keycode == 315 )
-        keycode = MYKEYCODE_UP;
-    if( keycode == 317 )
-        keycode = MYKEYCODE_DOWN;
-
-    if( g_pGameCore )
-        g_pGameCore->OnKeyUp( keycode, keycode );
-
-    //if( keycode < 512 )
-    //    m_KeysDown[keycode] = false;
+    LOGInfo( "wxEvents", "MainFrame::OnKeyReleased() was hit" );
 }
 
 void MainFrame::ResizeViewport()
@@ -523,11 +495,14 @@ int MainApp::FilterEvent(wxEvent& event)
 BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
     EVT_MOTION(MainGLCanvas::MouseMoved)
     EVT_LEFT_DOWN(MainGLCanvas::MouseLeftDown)
+    EVT_LEFT_DCLICK(MainGLCanvas::MouseLeftDoubleClick)
     EVT_LEFT_UP(MainGLCanvas::MouseLeftUp)
     EVT_RIGHT_DOWN(MainGLCanvas::MouseRightDown)
     EVT_RIGHT_UP(MainGLCanvas::MouseRightUp)
+    EVT_RIGHT_DCLICK(MainGLCanvas::MouseRightDoubleClick)
     EVT_MIDDLE_DOWN(MainGLCanvas::MouseMiddleDown)
     EVT_MIDDLE_UP(MainGLCanvas::MouseMiddleUp)
+    EVT_MIDDLE_DCLICK(MainGLCanvas::MouseMiddleDoubleClick)
     EVT_LEAVE_WINDOW(MainGLCanvas::MouseLeftWindow)
     EVT_SIZE(MainGLCanvas::Resized)
     EVT_KEY_DOWN(MainGLCanvas::KeyPressed)
@@ -552,7 +527,7 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     g_GLContextRefCount++;
 
     m_MouseCaptured_ButtonsHeld = 0;
-    m_MouseDown = false;
+    m_MouseButtonStates = 0;
 
     // To avoid flashing on MSW
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
@@ -585,8 +560,11 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 
     //LOGInfo( LOGTag, "MainGLCanvas::MouseMoved Event, %d, %d\n", event.m_x, event.m_y );
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Held, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Held, m_MouseDown?0:-1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
@@ -601,9 +579,17 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
     this->SetFocus();
 
-    m_MouseDown = true;
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Down, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates |= (1 << 0);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Down, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Down, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+}
+
+void MainGLCanvas::MouseLeftDoubleClick(wxMouseEvent& event)
+{
+    MouseLeftDown( event );
 }
 
 void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
@@ -616,9 +602,12 @@ void MainGLCanvas::MouseLeftUp(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    m_MouseDown = false;
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates &= ~(1 << 0);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Up, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Up, 0, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
@@ -645,8 +634,17 @@ void MainGLCanvas::MouseRightDown(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Down, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates |= (1 << 1);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Down, 1, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Down, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+}
+
+void MainGLCanvas::MouseRightDoubleClick(wxMouseEvent& event)
+{
+    MouseRightDown( event );
 }
 
 void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
@@ -659,8 +657,12 @@ void MainGLCanvas::MouseRightUp(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Up, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates &= ~(1 << 1);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Up, 1, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Up, 1, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
@@ -675,8 +677,17 @@ void MainGLCanvas::MouseMiddleDown(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Down, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates |= (1 << 2);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Down, 2, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Down, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+}
+
+void MainGLCanvas::MouseMiddleDoubleClick(wxMouseEvent& event)
+{
+    MouseMiddleDown( event );
 }
 
 void MainGLCanvas::MouseMiddleUp(wxMouseEvent& event)
@@ -689,16 +700,23 @@ void MainGLCanvas::MouseMiddleUp(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Up, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
+    m_MouseButtonStates &= ~(1 << 2);
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Up, 2, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Up, 2, (float)event.m_x, (float)event.m_y, 0, 0 ); // new press
 }
 
 void MainGLCanvas::MouseWheelMoved(wxMouseEvent& event)
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_pGameCore )
-        g_pGameCore->OnTouch( GCBA_Wheel, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation, 0 ); // new press
+    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, GCBA_Wheel, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+
+    //if( g_pGameCore )
+    //    g_pGameCore->OnTouch( GCBA_Wheel, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation, 0 ); // new press
 }
 
 void MainGLCanvas::KeyPressed(wxKeyEvent& event)
@@ -707,37 +725,12 @@ void MainGLCanvas::KeyPressed(wxKeyEvent& event)
 
     int keycode = (int)event.m_keyCode;
 
-    //if( keycode == '1' )
-    //{
-    //    g_CurrentGLViewType = GLView_Full;
-    //    ResizeViewport();
-    //}
-    //if( keycode == '2' )
-    //{
-    //    g_CurrentGLViewType = GLView_Tall;
-    //    ResizeViewport();
-    //}
-    //if( keycode == '3' )
-    //{
-    //    g_CurrentGLViewType = GLView_Square;
-    //    ResizeViewport();
-    //}
-    //if( keycode == '4' )
-    //{
-    //    g_CurrentGLViewType = GLView_Wide;
-    //    ResizeViewport();
-    //}
-
-    if( keycode == 8 )
-        keycode = MYKEYCODE_BACKSPACE;
-    if( keycode == 314 )
-        keycode = MYKEYCODE_LEFT;
-    if( keycode == 316 )
-        keycode = MYKEYCODE_RIGHT;
-    if( keycode == 315 )
-        keycode = MYKEYCODE_UP;
-    if( keycode == 317 )
-        keycode = MYKEYCODE_DOWN;
+    if( keycode == WXK_BACK )       keycode = MYKEYCODE_BACKSPACE;
+    if( keycode == WXK_LEFT )       keycode = MYKEYCODE_LEFT;
+    if( keycode == WXK_RIGHT )      keycode = MYKEYCODE_RIGHT;
+    if( keycode == WXK_UP )         keycode = MYKEYCODE_UP;
+    if( keycode == WXK_DOWN )       keycode = MYKEYCODE_DOWN;
+    if( keycode == WXK_DELETE )     keycode = MYKEYCODE_DELETE;
 
     if( m_KeysDown[keycode] == true )
         return;
@@ -762,16 +755,12 @@ void MainGLCanvas::KeyReleased(wxKeyEvent& event)
 
     int keycode = (int)event.m_keyCode;
     
-    if( keycode == 8 )
-        keycode = MYKEYCODE_BACKSPACE;
-    if( keycode == 314 )
-        keycode = MYKEYCODE_LEFT;
-    if( keycode == 316 )
-        keycode = MYKEYCODE_RIGHT;
-    if( keycode == 315 )
-        keycode = MYKEYCODE_UP;
-    if( keycode == 317 )
-        keycode = MYKEYCODE_DOWN;
+    if( keycode == WXK_BACK )       keycode = MYKEYCODE_BACKSPACE;
+    if( keycode == WXK_LEFT )       keycode = MYKEYCODE_LEFT;
+    if( keycode == WXK_RIGHT )      keycode = MYKEYCODE_RIGHT;
+    if( keycode == WXK_UP )         keycode = MYKEYCODE_UP;
+    if( keycode == WXK_DOWN )       keycode = MYKEYCODE_DOWN;
+    if( keycode == WXK_DELETE )     keycode = MYKEYCODE_DELETE;
 
     //LOGInfo( LOGTag, "KeyReleased: %d\n", keycode );
 
@@ -886,6 +875,36 @@ void MainGLCanvas::Render(wxPaintEvent& evt)
     Draw();
 }
 
+void MainGLCanvas::ProcessInputEventQueue()
+{
+    g_GLCanvasIDActive = m_GLCanvasID;
+
+    for( unsigned int i=0; i<m_InputEventQueue.size(); i++ )
+    {
+        EditorInputEvent* ev = &m_InputEventQueue[i];
+
+        if( ev->keyaction == -1 )
+        {
+            MyAssert( ev->keycode == -1 );
+
+            if( g_pGameCore )
+                g_pGameCore->OnTouch( ev->mouseaction, ev->mousebuttonid, (float)ev->x, (float)ev->y, ev->pressure, 0 );
+
+            //if( ev->mouseaction == GCBA_Down )
+            //    LOGInfo( "Input", "Input event mouse: %d, %d, %d\n", m_GLCanvasID, ev->mouseaction, ev->mousebuttonid );
+        }
+    }
+
+    // if any mouse button is held, send out a "held" event.
+    if( m_MouseButtonStates != 0 )
+    {
+        if( g_pGameCore )
+            g_pGameCore->OnTouch( GCBA_Held, m_MouseButtonStates, m_MousePosition.x, m_MousePosition.y, m_MousePosition.z, 0 );
+    }
+
+    m_InputEventQueue.clear();
+}
+
 void MainGLCanvas::Draw()
 {
     g_GLCanvasIDActive = m_GLCanvasID;
@@ -934,8 +953,14 @@ void MainGLCanvas::Draw()
             g_pMainApp->m_HasFocus = false;
         }
 
+        // deal with queued up input messages
         if( m_TickGameCore )
         {
+            //LOGInfo( "ImGui", "ProcessAllGLCanvasInputEventQueues()\n" );
+            // process events for all MainGLCanvas objects before we tick the game.
+            g_pMainApp->m_pMainFrame->ProcessAllGLCanvasInputEventQueues();
+            g_GLCanvasIDActive = m_GLCanvasID;
+
             double currtime = MyTime_GetRunningTime();
             double timepassed = currtime - m_LastTimeTicked;
             m_LastTimeTicked = currtime;
@@ -944,7 +969,7 @@ void MainGLCanvas::Draw()
         }
         else
         {
-            g_pGameCore->GenerateKeyHeldMessages();
+            //g_pGameCore->GenerateKeyHeldMessages();
         }
 
         int currentframebuffer;

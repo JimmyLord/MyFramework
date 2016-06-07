@@ -55,6 +55,28 @@ enum MenuIDs
     myID_LastID,
 };
 
+struct EditorInputEvent
+{
+    int keyaction;
+    int keycode;
+    int mouseaction;
+    int mousebuttonid;
+    float x;
+    float y;
+    float pressure;
+
+    EditorInputEvent(int keyaction, int keycode, int mouseaction, int id, float x, float y, float pressure)
+    {
+        this->keyaction = keyaction;
+        this->keycode = keycode;
+        this->mouseaction = mouseaction;
+        this->mousebuttonid = id;
+        this->x = x;
+        this->y = y;
+        this->pressure = pressure;
+    }
+};
+
 void WinMain_CreateGameCore();
 MainFrame* WinMain_CreateMainFrame();
 void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
@@ -133,6 +155,8 @@ public:
     virtual void ResizeViewport();
 
     virtual void UpdateMenuItemStates();
+
+    virtual void ProcessAllGLCanvasInputEventQueues();
 };
 
 extern int m_GLContextRefCount;
@@ -144,10 +168,13 @@ class MainGLCanvas : public wxGLCanvas
 public:
     bool m_KeysDown[512];
 
+    std::vector<EditorInputEvent> m_InputEventQueue;
+
     unsigned int m_GLCanvasID;
 
     int m_MouseCaptured_ButtonsHeld;
-    bool m_MouseDown;
+    int m_MouseButtonStates;
+    Vector3 m_MousePosition; // x, y and wheel
     double m_LastTimeTicked;
 
     bool m_TickGameCore;
@@ -163,9 +190,12 @@ public:
  
     void Resized(wxSizeEvent& evt);
     void ResizeViewport(bool clearhack = true);
- 
+
     void Idle(wxIdleEvent& evt);
     void Render(wxPaintEvent& evt);
+
+    void ProcessInputEventQueue();
+
     void Draw();
 
     // events
@@ -173,11 +203,14 @@ public:
     void MouseMoved(wxMouseEvent& event);
     void MouseWheelMoved(wxMouseEvent& event);
     void MouseLeftDown(wxMouseEvent& event);
+    void MouseLeftDoubleClick(wxMouseEvent& event);
     void MouseLeftUp(wxMouseEvent& event);
     void MouseRightDown(wxMouseEvent& event);
     void MouseRightUp(wxMouseEvent& event);
+    void MouseRightDoubleClick(wxMouseEvent& event);
     void MouseMiddleDown(wxMouseEvent& event);
     void MouseMiddleUp(wxMouseEvent& event);
+    void MouseMiddleDoubleClick(wxMouseEvent& event);
     void MouseLeftWindow(wxMouseEvent& event);
     void KeyPressed(wxKeyEvent& event);
     void KeyReleased(wxKeyEvent& event);
