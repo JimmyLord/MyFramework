@@ -10,28 +10,54 @@
 #ifndef __ExternalTools_H__
 #define __ExternalTools_H__
 
-#ifdef MYFW_ANDROID
-
-#define MYKEYCODE_BACKSPACE     67  //KEYCODE_DEL
-#define MYKEYCODE_ENTER         66
-
-#elif MYFW_WINDOWS
-
 #if MYFW_USING_WX
+
+#define MYKEYCODE_BACKSPACE     8
+#define MYKEYCODE_TAB           9
+#define MYKEYCODE_ENTER         13
+#define MYKEYCODE_ESC           27
+#define MYKEYCODE_LEFT          314 //arrows  //376(numpad arrows)
+#define MYKEYCODE_UP            315 //arrows  //377(numpad arrows)
+#define MYKEYCODE_RIGHT         316 //arrows  //378(numpad arrows)
+#define MYKEYCODE_DOWN          317 //arrows  //379(numpad arrows)
 #define MYKEYCODE_LSHIFT        306
 #define MYKEYCODE_RSHIFT        306
 #define MYKEYCODE_LCTRL         308
 #define MYKEYCODE_RCTRL         308
 #define MYKEYCODE_LALT          307
 #define MYKEYCODE_RALT          307
-#else
+#define MYKEYCODE_DELETE        127
+#define MYKEYCODE_PAGEUP        380
+#define MYKEYCODE_PAGEDOWN      381
+#define MYKEYCODE_HOME          375
+#define MYKEYCODE_END           382
+
+#elif MYFW_ANDROID
+
+#define MYKEYCODE_BACKSPACE     67  //KEYCODE_DEL
+#define MYKEYCODE_ENTER         66
+
+#elif MYFW_WINDOWS
+
+#define MYKEYCODE_BACKSPACE     8
+#define MYKEYCODE_TAB           9
+#define MYKEYCODE_ENTER         13
+#define MYKEYCODE_ESC           27
+#define MYKEYCODE_LEFT          37
+#define MYKEYCODE_UP            38
+#define MYKEYCODE_RIGHT         39
+#define MYKEYCODE_DOWN          40
 #define MYKEYCODE_LSHIFT        16
 #define MYKEYCODE_RSHIFT        16
 #define MYKEYCODE_LCTRL         17
 #define MYKEYCODE_RCTRL         17
-#define MYKEYCODE_LALT          0
-#define MYKEYCODE_RALT          0
-#endif
+#define MYKEYCODE_LALT          18
+#define MYKEYCODE_RALT          18
+#define MYKEYCODE_DELETE        127
+#define MYKEYCODE_PAGEUP        33
+#define MYKEYCODE_PAGEDOWN      34
+#define MYKEYCODE_HOME          36
+#define MYKEYCODE_END           35
 
 #elif MYFW_BLACKBERRY
 
@@ -43,42 +69,25 @@
 
 #elif MYFW_OSX
 
-#if MYFW_USING_WX
-#define MYKEYCODE_LSHIFT        306
-#define MYKEYCODE_RSHIFT        306
-#define MYKEYCODE_LCTRL         308
-#define MYKEYCODE_RCTRL         308
-#define MYKEYCODE_LALT          307
-#define MYKEYCODE_RALT          307
-#else
 #define MYKEYCODE_LSHIFT        16
 #define MYKEYCODE_RSHIFT        16
 #define MYKEYCODE_LCTRL         17
 #define MYKEYCODE_RCTRL         17
-#define MYKEYCODE_LALT          0
-#define MYKEYCODE_RALT          0
-#endif
-
-#else
-
-#define MYKEYCODE_BACKSPACE     0
-#define MYKEYCODE_ENTER         0
-#define MYKEYCODE_ESC           0
-#define MYKEYCODE_LEFT          0
-#define MYKEYCODE_UP            0
-#define MYKEYCODE_RIGHT         0
-#define MYKEYCODE_DOWN          0
 
 #endif
 
 #ifndef MYKEYCODE_BACKSPACE
 #define MYKEYCODE_BACKSPACE     8
 #endif
+#ifndef MYKEYCODE_TAB
+#define MYKEYCODE_TAB           9
+#endif
 #ifndef MYKEYCODE_ENTER
 #define MYKEYCODE_ENTER         13
 #endif
 #ifndef MYKEYCODE_ESC
 #define MYKEYCODE_ESC           27
+
 #endif
 #ifndef MYKEYCODE_LEFT
 #define MYKEYCODE_LEFT          37
@@ -92,8 +101,40 @@
 #ifndef MYKEYCODE_DOWN
 #define MYKEYCODE_DOWN          40
 #endif
+
+#ifndef MYKEYCODE_LSHIFT
+#define MYKEYCODE_LSHIFT        16
+#endif
+#ifndef MYKEYCODE_RSHIFT
+#define MYKEYCODE_RSHIFT        16
+#endif
+#ifndef MYKEYCODE_LCTRL
+#define MYKEYCODE_LCTRL         17
+#endif
+#ifndef MYKEYCODE_RCTRL
+#define MYKEYCODE_RCTRL         17
+#endif
+#ifndef MYKEYCODE_LALT
+#define MYKEYCODE_LALT          18
+#endif
+#ifndef MYKEYCODE_RALT
+#define MYKEYCODE_RALT          18
+#endif
+
 #ifndef MYKEYCODE_DELETE
 #define MYKEYCODE_DELETE        127
+#endif
+#ifndef MYKEYCODE_PAGEUP
+#define MYKEYCODE_PAGEUP        33
+#endif
+#ifndef MYKEYCODE_PAGEDOWN
+#define MYKEYCODE_PAGEDOWN      34
+#endif
+#ifndef MYKEYCODE_HOME
+#define MYKEYCODE_HOME          36
+#endif
+#ifndef MYKEYCODE_END
+#define MYKEYCODE_END           35
 #endif
 
 #if MYFW_WP8

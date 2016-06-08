@@ -57,6 +57,7 @@ enum MenuIDs
 
 struct EditorInputEvent
 {
+    int keychar;
     int keyaction;
     int keycode;
     int mouseaction;
@@ -65,8 +66,9 @@ struct EditorInputEvent
     float y;
     float pressure;
 
-    EditorInputEvent(int keyaction, int keycode, int mouseaction, int id, float x, float y, float pressure)
+    EditorInputEvent(int keychar, int keyaction, int keycode, int mouseaction, int id, float x, float y, float pressure)
     {
+        this->keychar = keychar;
         this->keyaction = keyaction;
         this->keycode = keycode;
         this->mouseaction = mouseaction;
@@ -149,8 +151,8 @@ public:
 
     void OnQuit(wxCommandEvent& event);
     void OnMenu(wxCommandEvent& event);
-    void OnKeyPressed(wxKeyEvent& event);
-    void OnKeyReleased(wxKeyEvent& event);
+    //void OnKeyPressed(wxKeyEvent& event);
+    //void OnKeyReleased(wxKeyEvent& event);
 
     virtual void ResizeViewport();
 
@@ -214,6 +216,7 @@ public:
     void MouseLeftWindow(wxMouseEvent& event);
     void KeyPressed(wxKeyEvent& event);
     void KeyReleased(wxKeyEvent& event);
- };
+    void KeyChar(wxKeyEvent& event);
+};
 
 #endif //__WinMainWx_H__
