@@ -19,6 +19,8 @@ SceneGraph_Flat::SceneGraph_Flat()
 
 SceneGraph_Flat::~SceneGraph_Flat()
 {
+    MyAssert( m_NumRenderables == 0 );
+
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
         m_pObjectPool.ReturnObject( m_pRenderables[i] );
@@ -64,6 +66,7 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
         if( m_pRenderables[i] == pObject )
         {
             m_pRenderables[i] = m_pRenderables[m_NumRenderables-1];
+            m_pRenderables[m_NumRenderables-1] = 0;
             m_NumRenderables--;
             break;
         }

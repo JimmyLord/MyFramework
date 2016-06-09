@@ -79,8 +79,8 @@ public:
     int m_LastInputMethodUsed;
 
     bool m_ButtonsHeld[GCBI_NumButtons];
-    bool m_KeysHeld[255];
-    GameCoreButtonIDs m_KeyMappingToButtons[255];
+    bool m_KeysHeld[512];
+    GameCoreButtonIDs m_KeyMappingToButtons[512];
     
     float m_TimeSinceGameStarted;
     float m_TimePassedUnpausedLastFrame;
