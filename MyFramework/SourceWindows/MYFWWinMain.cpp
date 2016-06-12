@@ -420,7 +420,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch( uMsg )
     {
-        case WM_ACTIVATE:
+    case WM_ACTIVATE:
         {
             if( !HIWORD(wParam) )
             {
@@ -430,10 +430,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 g_WindowIsActive = false;
             } 
-            return 0;
         }
+        return 0;
 
-        case WM_SYSCOMMAND:
+    case WM_SYSCOMMAND:
         {
             switch( wParam )
             {
@@ -442,22 +442,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 case SC_MONITORPOWER:
                     return 0;
             }
-            break;
         }
+        break;
 
-        case WM_CLOSE:
+    case WM_CLOSE:
         {
             PostQuitMessage(0);
-            return 0;
         }
+        return 0;
 
-        case WM_CHAR:
+    case WM_SETFOCUS:
+        {
+            g_pGameCore->OnFocusGained();
+        }
+        break;
+
+    case WM_KILLFOCUS:
+        {
+            g_pGameCore->OnFocusLost();
+
+            for( int i=0; i<256; i++ )
+                g_KeyStates[i] = false;
+
+            for( int i=0; i<3; i++ )
+                g_MouseButtonStates[i] = 0;
+        }
+        break;
+
+    case WM_CHAR:
         {
             g_pGameCore->OnChar( wParam );
-            return 0;
         }
+        return 0;
 
-        case WM_KEYDOWN:
+    case WM_KEYDOWN:
         {
             if( wParam == VK_OEM_COMMA )
                 g_KeyStates[','] = true;
@@ -469,10 +487,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_KeyStates[']'] = true;
             else
                 g_KeyStates[wParam] = true;
-            return 0;
         }
+        return 0;
 
-        case WM_KEYUP:
+    case WM_KEYUP:
         {
             if( wParam == VK_OEM_COMMA )
                 g_KeyStates[','] = false;
@@ -484,50 +502,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_KeyStates[']'] = false;
             else
                 g_KeyStates[wParam] = false;
-            return 0;
         }
+        return 0;
 
-        case WM_LBUTTONDOWN:
+    case WM_LBUTTONDOWN:
         {
             g_MouseButtonStates[0] = true;
-            return 0;
         }
+        return 0;
 
-        case WM_LBUTTONUP:
+    case WM_LBUTTONUP:
         {
             g_MouseButtonStates[0] = false;
-            return 0;
         }
+        return 0;
 
-        case WM_RBUTTONDOWN:
+    case WM_RBUTTONDOWN:
         {
             g_MouseButtonStates[1] = true;
-            return 0;
         }
+        return 0;
 
-        case WM_RBUTTONUP:
+    case WM_RBUTTONUP:
         {
             g_MouseButtonStates[1] = false;
-            return 0;
         }
+        return 0;
 
-        case WM_MBUTTONDOWN:
+    case WM_MBUTTONDOWN:
         {
             g_MouseButtonStates[2] = true;
-            return 0;
         }
+        return 0;
 
-        case WM_MBUTTONUP:
+    case WM_MBUTTONUP:
         {
             g_MouseButtonStates[2] = false;
-            return 0;
         }
+        return 0;
 
-        case WM_SIZE:
+    case WM_SIZE:
         {
             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
-            return 0;
         }
+        return 0;
     }
 
     // Pass all unhandled messages to DefWindowProc

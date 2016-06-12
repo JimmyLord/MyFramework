@@ -527,9 +527,6 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
 
     g_GLContextRefCount++;
 
-    m_MouseCaptured_ButtonsHeld = 0;
-    m_MouseButtonStates = 0;
-
     // To avoid flashing on MSW
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
@@ -539,6 +536,8 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     {
         m_KeysDown[i] = 0;
     }
+    m_MouseCaptured_ButtonsHeld = 0;
+    m_MouseButtonStates = 0;
 }
 
 MainGLCanvas::~MainGLCanvas()
@@ -978,6 +977,12 @@ void MainGLCanvas::Draw()
             {
                 //LOGInfo( LOGTag, "g_pMainApp lost focus\n" );
                 g_pGameCore->OnFocusLost();
+
+                for( int i=0; i<512; i++ )
+                    m_KeysDown[i] = false;
+
+                m_MouseCaptured_ButtonsHeld = 0;
+                m_MouseButtonStates = 0;
             }
 
             g_pMainApp->m_HasFocus = false;

@@ -168,12 +168,11 @@ extern wxGLContext* m_GLContext;
 class MainGLCanvas : public wxGLCanvas
 {
 public:
-    bool m_KeysDown[512];
-
     std::vector<EditorInputEvent> m_InputEventQueue;
 
     unsigned int m_GLCanvasID;
 
+    bool m_KeysDown[512];
     int m_MouseCaptured_ButtonsHeld;
     int m_MouseButtonStates;
     Vector3 m_MousePosition; // x, y and wheel
