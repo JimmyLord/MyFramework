@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -197,15 +197,24 @@ void GenerateMouseEvents(GameCore* pGameCore)
     //float x = ((float)px*480)/w; // map the input to an x/y range of 480x800, starting at top-left
     //float y = ((float)py*800)/h;
 
-    // button/finger 0
-    if( buttons[0] == 1 && buttonsold[0] == 0 )
-        pGameCore->OnTouch( GCBA_Down, 0, (float)px, (float)py, 0, 0 ); // new press
+    // buttons/fingers
+    for( int i=0; i<3; i++ )
+    {
+        if( buttons[i] == 1 && buttonsold[i] == 0 )
+            pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
 
-    if( buttons[0] == 0 && buttonsold[0] == 1 )
-        pGameCore->OnTouch( GCBA_Up, 0, (float)px, (float)py, 0, 0 ); // new release
+        if( buttons[i] == 0 && buttonsold[i] == 1 )
+            pGameCore->OnTouch( GCBA_Up, i, (float)px, (float)py, 0, 0 ); // new release
+    }
 
-    if( buttons[0] == 1 && buttonsold[0] == 1 )
-        pGameCore->OnTouch( GCBA_Held, 0, (float)px, (float)py, 0, 0 ); // still pressed
+    int buttonstates = 0;
+    for( int i=0; i<3; i++ )
+    {
+        if( buttons[i] == 1 && buttonsold[i] == 1 )
+            buttonstates |= (1 << i);
+    }
+        
+    pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 ); // still pressed
 }
 
 GLvoid KillGLWindow()
@@ -442,18 +451,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
 
-        //case WM_CHAR:
-        //{
-        ////    if( lParam & 1<<30 == 0 )
-        ////    {
-        ////        g_KeyStates[wParam] = true;
-        ////    }
-        ////    else
-        ////    {
-        ////        g_KeyStates[wParam] = false;
-        ////    }
-        //    return 0;
-        //}
+        case WM_CHAR:
+        {
+            g_pGameCore->OnChar( wParam );
+            return 0;
+        }
 
         case WM_KEYDOWN:
         {
@@ -494,6 +496,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_LBUTTONUP:
         {
             g_MouseButtonStates[0] = false;
+            return 0;
+        }
+
+        case WM_RBUTTONDOWN:
+        {
+            g_MouseButtonStates[1] = true;
+            return 0;
+        }
+
+        case WM_RBUTTONUP:
+        {
+            g_MouseButtonStates[1] = false;
+            return 0;
+        }
+
+        case WM_MBUTTONDOWN:
+        {
+            g_MouseButtonStates[2] = true;
+            return 0;
+        }
+
+        case WM_MBUTTONUP:
+        {
+            g_MouseButtonStates[2] = false;
             return 0;
         }
 

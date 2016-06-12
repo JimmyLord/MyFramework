@@ -343,18 +343,6 @@ bool GameCore::OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id)
 
 bool GameCore::OnKeys(GameCoreButtonActions action, int keycode, int unicodechar)
 {
-    return false;
-}
-
-bool GameCore::OnChar(unsigned int c)
-{
-    return false;
-}
-
-bool GameCore::OnKeyDown(int keycode, int unicodechar)
-{
-    // TODO: don't ignore the unicode characters.
-
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 )
 #endif
@@ -373,6 +361,17 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
     if( keycode >= 0 && keycode < 255 )
         m_KeysHeld[keycode] = true;
 
+    return false;
+}
+
+bool GameCore::OnChar(unsigned int c)
+{
+    return false;
+}
+
+bool GameCore::OnKeyDown(int keycode, int unicodechar)
+{
+    // TODO: don't ignore the unicode characters.
 #if MYFW_WINDOWS || MYFW_OSX
     if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
     {
