@@ -27,7 +27,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     }
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags)
+SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers)
 {
     MyAssert( pTransform != 0 );
 
@@ -38,6 +38,7 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
         MyAssert( m_NumRenderables < 10000 );
 
         pObject->m_Flags = flags;
+        pObject->m_Layers = layers;
 
         pObject->m_pTransform = pTransform;
         pObject->m_pMesh = pMesh;
@@ -75,13 +76,16 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObject( pObject );
 }
 
-void SceneGraph_Flat::Draw(SceneGraphFlags flags, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride)
+void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride)
 {
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
         SceneGraphObject* pObject = m_pRenderables[i];
 
         if( (pObject->m_Flags & flags) == 0 )
+            continue;
+
+        if( (pObject->m_Layers & layerstorender) == 0 )
             continue;
         
         MyAssert( pObject->m_pSubmesh );
