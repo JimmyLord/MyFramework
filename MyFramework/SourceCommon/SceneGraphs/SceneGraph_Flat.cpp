@@ -89,7 +89,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
             continue;
         
         MyAssert( pObject->m_pSubmesh );
-        MyAssert( pObject->m_pMaterial );
+        //MyAssert( pObject->m_pMaterial );
 
         if( pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
             continue;
