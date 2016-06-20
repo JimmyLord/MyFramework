@@ -27,7 +27,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     }
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers)
+SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     MyAssert( pTransform != 0 );
 
@@ -48,6 +48,8 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
         pObject->m_GLPrimitiveType = primitive;
         pObject->m_PointSize = pointsize;
+
+        pObject->m_pUserData = pUserData;
 
         m_pRenderables[m_NumRenderables] = pObject;
         m_NumRenderables++;

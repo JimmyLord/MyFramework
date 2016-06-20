@@ -34,6 +34,8 @@ public:
 
     int m_GLPrimitiveType;
     int m_PointSize;
+
+    void* m_pUserData;
 };
 
 class SceneGraph_Base
@@ -45,7 +47,7 @@ public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers) = 0;
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
     virtual void Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride) = 0;
