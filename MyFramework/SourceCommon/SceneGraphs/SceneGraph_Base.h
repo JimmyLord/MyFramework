@@ -12,12 +12,15 @@
 
 class MyMesh;
 class MaterialDefinition;
+class SceneGraphObject;
 
 enum SceneGraphFlags
 {
     SceneGraphFlag_Opaque       = 0x01,
     SceneGraphFlag_Transparent  = 0x02,
 };
+
+typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
 
 class SceneGraphObject
 {
@@ -50,7 +53,7 @@ public:
     virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
-    virtual void Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride) = 0;
+    virtual void Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc) = 0;
 };
 
 #endif //__SceneGraph_Base_H__

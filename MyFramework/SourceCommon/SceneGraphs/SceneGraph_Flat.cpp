@@ -78,7 +78,7 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObject( pObject );
 }
 
-void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride)
+void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
@@ -168,6 +168,11 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
         // Find nearest lights.
         MyLight* lights;
         int numlights = g_pLightManager->FindNearestLights( 4, worldtransform.GetTranslation(), &lights );
+
+        if( pPreDrawCallbackFunc )
+        {
+            (*pPreDrawCallbackFunc)( pObject, pShaderOverride );
+        }
 
         pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
     }
