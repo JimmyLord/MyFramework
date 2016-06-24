@@ -46,6 +46,8 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
 
 void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
+    checkGlError( "Start of MySubmesh::Draw()" );
+
     BufferDefinition* pVertexBuffer = m_pVertexBuffer;
     BufferDefinition* pIndexBuffer = m_pIndexBuffer;
     MaterialDefinition* pMaterial = m_pMaterial;
@@ -78,10 +80,18 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
 
     MyAssert( pVertexBuffer );
 
+    checkGlError( "Drawing Mesh before Rebuild()" );
+
     if( pVertexBuffer->m_Dirty )
+    {
+        MyAssert( NumVertsToDraw > 0 );
         pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
+    }
     if( pIndexBuffer && pIndexBuffer->m_Dirty )
+    {
+        MyAssert( NumIndicesToDraw > 0 );
         pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
+    }
     MyAssert( ( pIndexBuffer == 0 || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
 
     checkGlError( "Drawing Mesh Rebuild()" );
@@ -227,6 +237,8 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
             }
         }
     }
+
+    checkGlError( "End of MySubmesh::Draw()" );
 }
 
 MyMesh::MyMesh()

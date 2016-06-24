@@ -64,6 +64,8 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
 void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
 {
+    MyAssert( pObject != 0 );
+
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
         if( m_pRenderables[i] == pObject )
@@ -80,6 +82,8 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
 
 void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
+    checkGlError( "Start of SceneGraph_Flat::Draw()" );
+
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
         SceneGraphObject* pObject = m_pRenderables[i];
@@ -174,6 +178,12 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
             (*pPreDrawCallbackFunc)( pObject, pShaderOverride );
         }
 
+        checkGlError( "SceneGraph_Flat::Draw() before pSubmesh->Draw()" );
+
         pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
+
+        checkGlError( "SceneGraph_Flat::Draw() after pSubmesh->Draw()" );
     }
+
+    checkGlError( "End of SceneGraph_Flat::Draw()" );
 }

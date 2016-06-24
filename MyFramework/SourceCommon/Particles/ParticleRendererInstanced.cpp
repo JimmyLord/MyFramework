@@ -116,26 +116,24 @@ void ParticleRendererInstanced::AddPoint(Vector3 pos, float rot, ColorByte color
     }
 }
 
-void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
+void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
+    // Shader override is only used by mouse picker ATM, don't draw particles into mouse picker frame (or fix).
+    if( pShaderOverride )
+        return;
+
     if( m_pMaterial == 0 || m_pMaterial->GetShaderInstanced() == 0 || m_ParticleCount == 0 )
         return;
 
     checkGlError( "start of ParticleRenderInstanced::Draw()" );
 
-    if( m_Additive )
-    {
-        glBlendFunc( GL_ONE, GL_ONE );
-#if USE_D3D
-        float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabledAdditive.Get(), blendfactor, 0xfff);
-#endif
-    }
-
     int numparticles = m_ParticleCount;
 
     if( m_pVertexBuffer->m_Dirty )
+    {
+        MyAssert( m_pVertexBuffer->m_DataSize != 0 );
         m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
+    }
     MyAssert( m_pVertexBuffer->m_Dirty == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShaderInstanced()->GlobalPass();
@@ -147,9 +145,17 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     {
         glEnable( GL_BLEND );
         if( m_Additive )
+        {
             glBlendFunc( GL_ONE, GL_ONE );
+#if USE_D3D
+            float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabledAdditive.Get(), blendfactor, 0xfff);
+#endif
+        }
         else
+        {
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        }
     }
 
     if( pShader->ActivateAndProgramShader(
@@ -196,18 +202,18 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
         checkGlError( "after glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
 
         if( aiposloc != -1 )
-            glDisableVertexAttribArray( aiposloc );
-        if( aiscaleloc != -1 )
-            glDisableVertexAttribArray( aiscaleloc );
-        if( aicolorloc != -1 )
-            glDisableVertexAttribArray( aicolorloc );
-
-        if( aiposloc != -1 )
             glVertexAttribDivisor( aiposloc, 0 );
         if( aiscaleloc != -1 )
             glVertexAttribDivisor( aiscaleloc, 0 );
         if( aicolorloc != -1 )
             glVertexAttribDivisor( aicolorloc, 0 );
+
+        if( aiposloc != -1 )
+            glDisableVertexAttribArray( aiposloc );
+        if( aiscaleloc != -1 )
+            glDisableVertexAttribArray( aiscaleloc );
+        if( aicolorloc != -1 )
+            glDisableVertexAttribArray( aicolorloc );
 
         checkGlError( "after glVertexAttribDivisor() in ParticleRenderInstanced::Draw()" );
     }

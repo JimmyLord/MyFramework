@@ -79,6 +79,7 @@ public:
     void ReturnObject(MyType* object)
     {
         MyAssert( m_Count < m_Length );
+        MyAssert( object != 0 );
 
         m_pObjectPtrs[m_Count] = object;
         m_Count++;

@@ -426,7 +426,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
         }
     }
 
-    glUseProgram( m_ProgramHandle );
+    MyUseProgram( m_ProgramHandle );
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 
@@ -452,7 +452,7 @@ bool Shader_Base::ActivateAndProgramShader()
         }
     }
 
-    glUseProgram( m_ProgramHandle );
+    MyUseProgram( m_ProgramHandle );
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 

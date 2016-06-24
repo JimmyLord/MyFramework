@@ -423,7 +423,7 @@ void ShaderManager::AddShader(BaseShader* pShader)
 
 void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
 {
-    glUseProgram(0);
+    MyUseProgram( 0 );
 
     for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
     {

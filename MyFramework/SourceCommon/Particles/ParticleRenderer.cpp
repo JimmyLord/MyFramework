@@ -53,6 +53,8 @@ ParticleRenderer::~ParticleRenderer()
 
 void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category)
 {
+    checkGlError( "Start of ParticleRenderer::AllocateVertices()" );
+
     LOGInfo( LOGTag, "ParticleRenderer: Allocating %d Verts\n", numpoints );
 
     MyAssert( m_pVertexBuffer == 0 );
@@ -89,6 +91,8 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, 2, category, "Particles-Indices" );
     }
+
+    checkGlError( "End of ParticleRenderer::AllocateVertices()" );
 }
 
 void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
@@ -226,17 +230,23 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
 
 void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
-    DrawParticles( *campos, *camrot, matviewproj );
+    DrawParticles( *campos, *camrot, matviewproj, pShaderOverride );
 }
 
-void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj)
+void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
 #if MY_SHITTY_LAPTOP
     //return;
 #endif
 
+    // Shader override is only used by mouse picker ATM, don't draw particles into mouse picker frame (or fix).
+    if( pShaderOverride )
+        return;
+
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
         return;
+
+    checkGlError( "Start of ParticleRenderer::DrawParticles()" );
 
     //glEnable(GL_TEXTURE_2D);
 #if MYFW_WINDOWS
@@ -317,6 +327,8 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* m
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);
 #endif
     }
+
+    checkGlError( "End of ParticleRenderer::DrawParticles()" );
 
     return;
 }

@@ -51,10 +51,13 @@ void MyDeleteBuffers(GLsizei num, GLuint* buffers);
 void MyActiveTexture(GLenum texture);
 void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
 void MyDrawArrays(GLenum mode, GLint first, GLsizei count);
+void MyUseProgram(GLuint program);
 
 void MyEnableVertexAttribArray(GLuint index);
 void MyDisableVertexAttribArray(GLuint index);
 
 void MyBindFramebuffer(GLenum target, GLuint framebuffer, unsigned int fbwidth, unsigned int fbheight);
+
+bool MyGLDebug_IsProgramActive(GLuint program);
 
 #endif //__OpenGLWrapper_H__

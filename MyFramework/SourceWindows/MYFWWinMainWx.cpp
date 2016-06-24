@@ -1080,7 +1080,7 @@ void FragCoordTest(MainGLCanvas* pGLCanvas)
 
         glViewport( 0, 0, pGLCanvas->m_CurrentGLViewWidth, pGLCanvas->m_CurrentGLViewHeight );
 
-        glUseProgram( proghandle );
+        MyUseProgram( proghandle );
 
         int apos = glGetAttribLocation( proghandle, "a_Position" );
 

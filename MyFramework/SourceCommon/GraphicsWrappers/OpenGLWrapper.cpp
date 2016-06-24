@@ -13,6 +13,7 @@ GLStats g_GLStats;
 
 //static GLuint g_CurrentGLBuffers[2] = { 0, 0 };
 static GLenum g_CurrentGLActiveTextureUnit = -1;
+static GLuint g_CurrentProgram = 0;
 
 GLStats::GLStats()
 {
@@ -141,6 +142,13 @@ void MyDrawArrays(GLenum mode, GLint first, GLsizei count)
 #endif
 }
 
+void MyUseProgram(GLuint program)
+{
+    g_CurrentProgram = program;
+
+    glUseProgram( program );
+}
+
 void MyEnableVertexAttribArray(GLuint index)
 {
     glEnableVertexAttribArray( index );
@@ -169,4 +177,9 @@ void MyBindFramebuffer(GLenum target, GLuint framebuffer, unsigned int fbwidth, 
     g_GLStats.m_CurrentFramebuffer = framebuffer;
     g_GLStats.m_CurrentFramebufferWidth = fbwidth;
     g_GLStats.m_CurrentFramebufferHeight = fbheight;
+}
+
+bool MyGLDebug_IsProgramActive(GLuint program)
+{
+    return g_CurrentProgram == program;
 }
