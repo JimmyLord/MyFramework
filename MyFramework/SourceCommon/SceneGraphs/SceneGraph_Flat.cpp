@@ -29,6 +29,8 @@ SceneGraph_Flat::~SceneGraph_Flat()
 
 SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
+    //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
+
     MyAssert( pTransform != 0 );
 
     SceneGraphObject* pObject = m_pObjectPool.GetObject();
@@ -64,6 +66,8 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
 void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
 {
+    //LOGInfo( "SceneGraph", "Remove object %d\n", pObject->m_pUserData );
+
     MyAssert( pObject != 0 );
 
     for( unsigned int i=0; i<m_NumRenderables; i++ )

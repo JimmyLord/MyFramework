@@ -147,5 +147,6 @@ void SetMusicVolume(float volume);
 void LaunchURL(const char* url);
 void ShareString(const char* subject, const char* body);
 void ShowKeyboard(bool show);
+bool PlatformSpecific_CheckKeyState(int keycode);
 
 #endif //__ExternalTools_H__

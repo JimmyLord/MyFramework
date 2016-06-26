@@ -223,3 +223,20 @@ void ShowKeyboard(bool show)
     IOSShowKeyboard( show );
 #endif
 }
+
+bool PlatformSpecific_CheckKeyState(int keycode)
+{
+#if MYFW_WINDOWS
+    if( keycode == MYKEYCODE_LCTRL )        return (GetKeyState( VK_CONTROL ) & 0x8000) ? true : false;
+    else if( keycode == MYKEYCODE_LALT )    return (GetKeyState( VK_MENU ) & 0x8000)    ? true : false;
+    else if( keycode == MYKEYCODE_LSHIFT )  return (GetKeyState( VK_SHIFT ) & 0x8000)   ? true : false;
+    else if( keycode == ' ' )               return (GetKeyState( VK_SPACE ) & 0x8000)   ? true : false;
+
+    // default: just pass the keycode through, may not always work in wx where mykeycodes match wx's not win32's
+    else return GetKeyState( keycode ) ? true : false;
+#else
+    MyAssert( false ); // fix me on mac/linux?
+#endif
+
+    return false;
+}
