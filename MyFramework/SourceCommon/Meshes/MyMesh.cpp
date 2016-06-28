@@ -1754,7 +1754,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
         AnimationTime = (float)(StartTime + (float)fmod( TimeInTicks, Duration ));
     }
 
-    if( oldanimindex && perc > 0 )
+    if( oldanimindex != -1 && perc > 0 )
     {
         MyAnimation* pAnim = m_pAnimations[oldanimindex];
         int timelineindex = m_pAnimations[oldanimindex]->m_TimelineIndex;
@@ -1769,6 +1769,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
 
     MyMatrix matidentity;
     matidentity.SetIdentity();
+    //MyClamp( perc, 0.0f, 1.0f );
     RebuildNode( pTimeline, AnimationTime, pTimelineOld, AnimationTimeOld, perc, 0, &matidentity );
 }
 
@@ -1790,9 +1791,9 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnima
 
         if( pOldTimeline )
         {
-            Vector3 oldtranslation = pTimeline->GetInterpolatedTranslation( oldanimtime, channelindex );
-            MyQuat oldrotation = pTimeline->GetInterpolatedRotation( oldanimtime, channelindex );
-            //Vector3 oldscale = pTimeline->GetInterpolatedScaling( oldanimtime, channelindex );
+            Vector3 oldtranslation = pOldTimeline->GetInterpolatedTranslation( oldanimtime, channelindex );
+            MyQuat oldrotation = pOldTimeline->GetInterpolatedRotation( oldanimtime, channelindex );
+            //Vector3 oldscale = pOldTimeline->GetInterpolatedScaling( oldanimtime, channelindex );
 
             translation = translation + (oldtranslation - translation) * perc;
             rotation = MyQuat::Lerp( rotation, oldrotation, perc ).GetNormalized();
