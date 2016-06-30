@@ -44,6 +44,14 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
     m_pMaterial = pMaterial;
 }
 
+unsigned int MySubmesh::GetStride()
+{
+    if( m_pVertexBuffer->m_VertexFormat == VertexFormat_Dynamic )
+        return m_pVertexBuffer->m_pFormatDesc->stride;
+
+    return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
+}
+
 void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "Start of MySubmesh::Draw()" );
@@ -85,7 +93,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
     if( pVertexBuffer->m_Dirty )
     {
         MyAssert( NumVertsToDraw > 0 );
-        pVertexBuffer->Rebuild( 0, NumVertsToDraw*g_VertexFormatSizes[VertexFormat] );
+        pVertexBuffer->Rebuild( 0, NumVertsToDraw * GetStride() );
     }
     if( pIndexBuffer && pIndexBuffer->m_Dirty )
     {
@@ -384,7 +392,7 @@ void MyMesh::CreateSubmeshes(int numsubmeshes)
         m_SubmeshList.Add( MyNew MySubmesh() );
 }
 
-void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic)
+void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic)
 {
     MyAssert( m_SubmeshList.Length() == 0 );
 
@@ -397,7 +405,6 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
     if( dynamic )
     {
         usage = GL_DYNAMIC_DRAW;
-        //numbuffers = 1;
         numbuffers = 2;
     }
     else
@@ -410,22 +417,22 @@ void MyMesh::CreateBuffers(int vertexformat, unsigned short numverts, unsigned i
     {
         //m_NumVerts = numverts;
         m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_VertexFormat = vertexformat;
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Dynamic;
 
-        if( m_SubmeshList[0]->m_VertexFormat == VertexFormat_XYZUV_RGBA )
-        {
-            Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
-            m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, usage, false, numbuffers, VertexFormat_XYZUV_RGBA, "MyMesh", "Verts" );
-        }
+        Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
+            pVerts, pVertexFormatDesc->stride*numverts, GL_ARRAY_BUFFER, usage,
+            false, numbuffers, VertexFormat_Dynamic, pVertexFormatDesc, "MyMesh", "Verts" );
     }
 
     if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
-        //m_NumIndices = numindices;
         m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, usage, false, numbuffers, 2, "MyMesh", "Verts" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
+            pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, usage,
+            false, numbuffers, bytesperindex, "MyMesh", "Verts" );
     }
 }
 

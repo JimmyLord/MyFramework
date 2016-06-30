@@ -45,7 +45,7 @@ public:
     BufferDefinition* m_pVertexBuffer;
     BufferDefinition* m_pIndexBuffer;
 
-    unsigned short m_NumVertsToDraw;
+    unsigned int m_NumVertsToDraw;
     unsigned int m_NumIndicesToDraw;
     int m_PrimitiveType;
     int m_PointSize;
@@ -56,6 +56,7 @@ public:
 public:
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     void SetMaterial(MaterialDefinition* pMaterial);
+    unsigned int GetStride();
 
     virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 };
@@ -97,7 +98,7 @@ public:
     void Clear();
 
     void CreateSubmeshes(int numsubmeshes);
-    void CreateBuffers(int vertexformat, unsigned short numverts, unsigned int numindices, bool dynamic = false);
+    void CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic = false);
 
     void CreateFromOBJFile(MyFileObject* pFile);
     void CreateFromMyMeshFile(MyFileObject* pFile);
