@@ -419,9 +419,8 @@ void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigne
         m_SubmeshList[0]->m_NumVertsToDraw = numverts;
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Dynamic;
 
-        Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
         m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
-            pVerts, pVertexFormatDesc->stride*numverts, GL_ARRAY_BUFFER, usage,
+            0, pVertexFormatDesc->stride*numverts, GL_ARRAY_BUFFER, usage,
             false, numbuffers, VertexFormat_Dynamic, pVertexFormatDesc, "MyMesh", "Verts" );
     }
 
