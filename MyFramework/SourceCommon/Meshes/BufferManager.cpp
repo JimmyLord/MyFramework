@@ -71,8 +71,27 @@ void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
 {
     MyAssert( pData != 0 && sizeinbytes != 0 );
 
-    MyBindBuffer( m_Target, m_BufferIDs[m_CurrentBufferIndex] );
+    if( m_BufferIDs[m_NextBufferIndex] == 0 )
+    {
+        glGenBuffers( 1, &m_BufferIDs[m_NextBufferIndex] );
+        checkGlError( "glGenBuffers" );
+    }
+
+    MyBindBuffer( m_Target, m_BufferIDs[m_NextBufferIndex] );
     glBufferData( m_Target, sizeinbytes, pData, m_Usage );
+
+    m_CurrentBufferID = m_BufferIDs[m_NextBufferIndex];
+    m_CurrentVAOHandle = m_VAOHandles[m_NextBufferIndex];
+#if _DEBUG && MYFW_WINDOWS
+    m_DEBUG_CurrentVAOIndex = m_NextBufferIndex;
+#endif
+
+    m_CurrentBufferIndex = m_NextBufferIndex;
+    m_NextBufferIndex++;
+    if( m_NextBufferIndex >= m_NumBuffersToUse )
+        m_NextBufferIndex = 0;
+
+    m_Dirty = false;
 
     checkGlError( "BufferDefinition::TempBufferData" );
 }
@@ -86,6 +105,9 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
         return;
 
     if( m_Dirty == false && forcerebuild == false )
+        return;
+
+    if( m_DataSize == 0 )
         return;
 
     if( m_BufferIDs[m_NextBufferIndex] == 0 )
@@ -237,13 +259,13 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
 {
     MyAssert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
 
-    if( datasize != m_DataSize )
+    if( datasize == 0 || datasize != m_DataSize )
     {
         // delete old data block if necessary
         SAFE_DELETE_ARRAY( m_pData );
 
-        // if no data block was passed in allocate one.
-        if( pData == 0 )
+        // if no data block was passed in allocate one if datasize isn't 0.
+        if( pData == 0 && datasize != 0 )
             pData = MyNew char[datasize];
 
         for( int i=0; i<3; i++ )

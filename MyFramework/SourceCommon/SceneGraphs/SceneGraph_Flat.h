@@ -13,7 +13,7 @@
 class SceneGraph_Flat : public SceneGraph_Base
 {
 protected:
-    SceneGraphObject* m_pRenderables[10000];
+    SceneGraphObject** m_pRenderables;
     unsigned int m_NumRenderables;
 
 public:

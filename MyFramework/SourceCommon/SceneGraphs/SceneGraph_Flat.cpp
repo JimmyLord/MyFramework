@@ -14,6 +14,7 @@
 
 SceneGraph_Flat::SceneGraph_Flat()
 {
+    m_pRenderables = MyNew SceneGraphObject*[100000];
     m_NumRenderables = 0;
 }
 
@@ -25,6 +26,8 @@ SceneGraph_Flat::~SceneGraph_Flat()
     {
         m_pObjectPool.ReturnObject( m_pRenderables[i] );
     }
+
+    delete[] m_pRenderables;
 }
 
 SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
@@ -37,7 +40,7 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
     if( pObject )
     {
-        MyAssert( m_NumRenderables < 10000 );
+        MyAssert( m_NumRenderables < 100000 );
 
         pObject->m_Flags = flags;
         pObject->m_Layers = layers;

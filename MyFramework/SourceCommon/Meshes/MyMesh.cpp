@@ -415,7 +415,6 @@ void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigne
 
     if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        //m_NumVerts = numverts;
         m_SubmeshList[0]->m_NumVertsToDraw = numverts;
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Dynamic;
 
@@ -428,9 +427,8 @@ void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigne
     {
         m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
 
-        unsigned short* pIndices = MyNew unsigned short[numindices];
         m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
-            pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, usage,
+            0, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, usage,
             false, numbuffers, bytesperindex, "MyMesh", "Verts" );
     }
 }

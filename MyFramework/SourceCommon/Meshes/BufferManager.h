@@ -43,7 +43,7 @@ public:
     GLuint m_CurrentBufferID;
     GLuint m_CurrentVAOHandle;
 
-    char* m_pData; // only using char* because android compiler doesn't like deleting void*(warning : deleting 'void*' is undefined)
+    char* m_pData;
     unsigned int m_DataSize;
     union
     {
