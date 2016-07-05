@@ -1473,6 +1473,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Noise\SimplexNoise.cpp" />
     <ClCompile Include="SourceCommon\Particles\ParticleRenderer.cpp" />
     <ClCompile Include="SourceCommon\Particles\ParticleRendererInstanced.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DContactListener.cpp" />
@@ -2577,6 +2578,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SourceCommon\Noise\SimplexNoise.h" />
     <ClInclude Include="SourceCommon\Particles\ParticleRenderer.h" />
     <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DContactListener.h" />
