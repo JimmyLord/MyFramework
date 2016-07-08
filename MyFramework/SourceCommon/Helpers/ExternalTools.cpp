@@ -240,3 +240,12 @@ bool PlatformSpecific_CheckKeyState(int keycode)
 
     return false;
 }
+
+void PlatformSpecific_SetMousePosition(float x, float y)
+{
+#if MYFW_USING_WX
+    g_pMainApp->m_pMainFrame->m_pGLCanvas->WarpPointer( (int)x, (int)y );
+#else
+    MyAssert( false ); // fix me on win32/mac/linux
+#endif
+}

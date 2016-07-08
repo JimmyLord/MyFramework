@@ -148,5 +148,6 @@ void LaunchURL(const char* url);
 void ShareString(const char* subject, const char* body);
 void ShowKeyboard(bool show);
 bool PlatformSpecific_CheckKeyState(int keycode);
+void PlatformSpecific_SetMousePosition(float x, float y);
 
 #endif //__ExternalTools_H__
