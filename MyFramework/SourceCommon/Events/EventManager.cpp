@@ -27,12 +27,12 @@ EventManager::~EventManager()
 {
     for( unsigned int i=0; i<m_NumEvents; i++ )
     {
-        m_pEventPool.ReturnObject( m_pEvents[i] );
+        m_pEventPool.ReturnObjectToPool( m_pEvents[i] );
     }
 
     for( unsigned int i=0; i<m_NumEventHandlers; i++ )
     {
-        m_pEventHandlerPool.ReturnObject( m_pEventHandlers[i] );
+        m_pEventHandlerPool.ReturnObjectToPool( m_pEventHandlers[i] );
     }
 }
 
@@ -42,7 +42,7 @@ void EventManager::Tick()
 
 MyEvent* EventManager::CreateNewEvent(EventTypes type)
 {
-    MyEvent* pEvent = m_pEventPool.GetObject();
+    MyEvent* pEvent = m_pEventPool.GetObjectFromPool();
     pEvent->SetType( type );
 
     return pEvent;
@@ -50,12 +50,12 @@ MyEvent* EventManager::CreateNewEvent(EventTypes type)
 
 void EventManager::ReleaseEvent(MyEvent* pEvent)
 {
-    m_pEventPool.ReturnObject( pEvent );
+    m_pEventPool.ReturnObjectToPool( pEvent );
 }
 
 void EventManager::RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
 {
-    MyEventHandler* pEventHandler = m_pEventHandlerPool.GetObject();
+    MyEventHandler* pEventHandler = m_pEventHandlerPool.GetObjectFromPool();
     
     pEventHandler->m_EventType = type;
     pEventHandler->m_pObject = pObject;
@@ -82,7 +82,7 @@ void EventManager::UnregisterForEvents(EventTypes type, void* pObject, EventCall
             m_pEventHandlers[i]->m_pObject == pObject &&
             m_pEventHandlers[i]->m_pOnEventFunction == pOnEventFunction )
         {
-            m_pEventHandlerPool.ReturnObject( m_pEventHandlers[i] );
+            m_pEventHandlerPool.ReturnObjectToPool( m_pEventHandlers[i] );
 
             m_pEventHandlers[i] = m_pEventHandlers[m_NumEventHandlers-1];
             m_pEventHandlers[m_NumEventHandlers-1] = 0;

@@ -24,7 +24,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
 
     for( unsigned int i=0; i<m_NumRenderables; i++ )
     {
-        m_pObjectPool.ReturnObject( m_pRenderables[i] );
+        m_pObjectPool.ReturnObjectToPool( m_pRenderables[i] );
     }
 
     delete[] m_pRenderables;
@@ -36,7 +36,7 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
     MyAssert( pTransform != 0 );
 
-    SceneGraphObject* pObject = m_pObjectPool.GetObject();
+    SceneGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
 
     if( pObject )
     {
@@ -84,7 +84,7 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
         }
     }
 
-    m_pObjectPool.ReturnObject( pObject );
+    m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
 void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)

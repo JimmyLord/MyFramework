@@ -459,7 +459,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_KILLFOCUS:
         {
-            g_pGameCore->OnFocusLost();
+            if( g_pGameCore )
+                g_pGameCore->OnFocusLost();
 
             for( int i=0; i<256; i++ )
                 g_KeyStates[i] = false;

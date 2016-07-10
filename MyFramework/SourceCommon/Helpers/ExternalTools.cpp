@@ -245,6 +245,8 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 {
 #if MYFW_USING_WX
     g_pMainApp->m_pMainFrame->m_pGLCanvas->WarpPointer( (int)x, (int)y );
+#elif MYFW_NACL
+
 #else
     MyAssert( false ); // fix me on win32/mac/linux
 #endif

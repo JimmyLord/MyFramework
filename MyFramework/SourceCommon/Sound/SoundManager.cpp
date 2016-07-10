@@ -29,7 +29,7 @@ void SoundCue::Release()
     // if removing the second to last ref, return it to the pool.
     if( m_RefCount == 1 )
     {
-        m_pSourcePool->ReturnObject( this );
+        m_pSourcePool->ReturnObjectToPool( this );
         SAFE_RELEASE( m_pFile );
 
         m_FullyLoaded = false;
@@ -250,7 +250,7 @@ void SoundManager::Tick()
 
 SoundCue* SoundManager::GetCueFromPool()
 {
-    SoundCue* pCue = m_SoundCuePool.GetObject();
+    SoundCue* pCue = m_SoundCuePool.GetObjectFromPool();
     if( pCue == 0 )
     {
         LOGError( LOGTag, "SoundManager::GetCueFromPool(): Sound cue pool ran out of cues\n" );
@@ -311,8 +311,12 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
 
 void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 {
+#if MYFW_NACL
+    // TODO: fix
+#else
     SoundObject* pSoundObject = g_pGameCore->m_pSoundPlayer->LoadSound( fullpath );
     pCue->m_SoundObjects.AddTail( pSoundObject );
+#endif
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );

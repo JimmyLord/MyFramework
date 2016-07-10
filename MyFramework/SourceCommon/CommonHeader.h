@@ -165,6 +165,9 @@
 #include "DataTypes/MyList.h"
 #include "DataTypes/MyAABounds.h"
 
+#include "Helpers/MessageLog.h"
+#include "DataTypes/MyActivePool.h"
+
 #include "../../Libraries/Box2D/Box2D/Box2D/Box2D.h"
 #include "Physics/Box2DContactListener.h"
 #include "Physics/Box2DWorld.h"
@@ -299,6 +302,7 @@ using namespace Osp::Graphics::Opengl;
 #endif
 
 #if MYFW_EMSCRIPTEN
+#define MYFW_OPENGLES2 1
 #undef USE_PTHREAD
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
@@ -443,9 +447,6 @@ typedef int socklen_t;
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
 #include "Noise/SimplexNoise.h"
-
-#include "Helpers/MessageLog.h"
-#include "DataTypes/MyActivePool.h"
 
 #include "Events/EventTypeManager.h"
 #include "Events/MyEvent.h"

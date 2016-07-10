@@ -64,7 +64,7 @@ public:
         m_Count = length;
     }
 
-    MyType* GetObject()
+    MyType* GetObjectFromPool()
     {
         if( m_Count == 0 )
         {
@@ -76,7 +76,7 @@ public:
         return m_pObjectPtrs[m_Count];
     }
 
-    void ReturnObject(MyType* object)
+    void ReturnObjectToPool(MyType* object)
     {
         MyAssert( m_Count < m_Length );
         MyAssert( object != 0 );

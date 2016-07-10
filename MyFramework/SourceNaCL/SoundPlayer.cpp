@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -33,7 +33,7 @@ SoundPlayer::SoundPlayer()
 
     for( int i=0; i<MAX_AUDIO_FILES; i++ )
     {
-        m_WaveDescriptors[i].valid = false;
+        m_Sounds[i].m_Sound.valid = false;
     }
 
     m_SoundCueQueue.AllocateObjects( MAX_AUDIO_FILES_QUEUED );
@@ -59,45 +59,51 @@ void SoundPlayer::OnFocusLost()
 {
 }
 
-int SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
+//SoundObject* SoundPlayer::LoadSound(const char* path, const char* ext)
+//SoundObject* SoundPlayer::LoadSound(const char* fullpath)
+
+SoundObject* SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 {
     LOGInfo( LOGTag, "NaCL SoundPlayer::LoadSound, buffersize:%d\n", buffersize );
 
     MyAssert( m_NumAudioBuffersLoaded < MAX_AUDIO_FILES );
 
-    m_WaveDescriptors[m_NumAudioBuffersLoaded] = WaveLoader::ParseWaveBuffer( buffer, buffersize );
-    MyAssert( m_WaveDescriptors[m_NumAudioBuffersLoaded].valid );
+    m_Sounds[m_NumAudioBuffersLoaded].m_Sound = WaveLoader::ParseWaveBuffer( buffer, buffersize );
+    MyAssert( m_Sounds[m_NumAudioBuffersLoaded].m_Sound.valid );
 
     LOGInfo( LOGTag, "NaCL SoundPlayer parsed, bytes:%d, channels:%d, samples:%d, size:%d\n", 
-        m_WaveDescriptors[m_NumAudioBuffersLoaded].bytespersample,
-        m_WaveDescriptors[m_NumAudioBuffersLoaded].numchannels,
-        m_WaveDescriptors[m_NumAudioBuffersLoaded].samplerate,
-        m_WaveDescriptors[m_NumAudioBuffersLoaded].datasize );
+        m_Sounds[m_NumAudioBuffersLoaded].m_Sound.bytespersample,
+        m_Sounds[m_NumAudioBuffersLoaded].m_Sound.numchannels,
+        m_Sounds[m_NumAudioBuffersLoaded].m_Sound.samplerate,
+        m_Sounds[m_NumAudioBuffersLoaded].m_Sound.datasize );
 
     m_NumAudioBuffersLoaded++;
 
-    return m_NumAudioBuffersLoaded-1;
+    return &m_Sounds[m_NumAudioBuffersLoaded-1];
 }
 
 void SoundPlayer::Shutdown()
 {
 }
 
-void SoundPlayer::PlaySound(int soundid, bool looping)
+int SoundPlayer::PlaySound(SoundObject* pSoundObject, bool looping)
 {
-    LOGInfo( LOGTag, "NaCL SoundPlayer PlaySound soundid %d looping %d\n", soundid, looping );
+    //LOGInfo( LOGTag, "NaCL SoundPlayer PlaySound soundid %d looping %d\n", soundid, looping );
 
-    if( soundid == -1 )
-        return;
+    if( pSoundObject == 0 )
+        return -1;
     
     SoundCueWrapper* pCueInfo = m_SoundCueQueue.MakeObjectActive();
 
     if( pCueInfo )
     {
-        pCueInfo->descindex = soundid;
+        pCueInfo->soundobject = pSoundObject;
         pCueInfo->offset = 0;
         pCueInfo->looping = looping;
     }
+
+    // TODO: fix, should return a sound channel/id so sound can be paused/stopped
+    return 0;
 }
 
 void SoundPlayer::StopSound(int soundid)
@@ -167,14 +173,14 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
         SoundCueWrapper* pCueInfo = pSoundPlayer->m_SoundCueQueue.m_ActiveObjects[i];
         MyAssert( pCueInfo );
 
-        MyWaveDescriptor* pWaveDesc = &pSoundPlayer->m_WaveDescriptors[pCueInfo->descindex];
+        MyWaveDescriptor* pWaveDesc = &pCueInfo->soundobject->m_Sound;
         MyAssert( pWaveDesc );
             
         int sizetocopy = 0;
 
         if( pCueInfo->looping == false )
         {
-            LOGInfo( LOGTag, "NaCL SoundPlayer FillBufferCallback playing sound:%d size:%d offset:%d\n", pCueInfo->descindex, pWaveDesc->datasize, pCueInfo->offset );
+            //LOGInfo( LOGTag, "NaCL SoundPlayer FillBufferCallback playing sound:%d size:%d offset:%d\n", pCueInfo->descindex, pWaveDesc->datasize, pCueInfo->offset );
 
             sizetocopy = pWaveDesc->datasize - pCueInfo->offset;
             if( sizetocopy > buffer_size )
@@ -183,7 +189,7 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
             }
             else if( sizetocopy <= buffer_size )
             {
-                LOGInfo( LOGTag, "NaCL SoundPlayer FillBufferCallback removing sound %d\n", pCueInfo->descindex );
+                //LOGInfo( LOGTag, "NaCL SoundPlayer FillBufferCallback removing sound %d\n", pCueInfo->descindex );
                 // remove the sound from the list.
                 pSoundPlayer->m_SoundCueQueue.MakeObjectInactive( pCueInfo );
                 i--;
