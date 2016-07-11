@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,6 +16,7 @@
 
 #include "OpenGLContext.h"
 #include "ppapi/cpp/instance.h"
+#include "ppapi/cpp/mouse_lock.h"
 #include "../SourceCommon/GameCore.h"
 
 class GameCore;
@@ -23,11 +24,14 @@ class MainInstance;
 
 extern MainInstance* g_pInstance;
 
-class MainInstance : public pp::Instance
+class MainInstance : public pp::Instance, public pp::MouseLock
 {
 public:
     bool m_ButtonsDown[GCBI_NumButtons];
     int m_ShiftsHeld;
+
+    bool m_GameWantsLockedMouse;
+    bool m_SystemMouseIsLocked;
 
 public:
     explicit MainInstance(PP_Instance instance);
@@ -51,6 +55,11 @@ public:
 
     // Called to draw the contents of the module's browser area.
     void DrawSelf(int32_t somevaluethecallbackfactorywants);
+
+    // MouseLock functions
+    void SetMouseLock(bool lock);
+    void MouseLocked(int32_t somevaluethecallbackfactorywants);
+    virtual void MouseLockLost();
 
 private:
     pp::Graphics3D m_OpenGLContext;

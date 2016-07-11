@@ -23,6 +23,10 @@ char g_TextToShare_Subject[1000];
 char g_TextToShare_Body[1000];
 #endif
 
+#if MYFW_NACL
+#include "../../../MyFramework/SourceNaCL/MainInstance.h"
+#endif
+
 void SetExitOnBackButton(bool exit)
 {
 #if MYFW_ANDROID
@@ -246,8 +250,17 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 #if MYFW_USING_WX
     g_pMainApp->m_pMainFrame->m_pGLCanvas->WarpPointer( (int)x, (int)y );
 #elif MYFW_NACL
-
+    MyAssert( false ); // TODO: fix me on nacl
 #else
-    MyAssert( false ); // fix me on win32/mac/linux
+    MyAssert( false ); // TODO: fix me on everything else...
+#endif
+}
+
+void PlatformSpecific_SetMouseLock(bool lock)
+{
+#if MYFW_NACL
+    g_pInstance->SetMouseLock( lock );
+#else
+    MyAssert( false ); // TODO: fix me on everything else...
 #endif
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -31,6 +31,7 @@ static int currheight = -1;
 
 MainInstance::MainInstance(PP_Instance instance)
 : pp::Instance(instance)
+, pp::MouseLock(this)
 , m_CallbackFactory(this)
 {
     g_pInstance = this;
@@ -47,6 +48,8 @@ MainInstance::MainInstance(PP_Instance instance)
     }
 
     m_ShiftsHeld = 0;
+    m_GameWantsLockedMouse = false;
+    m_SystemMouseIsLocked = false;
 }
 
 MainInstance::~MainInstance()
@@ -95,10 +98,31 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
         {
             pp::MouseInputEvent mouseevent = pp::MouseInputEvent(event);
 
-            float x = (float)mouseevent.GetPosition().x();
-            float y = (float)mouseevent.GetPosition().y();
+            float x;
+            float y;
 
-            g_pGameCore->OnTouch( GCBA_Held, 0, x, y, 0, 0 );
+            if( m_GameWantsLockedMouse )
+            {
+                // Only send mouse movement messages (position diffs) if the system mouse is locked
+                if( m_SystemMouseIsLocked )
+                {
+                    x = (float)mouseevent.GetMovement().x();
+                    y = (float)mouseevent.GetMovement().y();
+                    
+                    g_pGameCore->OnTouch( GCBA_Held, 0, x, y, 0, 0 );
+                }
+            }
+            else
+            {
+                // Only send mouse positions if system mouse isn't locked
+                if( m_SystemMouseIsLocked == false )
+                {
+                    x = (float)mouseevent.GetPosition().x();
+                    y = (float)mouseevent.GetPosition().y();
+
+                    g_pGameCore->OnTouch( GCBA_Held, 0, x, y, 0, 0 );
+                }
+            }
         }
         //GotMouseEvent(pp::MouseInputEvent(event), "Move");
         break;
@@ -301,4 +325,36 @@ void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)
         m_OpenGLContext.SwapBuffers( m_CallbackFactory.NewCallback( &MainInstance::DrawSelf ) );
         //m_OpenGLContext->FlushContext();
     }
+}
+
+void MainInstance::SetMouseLock(bool lock)
+{
+    if( lock )
+    {
+        LOGInfo( LOGTag, "SetMouseLock( true );\n" );
+
+        m_GameWantsLockedMouse = true;
+        LockMouse( m_CallbackFactory.NewCallback( &MainInstance::MouseLocked ) );
+    }
+    else
+    {
+        LOGInfo( LOGTag, "SetMouseLock( false );\n" );
+
+        m_GameWantsLockedMouse = false;
+        UnlockMouse();
+    }
+}
+
+void MainInstance::MouseLocked(int32_t somevaluethecallbackfactorywants)
+{
+    LOGInfo( LOGTag, "Mouse locked\n" );
+
+    m_SystemMouseIsLocked = true;
+}
+
+void MainInstance::MouseLockLost()
+{
+    LOGInfo( LOGTag, "Mouse unlocked\n" );
+
+    m_SystemMouseIsLocked = false;
 }

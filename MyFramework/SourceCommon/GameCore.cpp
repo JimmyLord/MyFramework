@@ -319,6 +319,11 @@ void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathaft
 {
 }
 
+void GameCore::SetMouseLock(bool lock)
+{
+    PlatformSpecific_SetMouseLock( lock );
+}
+
 bool GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
 {
     m_LastInputMethodUsed = InputMethod_Touch;

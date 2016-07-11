@@ -149,5 +149,6 @@ void ShareString(const char* subject, const char* body);
 void ShowKeyboard(bool show);
 bool PlatformSpecific_CheckKeyState(int keycode);
 void PlatformSpecific_SetMousePosition(float x, float y);
+void PlatformSpecific_SetMouseLock(bool lock);
 
 #endif //__ExternalTools_H__
