@@ -86,6 +86,8 @@ void WinMain_GetClientSize(int* width, int* height, GLViewTypes* viewtype);
 extern unsigned int g_GLCanvasIDActive;
 extern wxDataFormat* g_pMyDataFormat;
 
+void SetMouseLock(bool lock);
+
 extern MainApp* g_pMainApp;
 
 // Main application class

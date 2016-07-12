@@ -13,6 +13,14 @@
 #include "../../SourceIOS/ExternalToolsIOS.h"
 #endif
 
+#if MYFW_USING_WX
+#include "../../SourceWindows/MYFWWinMainWx.h"
+#endif
+
+#if MYFW_WINDOWS && !MYFW_USING_WX
+#include "../../SourceWindows/MYFWWinMain.h"
+#endif
+
 #if MYFW_BLACKBERRY
 #include <bps/virtualkeyboard.h>
 #include <bps/navigator.h>
@@ -258,7 +266,9 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 
 void PlatformSpecific_SetMouseLock(bool lock)
 {
-#if MYFW_NACL
+#if MYFW_USING_WX || MYFW_WINDOWS
+    SetMouseLock( lock );
+#elif MYFW_NACL
     g_pInstance->SetMouseLock( lock );
 #else
     MyAssert( false ); // TODO: fix me on everything else...
