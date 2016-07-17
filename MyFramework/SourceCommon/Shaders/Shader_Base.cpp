@@ -417,6 +417,8 @@ bool Shader_Base::DoVAORequirementsMatch(BaseShader* pShader)
 
 bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial)
 {
+    MyAssert( pMaterial );
+
     if( m_Initialized == false )
     {
         if( LoadAndCompile() == false )
@@ -430,7 +432,8 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     //LOGInfo( LOGTag, "glUseProgram %d\n", m_ProgramHandle );
     checkGlError( "glUseProgram" );
 
-    SetupAttributes( vbo, ibo, true );
+    if( vbo )
+        SetupAttributes( vbo, ibo, true );
     checkGlError( "SetupAttributes" );
 
     ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->GetTextureColor(),
