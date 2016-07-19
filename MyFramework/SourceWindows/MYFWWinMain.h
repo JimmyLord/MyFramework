@@ -13,4 +13,7 @@
 bool MYFW_GetKey(int value);
 int MYFWWinMain(int width, int height);
 
+void SetMouseLock(bool lock);
+
+
 #endif //__MYFWWinMain_H__

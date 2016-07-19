@@ -34,6 +34,12 @@ bool g_MouseButtonStates[3];
 bool g_WindowIsActive = true;
 bool g_FullscreenMode = true;
 
+static bool g_GameWantsLockedMouse = true;
+static bool g_SystemMouseIsLocked = true;
+
+static int g_MouseXPositionWhenLocked = 300;
+static int g_MouseYPositionWhenLocked = 300;
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 static bool h_moviemode = false;
@@ -176,6 +182,32 @@ void GetMouseCoordinates(int* mx, int* my)
     }
 }
 
+void SetMouseLock(bool lock)
+{
+    if( lock )
+    {
+        LOGInfo( LOGTag, "SetMouseLock( true );\n" );
+
+        g_GameWantsLockedMouse = true;
+
+        POINT p;
+        p.x = g_WindowWidth/2;
+        p.y = g_WindowHeight/2;
+        ClientToScreen( hWnd, &p );
+
+        g_MouseXPositionWhenLocked = p.x;
+        g_MouseYPositionWhenLocked = p.y;
+
+        SetCursorPos( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
+    }
+    else
+    {
+        LOGInfo( LOGTag, "SetMouseLock( false );\n" );
+
+        g_GameWantsLockedMouse = false;
+    }
+}
+
 void GenerateMouseEvents(GameCore* pGameCore)
 {
     static unsigned int buttons[3];
@@ -213,8 +245,37 @@ void GenerateMouseEvents(GameCore* pGameCore)
         if( buttons[i] == 1 && buttonsold[i] == 1 )
             buttonstates |= (1 << i);
     }
-        
-    pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 ); // still pressed
+
+    // Game window wants mouse locked.
+    if( g_GameWantsLockedMouse )
+    {
+        // Only send mouse movement messages (position diffs) if the system mouse is locked
+        if( g_SystemMouseIsLocked )
+        {
+            POINT p;
+            p.x = px;
+            p.y = py;
+            ClientToScreen( hWnd, &p );
+
+            float xdiff = (float)p.x - g_MouseXPositionWhenLocked;
+            float ydiff = (float)p.y - g_MouseYPositionWhenLocked;
+
+            SetCursorPos( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
+
+            if( xdiff != 0 || ydiff != 0 )
+            {
+                pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
+            }
+        }
+        else
+        {
+            // Only send mouse positions if system mouse isn't locked
+            if( g_SystemMouseIsLocked == false )
+            {
+                pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 );
+            }
+        }
+    }
 }
 
 GLvoid KillGLWindow()

@@ -74,10 +74,29 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
         {
             pp::MouseInputEvent mouseevent = pp::MouseInputEvent(event);
 
-            float x = (float)mouseevent.GetPosition().x();
-            float y = (float)mouseevent.GetPosition().y();
+            if( m_GameWantsLockedMouse == true && m_SystemMouseIsLocked == false )
+            {
+                SetMouseLock( true );
+            }
 
-            g_pGameCore->OnTouch( GCBA_Down, 0, x, y, 0, 0 ); // new press
+            if( m_GameWantsLockedMouse == false || m_SystemMouseIsLocked == true )
+            {
+                int id = mouseevent.GetButton();                
+                if( id == PP_INPUTEVENT_MOUSEBUTTON_LEFT ) id = 0;
+                else if( id == PP_INPUTEVENT_MOUSEBUTTON_RIGHT ) id = 1;
+                else if( id == PP_INPUTEVENT_MOUSEBUTTON_MIDDLE ) id = 1;
+
+                float x = (float)mouseevent.GetPosition().x();
+                float y = (float)mouseevent.GetPosition().y();
+
+                if( m_GameWantsLockedMouse && m_SystemMouseIsLocked )
+                {
+                    x = currwidth/2;
+                    y = currheight/2;
+                }
+
+                g_pGameCore->OnTouch( GCBA_Down, id, x, y, 0, 0 ); // new press
+            }
         }
         //GotMouseEvent(pp::MouseInputEvent(event), "Down");
         break;
@@ -86,10 +105,21 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
         {
             pp::MouseInputEvent mouseevent = pp::MouseInputEvent(event);
 
+            int id = mouseevent.GetButton();
+            if( id == PP_INPUTEVENT_MOUSEBUTTON_LEFT ) id = 0;
+            else if( id == PP_INPUTEVENT_MOUSEBUTTON_RIGHT ) id = 1;
+            else if( id == PP_INPUTEVENT_MOUSEBUTTON_MIDDLE ) id = 1;
+
             float x = (float)mouseevent.GetPosition().x();
             float y = (float)mouseevent.GetPosition().y();
 
-            g_pGameCore->OnTouch( GCBA_Up, 0, x, y, 0, 0 ); // new release
+            if( m_GameWantsLockedMouse && m_SystemMouseIsLocked )
+            {
+                x = currwidth/2;
+                y = currheight/2;
+            }
+
+            g_pGameCore->OnTouch( GCBA_Up, id, x, y, 0, 0 ); // new release
         }
         //GotMouseEvent(pp::MouseInputEvent(event), "Up");
         break;

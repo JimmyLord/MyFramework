@@ -633,12 +633,15 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
+    if( this->HasFocus() == true && (g_GameWantsLockedMouse == false || g_SystemMouseIsLocked == true) )
+    {
+        m_MouseButtonStates |= (1 << 0);
+        m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
+        m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Down, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+    }
+
     this->SetFocus();
     g_SystemMouseIsLocked = true;
-
-    m_MouseButtonStates |= (1 << 0);
-    m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
-    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Down, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
 }
 
 void MainGLCanvas::MouseLeftDoubleClick(wxMouseEvent& event)
@@ -955,8 +958,8 @@ void MainGLCanvas::ProcessInputEventQueue()
             if( g_pGameCore )
                 g_pGameCore->OnTouch( ev->mouseaction, ev->mousebuttonid, (float)ev->x, (float)ev->y, ev->pressure, 0 );
 
-            if( ev->mouseaction == GCBA_Held )
-                LOGInfo( "Input", "Input event mouse: %d, %d, %d, %0.0f, %0.0f\n", m_GLCanvasID, ev->mouseaction, ev->mousebuttonid, (float)ev->x, (float)ev->y );
+            //if( ev->mouseaction == GCBA_Held )
+            //    LOGInfo( "Input", "Input event mouse: %d, %d, %d, %0.0f, %0.0f\n", m_GLCanvasID, ev->mouseaction, ev->mousebuttonid, (float)ev->x, (float)ev->y );
         }
         else
         {
