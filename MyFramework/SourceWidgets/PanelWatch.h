@@ -136,7 +136,7 @@ struct VariableProperties
 
 class PanelWatch : public wxScrolledWindow
 {
-public:
+protected:
     void* m_pObjectBeingWatched;
 
     wxTimer* m_pTimer;
@@ -179,12 +179,15 @@ public:
     void OnClickStaticText(wxMouseEvent& event);
     void OnRightClickVariable(wxMouseEvent& event);
 
+    void Tick(double TimePassed);
     void OnTimer(wxTimerEvent& event);
     void OnTextCtrlEnter(wxCommandEvent& event);
     void OnTextCtrlChanged(int controlid);
     void OnSliderChanged(wxScrollEvent& event);
     void OnSliderChanged(int controlid, int value, bool addundocommand);//wxScrollEvent& event);
     void OnColourPickerChanged(wxColourPickerEvent& event);
+
+    void StopTimer() { m_pTimer->Stop(); }
 
 public:
     PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack);
@@ -193,6 +196,9 @@ public:
     void* GetObjectBeingWatched() { return m_pObjectBeingWatched; }
     void SetObjectBeingWatched(void* obj) { m_pObjectBeingWatched = obj; }
 
+    VariableProperties* GetVariableProperties(unsigned int index) { return &m_pVariables[index]; }
+
+    void SetNeedsRefresh();
     void SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc);
     void ClearAllVariables();
 

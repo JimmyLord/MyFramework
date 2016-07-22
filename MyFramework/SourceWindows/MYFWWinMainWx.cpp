@@ -234,7 +234,7 @@ bool MainFrame::UpdateAUIManagerAndLoadPerspective()
 
 bool MainFrame::OnClose()
 {
-    g_pPanelWatch->m_pTimer->Stop();
+    g_pPanelWatch->StopTimer();
     g_pPanelObjectList->SelectObject( 0 );
 
     return true;

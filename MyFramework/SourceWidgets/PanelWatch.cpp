@@ -191,6 +191,11 @@ PanelWatch::~PanelWatch()
     SAFE_DELETE( m_pTimer );
 }
 
+void PanelWatch::SetNeedsRefresh()
+{
+    m_NeedsRefresh = true;
+}
+
 void PanelWatch::SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc)
 {
     m_RefreshCallbackObject = pCallbackObj;
@@ -1351,15 +1356,22 @@ void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
         m_pVariables[controlid].m_pRightClickCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
 }
 
+void PanelWatch::Tick(double TimePassed)
+{
+    if( m_NeedsRefresh )
+    {
+        int y = this->GetScrollPos( wxVERTICAL );
+        int x = this->GetScrollPos( wxHORIZONTAL );
+
+        m_RefreshCallbackFunc( m_RefreshCallbackObject );
+        m_NeedsRefresh = false;
+
+        this->Scroll( x, y );
+    }
+}
+
 void PanelWatch::OnTimer(wxTimerEvent& event)
 {
-    // moved to gamecore::tick to make it more responsive.
-    //if( m_NeedsRefresh )
-    //{
-    //    m_RefreshCallbackFunc( m_RefreshCallbackObject );
-    //    m_NeedsRefresh = false;
-    //}
-
     UpdatePanel();
 }
 

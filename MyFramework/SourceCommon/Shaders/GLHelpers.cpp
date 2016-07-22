@@ -133,12 +133,12 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
                 char* buf = (char*)malloc(infoLen);
                 if( buf )
                 {
+                    printShaderSource( shaderid );
+
                     glGetShaderInfoLog( shaderid, infoLen, NULL, buf );
                     LOGError( LOGTag, "%s\n", buf );
 
                     //MyAssert( false );
-
-                    printShaderSource( shaderid );
 
                     free( buf );
                 }
@@ -363,13 +363,13 @@ GLuint createProgram(GLuint* vsid, GLuint* gsid, GLuint* fsid, int prevslen, con
                 char* buf = (char*)malloc( bufLength );
                 if( buf )
                 {
+                    printShaderSource( *vsid );
+                    printShaderSource( *fsid );
+
                     glGetProgramInfoLog( programid, bufLength, 0, buf );
                     LOGError( LOGTag, "Could not link program:\n%s\n", buf );
 
                     //MyAssert( false );
-
-                    printShaderSource( *vsid );
-                    printShaderSource( *fsid );
 
                     free(buf);
                 }

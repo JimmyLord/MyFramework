@@ -206,11 +206,7 @@ double GameCore::Tick(double TimePassed)
         g_pGamepadManager->Tick( TimePassed );
 
 #if MYFW_USING_WX
-    if( g_pPanelWatch->m_NeedsRefresh )
-    {
-        g_pPanelWatch->m_RefreshCallbackFunc( g_pPanelWatch->m_RefreshCallbackObject );
-        g_pPanelWatch->m_NeedsRefresh = false;
-    }
+    g_pPanelWatch->Tick( TimePassed );
 #endif
 
     return TimePassed;

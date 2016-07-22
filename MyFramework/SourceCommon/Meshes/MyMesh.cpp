@@ -355,7 +355,7 @@ void MyMesh::OnAddAnimationPressed()
 
     m_pAnimations.Add( pAnim );
 
-    g_pPanelWatch->m_NeedsRefresh = true;
+    g_pPanelWatch->SetNeedsRefresh();
     //FillPropertiesWindow( true ); // crashed since in button press callback and button would be recreated.
 }
 
@@ -377,7 +377,7 @@ void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
 
         if( animthatchanged != -1 )
         {
-            wxString text = g_pPanelWatch->m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
+            wxString text = g_pPanelWatch->GetVariableProperties( controlid )->m_Handle_TextCtrl->GetValue();
             m_pAnimations[animthatchanged]->SetName( text );
         }
     }

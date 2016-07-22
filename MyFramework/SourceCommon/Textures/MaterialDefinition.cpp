@@ -516,7 +516,7 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
         }
 
         // update the panel so new Shader name shows up.
-        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
     }
 }
 
@@ -537,7 +537,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
         }
 
         // update the panel so new texture name shows up.
-        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = m_pTextureColor->m_Filename;
     }
 
     if( g_DragAndDropStruct.m_Type == DragAndDropType_TextureDefinitionPointer )
@@ -545,7 +545,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
         SetTextureColor( (TextureDefinition*)g_DragAndDropStruct.m_Value );
 
         // update the panel so new texture name shows up.
-        g_pPanelWatch->m_pVariables[g_DragAndDropStruct.m_ID].m_Description = m_pTextureColor->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = m_pTextureColor->m_Filename;
     }
 }
 #endif //MYFW_USING_WX
