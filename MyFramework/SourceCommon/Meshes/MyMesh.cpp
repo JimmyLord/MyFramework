@@ -1307,6 +1307,156 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     m_MeshReady = true;
 };
 
+//
+//   0-----1/4-----5/8-----9    <-- vertcount.x * 2 - 2
+//   |      |       |      |
+//   |      |       |      |
+//   2-----3/6-----7/10----11   <-- vertcount.x * 2 - 2
+//  12----13/16---17/20----22   <-- vertcount.x * 2 - 2
+//   |      |       |      |
+//   |      |       |      |
+//  14----15/18---19/21----23   <-- vertcount.x * 2 - 2
+//
+void MyMesh::CreatePlaneUVsNotShared(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles)
+{
+    checkGlError( "MyMesh::CreatePlaneUVsNotShared" );
+
+    LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared\n" );
+
+    unsigned int numquads = (vertcount.x - 1) * (vertcount.y - 1);
+    unsigned int numtris = numquads * 2;
+    unsigned int numverts = numquads * 4;
+    unsigned int numindices = numtris * 3;
+
+    if( numverts > 65535 )
+    {
+        LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared - too many verts needed for unsigned short indices - %d\n", numverts );
+        return;
+    }
+
+    //if( createtriangles == false )
+    //    numindices = numverts;
+
+    if( m_SubmeshList.Length() == 0 )
+    {
+        CreateSubmeshes( 1 );
+    }
+    MyAssert( m_SubmeshList.Count() == 1 );
+
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )//&& createtriangles )
+    {
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    // delete the old buffers, if we want a plane with more.
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
+        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
+    }
+
+    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
+    {
+        m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
+        unsigned short* pIndices = MyNew unsigned short[numindices];
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+    }
+
+    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
+
+    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+
+    unsigned short* pIndices = 0;
+    //if( createtriangles )
+    {
+        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
+    }
+
+    // loop through the quads
+    unsigned short vertex = 0;
+    int index = 0;
+    for( int y = 0; y < vertcount.y-1; y++ )
+    {
+        for( int x = 0; x < vertcount.x-1; x++ )
+        {
+            // 4 verts and 6 indices per quad
+            pVerts[vertex+0].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
+            pVerts[vertex+0].y = topleftpos.y;
+            pVerts[vertex+0].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            pVerts[vertex+0].u = uvstart.x;
+            pVerts[vertex+0].v = uvstart.y;
+
+            pVerts[vertex+1].x = topleftpos.x + size.x / (vertcount.x - 1) * (x+1);
+            pVerts[vertex+1].y = topleftpos.y;
+            pVerts[vertex+1].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            pVerts[vertex+1].u = uvstart.x + uvrange.x;
+            pVerts[vertex+1].v = uvstart.y;
+
+            pVerts[vertex+2].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
+            pVerts[vertex+2].y = topleftpos.y;
+            pVerts[vertex+2].z = topleftpos.z + size.y / (vertcount.y - 1) * (y+1);
+            pVerts[vertex+2].u = uvstart.x;
+            pVerts[vertex+2].v = uvstart.y + uvrange.y;
+
+            pVerts[vertex+3].x = topleftpos.x + size.x / (vertcount.x - 1) * (x+1);
+            pVerts[vertex+3].y = topleftpos.y;
+            pVerts[vertex+3].z = topleftpos.z + size.y / (vertcount.y - 1) * (y+1);
+            pVerts[vertex+3].u = uvstart.x + uvrange.x;
+            pVerts[vertex+3].v = uvstart.y + uvrange.y;
+
+            pIndices[index+0] = vertex+0;
+            pIndices[index+1] = vertex+2;
+            pIndices[index+2] = vertex+1;
+            pIndices[index+3] = vertex+1;
+            pIndices[index+4] = vertex+2;
+            pIndices[index+5] = vertex+3;
+
+            vertex += 4;
+            index += 6;
+
+            //if( createtriangles == false )
+            //    pIndices[index] = index;
+        }
+    }
+
+    //if( createtriangles )
+    //{
+    //    for( int y = 0; y < vertcount.y - 1; y++ )
+    //    {
+    //        for( int x = 0; x < vertcount.x - 1; x++ )
+    //        {
+    //            int elementindex = (y * (vertcount.x-1) + x) * 6;
+    //            unsigned short vertexindex = (unsigned short)(y * vertcount.x + x);
+
+    //            pIndices[ elementindex + 0 ] = vertexindex + 0;
+    //            pIndices[ elementindex + 1 ] = vertexindex + (unsigned short)vertcount.x;
+    //            pIndices[ elementindex + 2 ] = vertexindex + 1;
+
+    //            pIndices[ elementindex + 3 ] = vertexindex + 1;
+    //            pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertcount.x;
+    //            pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertcount.x + 1;
+    //        }
+    //    }
+    //}
+
+    Vector3 center( topleftpos.x + size.x/2, topleftpos.y, topleftpos.z + size.y/ 2 );
+    m_AABounds.Set( center, Vector3(size.x/2, 0, size.y/2) );
+
+    m_MeshReady = true;
+};
+
 void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 {
     // from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html

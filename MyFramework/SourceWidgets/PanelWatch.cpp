@@ -458,6 +458,20 @@ int PanelWatch::AddVector3(const char* name, Vector3* pVector3, float min, float
     return first;
 }
 
+int PanelWatch::AddVector3Int(const char* name, Vector3Int* pVector3Int, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
+{
+    int first;
+    first = AddVariableOfTypeRange( PanelWatchType_UnsignedInt, "x", &pVector3Int->x, min, max, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_UnsignedInt, "y", &pVector3Int->y, min, max, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, false );
+    AddVariableOfTypeRange( PanelWatchType_UnsignedInt, "z", &pVector3Int->z, min, max, pCallbackObj, pOnValueChangedCallBackFunc, pRightClickCallbackFunc, false );
+
+    AddControlsForVariable( name, first+0, 0, "x" );
+    AddControlsForVariable( name, first+1, 1, "y" );
+    AddControlsForVariable( name, first+2, 2, "z" );
+
+    return first;
+}
+
 int PanelWatch::AddVector4(const char* name, Vector4* pVector4, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
     int first;
