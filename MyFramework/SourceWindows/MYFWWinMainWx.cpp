@@ -633,7 +633,7 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( this->HasFocus() == true && (g_GameWantsLockedMouse == false || g_SystemMouseIsLocked == true) )
+    if( g_GLCanvasIDActive != 0 || this->HasFocus() == true && (g_GameWantsLockedMouse == false || g_SystemMouseIsLocked == true) )
     {
         m_MouseButtonStates |= (1 << 0);
         m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
