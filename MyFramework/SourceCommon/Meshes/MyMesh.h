@@ -102,7 +102,7 @@ public:
 
     void CreateFromOBJFile(MyFileObject* pFile);
     void CreateFromMyMeshFile(MyFileObject* pFile);
-    void ParseFile();
+    virtual void ParseFile();
     void GuessAndAssignAppropriateShader();
 
     void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags);
