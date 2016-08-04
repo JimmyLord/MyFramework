@@ -12,11 +12,13 @@
 
 enum LightTypes
 {
-    LightType_None,
     LightType_Directional,
     LightType_Point,
     LightType_Spot,
+    LightType_NumTypes,
 };
+
+extern const char* g_LightTypeStrings[];
 
 class MyLight : public CPPListNode
 {

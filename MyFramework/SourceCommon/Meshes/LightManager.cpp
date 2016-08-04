@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -57,14 +57,14 @@ void LightManager::SetLightEnabled(MyLight* pLight, bool enabled)
     }
 }
 
-int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLightArray)
+int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos, MyLight** ppLightArray)
 {
     MyAssert( numtofind > 0 );
 
     if( numtofind > MAX_LIGHTS )
         numtofind = MAX_LIGHTS;
 
-    // TODO: store lights in a quad-tree and maybe cache the nearest lights between frames.
+    // TODO: store lights in scene graph and cache the nearest lights between frames.
 
     float distances[MAX_LIGHTS];
     MyLight* lights[MAX_LIGHTS];
@@ -81,6 +81,9 @@ int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLigh
     {
         MyLight* pLight = (MyLight*)pNode;
 
+        if( pLight->m_LightType != type )
+            continue;
+
         float distance = (pLight->m_Position - pos).LengthSquared();
         if( distance < furthest )
         {
@@ -88,7 +91,7 @@ int LightManager::FindNearestLights(int numtofind, Vector3 pos, MyLight** ppLigh
             {
                 if( distance < distances[i] )
                 {
-                    for( int j=4-1; j>i; j-- )
+                    for( int j=numtofind-1; j>i; j-- )
                     {
                         distances[j] = distances[j-1];
                         lights[j] = lights[j-1];
