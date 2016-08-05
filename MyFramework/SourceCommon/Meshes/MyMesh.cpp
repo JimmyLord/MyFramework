@@ -52,7 +52,7 @@ unsigned int MySubmesh::GetStride()
     return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
 }
 
-void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "Start of MySubmesh::Draw()" );
 
@@ -169,7 +169,21 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
         if( pMaterial->GetShader() == 0 )
             return;
 
-        Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numlights, numboneinfluences );
+        int numdirlights = 0;
+        int numpointlights = 0;
+        for( int i=0; i<numlights; i++ )
+        {
+            switch( lightptrs[i]->m_LightType )
+            {
+            case LightType_Directional: numdirlights++;    break;
+            case LightType_Point:       numpointlights++;  break;
+            case LightType_Spot:        MyAssert( false ); break;
+            case LightType_NumTypes:    MyAssert( false ); break;
+            default:                    MyAssert( false ); break;
+            }
+        }
+
+        Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numpointlights, numboneinfluences );
         if( pShader )
         {
             if( pShader->ActivateAndProgramShader(
@@ -187,7 +201,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
                 pShader->ProgramCamera( campos, 0, &invworld );
                 checkGlError( "Drawing Mesh ProgramCamera()" );
 
-                pShader->ProgramLights( lights, numlights, &invworld );
+                pShader->ProgramLights( lightptrs, numlights, &invworld );
                 checkGlError( "Drawing Mesh ProgramLights()" );
 
                 if( PrimitiveType == GL_POINTS )
@@ -1863,7 +1877,7 @@ void MyMesh::RebuildIndices()
         m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "start of MyMesh::Draw()" );
 
@@ -1874,7 +1888,7 @@ void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Ve
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
+        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
     }
 
     checkGlError( "end of MyMesh::Draw()" );

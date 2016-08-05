@@ -177,8 +177,9 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
         pSubmesh->m_PointSize = pObject->m_PointSize;
 
         // Find nearest lights.
-        MyLight* lights;
-        int numlights = g_pLightManager->FindNearestLights( LightType_Point, 4, worldtransform.GetTranslation(), &lights );
+        MyLight* lights[5];
+        int numlights = g_pLightManager->FindNearestLights( LightType_Directional, 1, worldtransform.GetTranslation(), &lights[0] );
+        numlights += g_pLightManager->FindNearestLights( LightType_Point, 4, worldtransform.GetTranslation(), &lights[numlights] );
 
         if( pPreDrawCallbackFunc )
         {

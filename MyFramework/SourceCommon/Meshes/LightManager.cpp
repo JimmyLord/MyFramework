@@ -13,8 +13,6 @@ LightManager* g_pLightManager = 0;
 
 LightManager::LightManager()
 {
-    //for( int i=0; i<8; i++ )
-    //    m_LightArray[i];
 }
 
 LightManager::~LightManager()
@@ -57,22 +55,23 @@ void LightManager::SetLightEnabled(MyLight* pLight, bool enabled)
     }
 }
 
-int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos, MyLight** ppLightArray)
+int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos, MyLight** ppLights)
 {
     MyAssert( numtofind > 0 );
+    MyAssert( ppLights != 0 );
+    MyAssert( numtofind < MAX_LIGHTS_TO_FIND );
 
-    if( numtofind > MAX_LIGHTS )
-        numtofind = MAX_LIGHTS;
+    if( numtofind > MAX_LIGHTS_TO_FIND )
+        numtofind = MAX_LIGHTS_TO_FIND;
 
     // TODO: store lights in scene graph and cache the nearest lights between frames.
 
-    float distances[MAX_LIGHTS];
-    MyLight* lights[MAX_LIGHTS];
+    float distances[MAX_LIGHTS_TO_FIND];
     float furthest = 10000;
-    for( int i=0; i<MAX_LIGHTS; i++ )
+    for( int i=0; i<numtofind; i++ )
     {
-        distances[i] = 10000;
-        lights[i] = 0;
+        distances[i] = FLT_MAX;
+        ppLights[i] = 0;
     }
 
     // find nearest lights, based purely on distance from center.
@@ -94,13 +93,13 @@ int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos,
                     for( int j=numtofind-1; j>i; j-- )
                     {
                         distances[j] = distances[j-1];
-                        lights[j] = lights[j-1];
+                        ppLights[j] = ppLights[j-1];
                     }
 
                     furthest = distances[numtofind];
 
                     distances[i] = distance;
-                    lights[i] = pLight;
+                    ppLights[i] = pLight;
                     
                     break;
                 }
@@ -111,14 +110,11 @@ int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos,
     int numfound = 0;
     for( int i=0; i<numtofind; i++ )
     {
-        if( lights[i] == 0 )
+        if( ppLights[i] == 0 )
             break;
 
-        m_LightArray[numfound] = *lights[i];
         numfound++;
     }
-
-    *ppLightArray = m_LightArray;
 
     return numfound;
 }

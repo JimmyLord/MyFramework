@@ -167,7 +167,7 @@ void MySprite_XYZVertexColor::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight* lights, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     Draw( matworld, matviewproj, pShaderOverride );
 }

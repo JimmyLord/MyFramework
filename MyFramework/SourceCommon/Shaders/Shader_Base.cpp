@@ -63,6 +63,10 @@ void Shader_Base::Init_Shader_Base()
     m_uHandle_WSCameraPos = -1;
     m_uHandle_LSCameraPos = -1;
 
+    m_uHandle_AmbientLight = -1;
+    m_uHandle_DirLightDir = -1;
+    m_uHandle_DirLightColor = -1;
+
     for( int i=0; i<MAX_LIGHTS; i++ )
     {
         m_uHandle_LightPos[i] = -1;
@@ -132,6 +136,10 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     m_uHandle_WSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
     m_uHandle_LSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
     m_uHandle_CameraRotation =      GetUniformLocation( m_ProgramHandle, "u_CameraRotation" );
+
+    m_uHandle_AmbientLight =        GetUniformLocation( m_ProgramHandle, "u_AmbientLight" );
+    m_uHandle_DirLightDir =         GetUniformLocation( m_ProgramHandle, "u_DirLightDir" );
+    m_uHandle_DirLightColor =       GetUniformLocation( m_ProgramHandle, "u_DirLightColor" );
 
     for( int i=0; i<4; i++ )
     {
@@ -650,45 +658,70 @@ void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inve
     return;
 }
 
-void Shader_Base::ProgramLights(MyLight* lights, int numlights, MyMatrix* inverseworldmatrix)
+void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* inverseworldmatrix)
 {
     if( numlights == 0 )
         return;
 
     MyAssert( numlights <= MAX_LIGHTS );
-    MyAssert( lights );
+    MyAssert( lightptrs );
+
+    if( m_uHandle_AmbientLight != -1 )
+    {
+        glUniform4f( m_uHandle_AmbientLight, 0.2f, 0.2f, 0.2f, 1.0f );
+    }    
 
 #if USE_D3D
     MyAssert( 0 );
 #else
+    int numdir = 0;
+    int numpoints = 0;
     for( int i=0; i<numlights; i++ )
     {
-        if( m_uHandle_LightPos[i] != -1 )
+        if( lightptrs[i]->m_LightType == LightType_Directional )
         {
-            //MyAssert( inverseworldmatrix != 0 );
+            if( m_uHandle_DirLightDir != -1 )
+            {
+                glUniform3f( m_uHandle_DirLightDir, 1, 1, 1 ); //lightptrs[i]->m_SpotDirection.x, lightptrs[i]->m_SpotDirection.y, lightptrs[i]->m_SpotDirection.z );
+            }
 
-            //Vector3 LSlightpos = *inverseworldmatrix * lights[i].m_Position;
-            //glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
-
-            Vector3 WSlightpos = lights[i].m_Position;
-            glUniform3f( m_uHandle_LightPos[i], WSlightpos.x, WSlightpos.y, WSlightpos.z );
+            if( m_uHandle_DirLightColor != -1 )
+            {
+                glUniform4f( m_uHandle_DirLightColor, lightptrs[i]->m_Color.r, lightptrs[i]->m_Color.g, lightptrs[i]->m_Color.b, lightptrs[i]->m_Color.a );
+            }
         }
 
-        if( m_uHandle_LightDir[i] != -1 )
+        if( lightptrs[i]->m_LightType == LightType_Point )
         {
-            glUniform3f( m_uHandle_LightDir[i], lights[i].m_SpotDirection.x, lights[i].m_SpotDirection.y, lights[i].m_SpotDirection.z );
-        }
+            if( m_uHandle_LightPos[numpoints] != -1 )
+            {
+                //MyAssert( inverseworldmatrix != 0 );
 
-        if( m_uHandle_LightColor[i] != -1 )
-        {
-            glUniform4f( m_uHandle_LightColor[i], lights[i].m_Color.r, lights[i].m_Color.g, lights[i].m_Color.b, lights[i].m_Color.a );
-        }
+                //Vector3 LSlightpos = *inverseworldmatrix * lightptrs[i]->m_Position;
+                //glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
 
-        if( m_uHandle_LightAttenuation[i] != -1 )
-        {
-            Vector3 atten = lights[i].m_Attenuation;
-            //atten /= inverseworldmatrix->m11;
-            glUniform3f( m_uHandle_LightAttenuation[i], atten.x, atten.y, atten.z );
+                Vector3 WSlightpos = lightptrs[i]->m_Position;
+                glUniform3f( m_uHandle_LightPos[numpoints], WSlightpos.x, WSlightpos.y, WSlightpos.z );
+            }
+
+            if( m_uHandle_LightDir[i] != -1 )
+            {
+                glUniform3f( m_uHandle_LightDir[numpoints], lightptrs[i]->m_SpotDirection.x, lightptrs[i]->m_SpotDirection.y, lightptrs[i]->m_SpotDirection.z );
+            }
+
+            if( m_uHandle_LightColor[i] != -1 )
+            {
+                glUniform4f( m_uHandle_LightColor[numpoints], lightptrs[i]->m_Color.r, lightptrs[i]->m_Color.g, lightptrs[i]->m_Color.b, lightptrs[i]->m_Color.a );
+            }
+
+            if( m_uHandle_LightAttenuation[i] != -1 )
+            {
+                Vector3 atten = lightptrs[numpoints]->m_Attenuation;
+                //atten /= inverseworldmatrix->m11;
+                glUniform3f( m_uHandle_LightAttenuation[numpoints], atten.x, atten.y, atten.z );
+            }
+
+            numpoints++;
         }
     }
 #endif
