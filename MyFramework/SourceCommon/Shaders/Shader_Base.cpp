@@ -669,7 +669,7 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
     if( m_uHandle_AmbientLight != -1 )
     {
         glUniform4f( m_uHandle_AmbientLight, 0.2f, 0.2f, 0.2f, 1.0f );
-    }    
+    }
 
 #if USE_D3D
     MyAssert( 0 );
@@ -682,7 +682,7 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
         {
             if( m_uHandle_DirLightDir != -1 )
             {
-                glUniform3f( m_uHandle_DirLightDir, 1, 1, 1 ); //lightptrs[i]->m_SpotDirection.x, lightptrs[i]->m_SpotDirection.y, lightptrs[i]->m_SpotDirection.z );
+                glUniform3f( m_uHandle_DirLightDir, lightptrs[i]->m_SpotDirectionVector.x, lightptrs[i]->m_SpotDirectionVector.y, lightptrs[i]->m_SpotDirectionVector.z );
             }
 
             if( m_uHandle_DirLightColor != -1 )
@@ -704,17 +704,17 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
                 glUniform3f( m_uHandle_LightPos[numpoints], WSlightpos.x, WSlightpos.y, WSlightpos.z );
             }
 
-            if( m_uHandle_LightDir[i] != -1 )
+            if( m_uHandle_LightDir[numpoints] != -1 )
             {
-                glUniform3f( m_uHandle_LightDir[numpoints], lightptrs[i]->m_SpotDirection.x, lightptrs[i]->m_SpotDirection.y, lightptrs[i]->m_SpotDirection.z );
+                glUniform3f( m_uHandle_LightDir[numpoints], lightptrs[i]->m_SpotDirectionVector.x, lightptrs[i]->m_SpotDirectionVector.y, lightptrs[i]->m_SpotDirectionVector.z );
             }
 
-            if( m_uHandle_LightColor[i] != -1 )
+            if( m_uHandle_LightColor[numpoints] != -1 )
             {
                 glUniform4f( m_uHandle_LightColor[numpoints], lightptrs[i]->m_Color.r, lightptrs[i]->m_Color.g, lightptrs[i]->m_Color.b, lightptrs[i]->m_Color.a );
             }
 
-            if( m_uHandle_LightAttenuation[i] != -1 )
+            if( m_uHandle_LightAttenuation[numpoints] != -1 )
             {
                 Vector3 atten = lightptrs[numpoints]->m_Attenuation;
                 //atten /= inverseworldmatrix->m11;

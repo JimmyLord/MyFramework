@@ -25,7 +25,7 @@ class MyLight : public CPPListNode
 public:
     LightTypes m_LightType;
     Vector3 m_Position;
-    Vector3 m_SpotDirection;
+    Vector3 m_SpotDirectionVector; // not angles, should be normalized
     ColorFloat m_Color;
     Vector3 m_Attenuation;
 

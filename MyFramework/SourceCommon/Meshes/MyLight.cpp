@@ -21,7 +21,7 @@ MyLight::MyLight()
 {
     m_LightType = LightType_NumTypes;
     m_Position.Set( 0, 0, 0 );
-    m_SpotDirection.Set( 0, 0, 0 );
+    m_SpotDirectionVector.Set( 0, 0, 0 );
     m_Color.Set( 0, 0, 0, 0 );
     m_Attenuation.Set( 0, 0, 0 );
 }
