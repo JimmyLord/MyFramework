@@ -91,6 +91,21 @@ public:
 protected:
     //MyMatrix m_Transform;
 
+    // Internal file loading functions
+    void CreateFromOBJFile();
+    static void StaticOnFileFinishedLoadingOBJ(void* pObjectPtr, MyFileObject* pFile) { ((MyMesh*)pObjectPtr)->OnFileFinishedLoadingOBJ( pFile ); }
+    void OnFileFinishedLoadingOBJ(MyFileObject* pFile);
+
+    void CreateFromMyMeshFile();
+    static void StaticOnFileFinishedLoadingMyMesh(void* pObjectPtr, MyFileObject* pFile) { ((MyMesh*)pObjectPtr)->OnFileFinishedLoadingMyMesh( pFile ); }
+    void OnFileFinishedLoadingMyMesh(MyFileObject* pFile);
+
+    static void StaticOnFileFinishedLoadingMyAnim(void* pObjectPtr, MyFileObject* pFile) { ((MyMesh*)pObjectPtr)->OnFileFinishedLoadingMyAnim( pFile ); }
+    void OnFileFinishedLoadingMyAnim(MyFileObject* pFile);
+
+    virtual void ParseFile();
+    void GuessAndAssignAppropriateShader();
+
 public:
     MyMesh();
     virtual ~MyMesh();
@@ -100,11 +115,9 @@ public:
     void CreateSubmeshes(int numsubmeshes);
     void CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic = false);
 
-    void CreateFromOBJFile(MyFileObject* pFile);
-    void CreateFromMyMeshFile(MyFileObject* pFile);
-    virtual void ParseFile();
-    void GuessAndAssignAppropriateShader();
+    void SetSourceFile(MyFileObject* pFile);
 
+    // Shape creation functions
     void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags);
     void CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags);
     void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);

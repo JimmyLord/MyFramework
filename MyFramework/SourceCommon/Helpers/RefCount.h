@@ -54,6 +54,7 @@ public:
 #if _DEBUG
     void RemoveFinalRefIfCreatedOnStackToAvoidAssertInDestructor()
     {
+        MyAssert( m_RefCount == 1 );
         m_RefCount--;
     }
 #else

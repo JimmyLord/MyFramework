@@ -9,6 +9,8 @@
 
 #include "CommonHeader.h"
 
+MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;
+
 #if MYFW_WINDOWS
 void GetFileData(const char* path, WIN32_FIND_DATAA* data)
 {
@@ -103,6 +105,10 @@ MyFileObject::MyFileObject()
     m_CustomLeftClickCallback = 0;
     m_CustomLeftClickObject = 0;
 #endif
+
+    // the first MyFileObject will create the pool of callback objects.
+    if( g_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() == false )
+        g_pMyFileObject_FileFinishedLoadingCallbackPool.AllocateObjects( CALLBACK_POOL_SIZE );
 }
 
 MyFileObject::~MyFileObject()
@@ -487,4 +493,37 @@ void MyFileObject::UnloadContents()
     if( g_pPanelMemory )
         g_pPanelMemory->RemoveFile( this );
 #endif
+}
+
+void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
+{
+    MyAssert( pCallback != 0 );
+
+    FileFinishedLoadingCallbackStruct* pCallbackStruct = g_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
+
+    if( pCallbackStruct != 0 )
+    {
+        pCallbackStruct->pObj = pObj;
+        pCallbackStruct->pFunc = pCallback;
+
+        m_FileFinishedLoadingCallbackList.AddTail( pCallbackStruct );
+    }
+}
+
+void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
+{
+    for( CPPListNode* pNode = m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
+    {
+        CPPListNode* pNextNode = pNode->GetNext();
+
+        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+        if( pCallbackStruct->pObj == pObj )
+        {
+            pCallbackStruct->Remove();
+            g_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
+        }
+
+        pNode = pNextNode;
+    }
 }

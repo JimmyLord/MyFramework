@@ -10,11 +10,22 @@
 #ifndef __MyFileObject_H__
 #define __MyFileObject_H__
 
+class MyFileObject;
+
 #if MYFW_USING_WX
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif
 
 typedef void (*PanelObjectListCallback)(void*);
+
+typedef void (*FileFinishedLoadingCallbackFunc)(void* pObjectPtr, MyFileObject* pFile);
+struct FileFinishedLoadingCallbackStruct : public CPPListNode
+{
+    void* pObj;
+    FileFinishedLoadingCallbackFunc pFunc;
+};
+
+extern MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;
 
 #if MYFW_NACL
 class NaCLFileObject;
@@ -34,6 +45,11 @@ class MyFileObject : public CPPListNode, public RefCount
 #endif
 {
     friend class FileManager;
+
+    static const int CALLBACK_POOL_SIZE = 100;
+
+protected:
+    CPPListHead m_FileFinishedLoadingCallbackList;
 
 public:
     char* m_FullPath;
@@ -76,6 +92,11 @@ protected:
     virtual void UnloadContents();
 
     bool IsNewVersionAvailable();
+
+public:
+    // Callbacks
+    void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback);
+    void UnregisterFileFinishedLoadingCallback(void* pObj);
 
 public:
 #if MYFW_USING_WX

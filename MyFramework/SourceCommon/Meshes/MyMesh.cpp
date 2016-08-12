@@ -447,16 +447,50 @@ void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigne
     }
 }
 
-void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
+
+void MyMesh::SetSourceFile(MyFileObject* pFile)
 {
+    if( m_pSourceFile == pFile )
+        return;
+
     pFile->AddRef();
+
+    // Free the current source file and unregister it's "finished loading" callback if one was set.
+    if( m_pSourceFile )
+        m_pSourceFile->UnregisterFileFinishedLoadingCallback( this );
     SAFE_RELEASE( m_pSourceFile );
+
     m_pSourceFile = pFile;
 
+    // Free the old .myaniminfo file
+    SAFE_RELEASE( m_pAnimationControlFile );
+
+    ParseFile();
+}
+
+// ============================================================================================================================
+// Internal file loading functions
+// ============================================================================================================================
+void MyMesh::CreateFromOBJFile()
+{
     m_MeshReady = false;
 
-    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+    if( m_pSourceFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
+        OnFileFinishedLoadingOBJ( m_pSourceFile );
+    }
+    else
+    {
+        m_pSourceFile->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoadingOBJ );
+    }
+}
+
+void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
+{
+    if( pFile == m_pSourceFile )
+    {
+        pFile->UnregisterFileFinishedLoadingCallback( this );
+
         LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f, &m_AABounds );
 
         // TODO: fix if obj loader ever supports submeshes.
@@ -470,34 +504,42 @@ void MyMesh::CreateFromOBJFile(MyFileObject* pFile)
     }
 }
 
-void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
+void MyMesh::CreateFromMyMeshFile()
 {
+    m_MeshReady = false;
+
+    if( m_pSourceFile->m_FileLoadStatus == FileLoadStatus_Success )
+    {
+        OnFileFinishedLoadingMyMesh( m_pSourceFile );
+    }
+    else
+    {
+        m_pSourceFile->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoadingMyMesh );
+    }
+}
+
+void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
+{
+    MyAssert( pFile == m_pSourceFile );
     //LOGInfo( LOGTag, "%d: MyMesh::CreateFromMyMeshFile ( %s ) m_pAnimationControlFile = %d\n", this, pFile->m_FilenameWithoutExtension, m_pAnimationControlFile );
 
     MyAssert( pFile );
 
-    // if the requested file changed, then ditch the current one and load the new one.
-    if( pFile != m_pSourceFile || m_ForceCheckForAnimationFile )
+    pFile->UnregisterFileFinishedLoadingCallback( this );
+
+    // load the animation file.
+    if( m_ForceCheckForAnimationFile )
     {
         m_ForceCheckForAnimationFile = false;
 
-        // free the old .mymesh file and store a pointer to the new one.
-        pFile->AddRef();
-        SAFE_RELEASE( m_pSourceFile );
-        m_pSourceFile = pFile;
-
-        // free the old .myaniminfo file and store a pointer to the new one.
-        //if( m_pAnimationControlFile )
-        //    LOGInfo( LOGTag, "Releasing old animation file ( %s ) file = %d\n", pFile->m_FilenameWithoutExtension, m_pAnimationControlFile );
-        SAFE_RELEASE( m_pAnimationControlFile );
         char animfilename[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
 #if MYFW_USING_WX
         // only try to open the file if it exists, only in editor builds since file i/o isn't necessarily synchronous otherwise.
         if( g_pFileManager->DoesFileExist( animfilename ) )
         {
-            MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
-            m_pAnimationControlFile = newfile;
+            m_pAnimationControlFile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
+            m_pAnimationControlFile->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoadingMyAnim );
             //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned true file = %d\n", animfilename, m_pAnimationControlFile );
         }
         else
@@ -505,54 +547,65 @@ void MyMesh::CreateFromMyMeshFile(MyFileObject* pFile)
             //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned false\n", animfilename );
         }
 #else
-        MyFileObject* newfile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
-        m_pAnimationControlFile = newfile;
+        m_pAnimationControlFile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
 #endif
     }
 
     m_MeshReady = false;
 
     // is the mesh ready and the anim file is loaded or failed to load.
-    if( pFile->m_FileLoadStatus == FileLoadStatus_Success &&
-        (m_pAnimationControlFile == 0 || m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success)
-      )
+    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        //LOGInfo( LOGTag, "Animation File = %d\n", m_pAnimationControlFile );
-
-        if( m_pAnimationControlFile && m_pAnimationControlFile->m_FileLoadStatus == FileLoadStatus_Error_FileNotFound )
-        {
-            //LOGInfo( LOGTag, "Animation File - error loading file\n" );
-            g_pFileManager->FreeFile( m_pAnimationControlFile );
-            m_pAnimationControlFile = 0;
-        }
-
         LoadMyMesh( pFile->m_pBuffer, &m_SubmeshList, m_InitialScale );
-        
-        if( m_pAnimationControlFile )
-        {
-            //LOGInfo( LOGTag, "LoadAnimationControlFile = %s\n", m_pAnimationControlFile->m_pBuffer );
-            LoadAnimationControlFile( m_pAnimationControlFile->m_pBuffer );
-        }
-        else
-        {
+
+        if( m_pAnimationControlFile == 0 )
             LoadAnimationControlFile( 0 );
-        }
+    }
+}
+
+void MyMesh::OnFileFinishedLoadingMyAnim(MyFileObject* pFile)
+{
+    MyAssert( m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success );
+    MyAssert( m_pAnimationControlFile == pFile );
+
+    pFile->UnregisterFileFinishedLoadingCallback( this );
+
+    //LOGInfo( LOGTag, "Animation File = %d\n", m_pAnimationControlFile );
+
+    if( m_pAnimationControlFile->m_FileLoadStatus == FileLoadStatus_Error_FileNotFound )
+    {
+        //LOGInfo( LOGTag, "Animation File - error loading file\n" );
+        g_pFileManager->FreeFile( m_pAnimationControlFile );
+        m_pAnimationControlFile = 0;
+    }
+        
+    if( m_pAnimationControlFile )
+    {
+        //LOGInfo( LOGTag, "LoadAnimationControlFile = %s\n", m_pAnimationControlFile->m_pBuffer );
+        LoadAnimationControlFile( m_pAnimationControlFile->m_pBuffer );
+    }
+    else
+    {
+        LoadAnimationControlFile( 0 );
     }
 }
 
 void MyMesh::ParseFile()
 {
+    MyAssert( m_MeshReady == false );
+    MyAssert( m_pSourceFile != 0 );
+
     if( m_MeshReady == false )
     {
         if( m_pSourceFile != 0 )
         {
             if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
             {
-                CreateFromOBJFile( m_pSourceFile );
+                CreateFromOBJFile();
             }
             if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
             {
-                CreateFromMyMeshFile( m_pSourceFile );
+                CreateFromMyMeshFile();
             }
 
             if( m_SubmeshList.Count() > 0 )
@@ -579,6 +632,9 @@ void MyMesh::GuessAndAssignAppropriateShader()
     }
 }
 
+// ============================================================================================================================
+// Shape creation functions
+// ============================================================================================================================
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
 {
     CreateSubmeshes( 1 );
@@ -1880,11 +1936,6 @@ void MyMesh::RebuildIndices()
 void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "start of MyMesh::Draw()" );
-
-    if( m_MeshReady == false )
-    {
-        ParseFile();
-    }
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {

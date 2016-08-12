@@ -38,6 +38,8 @@ void MaterialManager::Tick()
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
+        MyAssert( pMaterial->m_pFile );
+
         if( pMaterial->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
             pMaterial->ImportFromFile();
@@ -145,6 +147,8 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     m_MaterialsStillLoading.AddTail( pMaterial );
     
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
+
+    MyAssert( pMaterial->m_pFile );
 
 #if MYFW_USING_WX
     g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->m_FilenameWithoutExtension, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );

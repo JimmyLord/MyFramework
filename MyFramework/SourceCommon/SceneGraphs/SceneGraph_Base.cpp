@@ -13,7 +13,7 @@
 
 SceneGraph_Base::SceneGraph_Base()
 {
-    m_pObjectPool.AllocateObjects( 10000 );
+    m_pObjectPool.AllocateObjects( 100000 );
 }
 
 SceneGraph_Base::~SceneGraph_Base()

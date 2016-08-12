@@ -12,6 +12,8 @@
 
 void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
+    checkGlError( "MyMesh::LoadMyMesh" );
+
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
 

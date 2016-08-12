@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -32,6 +32,7 @@ FileManager::FileManager()
         pthread_create( &m_FileIOThreads[threadid], 0, &Thread_FileIO, this );
 
         m_KillFileIOThread[threadid] = 0;
+        m_pLastFileLoadedByThread[threadid] = 0;
         m_pFileThisFileIOThreadIsLoading[threadid] = 0;
     }
 #endif //USE_PTHREAD
@@ -69,7 +70,7 @@ void* FileManager::Thread_FileIO(void* obj)
     while( 1 )
     {
         pthread_mutex_lock( &pthis->m_FileIOThreadLocks[threadid] );
-        
+
         if( pthis->m_pFileThisFileIOThreadIsLoading[threadid] )
         {
             while( pthis->m_pFileThisFileIOThreadIsLoading[threadid]->m_FileLoadStatus == FileLoadStatus_Loading )
@@ -236,6 +237,20 @@ void FileManager::Tick()
     // if we don't own the mutex for the fileio thread, then return
     if( m_FileIOThreadIsLocked[threadindex] == false )
         return;
+
+    // The previously loading file is now loaded, so call it's "finished loading" callbacks.
+    if( m_pLastFileLoadedByThread[threadindex] )
+    {
+        // inform all registered objects that the file finished loading.
+        for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+        {
+            FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+            pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
+        }
+
+        m_pLastFileLoadedByThread[threadindex] = 0;
+    }
 #endif //USE_PTHREAD
 
     // check if there are more files to load.
@@ -277,11 +292,22 @@ void FileManager::Tick()
             {
 #if USE_PTHREAD
                 // release the mutex so the fileio thread can load the file we want.
+                m_pLastFileLoadedByThread[threadindex] = pFile;
                 m_pFileThisFileIOThreadIsLoading[threadindex] = pFile;
                 pthread_mutex_unlock( &m_FileIOThreadLocks[threadindex] );
                 m_FileIOThreadIsLocked[threadindex] = false;
 #else
-                pFile->Tick();
+                {
+                    pFile->Tick();
+
+                    // inform all registered objects that the file finished loading.
+                    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+                    {
+                        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+                        pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
+                    }
+                }
 #endif
 
                 break; // file io thread only loads one file at a time.
