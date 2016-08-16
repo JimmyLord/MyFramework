@@ -14,20 +14,19 @@
 
 SceneGraph_Flat::SceneGraph_Flat()
 {
-    m_pRenderables = MyNew SceneGraphObject*[100000];
     m_NumRenderables = 0;
 }
 
 SceneGraph_Flat::~SceneGraph_Flat()
 {
-    MyAssert( m_NumRenderables == 0 );
-
-    for( unsigned int i=0; i<m_NumRenderables; i++ )
+    while( m_Renderables.GetHead() )
     {
-        m_pObjectPool.ReturnObjectToPool( m_pRenderables[i] );
+        m_pObjectPool.ReturnObjectToPool( (SceneGraphObject*)m_Renderables.RemHead() );
+
+        m_NumRenderables--;
     }
 
-    delete[] m_pRenderables;
+    MyAssert( m_NumRenderables == 0 );
 }
 
 SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
@@ -40,8 +39,6 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
     if( pObject )
     {
-        MyAssert( m_NumRenderables < 100000 );
-
         pObject->m_Flags = flags;
         pObject->m_Layers = layers;
 
@@ -56,7 +53,8 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
         pObject->m_pUserData = pUserData;
 
-        m_pRenderables[m_NumRenderables] = pObject;
+        m_Renderables.AddTail( pObject );
+
         m_NumRenderables++;
     }
     else
@@ -73,16 +71,8 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
 
     MyAssert( pObject != 0 );
 
-    for( unsigned int i=0; i<m_NumRenderables; i++ )
-    {
-        if( m_pRenderables[i] == pObject )
-        {
-            m_pRenderables[i] = m_pRenderables[m_NumRenderables-1];
-            m_pRenderables[m_NumRenderables-1] = 0;
-            m_NumRenderables--;
-            break;
-        }
-    }
+    pObject->Remove();
+    m_NumRenderables--;
 
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
@@ -91,9 +81,9 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
 {
     checkGlError( "Start of SceneGraph_Flat::Draw()" );
 
-    for( unsigned int i=0; i<m_NumRenderables; i++ )
+    for( CPPListNode* pNode = m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
-        SceneGraphObject* pObject = m_pRenderables[i];
+        SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
         if( (pObject->m_Flags & flags) == 0 )
             continue;

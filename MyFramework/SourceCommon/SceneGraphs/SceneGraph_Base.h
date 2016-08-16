@@ -22,7 +22,7 @@ enum SceneGraphFlags
 
 typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
 
-class SceneGraphObject
+class SceneGraphObject : public CPPListNode
 {
 public:
     // none of these hold references
