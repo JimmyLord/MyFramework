@@ -34,8 +34,8 @@ bool g_MouseButtonStates[3];
 bool g_WindowIsActive = true;
 bool g_FullscreenMode = true;
 
-static bool g_GameWantsLockedMouse = true;
-static bool g_SystemMouseIsLocked = true;
+static bool g_GameWantsLockedMouse = false;
+static bool g_SystemMouseIsLocked = false;
 
 static int g_MouseXPositionWhenLocked = 300;
 static int g_MouseYPositionWhenLocked = 300;

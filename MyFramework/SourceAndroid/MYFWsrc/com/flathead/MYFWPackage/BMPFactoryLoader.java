@@ -42,7 +42,7 @@ public class BMPFactoryLoader
 			
 			input.close();
 			
-			Log.v( "Flathead", "   JAVA: GetBinaryFileSize: " + length );
+			//Log.v( "Flathead", "   JAVA: GetBinaryFileSize: " + length );
             return length;
         }
         catch(Exception exc)
@@ -56,7 +56,7 @@ public class BMPFactoryLoader
     public void LoadBinaryFile(String path, ByteBuffer buffer)
     {
         String npath = path;
-        Log.v( "Flathead", "   JAVA: LoadBinaryFile: " + npath );
+        //Log.v( "Flathead", "   JAVA: LoadBinaryFile: " + npath );
 
         buffer.position(0);
 

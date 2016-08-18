@@ -311,7 +311,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* m
     //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
     //{
     //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
-    //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader();
+    //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer, true );
     //}
 #endif
 

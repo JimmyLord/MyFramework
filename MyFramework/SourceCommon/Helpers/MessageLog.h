@@ -17,6 +17,8 @@ extern MessageLogCallbackFunction g_pMessageLogCallbackFunction;
 
 #if MYFW_ANDROID
 
+#include <android/log.h>
+
 #if _DEBUG
 #define LOGInfo(...) __android_log_print( ANDROID_LOG_INFO, __VA_ARGS__ )
 #define LOGError(...) __android_log_print( ANDROID_LOG_ERROR, __VA_ARGS__ )
