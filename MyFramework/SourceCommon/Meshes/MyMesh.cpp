@@ -1973,7 +1973,7 @@ void MyMesh::RebuildAnimationMatrices(unsigned int animindex, double animtime, u
         AnimationTime = (float)(StartTime + (float)fmod( TimeInTicks, Duration ));
     }
 
-    if( oldanimindex != -1 && perc > 0 )
+    if( oldanimindex < m_pAnimations.Count() && perc > 0 )
     {
         MyAnimation* pAnim = m_pAnimations[oldanimindex];
         int timelineindex = m_pAnimations[oldanimindex]->m_TimelineIndex;

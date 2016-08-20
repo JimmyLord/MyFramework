@@ -15,6 +15,7 @@ const char* g_LightTypeStrings[] =
     "Directional",
     "Point",
     "Spot",
+    "Not Set",
 };
 
 MyLight::MyLight()

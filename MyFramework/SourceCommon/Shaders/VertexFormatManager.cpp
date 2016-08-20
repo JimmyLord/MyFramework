@@ -61,7 +61,7 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
     if( pDesc )
         return pDesc;
 
-    if( m_pDynamicVertexFormatDesc.Count() >= MAX_DYNAMIC_VERTEX_FORMATS )
+    if( m_pDynamicVertexFormatDesc.Count() >= (unsigned int)MAX_DYNAMIC_VERTEX_FORMATS )
     {
         MyAssert( false );
         return 0; // pretty much guananteeing a crash on the other end!
@@ -76,7 +76,7 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::GetDynamicVertexFormat(int numuv
     pDesc->num_position_components = 3;
     pDesc->num_bone_influences = boneinfluences;
     pDesc->num_uv_channels = numuvs;
-    
+
     int offset = 0;
 
     pDesc->offset_pos = offset;             offset += sizeof(float) * 3;

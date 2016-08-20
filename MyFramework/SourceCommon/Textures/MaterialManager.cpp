@@ -110,7 +110,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 {
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
-    
+
     pMaterial->m_FullyLoaded = true;
     if( name != 0 )
     {
@@ -145,7 +145,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
 
     pMaterial = MyNew MaterialDefinition();
     m_MaterialsStillLoading.AddTail( pMaterial );
-    
+
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
 
     MyAssert( pMaterial->m_pFile );
@@ -219,7 +219,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
 void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback)
 {
     MyAssert( pCallback != 0 );
-    MyAssert( m_pMaterialCreatedCallbackList.Count() < MAX_REGISTERED_CALLBACKS );
+    MyAssert( m_pMaterialCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
     MaterialCreatedCallbackStruct callbackstruct;
     callbackstruct.pObj = pObj;

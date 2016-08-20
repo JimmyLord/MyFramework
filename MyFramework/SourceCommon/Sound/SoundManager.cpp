@@ -396,7 +396,7 @@ int SoundManager::PlayCue(SoundCue* pCue)
 void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCreatedCallbackFunc pCallback)
 {
     MyAssert( pCallback != 0 );
-    MyAssert( m_pSoundCueCreatedCallbackList.Count() < MAX_REGISTERED_CALLBACKS );
+    MyAssert( m_pSoundCueCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
     SoundCueCreatedCallbackStruct callbackstruct;
     callbackstruct.pObj = pObj;
@@ -453,10 +453,10 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
     {
         // multiple select file open dialog
         wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data", "", "Sound files(*.wav)|*.wav", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
-    
+
         if( FileDialog.ShowModal() == wxID_CANCEL )
             return;
-    
+
         // load the files chosen by the user
         // TODO: typecasting will likely cause issues with multibyte names
         wxArrayString patharray;
@@ -481,7 +481,7 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
             char filename[32];
             char extension[10];
             ParseFilename( fullpath, filename, 32, extension, 10 );
-    
+
             SoundCue* pCue = pSoundManager->CreateCue( filename );
             g_pGameCore->m_pSoundManager->AddSoundToCue( pCue, relativepath );
 

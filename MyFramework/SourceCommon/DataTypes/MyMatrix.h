@@ -31,10 +31,10 @@ public:
              float v21, float v22, float v23, float v24,
              float v31, float v32, float v33, float v34,
              float v41, float v42, float v43, float v44)
-        : m11(v11), m21(v21), m31(v31), m41(v41)
-        , m12(v12), m22(v22), m32(v32), m42(v42)
-        , m13(v13), m23(v23), m33(v33), m43(v43)
-        , m14(v14), m24(v24), m34(v34), m44(v44) {}
+        : m11(v11), m12(v12), m13(v13), m14(v14)
+        , m21(v21), m22(v22), m23(v23), m24(v24)
+        , m31(v31), m32(v32), m33(v33), m34(v34)
+        , m41(v41), m42(v42), m43(v43), m44(v44) {}
     // Added this copy constuctor when I was having issue with Android(gcc), didn't end up using it and it shouldn't be needed.
     //MyMatrix(const MyMatrix& o)
     //    : m11(o.m11), m21(o.m21), m31(o.m31), m41(o.m41)
@@ -158,7 +158,7 @@ public:
         newmat.m42 = this->m12 * o.m41 + this->m22 * o.m42 + this->m32 * o.m43 + this->m42 * o.m44;
         newmat.m43 = this->m13 * o.m41 + this->m23 * o.m42 + this->m33 * o.m43 + this->m43 * o.m44;
         newmat.m44 = this->m14 * o.m41 + this->m24 * o.m42 + this->m34 * o.m43 + this->m44 * o.m44;
-    
+
         return newmat;
     }
 

@@ -11,7 +11,7 @@
 #define __CommonHeader_H__
 
 //#ifdef __WXMSW__
-//    #include <wx/msw/msvcrt.h>      // redefines the new() operator 
+//    #include <wx/msw/msvcrt.h>      // redefines the new() operator
 //#endif
 
 //#if MYFW_WINDOWS && _DEBUG
@@ -83,7 +83,7 @@
 #pragma warning( 3 : 4549 ) // 'operator': operator before comma has no effect; did you intend 'operator'?
 #pragma warning( 3 : 4555 ) // expression has no effect; expected expression with side-effect
 #pragma warning( 3 : 4557 ) // '__assume' contains effect 'effect'
-//vcincludes #pragma warning( 3 : 4571 ) // informational: catch(…) semantics changed since Visual C++ 7.1; structured exceptions (SEH) are no longer caught
+//vcincludes #pragma warning( 3 : 4571 ) // informational: catch(ï¿½) semantics changed since Visual C++ 7.1; structured exceptions (SEH) are no longer caught
 #pragma warning( 3 : 4574 ) // 'identifier' is defined to be '0': did you mean to use '#if identifier'?
 #pragma warning( 3 : 4608 ) // 'symbol1' has already been initialized by another union member in the initializer list, 'symbol2'
 //#pragma warning( 3 : 4610 ) // class 'type' can never be instantiated - user defined constructor required
@@ -238,6 +238,7 @@ typedef unsigned char byte;
 #endif
 
 #if MYFW_BLACKBERRY
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 1
 #if MYFW_BLACKBERRY10

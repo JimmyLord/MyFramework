@@ -41,7 +41,7 @@ public:
 public:
     void SetName(const char* name)
     {
-        if( strlen(name) > MAX_ANIMATION_NAME_LEN )
+        if( strlen(name) > (unsigned int)MAX_ANIMATION_NAME_LEN )
             LOGInfo( LOGTag, "Warning: animation name longer than 32 characters - %s - truncating\n", name );
         strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
     }

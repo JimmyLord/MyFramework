@@ -155,7 +155,7 @@ MyFileObject* FileManager::RequestFile(const char* filename)
         return 0;
 
     MyFileObject* pFile;
-    
+
     // check if the file has already been requested... might still be loading.
     pFile = FindFileByName( filename );
     if( pFile )
@@ -166,7 +166,7 @@ MyFileObject* FileManager::RequestFile(const char* filename)
 
     // if the file wasn't already loaded create a new one and load it up.
     pFile = 0;
-    
+
     int len = (int)strlen( filename );
     if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
         pFile = MyNew MyFileObjectShader;
