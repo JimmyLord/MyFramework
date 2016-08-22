@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -108,13 +108,9 @@ void ShaderGroup::DisableShadowCasting_AndDoItBadly_WillBeReplaced()
 
 ShaderGroup::~ShaderGroup()
 {
-    checkGlError( "start of ShaderGroup::~ShaderGroup" );
-
     this->Remove(); // remove this node from the shadergroupmanager's list
 
     SAFE_RELEASE( m_pFile );
-
-    checkGlError( "ShaderGroup::~ShaderGroup -> SAFE_RELEASE( m_pFile )" );
 
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
@@ -131,8 +127,6 @@ ShaderGroup::~ShaderGroup()
     if( g_pPanelMemory )
         g_pPanelMemory->RemoveShaderGroup( this );
 #endif
-
-    checkGlError( "end of ShaderGroup::~ShaderGroup" );
 }
 
 #if MYFW_USING_WX

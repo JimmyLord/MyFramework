@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,6 +11,7 @@
 
 FBODefinition::FBODefinition()
 {
+    m_HasValidResources = false;
     m_FullyLoaded = false;
     m_FailedToInit = false;
     m_OnlyFreeOnShutdown = false;
@@ -142,12 +143,16 @@ bool FBODefinition::Create()
 
     // get a framebuffer, render buffer and a texture from opengl.
     glGenFramebuffers( 1, &m_FrameBufferID );
+    m_HasValidResources = true;
     checkGlError( "glGenFramebuffers" );
 
     if( m_NeedColorTexture )
     {
         m_pColorTexture = MyNew TextureDefinition();
+
         glGenTextures( 1, &m_pColorTexture->m_TextureID );
+        m_HasValidResources = true;
+
         m_pColorTexture->m_MinFilter = m_MinFilter;
         m_pColorTexture->m_MagFilter = m_MagFilter;
         m_pColorTexture->m_WrapS = GL_CLAMP_TO_EDGE;
@@ -166,11 +171,13 @@ bool FBODefinition::Create()
         if( m_DepthIsTexture )
         {
             glGenTextures( 1, &m_pDepthTexture->m_TextureID );
+            m_HasValidResources = true;
             checkGlError( "glGenTextures" );
         }
         else
         {
             glGenRenderbuffers( 1, &m_pDepthTexture->m_TextureID );
+            m_HasValidResources = true;
             checkGlError( "glGenRenderbuffers" );
         }
 
@@ -235,17 +242,22 @@ bool FBODefinition::Create()
 
         // attach color texture
         if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+        {
+            LOGInfo( LOGTag, "FBO: Attaching color texture %d\n", m_pColorTexture->m_TextureID );
             glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->m_TextureID, 0 );
+        }
 
         // attach depth renderbuffer
         if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
         {
             if( m_DepthIsTexture )
             {
+                LOGInfo( LOGTag, "FBO: Attaching depth texture %d\n", m_pDepthTexture->m_TextureID );
                 glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->m_TextureID, 0 );
             }
             else
             {
+                LOGInfo( LOGTag, "FBO: Attaching depth renderbuffer %d\n", m_pDepthTexture->m_TextureID );
                glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_pDepthTexture->m_TextureID );
             }
         }
@@ -255,11 +267,13 @@ bool FBODefinition::Create()
         checkGlError( "glCheckFramebufferStatus" );
         if( status != GL_FRAMEBUFFER_COMPLETE )
         {
-            LOGInfo( LOGTag, "CreateFBO - error\n" );
+            LOGInfo( LOGTag, "CreateFBO - error glCheckFramebufferStatus( GL_FRAMEBUFFER )\n" );
             //MyAssert( false );
             Invalidate( true );
             return false;
         }
+
+        LOGInfo( LOGTag, "FBO: created successfully\n" );
 
         MyBindFramebuffer( GL_FRAMEBUFFER, 0, 0, 0 );
         checkGlError( "glBindFramebufferEXT" );
@@ -269,6 +283,8 @@ bool FBODefinition::Create()
 #else
     return false;
 #endif
+
+    m_FullyLoaded = true;
 
     return true;
 }
@@ -300,11 +316,14 @@ void FBODefinition::Unbind(bool restorelastframebufferid)
 
 void FBODefinition::Invalidate(bool cleanglallocs)
 {
-    checkGlError( "start of FBODefinition::Invalidate" );
+    if( m_HasValidResources == false )
+        return;
 
 #if !USE_D3D
     if( cleanglallocs )
     {
+        checkGlError( "start of FBODefinition::Invalidate" );
+
         if( g_GLStats.m_CurrentFramebuffer == m_FrameBufferID )
         {
             Unbind( true );
@@ -341,12 +360,19 @@ void FBODefinition::Invalidate(bool cleanglallocs)
 
         SAFE_RELEASE( m_pColorTexture );
         SAFE_RELEASE( m_pDepthTexture );
+
+        checkGlError( "end of FBODefinition::Invalidate" );
     }
 
-    m_pColorTexture = 0;
-    m_pDepthTexture = 0;
+    m_pColorTexture->Invalidate( false );
+    m_pDepthTexture->Invalidate( false );
+
+    SAFE_RELEASE( m_pColorTexture );
+    SAFE_RELEASE( m_pDepthTexture );
+
     m_FrameBufferID = 0;
 
-    checkGlError( "end of FBODefinition::Invalidate" );
+    m_FullyLoaded = false;
+    m_HasValidResources = false;
 #endif
 }

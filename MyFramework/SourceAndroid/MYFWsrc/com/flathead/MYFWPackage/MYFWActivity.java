@@ -79,8 +79,6 @@ public class MYFWActivity extends Activity
     private SoundPlayer m_SoundPlayer = null;
     private IAPManager m_IAPManager = null;
 
-    private Boolean m_ExitOnBackButton;
-
     private Boolean m_ShowAds = false;
 
     public AudioManager GetAudioManager() { return m_AudioManager; }
@@ -149,11 +147,6 @@ public class MYFWActivity extends Activity
         }
     }
 
-    public void SetExitOnBackButton(boolean exit) // (Z)V
-    {
-        m_ExitOnBackButton = exit;
-    }
-
     boolean m_KeyboardShowing = false;
 
     public void ShowKeyboard(boolean show) // (Z)V
@@ -218,8 +211,6 @@ public class MYFWActivity extends Activity
         m_BMPFactoryLoader.m_AssetManager = m_AssetManager;
 
         Log.v( "Flathead", "Java - [Flow] - m_AudioManager/m_AssetManager initialized and bmpfactory created" );
-
-        m_ExitOnBackButton = true;
 
         m_SoundPlayer = new SoundPlayer();
         m_SoundPlayer.m_AssetManager = m_AssetManager;
@@ -310,33 +301,23 @@ public class MYFWActivity extends Activity
 //        }
     }
 
-    // @Override public void onBackPressed()
     public void MyOnBackPressed()
     {
         Log.v( "Flathead", "Java - [Flow] - onBackPressed" );
 
-        // if( m_KeyboardShowing == true )
-        // m_KeyboardShowing = false;
-
-        if( m_ExitOnBackButton )
-        {
-            finish();
-            // super.onBackPressed(); // calling this will kill the app...
-            Log.v( "Flathead", "Java - [Flow] - attempting to kill app" );
-        }
-        else
-        {
-            NativeOnBackPressed( Global.m_Activity,
-                                 Global.m_Activity.GetAssetManager(),
-                                 Global.m_Activity.GetBMPFactoryLoader(),
-                                 Global.m_Activity.GetSoundPlayer() );
-        }
+        NativeOnBackPressed( Global.m_Activity,
+                             Global.m_Activity.GetAssetManager(),
+                             Global.m_Activity.GetBMPFactoryLoader(),
+                             Global.m_Activity.GetSoundPlayer() );
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         switch( keyCode )
         {
+		case KeyEvent.KEYCODE_HOME:
+            return true;
+
         case KeyEvent.KEYCODE_BACK:
             if( event.isAltPressed() == false ) // for Xperia Play(alt-back is the 'o' key)
                 MyOnBackPressed();
@@ -354,17 +335,17 @@ public class MYFWActivity extends Activity
 
         default:
             // if( m_KeyboardShowing )
-        {
-            // Log.v( "keydown",
-            // Character.toString(Character.toChars(event.getUnicodeChar())[0])
-            // );
-            NativeOnKeyDown( event.getKeyCode(), event.getUnicodeChar(),
-                             Global.m_Activity,
-                             Global.m_Activity.GetAssetManager(),
-                             Global.m_Activity.GetBMPFactoryLoader(),
-                             Global.m_Activity.GetSoundPlayer() );
-            return true;
-        }
+			{
+				// Log.v( "keydown",
+				// Character.toString(Character.toChars(event.getUnicodeChar())[0])
+				// );
+				NativeOnKeyDown( event.getKeyCode(), event.getUnicodeChar(),
+								 Global.m_Activity,
+								 Global.m_Activity.GetAssetManager(),
+								 Global.m_Activity.GetBMPFactoryLoader(),
+								 Global.m_Activity.GetSoundPlayer() );
+				return true;
+			}
         }
 
         // return super.onKeyDown(keyCode, event);
@@ -443,13 +424,14 @@ public class MYFWActivity extends Activity
     @Override protected void onPause()
     {
         Log.v( "Flathead", "Java - [Flow] - onPause" );
-        super.onPause();
 
         if( m_ShowAds )
         {
             // m_AdViewParent.removeView( m_MoPubView );
         }
         m_GLView.onPause();
+
+        super.onPause();
     }
 
     @Override protected void onResume()
@@ -637,10 +619,13 @@ class MyGL2SurfaceView extends GLSurfaceView
 
     public void onPause()
     {
-        //Log.v( "Flathead", "Java - MyGL2SurfaceView - onPause" );
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - onPause" );
 
-        super.onPause();
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call NativeOnPause()" );
         NativeOnPause();
+
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call super.onPause()" );
+        super.onPause();
     }
 
     private static native void NativeOnPause();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -41,7 +41,7 @@ extern void App_GL_OnSurfaceCreated();
 extern void App_GL_OnSurfaceChanged(int w, int h);
 extern void appDeinit2();
 extern void appSurfaceLost();
-extern void appRender2(long tick, int width, int height);
+extern void JavaInterface_NativeRender(long currenttimemilliseconds);
 extern void appOnKeyDown(int keycode, int unicodechar);
 extern void appOnKeyUp(int keycode, int unicodechar);
 extern void appOnTouch(int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size);

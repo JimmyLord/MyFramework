@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -15,9 +15,10 @@ class FBODefinition : public CPPListNode, public RefCount
     friend class TextureManager;
 
 protected:
+    bool m_HasValidResources;
+    bool m_FullyLoaded;
 
 public:
-    bool m_FullyLoaded;
     bool m_FailedToInit;
     bool m_OnlyFreeOnShutdown;
 
@@ -46,6 +47,8 @@ protected:
 public:
     FBODefinition();
     virtual ~FBODefinition();
+
+    bool IsFullyLoaded() { return m_FullyLoaded; }
 
     // returns true if a new texture needs to be created.
     bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);

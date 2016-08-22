@@ -157,7 +157,10 @@ void GameCore::OnPrepareToDie()
 
 bool GameCore::IsReadyToRender()
 {
-    return false;
+    if( m_GLSurfaceIsValid == 0 )
+        return false;
+
+    return true;
 }
 
 double GameCore::Tick(double TimePassed)
@@ -264,16 +267,14 @@ void GameCore::OnSurfaceLost()
 
     LOGInfo( LOGTag, "onSurfaceLost()\n" );
 
-    checkGlError( "Before Invalidated Shaders and Textures" );
+    // these calls don't clean out opengl allocations,
+    //     the surface was already lost along with all allocs.
     if( g_pShaderManager )
         g_pShaderManager->InvalidateAllShaders( false );
     if( g_pTextureManager )
         g_pTextureManager->InvalidateAllTextures( false );
     if( g_pBufferManager )
         g_pBufferManager->InvalidateAllBuffers( false );
-    checkGlError( "Invalidated Shaders and Textures" );
-
-    checkGlError( "OnSurfaceLost" );
 }
 
 void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height)

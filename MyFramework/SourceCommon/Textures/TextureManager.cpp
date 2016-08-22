@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -208,7 +208,6 @@ void TextureManager::Tick()
                 //g_pPanelMemory->AddTexture( pFBODef );
 
                 m_InitializedFBOs.MoveTail( pFBODef );
-                pFBODef->m_FullyLoaded = true;
             }
             else
             {
@@ -418,7 +417,7 @@ void TextureManager::InvalidateAllTextures(bool cleanglallocs)
         TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
         pNode = pNode->GetNext();
         
-        pTextureDef->Invalidate(cleanglallocs);
+        pTextureDef->Invalidate( cleanglallocs );
 
         m_TexturesStillLoading.MoveTail( pTextureDef );
 
@@ -430,10 +429,8 @@ void TextureManager::InvalidateAllTextures(bool cleanglallocs)
         FBODefinition* pFBODef = (FBODefinition*)pNode;
         pNode = pNode->GetNext();
         
-        pFBODef->Invalidate(cleanglallocs);
+        pFBODef->Invalidate( cleanglallocs );
 
         m_UninitializedFBOs.MoveTail( pFBODef );
-
-        pFBODef->m_FullyLoaded = false;
     }
 }

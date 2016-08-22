@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -202,7 +202,7 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnPause(JNIEnv* env)
 // Call to render the next GL frame
 void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeRender(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
 {
-    //__android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - nativeRender");
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - nativeRender");
 
     g_pJavaEnvironment = env;
     g_pMainActivity = activity;
@@ -211,11 +211,9 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeRender(JNIEnv* env, jobje
     g_pJavaSoundPlayer = soundplayer;
 
     {
-        //__android_log_print(ANDROID_LOG_INFO, "Flathead", "nativeRender");
+        long time = _getTime();
 
-        long curTime = _getTime();
-
-        appRender2(curTime, sWindowWidth, sWindowHeight);
+        JavaInterface_NativeRender( time );
     }
 
     g_pJavaEnvironment = 0;

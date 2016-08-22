@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -21,6 +21,8 @@
 #if !ANDROID_NDK
 #include <GLES2/egl2.h>
 #endif // !ANDROID_NDK
+
+bool g_Android_ExitOnBackButton = true;
 
 #include "JavaInterfaceCPP.h"
 #include "../SourceCommon/CommonHeader.h"
@@ -176,10 +178,7 @@ void appOnTouch(int action, int actionindex, int actionmasked, int tool, int id,
     pthread_mutex_unlock( &g_TouchInputMutex );
 }
 
-// Called from the app framework.
-// The tick is current time in milliseconds, width and height
-// are the image dimensions to be rendered.
-void appRender2(long tick, int width, int height)
+void JavaInterface_NativeRender(long currenttimemilliseconds)
 {
     if( !g_AppAlive )
         return;
@@ -187,12 +186,10 @@ void appRender2(long tick, int width, int height)
     if( g_pGameCore->m_OneTimeInitWasCalled == false )
         g_pGameCore->OneTimeInit();
 
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    static long lastmills = tick;
-    long millspassed = tick - lastmills;
+    static long lastmills = currenttimemilliseconds;
+    long millspassed = currenttimemilliseconds - lastmills;
     //LOGInfo( LOGTag, "mills last(%d) tick(%d) diff(%d)", (int)lastmills, (int)tick, (int)millspassed );
-    lastmills = tick;
+    lastmills = currenttimemilliseconds;
 
     static int numframes = 0;
     static int totaltime = 0;
@@ -233,6 +230,20 @@ void appRender2(long tick, int width, int height)
         }
         else //if( event->eventtype == 1 )
         {
+            if( g_Android_ExitOnBackButton &&
+                event->id == GCBI_Back && event->action == GCBA_Down )
+            {
+                LOGInfo( LOGTag, "[Flow] Calling Java finish() from C++\n" );
+                jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+                jmethodID finish = g_pJavaEnvironment->GetMethodID( cls, "finish", "()V" );
+                g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, finish );
+
+                // throw away all other input events and return;
+                currentreadindex = currentwriteindex;
+                pthread_mutex_unlock( &g_TouchInputMutex );
+                return;
+            }
+
             g_pGameCore->OnButtons( (GameCoreButtonActions)event->action, (GameCoreButtonIDs)event->id );
         }
 
@@ -246,6 +257,4 @@ void appRender2(long tick, int width, int height)
 
     g_pGameCore->OnDrawFrame( 0 );
     g_pGameCore->OnDrawFrameDone();
-
-    //DrawScene();
 }

@@ -162,12 +162,12 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
     }
     else
     {
+        if( pMaterial->GetShader() == 0 )
+            return;
+
         int numboneinfluences = 0;
         if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
             numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
-
-        if( pMaterial->GetShader() == 0 )
-            return;
 
         int numdirlights = 0;
         int numpointlights = 0;

@@ -9,6 +9,10 @@
 
 #include "CommonHeader.h"
 
+#if MYFW_ANDROID
+#include "../../SourceAndroid/JavaInterfaceCPP.h"
+#endif
+
 #if MYFW_IOS
 #include "../../SourceIOS/ExternalToolsIOS.h"
 #endif
@@ -38,17 +42,7 @@ char g_TextToShare_Body[1000];
 void SetExitOnBackButton(bool exit)
 {
 #if MYFW_ANDROID
-    jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
-    LOGInfo( LOGTag, "SetExitOnBackButton - cls %p", cls );
-
-    jmethodID SetExitOnBackButton = g_pJavaEnvironment->GetMethodID( cls, "SetExitOnBackButton", "(Z)V" );
-
-    LOGInfo( LOGTag, "SetExitOnBackButton - SetExitOnBackButton %p", SetExitOnBackButton );
-
-    if( SetExitOnBackButton == 0 )
-        return;
-
-    g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, SetExitOnBackButton, exit );
+    g_Android_ExitOnBackButton = exit;
 #endif
 }
 
