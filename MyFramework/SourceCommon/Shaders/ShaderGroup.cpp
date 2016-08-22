@@ -77,12 +77,17 @@ void ShaderGroup::Initialize()
 
 void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype)
 {
+    // This must be called before the shader gets compiled since m_PassType is used to determine the
+    //   g_ShaderPassDefines[] string used in BaseShader::LoadAndCompile(...);
+
     int p = originalpasstype;
 
     for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
     {
         for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
         {
+            MyAssert( m_pShaderPasses[p][lc][bc]->m_Initialized == false );
+
             m_pShaderPasses[p][lc][bc]->m_PassType = newpasstype;
         }
     }
