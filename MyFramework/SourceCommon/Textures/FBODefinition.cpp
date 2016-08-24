@@ -358,19 +358,20 @@ void FBODefinition::Invalidate(bool cleanglallocs)
             m_FrameBufferID = 0;
         }
 
-        SAFE_RELEASE( m_pColorTexture );
-        SAFE_RELEASE( m_pDepthTexture );
-
         checkGlError( "end of FBODefinition::Invalidate" );
     }
+    else
+    {
+        if( m_pColorTexture )
+            m_pColorTexture->Invalidate( false );
+        if( m_pDepthTexture )
+            m_pDepthTexture->Invalidate( false );
 
-    m_pColorTexture->Invalidate( false );
-    m_pDepthTexture->Invalidate( false );
+        m_FrameBufferID = 0;
+    }
 
     SAFE_RELEASE( m_pColorTexture );
     SAFE_RELEASE( m_pDepthTexture );
-
-    m_FrameBufferID = 0;
 
     m_FullyLoaded = false;
     m_HasValidResources = false;

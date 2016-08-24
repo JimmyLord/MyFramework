@@ -20,7 +20,7 @@
 
 #include <GLES/gl.h>
 
-#include "UnthoughtOutAndroidHeader.h"
+#include "JavaInterfaceCPP.h"
 
 MyFileObject* RequestFile(const char* filename)
 {

@@ -530,9 +530,6 @@
     <ClInclude Include="SourceNaCL\ReallyShittyCode.h">
       <Filter>Source-Platform\Source - NaCL</Filter>
     </ClInclude>
-    <ClInclude Include="SourceAndroid\UnthoughtOutAndroidHeader.h">
-      <Filter>Source-Platform\Source - Android</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\Shaders\VertexFormats.h">
       <Filter>Source\Shaders</Filter>
     </ClInclude>

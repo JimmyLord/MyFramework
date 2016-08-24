@@ -10,8 +10,40 @@
 #ifndef __JavaInterfaceCPP_H__
 #define __JavaInterfaceCPP_H__
 
-extern bool g_Android_ExitOnBackButton;
+extern int g_AppAlive;
 
+extern JNIEnv* g_pJavaEnvironment;
+extern jobject g_pMainActivity;
+extern jobject g_pAssetManager;
+extern jobject g_pBMPFactoryLoader;
+extern jobject g_pJavaSoundPlayer;
+extern char g_pAndroidDeviceName[128];
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void App_Activity_OnCreate();
+extern void App_Activity_OnDestroy();
+extern void App_Activity_OnPause();
+extern void App_Activity_OnResume();
+extern void App_Activity_OnBackPressed();
+extern void App_Activity_OnKeyDown(int keycode, int unicodechar);
+extern void App_Activity_OnKeyUp(int keycode, int unicodechar);
+
+extern void App_GLSurfaceView_OnTouch(int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size);
+
+extern void App_GLRenderer_OnSurfaceCreated();
+extern void App_GLRenderer_OnSurfaceChanged(int w, int h);
+extern void App_GLSurfaceView_SurfaceDestroyed();
+extern void App_GLRenderer_NativeRender(long currenttimemilliseconds);
+
+#ifdef __cplusplus
+}
+#endif
+
+// the AndroidMain_CreateGameCore() should be defined in main.cpp and
+//     create a new instance of the game specific subclass of GameCore.
 void AndroidMain_CreateGameCore();
 
 #endif //__JavaInterfaceCPP_H__

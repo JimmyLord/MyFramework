@@ -42,6 +42,7 @@ char g_TextToShare_Body[1000];
 void SetExitOnBackButton(bool exit)
 {
 #if MYFW_ANDROID
+    extern bool g_Android_ExitOnBackButton;
     g_Android_ExitOnBackButton = exit;
 #endif
 }

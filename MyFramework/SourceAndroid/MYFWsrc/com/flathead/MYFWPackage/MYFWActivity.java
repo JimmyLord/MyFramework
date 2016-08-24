@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.inputmethod.InputMethodManager;
 import android.util.Log;
 
@@ -301,16 +302,6 @@ public class MYFWActivity extends Activity
 //        }
     }
 
-    public void MyOnBackPressed()
-    {
-        Log.v( "Flathead", "Java - [Flow] - onBackPressed" );
-
-        NativeOnBackPressed( Global.m_Activity,
-                             Global.m_Activity.GetAssetManager(),
-                             Global.m_Activity.GetBMPFactoryLoader(),
-                             Global.m_Activity.GetSoundPlayer() );
-    }
-
     @Override public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         switch( keyCode )
@@ -320,7 +311,13 @@ public class MYFWActivity extends Activity
 
         case KeyEvent.KEYCODE_BACK:
             if( event.isAltPressed() == false ) // for Xperia Play(alt-back is the 'o' key)
-                MyOnBackPressed();
+			{
+		        Log.v( "Flathead", "Java - [Flow] - onBackPressed" );
+				NativeOnBackPressed( Global.m_Activity,
+									 Global.m_Activity.GetAssetManager(),
+									 Global.m_Activity.GetBMPFactoryLoader(),
+									 Global.m_Activity.GetSoundPlayer() );
+			}
             return true;
 
         case KeyEvent.KEYCODE_VOLUME_UP:
@@ -334,11 +331,7 @@ public class MYFWActivity extends Activity
             return true;
 
         default:
-            // if( m_KeyboardShowing )
 			{
-				// Log.v( "keydown",
-				// Character.toString(Character.toChars(event.getUnicodeChar())[0])
-				// );
 				NativeOnKeyDown( event.getKeyCode(), event.getUnicodeChar(),
 								 Global.m_Activity,
 								 Global.m_Activity.GetAssetManager(),
@@ -356,18 +349,14 @@ public class MYFWActivity extends Activity
         switch( keyCode )
         {
         default:
-            // if( m_KeyboardShowing )
-        {
-            // Log.v( "keyup",
-            // Character.toString(Character.toChars(event.getUnicodeChar())[0])
-            // );
-            NativeOnKeyUp( event.getKeyCode(), event.getUnicodeChar(),
-                           Global.m_Activity,
-                           Global.m_Activity.GetAssetManager(),
-                           Global.m_Activity.GetBMPFactoryLoader(),
-                           Global.m_Activity.GetSoundPlayer() );
-            return true;
-        }
+			{
+				NativeOnKeyUp( event.getKeyCode(), event.getUnicodeChar(),
+							   Global.m_Activity,
+							   Global.m_Activity.GetAssetManager(),
+							   Global.m_Activity.GetBMPFactoryLoader(),
+							   Global.m_Activity.GetSoundPlayer() );
+				return true;
+			}
         }
 
         // return super.onKeyUp(keyCode, event);
@@ -427,8 +416,9 @@ public class MYFWActivity extends Activity
 
         if( m_ShowAds )
         {
-            // m_AdViewParent.removeView( m_MoPubView );
+            //m_AdViewParent.removeView( m_MoPubView );
         }
+
         m_GLView.onPause();
 
         super.onPause();
@@ -506,7 +496,8 @@ class MyGL2SurfaceView extends GLSurfaceView
 
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion( 2 );
-        setEGLConfigChooser( 5, 6, 5, 0, 16, 0 );
+		//setPreserveEGLContextOnPause( true );
+        setEGLConfigChooser( 5, 6, 5, 0, 16, 0 ); // R,G,B,A,Depth,Stencil
 
         m_Renderer = new MyGL2Renderer();
         setRenderer( m_Renderer );
@@ -514,83 +505,7 @@ class MyGL2SurfaceView extends GLSurfaceView
         //Log.v( "Flathead", "MyGL2SurfaceView constructor end" );
     }
 
-//    @Override public InputConnection onCreateInputConnection(EditorInfo outAttrs)
-//    {
-//        outAttrs.actionLabel = "";
-//        outAttrs.hintText = "";
-//        outAttrs.initialCapsMode = 0;
-//        outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
-//        outAttrs.label = "";
-//        outAttrs.imeOptions = EditorInfo.IME_ACTION_UNSPECIFIED | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
-//        outAttrs.inputType = InputType.TYPE_CLASS_TEXT;
-//
-//        final InputConnection in = new BaseInputConnection(this, false)
-//        {
-//            //private HudInputElement getInputElement(){...}
-//
-//            @Override
-//            public boolean setComposingText(CharSequence text, int newCursorPosition)
-//            {
-//            	Log.v( "Flathead", "Java - setComposingText " + text + " " + newCursorPosition );
-//                //B2DEngine.getLogger().info("composing text: "+text+","+newCursorPosition);
-//                //HudInputElement input = getInputElement();
-//                //if(input!=null)
-//                //{
-//                //    input.setComposingText(text.toString());
-//                //}
-//                return super.setComposingText(text, newCursorPosition);
-//            }
-//
-//            @Override
-//            public boolean finishComposingText()
-//            {
-//            	Log.v( "Flathead", "Java - finishComposingText " );
-////                HudInputElement input = getInputElement();
-////                if(input!=null)
-////                {
-////                    input.doneComposing();
-////                }
-//                return super.finishComposingText();
-//            }
-//
-//            @Override
-//            public boolean commitText(CharSequence text, int newCursorPosition)
-//            {
-//            	Log.v( "Flathead", "Java - commitText " + text + " " + newCursorPosition );
-////                B2DEngine.getLogger().info("commit:"+text.toString()+","+this.getEditable().toString());
-////                HudInputElement input = getInputElement();
-////                if(input!=null)
-////                {
-////                    input.doneComposing();
-////                }
-//                return super.commitText(text, newCursorPosition);
-//            }
-//        };
-//
-//        return in;
-//    }
-//
-////    @Override public InputConnection onCreateInputConnection(EditorInfo outAttrs)
-////    {
-////        BaseInputConnection fic = new BaseInputConnection( this, false ); //true );
-////        outAttrs.actionLabel = null;
-////        outAttrs.inputType = InputType.TYPE_NULL; //TYPE_CLASS_TEXT;
-////        outAttrs.imeOptions = EditorInfo.IME_ACTION_NEXT;
-////        return fic;
-////    }
-//
-//    @Override public boolean onCheckIsTextEditor()
-//    {
-//        return true;
-//    }
-//
-//    public boolean onKeyPreIme(int keycode, KeyEvent event)
-//    {
-//        Log.v( "Flathead", "Java - onKeyPreIme " + keycode );
-//        return false;
-//    }
-
-    public boolean onTouchEvent(final MotionEvent ev)
+    @Override public boolean onTouchEvent(final MotionEvent ev)
     {
         // Log.v("Flathead", "Java - MyGL2SurfaceView - onTouchEvent");
 
@@ -617,18 +532,27 @@ class MyGL2SurfaceView extends GLSurfaceView
         return true;
     }
 
-    public void onPause()
+    @Override public void onPause()
     {
         Log.v( "Flathead", "Java - MyGL2SurfaceView - onPause" );
-
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call NativeOnPause()" );
-        NativeOnPause();
-
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call super.onPause()" );
         super.onPause();
     }
 
-    private static native void NativeOnPause();
+    @Override public void onResume()
+    {
+        super.onResume();
+	}
+
+	@Override public void surfaceDestroyed(SurfaceHolder holder)
+	{
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - surfaceDestroyed()" );
+        super.surfaceDestroyed( holder );
+
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call NativeOnSurfaceDestroyed()" );
+        NativeOnSurfaceDestroyed();
+    }
+
+    private static native void NativeOnSurfaceDestroyed();
 
     private static native void NativeOnTouchEvent(Object activity,
                                                   Object assetmgr, Object bmploader, Object sndplayer, int action,
@@ -638,7 +562,7 @@ class MyGL2SurfaceView extends GLSurfaceView
 
 class MyGL2Renderer implements GLSurfaceView.Renderer
 {
-    public long startTime;// = System.currentTimeMillis();
+    public long startTime;
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
@@ -652,7 +576,7 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
     public void onSurfaceChanged(GL10 gl, int w, int h)
     {
         //Log.v( "Flathead", "Java - MyGL2Renderer - onSurfaceChanged" );
-        nativeOnSurfaceChanged( w, h, Global.m_Activity,
+        NativeOnSurfaceChanged( w, h, Global.m_Activity,
                                 Global.m_Activity.GetAssetManager(),
                                 Global.m_Activity.GetBMPFactoryLoader(),
                                 Global.m_Activity.GetSoundPlayer() );
@@ -676,19 +600,17 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
         startTime = System.currentTimeMillis();
 
         //Log.v( "Flathead", "Java - MyGL2Renderer - onDrawFrame" );
-        nativeRender( Global.m_Activity, Global.m_Activity.GetAssetManager(),
+        NativeRender( Global.m_Activity, Global.m_Activity.GetAssetManager(),
                       Global.m_Activity.GetBMPFactoryLoader(),
                       Global.m_Activity.GetSoundPlayer() );
     }
 
-    private static native void NativeOnSurfaceCreated(Object activity,
-                                                      Object assetmgr, Object bmploader, Object sndplayer);
+    private static native void NativeOnSurfaceCreated(Object activity, Object assetmgr, Object bmploader, Object sndplayer);
 
-    private static native void nativeOnSurfaceChanged(int w, int h,
+    private static native void NativeOnSurfaceChanged(int w, int h,
                                                       Object activity, Object assetmgr, Object bmploader, Object sndplayer);
 
-    private static native void nativeRender(Object activity, Object assetmgr,
-                                            Object bmploader, Object sndplayer);
+    private static native void NativeRender(Object activity, Object assetmgr, Object bmploader, Object sndplayer);
 
-    private static native void nativeDone();
+    private static native void NativeDone();
 }

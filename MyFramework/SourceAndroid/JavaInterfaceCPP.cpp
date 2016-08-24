@@ -98,7 +98,7 @@ void App_Activity_OnBackPressed()
 }
 
 // Called from the app framework.
-void App_GL_OnSurfaceCreated()
+void App_GLRenderer_OnSurfaceCreated()
 {
     if( g_pGameCore )
     {
@@ -106,7 +106,7 @@ void App_GL_OnSurfaceCreated()
     }
 }
 
-void App_GL_OnSurfaceChanged(int w, int h)
+void App_GLRenderer_OnSurfaceChanged(int w, int h)
 {
     glViewport(0, 0, w, h);
 
@@ -116,29 +116,22 @@ void App_GL_OnSurfaceChanged(int w, int h)
     }
 }
 
-// Called from the app framework.
-void appDeinit2()
-{
-    // TODO: write a better shutdown?
-    g_pGameCore->OnSurfaceLost();
-}
-
-void appSurfaceLost()
+void App_GLSurfaceView_SurfaceDestroyed()
 {
     g_pGameCore->OnSurfaceLost();
 }
 
-void appOnKeyDown(int keycode, int unicodechar)
+void App_Activity_OnKeyDown(int keycode, int unicodechar)
 {
     g_pGameCore->OnKeyDown( keycode, unicodechar );
 }
 
-void appOnKeyUp(int keycode, int unicodechar)
+void App_Activity_OnKeyUp(int keycode, int unicodechar)
 {
     g_pGameCore->OnKeyUp( keycode, unicodechar );
 }
 
-void appOnTouch(int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size)
+void App_GLSurfaceView_OnTouch(int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size)
 {
     pthread_mutex_lock( &g_TouchInputMutex );
 
@@ -178,7 +171,7 @@ void appOnTouch(int action, int actionindex, int actionmasked, int tool, int id,
     pthread_mutex_unlock( &g_TouchInputMutex );
 }
 
-void JavaInterface_NativeRender(long currenttimemilliseconds)
+void App_GLRenderer_NativeRender(long currenttimemilliseconds)
 {
     if( !g_AppAlive )
         return;

@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../../MyFramework/SourceAndroid/UnthoughtoutAndroidHeader.h"
+#include "../../MyFramework/SourceAndroid/JavaInterfaceCPP.h"
 #include "JavaInterface.h"
 
 int g_AppAlive = 1;
@@ -122,7 +122,7 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceCreated(JNIEnv* 
     //g_pJavaSoundPlayer = soundplayer;
 
     {
-        App_GL_OnSurfaceCreated();
+        App_GLRenderer_OnSurfaceCreated();
 
         g_AppAlive = 1;
 
@@ -137,9 +137,9 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceCreated(JNIEnv* 
     //g_pJavaSoundPlayer = 0;
 }
 
-void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
+void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
 {
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - nativeOnSurfaceChanged (%dx%d)", w, h);
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceChanged (%dx%d)", w, h);
 
     //g_pJavaEnvironment = env;
     //g_pMainActivity = activity;
@@ -148,7 +148,7 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeOnSurfaceChanged(JNIEnv* 
     //g_pJavaSoundPlayer = soundplayer;
 
     {
-        App_GL_OnSurfaceChanged( w, h );
+        App_GLRenderer_OnSurfaceChanged( w, h );
 
         sWindowWidth = w;
         sWindowHeight = h;
@@ -159,14 +159,6 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeOnSurfaceChanged(JNIEnv* 
     //g_pAssetManager = 0;
     //g_pBMPFactoryLoader = 0;
     //g_pJavaSoundPlayer = 0;
-}
-
-// Call to finalize the graphics state
-void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeDone(JNIEnv* env)
-{
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - nativeDone");
-
-    appDeinit2();
 }
 
 void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* env, jobject thiz,
@@ -180,7 +172,7 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* e
     //g_pJavaSoundPlayer = soundplayer;
 
     {
-        appOnTouch( action, actionindex, actionmasked, tool, id, x, y, pressure, size );
+        App_GLSurfaceView_OnTouch( action, actionindex, actionmasked, tool, id, x, y, pressure, size );
     }
 
     //g_pJavaEnvironment = 0;
@@ -192,17 +184,17 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* e
 }
 
 // This is called when the app lost focus, so potentially we lost all opengl handles.
-void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnPause(JNIEnv* env)
+void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceDestroyed(JNIEnv* env)
 {
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnPause");
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceDestroyed");
 
-    appSurfaceLost();
+    App_GLSurfaceView_SurfaceDestroyed();
 }
 
 // Call to render the next GL frame
-void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeRender(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
+void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeRender(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
 {
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - nativeRender");
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeRender");
 
     g_pJavaEnvironment = env;
     g_pMainActivity = activity;
@@ -213,7 +205,7 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_nativeRender(JNIEnv* env, jobje
     {
         long time = _getTime();
 
-        JavaInterface_NativeRender( time );
+        App_GLRenderer_NativeRender( time );
     }
 
     g_pJavaEnvironment = 0;
@@ -234,7 +226,7 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnKeyDown(JNIEnv* env, job
     //g_pJavaSoundPlayer = soundplayer;
 
     {
-        appOnKeyDown( keycode, unicodechar );
+        App_Activity_OnKeyDown( keycode, unicodechar );
     }
 
     //g_pJavaEnvironment = 0;
@@ -257,7 +249,7 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnKeyUp(JNIEnv* env, jobje
     //g_pJavaSoundPlayer = soundplayer;
 
     {
-        appOnKeyUp( keycode, unicodechar );
+        App_Activity_OnKeyUp( keycode, unicodechar );
     }
 
     //g_pJavaEnvironment = 0;

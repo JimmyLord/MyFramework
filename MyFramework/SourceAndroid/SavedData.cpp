@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "UnthoughtOutAndroidHeader.h"
+#include "JavaInterfaceCPP.h"
 
 void StartAdView()
 {

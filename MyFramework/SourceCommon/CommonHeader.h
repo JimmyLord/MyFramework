@@ -297,7 +297,7 @@ using namespace Osp::Graphics::Opengl;
 #include "../SourceAndroid/IAPManagerAndroid.h"
 #include "../SourceAndroid/TextureLoader.h"
 #include "../SourceAndroid/SoundPlayer.h"
-#include "../SourceAndroid/UnthoughtOutAndroidHeader.h"
+#include "../SourceAndroid/JavaInterfaceCPP.h"
 #include "../SourceAndroid/SavedData.h"
 #include "Networking/WebRequest.h"
 #endif
