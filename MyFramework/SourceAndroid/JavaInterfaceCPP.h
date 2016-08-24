@@ -33,9 +33,10 @@ extern void App_Activity_OnKeyUp(int keycode, int unicodechar);
 
 extern void App_GLSurfaceView_OnTouch(int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size);
 
-extern void App_GLRenderer_OnSurfaceCreated();
-extern void App_GLRenderer_OnSurfaceChanged(int w, int h);
+extern void App_GLSurfaceView_SurfaceCreated();
+extern void App_GLSurfaceView_SurfaceChanged(int w, int h);
 extern void App_GLSurfaceView_SurfaceDestroyed();
+
 extern void App_GLRenderer_NativeRender(long currenttimemilliseconds);
 
 #ifdef __cplusplus

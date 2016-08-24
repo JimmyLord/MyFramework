@@ -25,13 +25,6 @@ jobject g_pBMPFactoryLoader = 0;
 jobject g_pJavaSoundPlayer = 0;
 char g_pAndroidDeviceName[128];
 
-static int  sWindowWidth  = 320;
-static int  sWindowHeight = 480;
-static int  sDemoStopped  = 0;
-static long sTimeOffset   = 0;
-static int  sTimeOffsetInit = 0;
-static long sTimeStopped  = 0;
-
 static long _getTime(void)
 {
     struct timeval now;
@@ -110,57 +103,6 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnBackPressed(JNIEnv* env,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Call to initialize the graphics state
-void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
-{
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceCreated");
-
-    //g_pJavaEnvironment = env;
-    //g_pMainActivity = activity;
-    //g_pAssetManager = assetmgr;
-    //g_pBMPFactoryLoader = bmploader;
-    //g_pJavaSoundPlayer = soundplayer;
-
-    {
-        App_GLRenderer_OnSurfaceCreated();
-
-        g_AppAlive = 1;
-
-        sDemoStopped = 0;
-        sTimeOffsetInit = 0;
-    }
-
-    //g_pJavaEnvironment = 0;
-    //g_pMainActivity = 0;
-    //g_pAssetManager = 0;
-    //g_pBMPFactoryLoader = 0;
-    //g_pJavaSoundPlayer = 0;
-}
-
-void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
-{
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceChanged (%dx%d)", w, h);
-
-    //g_pJavaEnvironment = env;
-    //g_pMainActivity = activity;
-    //g_pAssetManager = assetmgr;
-    //g_pBMPFactoryLoader = bmploader;
-    //g_pJavaSoundPlayer = soundplayer;
-
-    {
-        App_GLRenderer_OnSurfaceChanged( w, h );
-
-        sWindowWidth = w;
-        sWindowHeight = h;
-    }
-
-    //g_pJavaEnvironment = 0;
-    //g_pMainActivity = 0;
-    //g_pAssetManager = 0;
-    //g_pBMPFactoryLoader = 0;
-    //g_pJavaSoundPlayer = 0;
-}
-
 void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* env, jobject thiz,
     jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer,
     int action, int actionindex, int actionmasked, int tool, int id, float x, float y, float pressure, float size)
@@ -183,6 +125,22 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* e
     //__android_log_print(ANDROID_LOG_INFO, "Flathead", "NativeOnTouchEvent (%d %d %d)(%d %d)(%f,%f)(%f %f)", action, actionindex, actionmasked, tool, id, x, y, pressure, size);
 }
 
+void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceCreated()
+{
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceCreated");
+
+    App_GLSurfaceView_SurfaceCreated();
+
+    g_AppAlive = 1;
+}
+
+void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h)
+{
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceChanged (%dx%d)", w, h);
+
+    App_GLSurfaceView_SurfaceChanged( w, h );
+}
+
 // This is called when the app lost focus, so potentially we lost all opengl handles.
 void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceDestroyed(JNIEnv* env)
 {
@@ -194,7 +152,7 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceDestroyed(JNI
 // Call to render the next GL frame
 void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeRender(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
 {
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeRender");
+    //__android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeRender");
 
     g_pJavaEnvironment = env;
     g_pMainActivity = activity;

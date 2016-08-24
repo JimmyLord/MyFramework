@@ -38,7 +38,6 @@ import android.content.res.Configuration;
 //import com.google.ads.AdSize;
 //import com.google.ads.AdView;
 
-//import android.widget.EditText;
 import android.widget.LinearLayout;
 
 //// JNI Reference
@@ -67,9 +66,6 @@ public class MYFWActivity extends Activity
 
     private GLSurfaceView m_GLView;
     // private MoPubView m_MoPubView;
-    //private EditText m_EditText;
-    //private Boolean h_ShowEditText = false;
-    //private Boolean h_HideEditText = false;
 
     protected int m_MainViewResourceID;
     protected int m_MainLayoutResourceID;
@@ -158,51 +154,18 @@ public class MYFWActivity extends Activity
         if( show )
         {
             inputMgr.showSoftInput( getWindow().getDecorView(), 0 );
-
-            //h_ShowEditText = true;
-            //m_EditText.setVisibility( View.VISIBLE );
         }
         else
         {
             inputMgr.hideSoftInputFromWindow( getWindow().getDecorView().getWindowToken(), 0 );
-
-            //h_HideEditText = true;
-            //m_EditText.setVisibility( View.INVISIBLE );
-            //m_MainLayout.removeViewAt( 1 );
         }
 
         m_KeyboardShowing = show;
-
-        // if( show )
-        // {
-        // if( m_KeyboardShowing == true )
-        // {
-        // //inputMgr.showSoftInput( m_MainLayout, 0 );
-        // Configuration config = this.getResources().getConfiguration();
-        // if( config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES
-        // ||
-        // config.keyboard != Configuration.KEYBOARD_QWERTY )
-        // {
-        // inputMgr.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
-        // //SHOW_IMPLICIT, 0 );
-        // m_KeyboardShowing = true;
-        // }
-        // }
-        // }
-        // else
-        // {
-        // if( m_KeyboardShowing == true )
-        // {
-        // inputMgr.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
-        // //SHOW_IMPLICIT, 0 );
-        // m_KeyboardShowing = false;
-        // }
-        // }
     }
 
     @Override protected void onCreate(Bundle savedInstanceState)
     {
-        Log.v( "Flathead", "Java - [Flow] - onCreate" );
+        Log.v( "Flathead", "[Flow] Java - onCreate" );
 
         Global.m_Activity = this;
 
@@ -211,29 +174,29 @@ public class MYFWActivity extends Activity
         m_BMPFactoryLoader = new BMPFactoryLoader();
         m_BMPFactoryLoader.m_AssetManager = m_AssetManager;
 
-        Log.v( "Flathead", "Java - [Flow] - m_AudioManager/m_AssetManager initialized and bmpfactory created" );
+        Log.v( "Flathead", "[Flow] Java - m_AudioManager/m_AssetManager initialized and bmpfactory created" );
 
         m_SoundPlayer = new SoundPlayer();
         m_SoundPlayer.m_AssetManager = m_AssetManager;
 
-        Log.v( "Flathead", "Java - [Flow] - m_SoundPlayer created" );
+        Log.v( "Flathead", "[Flow] Java - m_SoundPlayer created" );
 
         super.onCreate( savedInstanceState );
 
-        Log.v( "Flathead", "Java - [Flow] - before setContentView" );
+        Log.v( "Flathead", "Java - before setContentView" );
         setContentView( m_MainViewResourceID );//R.layout.main );
-        Log.v( "Flathead", "Java - [Flow] - after setContentView" );
+        Log.v( "Flathead", "Java - after setContentView" );
 
         // Lookup your LinearLayout assuming it's been given
         // the attribute android:id="@+id/mainLayout"
-        Log.v( "Flathead", "Java - [Flow] - findViewById -> " + m_MainLayoutResourceID );
+        Log.v( "Flathead", "Java - findViewById -> " + m_MainLayoutResourceID );
         m_MainLayout = (LinearLayout) findViewById( m_MainLayoutResourceID );//R.id.mainLayout );
         //Log.v("Flathead", "Java - Main Layout: " + m_MainLayout);
 
         // m_AdViewParent = (LinearLayout) findViewById(R.id.adViewParent);
         // Log.v("Flathead", "Java - Main AdViewParent: " + m_MainLayout);
 
-        Log.v( "Flathead", "Java - [Flow] - m_MainLayout setup" );
+        Log.v( "Flathead", "Java - m_MainLayout setup" );
 
         if( m_ShowAds )
         {
@@ -255,16 +218,6 @@ public class MYFWActivity extends Activity
         m_GLView = new MyGL2SurfaceView( this );
 
         m_MainLayout.addView( m_GLView );
-
-        //m_EditText = new EditText( this );
-        //m_EditText.setText( "Testing EditText" );
-
-        ////m_MainLayout.addView( m_EditText );
-
-        //ViewGroup.LayoutParams params;
-        //params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        //addContentView( m_EditText, params );
-        //m_EditText.setVisibility( View.INVISIBLE );
 
         NativeOnCreate( Global.m_Activity, Global.m_Activity.GetAssetManager(),
                         Global.m_Activity.GetBMPFactoryLoader(),
@@ -289,35 +242,21 @@ public class MYFWActivity extends Activity
             // if( m_AdViewParent.getChildCount() == 0 )
             // m_AdViewParent.addView( m_MoPubView );
         }
-
-//        if( h_ShowEditText )
-//        {
-////	        m_EditText.setVisibility( View.VISIBLE );
-//            h_ShowEditText = false;
-//        }
-//        if( h_HideEditText )
-//        {
-////	        m_EditText.setVisibility( View.INVISIBLE );
-//            h_HideEditText = false;
-//        }
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         switch( keyCode )
         {
-		case KeyEvent.KEYCODE_HOME:
-            return true;
-
         case KeyEvent.KEYCODE_BACK:
             if( event.isAltPressed() == false ) // for Xperia Play(alt-back is the 'o' key)
-			{
-		        Log.v( "Flathead", "Java - [Flow] - onBackPressed" );
-				NativeOnBackPressed( Global.m_Activity,
-									 Global.m_Activity.GetAssetManager(),
-									 Global.m_Activity.GetBMPFactoryLoader(),
-									 Global.m_Activity.GetSoundPlayer() );
-			}
+            {
+                Log.v( "Flathead", "[Flow] Java - onBackPressed" );
+                NativeOnBackPressed( Global.m_Activity,
+                                     Global.m_Activity.GetAssetManager(),
+                                     Global.m_Activity.GetBMPFactoryLoader(),
+                                     Global.m_Activity.GetSoundPlayer() );
+            }
             return true;
 
         case KeyEvent.KEYCODE_VOLUME_UP:
@@ -331,14 +270,14 @@ public class MYFWActivity extends Activity
             return true;
 
         default:
-			{
-				NativeOnKeyDown( event.getKeyCode(), event.getUnicodeChar(),
-								 Global.m_Activity,
-								 Global.m_Activity.GetAssetManager(),
-								 Global.m_Activity.GetBMPFactoryLoader(),
-								 Global.m_Activity.GetSoundPlayer() );
-				return true;
-			}
+            {
+                NativeOnKeyDown( event.getKeyCode(), event.getUnicodeChar(),
+                                 Global.m_Activity,
+                                 Global.m_Activity.GetAssetManager(),
+                                 Global.m_Activity.GetBMPFactoryLoader(),
+                                 Global.m_Activity.GetSoundPlayer() );
+                return true;
+            }
         }
 
         // return super.onKeyDown(keyCode, event);
@@ -349,14 +288,14 @@ public class MYFWActivity extends Activity
         switch( keyCode )
         {
         default:
-			{
-				NativeOnKeyUp( event.getKeyCode(), event.getUnicodeChar(),
-							   Global.m_Activity,
-							   Global.m_Activity.GetAssetManager(),
-							   Global.m_Activity.GetBMPFactoryLoader(),
-							   Global.m_Activity.GetSoundPlayer() );
-				return true;
-			}
+            {
+                NativeOnKeyUp( event.getKeyCode(), event.getUnicodeChar(),
+                               Global.m_Activity,
+                               Global.m_Activity.GetAssetManager(),
+                               Global.m_Activity.GetBMPFactoryLoader(),
+                               Global.m_Activity.GetSoundPlayer() );
+                return true;
+            }
         }
 
         // return super.onKeyUp(keyCode, event);
@@ -398,21 +337,19 @@ public class MYFWActivity extends Activity
         // Checks the orientation of the screen
         if( newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE )
         {
-            Log.v( "Flathead", "Java - [Flow] - onConfigurationChanged to landscape" );
+            Log.v( "Flathead", "[Flow] Java - onConfigurationChanged to landscape" );
         }
         else if( newConfig.orientation == Configuration.ORIENTATION_PORTRAIT )
         {
-            Log.v( "Flathead", "Java - [Flow] - onConfigurationChanged to portrait" );
+            Log.v( "Flathead", "[Flow] Java - onConfigurationChanged to portrait" );
         }
 
         super.onConfigurationChanged( newConfig );
-
-        Log.v( "Flathead", "Java - [Flow] - onConfigurationChanged post super" );
     }
 
     @Override protected void onPause()
     {
-        Log.v( "Flathead", "Java - [Flow] - onPause" );
+        Log.v( "Flathead", "[Flow] Java - onPause" );
 
         if( m_ShowAds )
         {
@@ -426,7 +363,7 @@ public class MYFWActivity extends Activity
 
     @Override protected void onResume()
     {
-        Log.v( "Flathead", "Java - [Flow] - onResume" );
+        Log.v( "Flathead", "[Flow] Java - onResume" );
         super.onResume();
 
         m_GLView.onResume();
@@ -434,7 +371,7 @@ public class MYFWActivity extends Activity
 
     @Override protected void onPostResume()
     {
-        Log.v( "Flathead", "Java - [Flow] - onPostResume" );
+        Log.v( "Flathead", "[Flow] Java - onPostResume" );
 
         super.onPostResume();
 
@@ -447,14 +384,14 @@ public class MYFWActivity extends Activity
 
     @Override public void finish()
     {
-        Log.v( "Flathead", "Java - [Flow] - finish" );
+        Log.v( "Flathead", "[Flow] Java - finish" );
 
         super.finish();
     }
 
     @Override public void onDestroy()
     {
-        Log.v( "Flathead", "Java - [Flow] - onDestroy" );
+        Log.v( "Flathead", "[Flow] Java - onDestroy" );
 
         NativeOnDestroy();
 
@@ -496,7 +433,7 @@ class MyGL2SurfaceView extends GLSurfaceView
 
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion( 2 );
-		//setPreserveEGLContextOnPause( true );
+        setPreserveEGLContextOnPause( true );
         setEGLConfigChooser( 5, 6, 5, 0, 16, 0 ); // R,G,B,A,Depth,Stencil
 
         m_Renderer = new MyGL2Renderer();
@@ -540,18 +477,36 @@ class MyGL2SurfaceView extends GLSurfaceView
 
     @Override public void onResume()
     {
+        Log.v( "Flathead", "Java - MyGL2SurfaceView - onResume" );
         super.onResume();
-	}
+    }
 
-	@Override public void surfaceDestroyed(SurfaceHolder holder)
-	{
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - surfaceDestroyed()" );
+    @Override public void surfaceCreated(SurfaceHolder holder)
+    {
+        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceCreated()" );
+
+        super.surfaceCreated( holder );
+        NativeOnSurfaceCreated();
+    }
+
+    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
+    {
+        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceChanged()" );
+
+        super.surfaceChanged( holder, format, w, h );
+        NativeOnSurfaceChanged( w, h );
+    }
+
+    @Override public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceDestroyed()" );
+
         super.surfaceDestroyed( holder );
-
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - about to call NativeOnSurfaceDestroyed()" );
         NativeOnSurfaceDestroyed();
     }
 
+    private static native void NativeOnSurfaceCreated();
+    private static native void NativeOnSurfaceChanged(int w, int h);
     private static native void NativeOnSurfaceDestroyed();
 
     private static native void NativeOnTouchEvent(Object activity,
@@ -567,19 +522,11 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
         //Log.v( "Flathead", "Java - MyGL2Renderer - onSurfaceCreated" );
-        NativeOnSurfaceCreated( Global.m_Activity,
-                                Global.m_Activity.GetAssetManager(),
-                                Global.m_Activity.GetBMPFactoryLoader(),
-                                Global.m_Activity.GetSoundPlayer() );
     }
 
     public void onSurfaceChanged(GL10 gl, int w, int h)
     {
         //Log.v( "Flathead", "Java - MyGL2Renderer - onSurfaceChanged" );
-        NativeOnSurfaceChanged( w, h, Global.m_Activity,
-                                Global.m_Activity.GetAssetManager(),
-                                Global.m_Activity.GetBMPFactoryLoader(),
-                                Global.m_Activity.GetSoundPlayer() );
     }
 
     public void onDrawFrame(GL10 gl)
@@ -599,18 +546,11 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
         }
         startTime = System.currentTimeMillis();
 
-        //Log.v( "Flathead", "Java - MyGL2Renderer - onDrawFrame" );
+        //Log.v( "Flathead", "[Flow] Java - MyGL2Renderer - onDrawFrame" );
         NativeRender( Global.m_Activity, Global.m_Activity.GetAssetManager(),
                       Global.m_Activity.GetBMPFactoryLoader(),
                       Global.m_Activity.GetSoundPlayer() );
     }
 
-    private static native void NativeOnSurfaceCreated(Object activity, Object assetmgr, Object bmploader, Object sndplayer);
-
-    private static native void NativeOnSurfaceChanged(int w, int h,
-                                                      Object activity, Object assetmgr, Object bmploader, Object sndplayer);
-
     private static native void NativeRender(Object activity, Object assetmgr, Object bmploader, Object sndplayer);
-
-    private static native void NativeDone();
 }

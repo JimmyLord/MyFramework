@@ -97,8 +97,7 @@ void App_Activity_OnBackPressed()
     pthread_mutex_unlock( &g_TouchInputMutex );
 }
 
-// Called from the app framework.
-void App_GLRenderer_OnSurfaceCreated()
+void App_GLSurfaceView_SurfaceCreated()
 {
     if( g_pGameCore )
     {
@@ -106,7 +105,7 @@ void App_GLRenderer_OnSurfaceCreated()
     }
 }
 
-void App_GLRenderer_OnSurfaceChanged(int w, int h)
+void App_GLSurfaceView_SurfaceChanged(int w, int h)
 {
     glViewport(0, 0, w, h);
 

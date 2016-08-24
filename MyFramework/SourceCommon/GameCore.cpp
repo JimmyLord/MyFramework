@@ -238,18 +238,18 @@ void GameCore::OnFocusLost()
 
 void GameCore::OnSurfaceCreated()
 {
+    // Android can call GLSurfaceView.Renderer::onSurfaceCreated()
+    //     without having destroyed the previous surface with GLSurfaceView::surfaceDestroyed()
+    //     if that happens, just invalidate all objects
+    if( m_GLSurfaceIsValid )
+    {
+        LOGInfo( LOGTag, "[Flow] forcing OnSurfaceLost(), didn't know surface was destroyed.\n" );
+        OnSurfaceLost();
+    }
+
     m_GLSurfaceIsValid = true;
 
-    LOGInfo( LOGTag, "onSurfaceCreated()\n" );
-
-    //checkGlError( "Before Invalidated Shaders and Textures" );
-    //if( g_pShaderManager )
-    //    g_pShaderManager->InvalidateAllShaders( false );
-    //if( g_pTextureManager )
-    //    g_pTextureManager->InvalidateAllTextures( false );
-    //if( g_pBufferManager )
-    //    g_pBufferManager->InvalidateAllBuffers( false );
-    //checkGlError( "Invalidated Shaders and Textures" );
+    LOGInfo( LOGTag, "[Flow] onSurfaceCreated()\n" );
 
 #if !USE_D3D
     printGLString( "Version", GL_VERSION );
@@ -265,7 +265,7 @@ void GameCore::OnSurfaceLost()
 {
     m_GLSurfaceIsValid = false;
 
-    LOGInfo( LOGTag, "onSurfaceLost()\n" );
+    LOGInfo( LOGTag, "[Flow] onSurfaceLost()\n" );
 
     // these calls don't clean out opengl allocations,
     //     the surface was already lost along with all allocs.
