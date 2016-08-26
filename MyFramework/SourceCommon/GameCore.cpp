@@ -157,7 +157,7 @@ void GameCore::OnPrepareToDie()
 
 bool GameCore::IsReadyToRender()
 {
-    if( m_GLSurfaceIsValid == 0 )
+    if( m_GLSurfaceIsValid == false )
         return false;
 
     return true;
@@ -251,14 +251,14 @@ void GameCore::OnSurfaceCreated()
 
     LOGInfo( LOGTag, "[Flow] onSurfaceCreated()\n" );
 
-#if !USE_D3D
-    printGLString( "Version", GL_VERSION );
-    printGLString( "Vendor", GL_VENDOR );
-    printGLString( "Renderer", GL_RENDERER );
-    printGLString( "Extensions", GL_EXTENSIONS );
-#endif
-
-    checkGlError( "OnSurfaceCreated\n" );
+//#if !USE_D3D
+//    printGLString( "Version", GL_VERSION );
+//    printGLString( "Vendor", GL_VENDOR );
+//    printGLString( "Renderer", GL_RENDERER );
+//    printGLString( "Extensions", GL_EXTENSIONS );
+//#endif
+//
+//    checkGlError( "OnSurfaceCreated\n" );
 }
 
 void GameCore::OnSurfaceLost()

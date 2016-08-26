@@ -433,7 +433,8 @@ class MyGL2SurfaceView extends GLSurfaceView
 
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion( 2 );
-        setPreserveEGLContextOnPause( true );
+        if( Build.VERSION.SDK_INT >= 11 ) //Build.VERSION_CODES.HONEYCOMB // Android 3.0.x
+	        setPreserveEGLContextOnPause( true );
         setEGLConfigChooser( 5, 6, 5, 0, 16, 0 ); // R,G,B,A,Depth,Stencil
 
         m_Renderer = new MyGL2Renderer();

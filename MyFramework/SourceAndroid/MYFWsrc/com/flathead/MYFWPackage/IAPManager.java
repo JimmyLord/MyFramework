@@ -64,13 +64,13 @@ public class IAPManager
         }
     }
 
-    public void BuyItem()
+    public void BuyItem(String sku, String type, String payload) //(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     {
-        //Log.v( "Flathead", "[JAVA] BuyItem()" );
+        Log.v( "Flathead", "Java - BuyItem( " + sku + ", " + type + ", " + payload + " )" );
 
         try
         {
-            InternalBuyItem();
+            InternalBuyItem( sku, type, payload );
         }
         catch( Exception e )
         {
@@ -78,13 +78,14 @@ public class IAPManager
         }
     }
 
-    protected void InternalBuyItem() throws RemoteException, IntentSender.SendIntentException
+    protected void InternalBuyItem(String sku, String type, String payload) throws RemoteException, IntentSender.SendIntentException
     {
         Bundle buyIntentBundle = m_IAPService.getBuyIntent( 3, m_Activity.getPackageName(),
-                                                            "android.test.purchased", "inapp", "Custom payload string");
-//                                                            "android.test.canceled", "inapp", "Custom payload string");
-//                                                            "android.test.refunded", "inapp", "Custom payload string");
-//                                                            "android.test.item_unavailable", "inapp", "Custom payload string");
+                                                            sku, type, payload );
+                                                            //"android.test.purchased", "inapp", "Custom payload string" );
+                                                            //"android.test.canceled", "inapp", "Custom payload string" );
+                                                            //"android.test.refunded", "inapp", "Custom payload string" );
+                                                            //"android.test.item_unavailable", "inapp", "Custom payload string" );
 
         PendingIntent pendingIntent = buyIntentBundle.getParcelable( "BUY_INTENT" );
 
@@ -107,7 +108,7 @@ public class IAPManager
                 {
                     JSONObject jo = new JSONObject( purchaseData );
                     String sku = jo.getString( "productId" );
-                    Log.v( "Flathead", "You have bought the " + sku + ". Excellent choice, adventurer !");
+                    Log.v( "Flathead", "Purchase successful");
                 }
                 catch( JSONException e )
                 {

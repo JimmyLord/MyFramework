@@ -40,8 +40,13 @@ void IAPManager::Purchase(const char* IAPProductID)
     jclass jclassIAPManager = g_pJavaEnvironment->GetObjectClass( jobjIAPManager );
 
     // call IAPManager::BuyItem()
-    jmethodID jfuncBuyItem = g_pJavaEnvironment->GetMethodID( jclassIAPManager, "BuyItem", "()V" );
-    g_pJavaEnvironment->CallVoidMethod( jobjIAPManager, jfuncBuyItem );
+    jmethodID jfuncBuyItem = g_pJavaEnvironment->GetMethodID( jclassIAPManager, "BuyItem", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
+
+    jstring jsku = g_pJavaEnvironment->NewStringUTF( "android.test.purchased" );
+    //jstring jsku = g_pJavaEnvironment->NewStringUTF( "unlock.rules" );
+    jstring jtype = g_pJavaEnvironment->NewStringUTF( "inapp" );
+    jstring jpayload = g_pJavaEnvironment->NewStringUTF( "Custom payload string" );
+    g_pJavaEnvironment->CallVoidMethod( jobjIAPManager, jfuncBuyItem, jsku, jtype, jpayload );
 }
 
 // Request existing purchases from the payment service.

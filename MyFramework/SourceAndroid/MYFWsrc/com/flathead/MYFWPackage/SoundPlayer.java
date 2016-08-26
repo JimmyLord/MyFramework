@@ -44,7 +44,7 @@ public class SoundPlayer
 
     protected void CreateSoundPool()
     {
-        if( Build.VERSION.SDK_INT >= 21 ) //Build.VERSION_CODES.LOLLIPOP
+        if( Build.VERSION.SDK_INT >= 21 ) //Build.VERSION_CODES.LOLLIPOP // Android 5.0
             CreateNewSoundPool();
         else
             CreateOldSoundPool();
