@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,6 +16,8 @@
 void SaveScreenshot(int windowWidth, int windowHeight, char* filename)
 {
 #if !USE_D3D
+    LOGInfo( LOGTag, "Saving Screenshot (%dx%d)\n", windowWidth, windowHeight );
+
     byte* bmpBuffer = (byte*)malloc( windowWidth*windowHeight*3 );
     if( bmpBuffer == 0 )
         return;
@@ -23,7 +25,13 @@ void SaveScreenshot(int windowWidth, int windowHeight, char* filename)
     // not sure why GL_BGR is working for me,
     //   might be how we're initing the framebuffers or it's something do do with the bitmap below.
     //   either way, good enough for now since it works.
+    //glReadBuffer( GL_FRONT );
+    
+    // by default glReadPixels() expects width/height to be multiples of 4, change that to 1 and change it back after.
+    glPixelStorei( GL_PACK_ALIGNMENT, 1 );
     glReadPixels( 0, 0, windowWidth, windowHeight, GL_BGR, GL_UNSIGNED_BYTE, bmpBuffer );
+
+    checkGlError( "glReadPixels" );
 
     FILE* filePtr = fopen( filename, "wb" );
     if( !filePtr )
@@ -57,5 +65,7 @@ void SaveScreenshot(int windowWidth, int windowHeight, char* filename)
     fclose( filePtr );
 
     free( bmpBuffer );
+
+    glPixelStorei( GL_PACK_ALIGNMENT, 4 );
 #endif
 }
