@@ -145,6 +145,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include "DataTypes/MyTypes.h"
+
 #include "Memory/MyStackAllocator.h"
 
 #include "Helpers/MyAssert.h"
@@ -171,6 +173,10 @@
 #include "../../Libraries/Box2D/Box2D/Box2D/Box2D.h"
 #include "Physics/Box2DContactListener.h"
 #include "Physics/Box2DWorld.h"
+
+#include "Events/EventTypeManager.h"
+#include "Events/MyEvent.h"
+#include "Events/EventManager.h"
 
 #if MYFW_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -448,10 +454,6 @@ typedef int socklen_t;
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
 #include "Noise/SimplexNoise.h"
-
-#include "Events/EventTypeManager.h"
-#include "Events/MyEvent.h"
-#include "Events/EventManager.h"
 
 #include "Helpers/MyFileObject.h"
 #include "Shaders/MyFileObjectShader.h"

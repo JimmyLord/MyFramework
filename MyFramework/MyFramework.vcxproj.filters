@@ -489,6 +489,9 @@
     <ClCompile Include="SourceCommon\Noise\SimplexNoise.cpp">
       <Filter>Source\Noise</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\DataTypes\MyTypes.cpp">
+      <Filter>Source\DataTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1033,6 +1036,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Noise\SimplexNoise.h">
       <Filter>Source\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\DataTypes\MyTypes.h">
+      <Filter>Source\DataTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

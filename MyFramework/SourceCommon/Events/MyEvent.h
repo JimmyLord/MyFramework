@@ -10,10 +10,47 @@
 #ifndef __MyEvent_H__
 #define __MyEvent_H__
 
+struct MyEventArgument
+{
+    enum ArgumentTypes
+    {
+        Type_Pointer,
+        Type_Bool,
+        Type_Int,
+        Type_UnsignedInt,
+        Type_Float,
+        Type_Double,
+    };
+
+    union
+    {
+        char m_NameStr[8];
+        uint64 m_NameInt;
+    };
+
+    ArgumentTypes m_Type;
+
+    union
+    {
+        void* m_Pointer;
+        bool m_Bool;
+        int32 m_Int;
+        uint32 m_UnsignedInt;
+        float m_Float;
+        double m_Double;
+    };
+
+    MyEventArgument* m_NextArgument;
+};
+
 class MyEvent
 {
 protected:
     EventTypes m_Type;
+    MyEventArgument* m_FirstArgument;
+
+    void CheckIfArgumentIsAlreadyAttached(char* name);
+    void AttachArgument(MyEventArgument* pArg);
 
 public:
     MyEvent();
@@ -21,6 +58,26 @@ public:
 
     void SetType(EventTypes type) { m_Type = type; }
     EventTypes GetType() { return m_Type; }
+
+    // Arguments
+    void ClearArguments();
+
+    void AttachPointer(char* name, void* value);
+    void AttachBool(char* name, bool value);
+    void AttachInt(char* name, int32 value);
+    void AttachUnsignedInt(char* name, uint32 value);
+    void AttachFloat(char* name, float value);
+    void AttachDouble(char* name, double value);
+
+    MyEventArgument* GetArgument(char* name);
+    void* GetPointer(char* name);
+    bool GetBool(char* name);
+    int32 GetInt(char* name);
+    uint32 GetUnsignedInt(char* name);
+    float GetFloat(char* name);
+    double GetDouble(char* name);
+
+    MyEventArgument* GetFirstArgument() { return m_FirstArgument; }
 };
 
 #endif //__EventManager_H__

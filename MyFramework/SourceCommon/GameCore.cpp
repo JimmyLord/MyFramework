@@ -19,6 +19,8 @@ GameCore::GameCore()
 {
     g_pGameCore = this;
 
+    TestMyTypeSizes();
+
     m_OneTimeInitWasCalled = false;
 
     m_GLSurfaceIsValid = false;

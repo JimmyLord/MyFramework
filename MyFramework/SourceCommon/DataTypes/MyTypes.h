@@ -7,41 +7,25 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __EventTypeManager_H__
-#define __EventTypeManager_H__
+#ifndef __MYTYPES_H__
+#define __MYTYPES_H__
 
-class EventTypeManager;
-class MyEvent;
+#if MYFW_WINDOWS
 
-extern EventTypeManager* g_pEventTypeManager;
+typedef __int32 int32;
+typedef unsigned __int32 uint32;
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
 
-enum EventTypes // ADDING_NEW_EventType
-{
-    Event_Undefined,
-    Event_MaterialFinishedLoading,
-    Event_ShaderFinishedLoading,
-    Event_NumEventTypes,
-};
+#else
 
-struct EventTypeInfo
-{
-    const char* name;
-};
+typedef int32_t int32;
+typedef uint32_t uint32;
+typedef int64_t int64;
+typedef uint64_t uint64;
 
-class EventTypeManager
-{
-protected:
+#endif
 
-public:
-    EventTypeManager();
-    virtual ~EventTypeManager();
+void TestMyTypeSizes();
 
-    virtual unsigned int GetNumberOfEventTypes();
-
-    virtual const char* GetTypeCategory(int type);
-    virtual const char* GetTypeName(int type);
-
-    virtual int GetTypeByName(const char* name);
-};
-
-#endif //__EventTypeManager_H__
+#endif //__MYTYPES_H__

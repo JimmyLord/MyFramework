@@ -1387,6 +1387,7 @@
     <ClCompile Include="SourceCommon\DataTypes\ColorStructs.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\MyMatrix.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp" />
+    <ClCompile Include="SourceCommon\DataTypes\MyTypes.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Plane.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\Vector.cpp" />
     <ClCompile Include="SourceCommon\Events\EventManager.cpp" />
@@ -2481,6 +2482,7 @@
     <ClInclude Include="SourceCommon\DataTypes\MyList.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyMatrix.h" />
     <ClInclude Include="SourceCommon\DataTypes\MyQuaternion.h" />
+    <ClInclude Include="SourceCommon\DataTypes\MyTypes.h" />
     <ClInclude Include="SourceCommon\DataTypes\Plane.h" />
     <ClInclude Include="SourceCommon\DataTypes\Vector.h" />
     <ClInclude Include="SourceCommon\Events\EventManager.h" />

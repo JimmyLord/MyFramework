@@ -36,10 +36,14 @@ public:
 class EventManager
 {
     static const unsigned int MAX_EVENTS = 10000;
+    static const unsigned int MAX_EVENT_ARGUMENTS = 40000;
     static const unsigned int MAX_EVENT_HANDLERS = 1000;
+
+    friend class MyEvent; // allow access to m_pEventArgumentPool to clear arguments.
 
 protected:
     MySimplePool<MyEvent> m_pEventPool;
+    MySimplePool<MyEventArgument> m_pEventArgumentPool;
     MySimplePool<MyEventHandler> m_pEventHandlerPool;
 
     MyEvent* m_pEvents[MAX_EVENTS]; // list of all active events, TODO: make linked list

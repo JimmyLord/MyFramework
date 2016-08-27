@@ -17,6 +17,7 @@ EventManager* g_pEventManager = 0;
 EventManager::EventManager()
 {
     m_pEventPool.AllocateObjects( MAX_EVENTS );
+    m_pEventArgumentPool.AllocateObjects( MAX_EVENT_ARGUMENTS );
     m_pEventHandlerPool.AllocateObjects( MAX_EVENT_HANDLERS );
 
     m_NumEvents = 0;
@@ -27,6 +28,7 @@ EventManager::~EventManager()
 {
     for( unsigned int i=0; i<m_NumEvents; i++ )
     {
+        m_pEvents[i]->ClearArguments();
         m_pEventPool.ReturnObjectToPool( m_pEvents[i] );
     }
 
@@ -43,6 +45,8 @@ void EventManager::Tick()
 MyEvent* EventManager::CreateNewEvent(EventTypes type)
 {
     MyEvent* pEvent = m_pEventPool.GetObjectFromPool();
+    MyAssert( pEvent->GetFirstArgument() == 0 );
+
     pEvent->SetType( type );
 
     return pEvent;
@@ -50,6 +54,7 @@ MyEvent* EventManager::CreateNewEvent(EventTypes type)
 
 void EventManager::ReleaseEvent(MyEvent* pEvent)
 {
+    pEvent->ClearArguments();
     m_pEventPool.ReturnObjectToPool( pEvent );
 }
 

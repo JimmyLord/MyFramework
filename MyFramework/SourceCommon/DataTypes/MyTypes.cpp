@@ -7,41 +7,14 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __EventTypeManager_H__
-#define __EventTypeManager_H__
+#include "CommonHeader.h"
 
-class EventTypeManager;
-class MyEvent;
-
-extern EventTypeManager* g_pEventTypeManager;
-
-enum EventTypes // ADDING_NEW_EventType
+void TestMyTypeSizes()
 {
-    Event_Undefined,
-    Event_MaterialFinishedLoading,
-    Event_ShaderFinishedLoading,
-    Event_NumEventTypes,
-};
+    bool ok;
 
-struct EventTypeInfo
-{
-    const char* name;
-};
-
-class EventTypeManager
-{
-protected:
-
-public:
-    EventTypeManager();
-    virtual ~EventTypeManager();
-
-    virtual unsigned int GetNumberOfEventTypes();
-
-    virtual const char* GetTypeCategory(int type);
-    virtual const char* GetTypeName(int type);
-
-    virtual int GetTypeByName(const char* name);
-};
-
-#endif //__EventTypeManager_H__
+    sizeof( int32 ) == 4  ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( uint32 ) == 4 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( int64 ) == 8  ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( uint64 ) == 8 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+}
