@@ -69,6 +69,8 @@ public:
     void AttachFloat(char* name, float value);
     void AttachDouble(char* name, double value);
 
+    bool IsArgumentAttached(char* name);
+
     MyEventArgument* GetArgument(char* name);
     void* GetPointer(char* name);
     bool GetBool(char* name);

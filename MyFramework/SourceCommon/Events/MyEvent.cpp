@@ -57,22 +57,40 @@ void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected
     this->m_FirstArgument = pArg;
 }
 
-//void MyEvent::AttachPointer(char* name, void* value)
-
-void MyEvent::AttachBool(char* name, bool value)
-{
-    // setup the new argument.
-    MyEventArgument* pArg = g_pEventManager->m_pEventArgumentPool.GetObjectFromPool();
-    pArg->m_Type = MyEventArgument::Type_Bool;
-    pArg->m_Bool = value;
-
-    AttachArgument( pArg );
+//====================================================================================================
+// Create a function for each type of argument in ArgumentTypes enum
+//====================================================================================================
+#define CREATE_ATTACH_ARGUMENT_FUNC(ArgumentName, ArgumentType) \
+void MyEvent::Attach##ArgumentName(char* name, ArgumentType value) \
+{ \
+    MyEventArgument* pArg = g_pEventManager->m_pEventArgumentPool.GetObjectFromPool(); \
+    pArg->m_NameInt = *(uint64*)name; \
+    pArg->m_Type = MyEventArgument::Type_##ArgumentName; \
+    pArg->m_##ArgumentName = value; \
+    AttachArgument( pArg ); \
 }
 
-//void MyEvent::AttachInt(char* name, int32 value)
-//void MyEvent::AttachUnsignedInt(char* name, uint32 value)
-//void MyEvent::AttachFloat(char* name, float value)
-//void MyEvent::AttachDouble(char* name, double value)
+CREATE_ATTACH_ARGUMENT_FUNC( Pointer, void* );
+CREATE_ATTACH_ARGUMENT_FUNC( Bool, bool );
+CREATE_ATTACH_ARGUMENT_FUNC( Int, int32 );
+CREATE_ATTACH_ARGUMENT_FUNC( UnsignedInt, uint32 );
+CREATE_ATTACH_ARGUMENT_FUNC( Float, float );
+CREATE_ATTACH_ARGUMENT_FUNC( Double, double );
+//====================================================================================================
+
+bool MyEvent::IsArgumentAttached(char* name)
+{
+    MyEventArgument* pArg = m_FirstArgument;
+    while( pArg )
+    {
+        if( *(uint64*)name == pArg->m_NameInt )
+            return true;
+
+        pArg = pArg->m_NextArgument;
+    }
+
+    return false;
+}
 
 MyEventArgument* MyEvent::GetArgument(char* name)
 {
@@ -80,9 +98,7 @@ MyEventArgument* MyEvent::GetArgument(char* name)
     while( pArg )
     {
         if( *(uint64*)name == pArg->m_NameInt )
-        {
             return pArg;
-        }
 
         pArg = pArg->m_NextArgument;
     }
@@ -92,9 +108,22 @@ MyEventArgument* MyEvent::GetArgument(char* name)
     return 0;
 }
 
-//void* MyEvent::GetPointer(char* name)
-//bool MyEvent::GetBool(char* name)
-//int32 MyEvent::GetInt(char* name)
-//uint32 MyEvent::GetUnsignedInt(char* name)
-//float MyEvent::GetFloat(char* name)
-//double MyEvent::GetDouble(char* name)
+//====================================================================================================
+// Create a function for each type of argument in ArgumentTypes enum
+//====================================================================================================
+#define CREATE_GET_ARGUMENT_FUNC(ArgumentName, ArgumentType, DefaultValue) \
+ArgumentType MyEvent::Get##ArgumentName(char* name) \
+{ \
+    MyEventArgument* pArg = GetArgument( name ); \
+    if( pArg ) \
+        return pArg->m_##ArgumentName; \
+    return DefaultValue; \
+}
+
+CREATE_GET_ARGUMENT_FUNC( Pointer, void*, 0 );
+CREATE_GET_ARGUMENT_FUNC( Bool, bool, false );
+CREATE_GET_ARGUMENT_FUNC( Int, int32, 0 );
+CREATE_GET_ARGUMENT_FUNC( UnsignedInt, uint32, 0 );
+CREATE_GET_ARGUMENT_FUNC( Float, float, 0 );
+CREATE_GET_ARGUMENT_FUNC( Double, double, 0 );
+//====================================================================================================
