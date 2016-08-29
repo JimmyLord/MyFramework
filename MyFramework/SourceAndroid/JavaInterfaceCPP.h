@@ -39,6 +39,8 @@ extern void App_GLSurfaceView_SurfaceDestroyed();
 
 extern void App_GLRenderer_NativeRender(long currenttimemilliseconds);
 
+extern void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const char* dataSignature, const char* sku, const char* payload);
+
 #ifdef __cplusplus
 }
 #endif

@@ -74,30 +74,66 @@ public class IAPManager
         }
         catch( Exception e )
         {
+			e.printStackTrace();
             Log.v( "Flathead", "Failed to purchase item." );
         }
     }
 
     protected void InternalBuyItem(String sku, String type, String payload) throws RemoteException, IntentSender.SendIntentException
     {
-        Bundle buyIntentBundle = m_IAPService.getBuyIntent( 3, m_Activity.getPackageName(),
-                                                            sku, type, payload );
-                                                            //"android.test.purchased", "inapp", "Custom payload string" );
-                                                            //"android.test.canceled", "inapp", "Custom payload string" );
-                                                            //"android.test.refunded", "inapp", "Custom payload string" );
-                                                            //"android.test.item_unavailable", "inapp", "Custom payload string" );
+        if( m_IAPService.isBillingSupported( 3, m_Activity.getPackageName(), type ) != 0 ) //RESULT_OK )
+        {
+            Log.v( "Flathead", "Billing not supported." );
+        }
+        else
+        {
+            Bundle buyIntentBundle = m_IAPService.getBuyIntent( 3, m_Activity.getPackageName(),
+                                                                sku, type, payload );
+																//"android.test.purchased", "inapp", "Custom payload string" );
+																//"android.test.canceled", "inapp", "Custom payload string" );
+																//"android.test.refunded", "inapp", "Custom payload string" );
+																//"android.test.item_unavailable", "inapp", "Custom payload string" );
 
-        PendingIntent pendingIntent = buyIntentBundle.getParcelable( "BUY_INTENT" );
+			int responseCode = buyIntentBundle.getInt( "RESPONSE_CODE" );
 
-        m_Activity.startIntentSenderForResult( pendingIntent.getIntentSender(),
-                                               1001, new Intent(), Integer.valueOf( 0 ), Integer.valueOf( 0 ),
-                                               Integer.valueOf( 0 ) );
+			Log.v( "Flathead", "m_IAPService.getBuyIntent responseCode = " + responseCode );
+
+			if( responseCode == 0 ) //BILLING_RESPONSE_RESULT_OK )
+			{
+				PendingIntent pendingIntent = buyIntentBundle.getParcelable( "BUY_INTENT" );
+
+				// pendingIntent can be null if no account is logged in
+				if( pendingIntent == null )
+				{
+					Log.v( "Flathead", "pendingIntent is null, is account logged in?" );
+					return;
+				}
+
+				m_Activity.startIntentSenderForResult( pendingIntent.getIntentSender(),
+													   1001, new Intent(), Integer.valueOf( 0 ), Integer.valueOf( 0 ),
+													   Integer.valueOf( 0 ) );
+			}
+			else
+			{
+				NativeOnResult( responseCode, "", "", "", "" );
+			}
+        }
     }
 
     public Boolean OnResult(int requestCode, int resultCode, Intent data)
     {
         if( requestCode == 1001 )
         {
+			//{
+			//   "orderId":"GPA.1234-5678-9012-34567",
+			//   "packageName":"com.example.app",
+			//   "productId":"exampleSku",
+			//   "purchaseTime":1345678900000,
+			//   "purchaseState":0,
+			//   "developerPayload":"bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ",
+			//   "purchaseToken":"opaque-token-up-to-1000-characters"
+			//}
+
             int responseCode = data.getIntExtra( "RESPONSE_CODE", 0 );
             String purchaseData = data.getStringExtra( "INAPP_PURCHASE_DATA" );
             String dataSignature = data.getStringExtra( "INAPP_DATA_SIGNATURE" );
@@ -108,12 +144,17 @@ public class IAPManager
                 {
                     JSONObject jo = new JSONObject( purchaseData );
                     String sku = jo.getString( "productId" );
-                    Log.v( "Flathead", "Purchase successful");
+                    String payload = jo.getString( "developerPayload" );
+
+					Log.v( "Flathead", "Purchase successful");
+					NativeOnResult( responseCode, purchaseData, dataSignature, sku, payload );
                 }
                 catch( JSONException e )
                 {
                     Log.v( "Flathead", "Failed to parse purchase data." );
                     e.printStackTrace();
+
+					NativeOnResult( responseCode, purchaseData, dataSignature, "", "" );
                 }
             }
 
@@ -122,4 +163,6 @@ public class IAPManager
 
         return false;
     }
+
+    private static native void NativeOnResult(int responseCode, String purchaseData, String dataSignature, String sku, String payload);
 }

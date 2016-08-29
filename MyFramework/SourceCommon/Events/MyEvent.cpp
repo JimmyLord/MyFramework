@@ -21,7 +21,7 @@ MyEvent::~MyEvent()
 {
 }
 
-void MyEvent::CheckIfArgumentIsAlreadyAttached(char* name) // Protected
+void MyEvent::CheckIfArgumentIsAlreadyAttached(const char* name) // Protected
 {
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
@@ -61,7 +61,7 @@ void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected
 // Create a function for each type of argument in ArgumentTypes enum
 //====================================================================================================
 #define CREATE_ATTACH_ARGUMENT_FUNC(ArgumentName, ArgumentType) \
-void MyEvent::Attach##ArgumentName(char* name, ArgumentType value) \
+void MyEvent::Attach##ArgumentName(const char* name, ArgumentType value) \
 { \
     MyEventArgument* pArg = g_pEventManager->m_pEventArgumentPool.GetObjectFromPool(); \
     pArg->m_NameInt = *(uint64*)name; \
@@ -78,7 +78,7 @@ CREATE_ATTACH_ARGUMENT_FUNC( Float, float );
 CREATE_ATTACH_ARGUMENT_FUNC( Double, double );
 //====================================================================================================
 
-bool MyEvent::IsArgumentAttached(char* name)
+bool MyEvent::IsArgumentAttached(const char* name)
 {
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
@@ -92,7 +92,7 @@ bool MyEvent::IsArgumentAttached(char* name)
     return false;
 }
 
-MyEventArgument* MyEvent::GetArgument(char* name)
+MyEventArgument* MyEvent::GetArgument(const char* name)
 {
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
@@ -112,7 +112,7 @@ MyEventArgument* MyEvent::GetArgument(char* name)
 // Create a function for each type of argument in ArgumentTypes enum
 //====================================================================================================
 #define CREATE_GET_ARGUMENT_FUNC(ArgumentName, ArgumentType, DefaultValue) \
-ArgumentType MyEvent::Get##ArgumentName(char* name) \
+ArgumentType MyEvent::Get##ArgumentName(const char* name) \
 { \
     MyEventArgument* pArg = GetArgument( name ); \
     if( pArg ) \

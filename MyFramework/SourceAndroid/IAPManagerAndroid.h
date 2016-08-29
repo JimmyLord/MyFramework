@@ -18,9 +18,17 @@ class IAPManager
 protected:
     bool m_Initialized;
 
+    bool m_AttemptingNewPurchase;
+    const char* m_IAPProductID;
+
 public:
     IAPManager();
     virtual ~IAPManager();
+
+    void Initialize();
+
+    static bool StaticHandleEvent(void* pObjectPtr, MyEvent* pEvent) { ((IAPManager*)pObjectPtr)->HandleEvent( pEvent ); }
+    bool HandleEvent(MyEvent* pEvent);
 
     void Purchase(const char* IAPProductID);
     void GetExistingPurchases();

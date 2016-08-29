@@ -216,3 +216,17 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnKeyUp(JNIEnv* env, jobje
     //g_pBMPFactoryLoader = 0;
     //g_pJavaSoundPlayer = 0;
 }
+
+void Java_com_flathead_MYFWPackage_IAPManager_NativeOnResult(JNIEnv* env, jobject thiz,
+                       jint responseCode, jstring jpurchaseData, jstring jdataSignature,
+                       jstring jsku, jstring jpayload)
+{
+    __android_log_print(ANDROID_LOG_INFO, "Flathead", "IAPManager::NativeOnResult");
+
+    const char* purchaseData  = (*env)->GetStringUTFChars( env, jpurchaseData, 0 );
+    const char* dataSignature = (*env)->GetStringUTFChars( env, jdataSignature, 0 );
+    const char* sku           = (*env)->GetStringUTFChars( env, jsku, 0 );
+    const char* payload       = (*env)->GetStringUTFChars( env, jpayload, 0 );
+
+    App_IAPManager_OnResult( responseCode, purchaseData, dataSignature, sku, payload );
+}

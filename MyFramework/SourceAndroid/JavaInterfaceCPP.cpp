@@ -250,3 +250,24 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
     g_pGameCore->OnDrawFrame( 0 );
     g_pGameCore->OnDrawFrameDone();
 }
+
+void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const char* dataSignature,
+                             const char* sku, const char* payload)
+{
+    MyEvent* pIAPEvent = g_pEventManager->CreateNewEvent( Event_IAP );
+
+    if( pIAPEvent )
+    {
+        //int responseCode = event->GetInt( "responseCode" );
+        //const char* sku = (const char*)event->GetPointer( "sku" );
+        //const char* payload = (const char*)event->GetPointer( "payload" );
+
+        pIAPEvent->AttachInt(           "responseCode", responseCode        );
+
+        pIAPEvent->AttachPointer(       "sku",          (void*)sku          );
+        pIAPEvent->AttachPointer(       "payload",      (void*)payload      );
+
+        LOGInfo( LOGTag, "Sending IAPEvent\n" );
+        g_pEventManager->SendEventNow( pIAPEvent );
+    }
+}

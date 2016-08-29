@@ -20,6 +20,7 @@ enum EventTypes // ADDING_NEW_EventType
     Event_Undefined,
     Event_MaterialFinishedLoading,
     Event_ShaderFinishedLoading,
+    Event_IAP,
     Event_NumEventTypes,
 };
 

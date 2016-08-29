@@ -150,6 +150,10 @@ void GameCore::OneTimeInit()
     m_pMediaPlayer = MyNew MediaPlayer;
 #endif
 
+#if MYFW_IOS || MYFW_ANDROID
+    g_pIAPManager->Initialize();
+#endif
+
     m_TimeSinceGameStarted = 0;
 }
 

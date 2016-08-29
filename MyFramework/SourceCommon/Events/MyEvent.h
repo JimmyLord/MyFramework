@@ -49,7 +49,7 @@ protected:
     EventTypes m_Type;
     MyEventArgument* m_FirstArgument;
 
-    void CheckIfArgumentIsAlreadyAttached(char* name);
+    void CheckIfArgumentIsAlreadyAttached(const char* name);
     void AttachArgument(MyEventArgument* pArg);
 
 public:
@@ -62,22 +62,22 @@ public:
     // Arguments
     void ClearArguments();
 
-    void AttachPointer(char* name, void* value);
-    void AttachBool(char* name, bool value);
-    void AttachInt(char* name, int32 value);
-    void AttachUnsignedInt(char* name, uint32 value);
-    void AttachFloat(char* name, float value);
-    void AttachDouble(char* name, double value);
+    void AttachPointer(const char* name, void* value);
+    void AttachBool(const char* name, bool value);
+    void AttachInt(const char* name, int32 value);
+    void AttachUnsignedInt(const char* name, uint32 value);
+    void AttachFloat(const char* name, float value);
+    void AttachDouble(const char* name, double value);
 
-    bool IsArgumentAttached(char* name);
+    bool IsArgumentAttached(const char* name);
 
-    MyEventArgument* GetArgument(char* name);
-    void* GetPointer(char* name);
-    bool GetBool(char* name);
-    int32 GetInt(char* name);
-    uint32 GetUnsignedInt(char* name);
-    float GetFloat(char* name);
-    double GetDouble(char* name);
+    MyEventArgument* GetArgument(const char* name);
+    void* GetPointer(const char* name);
+    bool GetBool(const char* name);
+    int32 GetInt(const char* name);
+    uint32 GetUnsignedInt(const char* name);
+    float GetFloat(const char* name);
+    double GetDouble(const char* name);
 
     MyEventArgument* GetFirstArgument() { return m_FirstArgument; }
 };
