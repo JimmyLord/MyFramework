@@ -121,10 +121,10 @@ void IAPManager::Purchase(const char* IAPProductID)
     // call IAPManager::BuyItem()
     jmethodID jfuncBuyItem = g_pJavaEnvironment->GetMethodID( jclassIAPManager, "BuyItem", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
-    jstring jsku = g_pJavaEnvironment->NewStringUTF( "android.test.purchased" );
-    //jstring jsku = g_pJavaEnvironment->NewStringUTF( IAPProductID );
+    //jstring jsku = g_pJavaEnvironment->NewStringUTF( "android.test.purchased" );
+    jstring jsku = g_pJavaEnvironment->NewStringUTF( IAPProductID );
     jstring jtype = g_pJavaEnvironment->NewStringUTF( "inapp" );
-    jstring jpayload = g_pJavaEnvironment->NewStringUTF( "Custom payload string" );
+    jstring jpayload = g_pJavaEnvironment->NewStringUTF( "" );//Custom payload string" );
     g_pJavaEnvironment->CallVoidMethod( jobjIAPManager, jfuncBuyItem, jsku, jtype, jpayload );
 }
 

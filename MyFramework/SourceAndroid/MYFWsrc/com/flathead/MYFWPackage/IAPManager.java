@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -26,10 +27,13 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class IAPManager
 {
     public IInAppBillingService m_IAPService = null;
     public Activity m_Activity = null;
+    private Handler m_IAPMessageHandler = null;
 
     ServiceConnection m_ServiceConnection = new ServiceConnection()
     {
@@ -52,6 +56,8 @@ public class IAPManager
         Intent serviceIntent = new Intent( "com.android.vending.billing.InAppBillingService.BIND" );
         serviceIntent.setPackage( "com.android.vending" );
         m_Activity.bindService( serviceIntent, m_ServiceConnection, Context.BIND_AUTO_CREATE );
+
+        m_IAPMessageHandler = new Handler();
     }
 
     public void Shutdown()
@@ -66,7 +72,7 @@ public class IAPManager
 
     public void BuyItem(String sku, String type, String payload) //(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
     {
-        Log.v( "Flathead", "Java - BuyItem( " + sku + ", " + type + ", " + payload + " )" );
+        //Log.v( "Flathead", "Java - IAPManager: BuyItem( " + sku + ", " + type + ", " + payload + " )" );
 
         try
         {
@@ -74,8 +80,8 @@ public class IAPManager
         }
         catch( Exception e )
         {
-			e.printStackTrace();
-            Log.v( "Flathead", "Failed to purchase item." );
+            e.printStackTrace();
+            //Log.v( "Flathead", "IAPManager: Failed to purchase item." );
         }
     }
 
@@ -83,40 +89,109 @@ public class IAPManager
     {
         if( m_IAPService.isBillingSupported( 3, m_Activity.getPackageName(), type ) != 0 ) //RESULT_OK )
         {
-            Log.v( "Flathead", "Billing not supported." );
+            //Log.v( "Flathead", "IAPManager: Billing not supported." );
         }
         else
         {
             Bundle buyIntentBundle = m_IAPService.getBuyIntent( 3, m_Activity.getPackageName(),
                                                                 sku, type, payload );
-																//"android.test.purchased", "inapp", "Custom payload string" );
-																//"android.test.canceled", "inapp", "Custom payload string" );
-																//"android.test.refunded", "inapp", "Custom payload string" );
-																//"android.test.item_unavailable", "inapp", "Custom payload string" );
+                                                                //"android.test.purchased", "inapp", "Custom payload string" );
+                                                                //"android.test.canceled", "inapp", "Custom payload string" );
+                                                                //"android.test.refunded", "inapp", "Custom payload string" );
+                                                                //"android.test.item_unavailable", "inapp", "Custom payload string" );
 
-			int responseCode = buyIntentBundle.getInt( "RESPONSE_CODE" );
+            int responseCode = buyIntentBundle.getInt( "RESPONSE_CODE" );
 
-			Log.v( "Flathead", "m_IAPService.getBuyIntent responseCode = " + responseCode );
+            //Log.v( "Flathead", "IAPManager: m_IAPService.getBuyIntent responseCode = " + responseCode );
 
-			if( responseCode == 0 ) //BILLING_RESPONSE_RESULT_OK )
-			{
-				PendingIntent pendingIntent = buyIntentBundle.getParcelable( "BUY_INTENT" );
+            if( responseCode == 0 ) //BILLING_RESPONSE_RESULT_OK
+            {
+                PendingIntent pendingIntent = buyIntentBundle.getParcelable( "BUY_INTENT" );
 
-				// pendingIntent can be null if no account is logged in
-				if( pendingIntent == null )
-				{
-					Log.v( "Flathead", "pendingIntent is null, is account logged in?" );
-					return;
-				}
+                // pendingIntent can be null if no account is logged in
+                if( pendingIntent == null )
+                {
+                    //Log.v( "Flathead", "IAPManager: pendingIntent is null, is account logged in?" );
+                    return;
+                }
 
-				m_Activity.startIntentSenderForResult( pendingIntent.getIntentSender(),
-													   1001, new Intent(), Integer.valueOf( 0 ), Integer.valueOf( 0 ),
-													   Integer.valueOf( 0 ) );
-			}
-			else
-			{
-				NativeOnResult( responseCode, "", "", "", "" );
-			}
+                m_Activity.startIntentSenderForResult( pendingIntent.getIntentSender(),
+                                                       1001, new Intent(), Integer.valueOf( 0 ), Integer.valueOf( 0 ),
+                                                       Integer.valueOf( 0 ) );
+            }
+            else
+            {
+            }
+        }
+    }
+
+    public void GetPurchasesAsync()
+    {
+        (new Thread(
+            new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        InternalThreadedGetPurchases();
+                    }
+                    catch( Exception e )
+                    {
+                        e.printStackTrace();
+                        //Log.v( "Flathead", "IAPManager: GetPurchasesAsync threw exception." );
+                    }
+                }
+            }
+        )).start();
+    }
+
+    protected void InternalThreadedGetPurchases() throws RemoteException
+    {
+        String continuationToken = null;
+
+        while( true )
+        {
+            if( m_IAPService != null ) // service may not be initialized yet, so spin until it is.
+            {
+                //Log.v( "Flathead", "IAPManager: checking for ownedItems." );
+
+                Bundle ownedItems = m_IAPService.getPurchases( 3, m_Activity.getPackageName(), "inapp", continuationToken );
+
+                int response = ownedItems.getInt( "RESPONSE_CODE" );
+                //Log.v( "Flathead", "IAPManager: ownedItems response code: " + response );
+                if( response == 0 )
+                {
+                    ArrayList<String> ownedSkus = ownedItems.getStringArrayList( "INAPP_PURCHASE_ITEM_LIST" );
+                    ArrayList<String> purchaseDataList = ownedItems.getStringArrayList( "INAPP_PURCHASE_DATA_LIST" );
+                    ArrayList<String> signatureList = ownedItems.getStringArrayList( "INAPP_DATA_SIGNATURE_LIST" );
+
+                    continuationToken = ownedItems.getString( "INAPP_CONTINUATION_TOKEN" );
+
+                    //Log.v( "Flathead", "IAPManager: purchaseDataList size: " + purchaseDataList.size() );
+
+                    for( int i = 0; i < purchaseDataList.size(); i++ )
+                    {
+                        final String purchaseData = purchaseDataList.get( i );
+                        final String signature = signatureList.get( i );
+                        final String ownedSku = ownedSkus.get( i );
+
+                        m_IAPMessageHandler.post( new Runnable()
+                            {
+                                @Override public void run()
+                                {
+                                    //Log.v( "Flathead", "IAPManager: old purchase found: " + ownedSku );
+                                    NativeOnResult( 7, purchaseData, "", ownedSku, "" );
+                                }
+                            }
+                        );
+                    }
+
+                    // if continuationToken != null, call getPurchases again and pass in the token to retrieve more items
+                    if( continuationToken == null )
+                        break;
+                }
+            }
         }
     }
 
@@ -124,15 +199,15 @@ public class IAPManager
     {
         if( requestCode == 1001 )
         {
-			//{
-			//   "orderId":"GPA.1234-5678-9012-34567",
-			//   "packageName":"com.example.app",
-			//   "productId":"exampleSku",
-			//   "purchaseTime":1345678900000,
-			//   "purchaseState":0,
-			//   "developerPayload":"bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ",
-			//   "purchaseToken":"opaque-token-up-to-1000-characters"
-			//}
+            //{
+            //   "orderId":"GPA.1234-5678-9012-34567",
+            //   "packageName":"com.example.app",
+            //   "productId":"exampleSku",
+            //   "purchaseTime":1345678900000,
+            //   "purchaseState":0,
+            //   "developerPayload":"bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ",
+            //   "purchaseToken":"opaque-token-up-to-1000-characters"
+            //}
 
             int responseCode = data.getIntExtra( "RESPONSE_CODE", 0 );
             String purchaseData = data.getStringExtra( "INAPP_PURCHASE_DATA" );
@@ -146,15 +221,15 @@ public class IAPManager
                     String sku = jo.getString( "productId" );
                     String payload = jo.getString( "developerPayload" );
 
-					Log.v( "Flathead", "Purchase successful");
-					NativeOnResult( responseCode, purchaseData, dataSignature, sku, payload );
+                    //Log.v( "Flathead", "IAPManager: Purchase successful");
+                    NativeOnResult( responseCode, purchaseData, dataSignature, sku, payload );
                 }
                 catch( JSONException e )
                 {
-                    Log.v( "Flathead", "Failed to parse purchase data." );
+                    //Log.v( "Flathead", "IAPManager: Failed to parse purchase data." );
                     e.printStackTrace();
 
-					NativeOnResult( responseCode, purchaseData, dataSignature, "", "" );
+                    NativeOnResult( responseCode, purchaseData, dataSignature, "", "" );
                 }
             }
 

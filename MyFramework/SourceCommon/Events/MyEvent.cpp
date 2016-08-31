@@ -41,10 +41,14 @@ void MyEvent::ClearArguments()
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
     {
+        MyEventArgument* pNextArg = pArg->m_NextArgument;
+
+        pArg->m_NextArgument = 0;
         g_pEventManager->m_pEventArgumentPool.ReturnObjectToPool( pArg );
 
-        pArg = pArg->m_NextArgument;
+        pArg = pNextArg;
     }
+    m_FirstArgument = 0;
 }
 
 void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected

@@ -225,6 +225,7 @@ public class MYFWActivity extends Activity
                         GetDeviceName() );
 
         m_IAPManager = new IAPManager( this );
+        m_IAPManager.GetPurchasesAsync();
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data)
