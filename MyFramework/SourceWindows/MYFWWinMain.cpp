@@ -712,7 +712,7 @@ int MYFWWinMain(int width, int height)
                             double timebefore = MyTime_GetSystemTime();
 
                             CreateDirectory( L"!Screenshots", 0 );
-                            sprintf_s( tempname, MAX_PATH, "!Screenshots/Screenshot_%f.bmp", MyTime_GetSystemTime() );
+                            sprintf_s( tempname, MAX_PATH, "!Screenshots/Screenshot_%f", MyTime_GetSystemTime() );
                             SaveScreenshot( g_WindowWidth, g_WindowHeight, tempname );
 
                             double timeafter = MyTime_GetSystemTime();
