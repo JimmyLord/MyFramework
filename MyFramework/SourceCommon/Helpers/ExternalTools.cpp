@@ -39,6 +39,23 @@ char g_TextToShare_Body[1000];
 #include "../../../MyFramework/SourceNaCL/MainInstance.h"
 #endif
 
+void SetRenderMode(bool continuous)
+{
+#if MYFW_ANDROID
+    LOGInfo( LOGTag, "[Flow] Setting render mode() %d\n", continuous );
+
+    if( g_pMainActivity )
+    {
+        jclass jActivity = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+        if( jActivity )
+        {
+            jmethodID jSetRenderMode = g_pJavaEnvironment->GetMethodID( jActivity, "SetRenderMode", "(Z)V" );
+            g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, jSetRenderMode, continuous );
+        }
+    }
+#endif
+}
+
 void SetExitOnBackButton(bool exit)
 {
 #if MYFW_ANDROID

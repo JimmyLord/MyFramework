@@ -84,6 +84,14 @@ public class MYFWActivity extends Activity
     public SoundPlayer GetSoundPlayer() { return m_SoundPlayer; }
     public IAPManager GetIAPManager() { return m_IAPManager; }
 
+    public void SetRenderMode(boolean continuous) // (Z)V
+    {
+        if( continuous )
+            m_GLView.setRenderMode( GLSurfaceView.RENDERMODE_CONTINUOUSLY );
+        else
+            m_GLView.setRenderMode( GLSurfaceView.RENDERMODE_WHEN_DIRTY );
+    }
+
     public File GetFilesDir() // ()Ljava/io/File;
     {
         return getFilesDir();
@@ -238,6 +246,10 @@ public class MYFWActivity extends Activity
     {
         super.onUserInteraction();
 
+        //Log.v( "Flathead", "[Flow] Java - onUserInteraction" );
+
+        m_GLView.setRenderMode( GLSurfaceView.RENDERMODE_CONTINUOUSLY );
+
         if( m_ShowAds )
         {
             // if( m_AdViewParent.getChildCount() == 0 )
@@ -247,6 +259,10 @@ public class MYFWActivity extends Activity
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        //Log.v( "Flathead", "[Flow] Java - onKeyDown" );
+
+        m_GLView.setRenderMode( GLSurfaceView.RENDERMODE_CONTINUOUSLY );
+
         switch( keyCode )
         {
         case KeyEvent.KEYCODE_BACK:
@@ -335,6 +351,8 @@ public class MYFWActivity extends Activity
 
     @Override public void onConfigurationChanged(Configuration newConfig)
     {
+        m_GLView.setRenderMode( GLSurfaceView.RENDERMODE_CONTINUOUSLY );
+
         // Checks the orientation of the screen
         if( newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE )
         {
@@ -441,12 +459,17 @@ class MyGL2SurfaceView extends GLSurfaceView
         m_Renderer = new MyGL2Renderer();
         setRenderer( m_Renderer );
 
+        setRenderMode( RENDERMODE_CONTINUOUSLY );
+        //setRenderMode( RENDERMODE_WHEN_DIRTY );
+
         //Log.v( "Flathead", "MyGL2SurfaceView constructor end" );
     }
 
     @Override public boolean onTouchEvent(final MotionEvent ev)
     {
-        // Log.v("Flathead", "Java - MyGL2SurfaceView - onTouchEvent");
+        //Log.v("Flathead", "Java - MyGL2SurfaceView - onTouchEvent");
+
+        setRenderMode( RENDERMODE_CONTINUOUSLY );
 
         int action = ev.getAction();
         int actionindex = ev.getActionIndex();
@@ -480,6 +503,9 @@ class MyGL2SurfaceView extends GLSurfaceView
     @Override public void onResume()
     {
         Log.v( "Flathead", "Java - MyGL2SurfaceView - onResume" );
+
+        setRenderMode( RENDERMODE_CONTINUOUSLY );
+
         super.onResume();
     }
 
@@ -494,6 +520,8 @@ class MyGL2SurfaceView extends GLSurfaceView
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
     {
         Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceChanged()" );
+
+        setRenderMode( RENDERMODE_CONTINUOUSLY );
 
         super.surfaceChanged( holder, format, w, h );
         NativeOnSurfaceChanged( w, h );
