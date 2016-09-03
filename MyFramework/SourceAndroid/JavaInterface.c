@@ -125,20 +125,20 @@ void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnTouchEvent(JNIEnv* e
     //__android_log_print(ANDROID_LOG_INFO, "Flathead", "NativeOnTouchEvent (%d %d %d)(%d %d)(%f,%f)(%f %f)", action, actionindex, actionmasked, tool, id, x, y, pressure, size);
 }
 
-void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceCreated()
+void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceCreated()
 {
     __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceCreated");
 
-    App_GLSurfaceView_SurfaceCreated();
+    App_GLRenderer_SurfaceCreated();
 
     g_AppAlive = 1;
 }
 
-void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h)
+void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceChanged(JNIEnv* env, jobject thiz, jint w, jint h)
 {
     __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceChanged (%dx%d)", w, h);
 
-    App_GLSurfaceView_SurfaceChanged( w, h );
+    App_GLRenderer_SurfaceChanged( w, h );
 }
 
 // This is called when the app lost focus, so potentially we lost all opengl handles.

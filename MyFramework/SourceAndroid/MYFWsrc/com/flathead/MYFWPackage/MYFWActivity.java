@@ -514,7 +514,6 @@ class MyGL2SurfaceView extends GLSurfaceView
         Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceCreated()" );
 
         super.surfaceCreated( holder );
-        NativeOnSurfaceCreated();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
@@ -524,7 +523,6 @@ class MyGL2SurfaceView extends GLSurfaceView
         setRenderMode( RENDERMODE_CONTINUOUSLY );
 
         super.surfaceChanged( holder, format, w, h );
-        NativeOnSurfaceChanged( w, h );
     }
 
     @Override public void surfaceDestroyed(SurfaceHolder holder)
@@ -535,8 +533,6 @@ class MyGL2SurfaceView extends GLSurfaceView
         NativeOnSurfaceDestroyed();
     }
 
-    private static native void NativeOnSurfaceCreated();
-    private static native void NativeOnSurfaceChanged(int w, int h);
     private static native void NativeOnSurfaceDestroyed();
 
     private static native void NativeOnTouchEvent(Object activity,
@@ -551,12 +547,14 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config)
     {
-        //Log.v( "Flathead", "Java - MyGL2Renderer - onSurfaceCreated" );
+        Log.v( "Flathead", "[Flow] Java - MyGL2Renderer - onSurfaceCreated" );
+        NativeOnSurfaceCreated();
     }
 
     public void onSurfaceChanged(GL10 gl, int w, int h)
     {
-        //Log.v( "Flathead", "Java - MyGL2Renderer - onSurfaceChanged" );
+        Log.v( "Flathead", "[Flow] Java - MyGL2Renderer - onSurfaceChanged" );
+        NativeOnSurfaceChanged( w, h );
     }
 
     public void onDrawFrame(GL10 gl)
@@ -581,6 +579,9 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
                       Global.m_Activity.GetBMPFactoryLoader(),
                       Global.m_Activity.GetSoundPlayer() );
     }
+
+    private static native void NativeOnSurfaceCreated();
+    private static native void NativeOnSurfaceChanged(int w, int h);
 
     private static native void NativeRender(Object activity, Object assetmgr, Object bmploader, Object sndplayer);
 }
