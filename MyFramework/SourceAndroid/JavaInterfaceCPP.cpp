@@ -97,29 +97,6 @@ void App_Activity_OnBackPressed()
     pthread_mutex_unlock( &g_TouchInputMutex );
 }
 
-void App_GLRenderer_SurfaceCreated()
-{
-    if( g_pGameCore )
-    {
-        g_pGameCore->OnSurfaceCreated();
-    }
-}
-
-void App_GLRenderer_SurfaceChanged(int w, int h)
-{
-    glViewport(0, 0, w, h);
-
-    if( g_pGameCore )
-    {
-        g_pGameCore->OnSurfaceChanged( 0, 0, w, h );
-    }
-}
-
-void App_GLSurfaceView_SurfaceDestroyed()
-{
-    g_pGameCore->OnSurfaceLost();
-}
-
 void App_Activity_OnKeyDown(int keycode, int unicodechar)
 {
     g_pGameCore->OnKeyDown( keycode, unicodechar );
@@ -168,6 +145,28 @@ void App_GLSurfaceView_OnTouch(int action, int actionindex, int actionmasked, in
     event->size = size;
    
     pthread_mutex_unlock( &g_TouchInputMutex );
+}
+
+void App_GLRenderer_SurfaceCreated()
+{
+    if( g_pGameCore )
+    {
+        // in theory should get called only the first time the context is created
+        // or after resuming if the context was destroyed
+        // so, invalidate all the gl objects and rebuild them later.
+        g_pGameCore->OnSurfaceLost();
+        g_pGameCore->OnSurfaceCreated();
+    }
+}
+
+void App_GLRenderer_SurfaceChanged(int w, int h)
+{
+    glViewport( 0, 0, w, h );
+
+    if( g_pGameCore )
+    {
+        g_pGameCore->OnSurfaceChanged( 0, 0, w, h );
+    }
 }
 
 void App_GLRenderer_NativeRender(long currenttimemilliseconds)

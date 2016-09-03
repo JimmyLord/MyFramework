@@ -244,15 +244,6 @@ void GameCore::OnFocusLost()
 
 void GameCore::OnSurfaceCreated()
 {
-    // Android can call GLSurfaceView.Renderer::onSurfaceCreated()
-    //     without having destroyed the previous surface with GLSurfaceView::surfaceDestroyed()
-    //     if that happens, just invalidate all objects
-    if( m_GLSurfaceIsValid )
-    {
-        LOGInfo( LOGTag, "[Flow] forcing OnSurfaceLost(), didn't know surface was destroyed.\n" );
-        OnSurfaceLost();
-    }
-
     m_GLSurfaceIsValid = true;
 
     LOGInfo( LOGTag, "[Flow] onSurfaceCreated()\n" );

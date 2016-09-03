@@ -35,8 +35,6 @@ extern void App_GLSurfaceView_OnTouch(int action, int actionindex, int actionmas
 
 extern void App_GLRenderer_SurfaceCreated();
 extern void App_GLRenderer_SurfaceChanged(int w, int h);
-extern void App_GLSurfaceView_SurfaceDestroyed();
-
 extern void App_GLRenderer_NativeRender(long currenttimemilliseconds);
 
 extern void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const char* dataSignature, const char* sku, const char* payload);

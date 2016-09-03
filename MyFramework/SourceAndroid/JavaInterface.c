@@ -141,14 +141,6 @@ void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeOnSurfaceChanged(JNIEnv* 
     App_GLRenderer_SurfaceChanged( w, h );
 }
 
-// This is called when the app lost focus, so potentially we lost all opengl handles.
-void Java_com_flathead_MYFWPackage_MyGL2SurfaceView_NativeOnSurfaceDestroyed(JNIEnv* env)
-{
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnSurfaceDestroyed");
-
-    App_GLSurfaceView_SurfaceDestroyed();
-}
-
 // Call to render the next GL frame
 void Java_com_flathead_MYFWPackage_MyGL2Renderer_NativeRender(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer)
 {

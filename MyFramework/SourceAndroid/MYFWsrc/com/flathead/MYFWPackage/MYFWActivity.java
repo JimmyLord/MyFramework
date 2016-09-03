@@ -460,7 +460,6 @@ class MyGL2SurfaceView extends GLSurfaceView
         setRenderer( m_Renderer );
 
         setRenderMode( RENDERMODE_CONTINUOUSLY );
-        //setRenderMode( RENDERMODE_WHEN_DIRTY );
 
         //Log.v( "Flathead", "MyGL2SurfaceView constructor end" );
     }
@@ -491,49 +490,17 @@ class MyGL2SurfaceView extends GLSurfaceView
                                 Global.m_Activity.GetSoundPlayer(), action, actionindex,
                                 actionmasked, tool, id, x, y, pressure, size );
         }
-        return true;
-    }
 
-    @Override public void onPause()
-    {
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - onPause" );
-        super.onPause();
+        return true;
     }
 
     @Override public void onResume()
     {
-        Log.v( "Flathead", "Java - MyGL2SurfaceView - onResume" );
-
-        setRenderMode( RENDERMODE_CONTINUOUSLY );
-
+        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - onResume" );
         super.onResume();
-    }
-
-    @Override public void surfaceCreated(SurfaceHolder holder)
-    {
-        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceCreated()" );
-
-        super.surfaceCreated( holder );
-    }
-
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
-    {
-        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceChanged()" );
 
         setRenderMode( RENDERMODE_CONTINUOUSLY );
-
-        super.surfaceChanged( holder, format, w, h );
     }
-
-    @Override public void surfaceDestroyed(SurfaceHolder holder)
-    {
-        Log.v( "Flathead", "[Flow] Java - MyGL2SurfaceView - surfaceDestroyed()" );
-
-        super.surfaceDestroyed( holder );
-        NativeOnSurfaceDestroyed();
-    }
-
-    private static native void NativeOnSurfaceDestroyed();
 
     private static native void NativeOnTouchEvent(Object activity,
                                                   Object assetmgr, Object bmploader, Object sndplayer, int action,
@@ -559,20 +526,21 @@ class MyGL2Renderer implements GLSurfaceView.Renderer
 
     public void onDrawFrame(GL10 gl)
     {
-        long endTime = System.currentTimeMillis();
-        long dt = endTime - startTime;
-        if( dt < 1000 / 30 )
-        {
-            try
-            {
-                Thread.sleep( 1000 / 30 - dt );
-            }
-            catch( InterruptedException e )
-            {
-                //e.printStackTrace();
-            }
-        }
-        startTime = System.currentTimeMillis();
+        // TODO: limit fps to 30, taking this out for now, should be configurable
+        //long endTime = System.currentTimeMillis();
+        //long dt = endTime - startTime;
+        //if( dt < 1000 / 30 )
+        //{
+        //    try
+        //    {
+        //        Thread.sleep( 1000 / 30 - dt );
+        //    }
+        //    catch( InterruptedException e )
+        //    {
+        //        //e.printStackTrace();
+        //    }
+        //}
+        //startTime = System.currentTimeMillis();
 
         //Log.v( "Flathead", "[Flow] Java - MyGL2Renderer - onDrawFrame" );
         NativeRender( Global.m_Activity, Global.m_Activity.GetAssetManager(),
