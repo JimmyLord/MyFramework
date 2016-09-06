@@ -473,7 +473,7 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
     m_pBuffer = buffer;
     m_FileLength = length;
     m_BytesRead = length;
-    m_FileLoadStatus = FileLoadStatus_Success;
+    m_FileLoadStatus = FileLoadStatus_LoadedButNotFinalized;
 }
 
 void MyFileObject::UnloadContents()
