@@ -107,7 +107,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
             // or assert if the character immediately following the #endif isn't a space.
 
             // If there's any code after an #endif
-            if( m_pBuffer[i+6] != '\r' || m_pBuffer[i+6] != '\n' )
+            if( m_pBuffer[i+6] != '\r' && m_pBuffer[i+6] != '\n' )
             {
                 if( m_pBuffer[i+6] == ' ' )
                 {
