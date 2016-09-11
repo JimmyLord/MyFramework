@@ -241,6 +241,8 @@ void FileManager::Tick()
     // The previously loading file is now loaded, so call it's "finished loading" callbacks.
     if( m_pLastFileLoadedByThread[threadindex] )
     {
+        m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
+
         // inform all registered objects that the file finished loading.
         for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
         {

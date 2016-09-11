@@ -199,6 +199,7 @@ void SetMouseLock(bool lock)
         g_MouseYPositionWhenLocked = p.y;
 
         SetCursorPos( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
+        g_SystemMouseIsLocked = true;
     }
     else
     {
@@ -267,13 +268,13 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
             }
         }
-        else
+    }
+    else
+    {
+        // Only send mouse positions if system mouse isn't locked
+        if( g_SystemMouseIsLocked == false )
         {
-            // Only send mouse positions if system mouse isn't locked
-            if( g_SystemMouseIsLocked == false )
-            {
-                pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 );
-            }
+            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 );
         }
     }
 }
@@ -515,6 +516,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SETFOCUS:
         {
             g_pGameCore->OnFocusGained();
+
+            if( g_GameWantsLockedMouse )
+            {
+                SetMouseLock( true );
+            }
         }
         break;
 
@@ -528,6 +534,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             for( int i=0; i<3; i++ )
                 g_MouseButtonStates[i] = 0;
+
+            if( g_GameWantsLockedMouse )
+            {
+                g_SystemMouseIsLocked = false;
+            }
         }
         break;
 
@@ -606,6 +617,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         {
             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
+
+            if( g_GameWantsLockedMouse )
+            {
+                SetMouseLock( true );
+            }
         }
         return 0;
     }

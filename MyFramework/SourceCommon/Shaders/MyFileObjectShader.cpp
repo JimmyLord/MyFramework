@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -97,6 +97,30 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                 m_pIncludes[m_NumIncludes].m_Include_StartIndex = i;
                 m_pIncludes[m_NumIncludes].m_Include_EndIndex = i + charsread;
                 m_NumIncludes++;
+            }
+        }
+        else if( m_pBuffer[i] == '#' && strncmp( &m_pBuffer[i], "#endif", 6 ) == 0 )
+        {
+            // Some Android .glsl compilers are strict about characters appearing after an #endif
+            // I like to put comments on some #endif's like so: "#endif //comment"
+            // This code will insert a newline in the space after the #endif if there is one
+            // or assert if the character immediately following the #endif isn't a space.
+
+            // If there's any code after an #endif
+            if( m_pBuffer[i+6] != '\r' && m_pBuffer[i+6] != '\n' )
+            {
+                if( m_pBuffer[i+6] == ' ' )
+                {
+                    // if the next character is a space, then put in a newline
+                    m_pBuffer[i+6] = '\n';
+                }
+                else
+                {
+                    // Assert, since there may be an issue compiling the shader
+                    // it could be fine, since there may be whitespace and this code doesn't check for all types.
+                    LOGError( LOGTag, "Characters found after #endif\n" );
+                    MyAssert( false );
+                }
             }
         }
     }

@@ -34,7 +34,12 @@ class NaCLFileObject;
 enum FileLoadStatus
 {
     FileLoadStatus_Loading,
+    FileLoadStatus_LoadedButNotFinalized,
+    // all states above need to be loading
+
     FileLoadStatus_Success,
+
+    // all states below need to be errors
     FileLoadStatus_Error_FileNotFound,
     FileLoadStatus_Error_Other,
 };
