@@ -176,15 +176,37 @@ public class IAPManager
                         final String signature = signatureList.get( i );
                         final String ownedSku = ownedSkus.get( i );
 
-                        m_IAPMessageHandler.post( new Runnable()
-                            {
-                                @Override public void run()
+                        // for Debugging, consume the old purchase instead of passing it to the app.
+                        //if( false )
+                        //{
+                        //    try
+                        //    {
+                        //        Log.v( "Flathead", "IAPManager: old purchase found consuming it: " + purchaseData );
+                        //
+                        //        JSONObject jo = new JSONObject( purchaseData );
+                        //        final String token = jo.getString( "purchaseToken" );
+                        //
+                        //        m_IAPService.consumePurchase( 3, m_Activity.getPackageName(), token );
+                        //    }
+                        //    catch( JSONException e )
+                        //    {
+                        //        Log.v( "Flathead", "IAPManager: Failed to parse purchase data while consuming." );
+                        //
+                        //        e.printStackTrace();
+                        //    }
+                        //}
+                        //else
+                        {
+                            m_IAPMessageHandler.post( new Runnable()
                                 {
-                                    //Log.v( "Flathead", "IAPManager: old purchase found: " + ownedSku );
-                                    NativeOnResult( 7, purchaseData, "", ownedSku, "" );
+                                    @Override public void run()
+                                    {
+                                        //Log.v( "Flathead", "IAPManager: old purchase found: " + ownedSku );
+                                        NativeOnResult( 7, purchaseData, "", ownedSku, "" );
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        }
                     }
 
                     // if continuationToken != null, call getPurchases again and pass in the token to retrieve more items
@@ -217,16 +239,24 @@ public class IAPManager
             {
                 try
                 {
+                    //Log.v( "Flathead", "IAPManager: purchaseData: " + purchaseData);
+
                     JSONObject jo = new JSONObject( purchaseData );
                     String sku = jo.getString( "productId" );
-                    String payload = jo.getString( "developerPayload" );
+                    
+                    // seems using "android.test.purchased" returns my "developerPayload" of ""
+                    //   but using a real sku in a signed build "developerPayload" of "" doesn't exist in purchaseData
+                    String payload = "";
+                    // TODO: test this "jo.has()"
+                    //if( jo.has( "developerPayload" )
+                    //    payload = jo.getString( "developerPayload" );
 
-                    //Log.v( "Flathead", "IAPManager: Purchase successful");
+                    //Log.v( "Flathead", "IAPManager: Purchase successful" );
                     NativeOnResult( responseCode, purchaseData, dataSignature, sku, payload );
                 }
                 catch( JSONException e )
                 {
-                    //Log.v( "Flathead", "IAPManager: Failed to parse purchase data." );
+                    Log.v( "Flathead", "IAPManager: Failed to parse purchase data." );
                     e.printStackTrace();
 
                     NativeOnResult( responseCode, purchaseData, dataSignature, "", "" );

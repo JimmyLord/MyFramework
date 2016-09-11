@@ -420,9 +420,9 @@ public class MYFWActivity extends Activity
             // //m_AdView.destroy();
         }
 
-        super.onDestroy();
-
         m_IAPManager.Shutdown();
+
+        super.onDestroy();
     }
 
     private static native void NativeOnCreate(Object activity, Object assetmgr,
