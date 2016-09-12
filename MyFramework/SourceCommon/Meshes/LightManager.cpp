@@ -67,7 +67,7 @@ int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos,
     // TODO: store lights in scene graph and cache the nearest lights between frames.
 
     float distances[MAX_LIGHTS_TO_FIND];
-    float furthest = 10000;
+    float furthest = FLT_MAX;
     for( int i=0; i<numtofind; i++ )
     {
         distances[i] = FLT_MAX;
@@ -96,7 +96,7 @@ int LightManager::FindNearestLights(LightTypes type, int numtofind, Vector3 pos,
                         ppLights[j] = ppLights[j-1];
                     }
 
-                    furthest = distances[numtofind];
+                    furthest = distances[numtofind-1];
 
                     distances[i] = distance;
                     ppLights[i] = pLight;
