@@ -392,6 +392,7 @@ typedef unsigned long   u_long;
 #define USE_LOADWAVESFROMFILESYSTEM 0
 #define USE_OPENAL 0
 #include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/WGLExtensions.h"
 #if USE_OPENAL
     #include "Sound/SoundPlayerOpenAL.h"
 #else

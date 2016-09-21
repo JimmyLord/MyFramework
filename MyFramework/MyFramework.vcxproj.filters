@@ -492,6 +492,9 @@
     <ClCompile Include="SourceCommon\DataTypes\MyTypes.cpp">
       <Filter>Source\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="SourceWindows\WGLExtensions.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1039,6 +1042,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\MyTypes.h">
       <Filter>Source\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\WGLExtensions.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

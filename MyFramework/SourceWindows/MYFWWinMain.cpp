@@ -675,6 +675,7 @@ int MYFWWinMain(int width, int height)
 
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
     OpenGL_InitExtensions();
+    WGL_InitExtensions();
 
     // Create and initialize our Game object.
     g_pGameCore->OnSurfaceCreated();

@@ -462,6 +462,7 @@ bool MainApp::OnInit()
 
 #if MYFW_WINDOWS
     OpenGL_InitExtensions();
+    WGL_InitExtensions();
 #endif
 
     // Initialize sockets
