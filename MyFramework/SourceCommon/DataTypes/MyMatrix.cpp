@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -313,22 +313,15 @@ void MyMatrix::CreateOrtho(float left, float right, float bottom, float top, flo
     m44 = 1;
 }
 
-void MyMatrix::CreateLookAtViewLeftHanded(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
-{
-    Vector3 zaxis = (at - eye).Normalize();
-    Vector3 xaxis = (up.Cross(zaxis)).Normalize();
-    Vector3 yaxis = zaxis.Cross(xaxis);
-
-    Vector3 pos = Vector3( -xaxis.Dot( eye ), -yaxis.Dot( eye ), -zaxis.Dot( eye ) );
-
-    SetAxesView( xaxis, yaxis, zaxis, pos );
-}
-
 void MyMatrix::CreateLookAtView(const Vector3 &eye, const Vector3 &up, const Vector3 &at)
 {
+#if MYFW_RIGHTHANDED
     Vector3 zaxis = (eye - at).Normalize();
-    Vector3 xaxis = (up.Cross(zaxis)).Normalize();
-    Vector3 yaxis = zaxis.Cross(xaxis);
+#else
+    Vector3 zaxis = (at - eye).Normalize();
+#endif
+    Vector3 xaxis = (up.Cross( zaxis )).Normalize();
+    Vector3 yaxis = zaxis.Cross( xaxis );
 
     Vector3 pos = Vector3( -xaxis.Dot( eye ), -yaxis.Dot( eye ), -zaxis.Dot( eye ) );
 
