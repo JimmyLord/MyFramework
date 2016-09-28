@@ -642,7 +642,8 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
     }
 
     this->SetFocus();
-    g_SystemMouseIsLocked = true;
+    if( g_GameWantsLockedMouse )
+        g_SystemMouseIsLocked = true;
 }
 
 void MainGLCanvas::MouseLeftDoubleClick(wxMouseEvent& event)
