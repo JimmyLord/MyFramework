@@ -241,14 +241,18 @@ void FileManager::Tick()
     // The previously loading file is now loaded, so call it's "finished loading" callbacks.
     if( m_pLastFileLoadedByThread[threadindex] )
     {
-        m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
-
-        // inform all registered objects that the file finished loading.
-        for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+        // if the file was successfully loaded by the other thread, then mark it loaded and call it's callbacks.
+        if( m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
         {
-            FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+            m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
 
-            pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
+            // inform all registered objects that the file finished loading.
+            for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+            {
+                FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+                pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
+            }
         }
 
         m_pLastFileLoadedByThread[threadindex] = 0;
