@@ -95,14 +95,16 @@ void GamepadManagerXInput::NormalizeStick(Vector2 stick, float deadzone, Vector2
     }
     else // normalize the input to match image above
     {
-        // clamp the magnitude to its expected range
-        if( magnitude > 32767 )
-            magnitude = 32767;
+        // get the direction vector of the thumbstick
+        Vector2 direction = stick / magnitude;
 
-        float normalizedmagnitude = (magnitude - deadzone) / (32767 - deadzone);
-        Vector2 normalizedstick = stick / magnitude;
+        magnitude = (magnitude - deadzone) / (32767 - deadzone);
 
-        *stickout = normalizedstick * normalizedmagnitude;
+        // clamp the magnitude to 1
+        if( magnitude > 1 )
+            magnitude = 1;
+
+        *stickout = direction * magnitude;
     }
 }
 
