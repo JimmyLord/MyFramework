@@ -491,15 +491,22 @@ void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
     {
         pFile->UnregisterFileFinishedLoadingCallback( this );
 
-        LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f, &m_AABounds );
-
-        // TODO: fix if obj loader ever supports submeshes.
-        if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
+        if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
         {
-            //m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-            m_SubmeshList[0]->m_NumIndicesToDraw = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
+            LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f, &m_AABounds );
 
-            m_MeshReady = true;
+            // TODO: fix if obj loader ever supports submeshes.
+            if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
+            {
+                //m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
+                m_SubmeshList[0]->m_NumIndicesToDraw = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
+
+                m_MeshReady = true;
+            }
+        }
+        else
+        {
+            m_MeshReady = false;
         }
     }
 }

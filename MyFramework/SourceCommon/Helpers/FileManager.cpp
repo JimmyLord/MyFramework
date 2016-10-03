@@ -245,14 +245,14 @@ void FileManager::Tick()
         if( m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
         {
             m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
+        }
 
-            // inform all registered objects that the file finished loading.
-            for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
-            {
-                FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+        // inform all registered objects that the file finished loading.
+        for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+        {
+            FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
 
-                pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
-            }
+            pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
         }
 
         m_pLastFileLoadedByThread[threadindex] = 0;
