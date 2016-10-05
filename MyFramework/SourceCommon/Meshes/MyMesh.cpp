@@ -642,7 +642,7 @@ void MyMesh::GuessAndAssignAppropriateShader()
 // ============================================================================================================================
 // Shape creation functions
 // ============================================================================================================================
-void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags)
+void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags, Vector3 offset)
 {
     CreateSubmeshes( 1 );
     MyAssert( m_SubmeshList.Count() == 1 );
@@ -706,6 +706,13 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
             xleft -= boxw / 2.0f;
             xright -= boxw / 2.0f;
         }
+
+        xleft += offset.x;
+        xright += offset.x;
+        ytop += offset.y;
+        ybottom += offset.y;
+        zfront += offset.z;
+        zback += offset.z;
 
         GLushort side;
 
