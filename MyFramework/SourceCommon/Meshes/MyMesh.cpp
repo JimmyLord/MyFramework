@@ -1828,6 +1828,63 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberofsegments)
     m_MeshReady = true;
 }
 
+void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float startradius, float endradius, unsigned int numberofsegments)
+{
+    int numverts = numberofsegments * 2 + 2;
+
+    if( m_SubmeshList.Length() == 0 )
+    {
+        CreateSubmeshes( 1 );
+    }
+    MyAssert( m_SubmeshList.Count() == 1 );
+
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = 0;
+
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_STRIP;
+
+    // delete the old buffers, if we want an circle with more verts.
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
+        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_2dCircle", "Verts" );
+    }
+
+    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+
+    float percentofcircle = (startangle - endangle)/360.0f;
+    float anglechange = (PI*2 * percentofcircle) / numberofsegments;
+
+    for( unsigned int i=0; i<numberofsegments + 1; i++ )
+    {
+        pVerts[i*2 + 0].pos.x = cos( i*anglechange ) * startradius;
+        pVerts[i*2 + 0].pos.y = sin( i*anglechange ) * startradius;
+        pVerts[i*2 + 0].pos.z = 0;
+
+        pVerts[i*2 + 0].uv.x = cos( i*anglechange );
+        pVerts[i*2 + 0].uv.y = sin( i*anglechange );
+
+        pVerts[i*2 + 1].pos.x = cos( i*anglechange ) * endradius;
+        pVerts[i*2 + 1].pos.y = sin( i*anglechange ) * endradius;
+        pVerts[i*2 + 1].pos.z = 0;
+
+        pVerts[i*2 + 1].uv.x = cos( i*anglechange );
+        pVerts[i*2 + 1].uv.y = sin( i*anglechange );
+    }
+
+    m_AABounds.Set( Vector3(0), Vector3(endradius, endradius, 0) );
+
+    m_MeshReady = true;
+}
+
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {
     CreateSubmeshes( 1 );
