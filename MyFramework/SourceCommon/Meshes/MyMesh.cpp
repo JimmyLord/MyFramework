@@ -1861,23 +1861,23 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     float percentofcircle = (startangle - endangle)/360.0f;
-    float anglechange = (PI*2 * percentofcircle) / numberofsegments;
+    float anglechange = (PI*2 * percentofcircle) / numberofsegments * -1;
+
+    float startrad = startangle/180.0f * PI;
 
     for( unsigned int i=0; i<numberofsegments + 1; i++ )
     {
-        pVerts[i*2 + 0].pos.x = cos( i*anglechange ) * startradius;
-        pVerts[i*2 + 0].pos.y = sin( i*anglechange ) * startradius;
+        pVerts[i*2 + 0].pos.x = cos( startrad + i*anglechange ) * endradius;
+        pVerts[i*2 + 0].pos.y = sin( startrad + i*anglechange ) * endradius;
         pVerts[i*2 + 0].pos.z = 0;
+        pVerts[i*2 + 0].uv.x = cos( startrad + i*anglechange );
+        pVerts[i*2 + 0].uv.y = sin( startrad + i*anglechange );
 
-        pVerts[i*2 + 0].uv.x = cos( i*anglechange );
-        pVerts[i*2 + 0].uv.y = sin( i*anglechange );
-
-        pVerts[i*2 + 1].pos.x = cos( i*anglechange ) * endradius;
-        pVerts[i*2 + 1].pos.y = sin( i*anglechange ) * endradius;
+        pVerts[i*2 + 1].pos.x = cos( startrad + i*anglechange ) * startradius;
+        pVerts[i*2 + 1].pos.y = sin( startrad + i*anglechange ) * startradius;
         pVerts[i*2 + 1].pos.z = 0;
-
-        pVerts[i*2 + 1].uv.x = cos( i*anglechange );
-        pVerts[i*2 + 1].uv.y = sin( i*anglechange );
+        pVerts[i*2 + 1].uv.x = cos( startrad + i*anglechange );
+        pVerts[i*2 + 1].uv.y = sin( startrad + i*anglechange );
     }
 
     m_AABounds.Set( Vector3(0), Vector3(endradius, endradius, 0) );
