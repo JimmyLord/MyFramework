@@ -45,6 +45,7 @@ public:
     // the following function will affect existing values in the matrix
     void Scale(float scale);
     void Scale(float sx, float sy, float sz);
+    void Scale(Vector3 scale);
     void Rotate(float angle, float x, float y, float z);
     void Rotate(MyQuat q);
     void TranslatePreRotScale(Vector3 translate);
@@ -61,6 +62,8 @@ public:
     void CreateScale(float scale);
     void CreateScale(float x, float y, float z);
     void CreateScale(Vector3 scale);
+    void CreateRotation(Vector3 eulerdegrees);
+    void CreateRotation(MyQuat rot);
     void CreateTranslation(float x, float y, float z);
     void CreateTranslation(Vector3 pos);
     void CreateSRT(float scale, Vector3 rot, Vector3 pos);

@@ -70,6 +70,20 @@ void MyMatrix::CreateScale(Vector3 scale)
     m44 = 1;
 }
 
+void MyMatrix::CreateRotation(Vector3 eulerdegrees)
+{
+    SetIdentity();
+    Rotate( eulerdegrees.z, 0, 0, 1 ); // roll
+    Rotate( eulerdegrees.x, 1, 0, 0 ); // pitch
+    Rotate( eulerdegrees.y, 0, 1, 0 ); // yaw
+}
+
+void MyMatrix::CreateRotation(MyQuat rot)
+{
+    SetIdentity();
+    Rotate( rot );
+}
+
 void MyMatrix::CreateTranslation(float x, float y, float z)
 {
     m12 = m13 = m14 = m21 = m23 = m24 = m31 = m32 = m34 = 0;
@@ -127,6 +141,13 @@ void MyMatrix::Scale(float sx, float sy, float sz)
     m11 *= sx; m21 *= sx; m31 *= sx; m41 *= sx;
     m12 *= sy; m22 *= sy; m32 *= sy; m42 *= sy;
     m13 *= sz; m32 *= sz; m33 *= sz; m43 *= sz;
+}
+
+void MyMatrix::Scale(Vector3 scale)
+{
+    m11 *= scale.x; m21 *= scale.x; m31 *= scale.x; m41 *= scale.x;
+    m12 *= scale.y; m22 *= scale.y; m32 *= scale.y; m42 *= scale.y;
+    m13 *= scale.z; m32 *= scale.z; m33 *= scale.z; m43 *= scale.z;
 }
 
 void MyMatrix::Rotate(float angle, float x, float y, float z)
