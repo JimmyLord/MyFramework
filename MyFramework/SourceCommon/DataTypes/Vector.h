@@ -20,7 +20,6 @@ public:
     Vector2() {}
     Vector2(float nxy) { x = nxy; y = nxy; }
     Vector2(float nx, float ny) { x = nx; y = ny; }
-    Vector2(int nx, int ny) { x = (float)nx; y = (float)ny; }
     //virtual ~Vector2() {}
 
     inline void Set(float nx, float ny) { x = nx; y = ny; }
@@ -39,16 +38,26 @@ public:
 
     inline Vector2 operator *(const float o) const { return Vector2(this->x * o, this->y * o); }
     inline Vector2 operator /(const float o) const { return Vector2(this->x / o, this->y / o); }
+    inline Vector2 operator +(const float o) const { return Vector2(this->x + o, this->y + o); }
+    inline Vector2 operator -(const float o) const { return Vector2(this->x - o, this->y - o); }
+    inline Vector2 operator *(const Vector2& o) const { return Vector2(this->x * o.x, this->y * o.y); }
+    inline Vector2 operator /(const Vector2& o) const { return Vector2(this->x / o.x, this->y / o.y); }
     inline Vector2 operator +(const Vector2& o) const { return Vector2(this->x + o.x, this->y + o.y); }
     inline Vector2 operator -(const Vector2& o) const { return Vector2(this->x - o.x, this->y - o.y); }
 
     inline Vector2 operator *=(const float o) { this->x *= o; this->y *= o; return *this; }
     inline Vector2 operator /=(const float o) { this->x /= o; this->y /= o; return *this; }
+    inline Vector2 operator +=(const float o) { this->x += o; this->y += o; return *this; }
+    inline Vector2 operator -=(const float o) { this->x -= o; this->y -= o; return *this; }
+    inline Vector2 operator *=(const Vector2& o) { this->x *= o.x; this->y *= o.y; return *this; }
+    inline Vector2 operator /=(const Vector2& o) { this->x /= o.x; this->y /= o.y; return *this; }
     inline Vector2 operator +=(const Vector2& o) { this->x += o.x; this->y += o.y; return *this; }
     inline Vector2 operator -=(const Vector2& o) { this->x -= o.x; this->y -= o.y; return *this; }
 
     float& operator[] (int i) { MyAssert(i>=0 && i<2); return *(&x + i); }
 };
+
+inline Vector2 operator *(float scalar, const Vector2& vector) { return vector * scalar; }
 
 class Vector3
 {
@@ -90,6 +99,8 @@ public:
     inline Vector3 operator /(const float o) const { return Vector3(this->x / o, this->y / o, this->z / o); }
     inline Vector3 operator +(const float o) const { return Vector3(this->x + o, this->y + o, this->z + o); }
     inline Vector3 operator -(const float o) const { return Vector3(this->x - o, this->y - o, this->z - o); }
+    inline Vector3 operator *(const Vector3& o) const { return Vector3(this->x * o.x, this->y * o.y, this->z * o.z); }
+    inline Vector3 operator /(const Vector3& o) const { return Vector3(this->x / o.x, this->y / o.y, this->z / o.z); }
     inline Vector3 operator +(const Vector3& o) const { return Vector3(this->x + o.x, this->y + o.y, this->z + o.z); }
     inline Vector3 operator -(const Vector3& o) const { return Vector3(this->x - o.x, this->y - o.y, this->z - o.z); }
 
@@ -97,6 +108,8 @@ public:
     inline Vector3 operator /=(const float o) { this->x /= o; this->y /= o; this->z /= o; return *this; }
     inline Vector3 operator +=(const float o) { this->x += o; this->y += o; this->z += o; return *this; }
     inline Vector3 operator -=(const float o) { this->x -= o; this->y -= o; this->z -= o; return *this; }
+    inline Vector3 operator *=(const Vector3& o) { this->x *= o.x; this->y *= o.y; this->z *= o.z; return *this; }
+    inline Vector3 operator /=(const Vector3& o) { this->x /= o.x; this->y /= o.y; this->z /= o.z; return *this; }
     inline Vector3 operator +=(const Vector3& o) { this->x += o.x; this->y += o.y; this->z += o.z; return *this; }
     inline Vector3 operator -=(const Vector3& o) { this->x -= o.x; this->y -= o.y; this->z -= o.z; return *this; }
 
@@ -149,6 +162,10 @@ public:
 
     inline Vector4 operator *(const float o) const { return Vector4(this->x * o, this->y * o, this->z * o, this->w * o); }
     inline Vector4 operator /(const float o) const { return Vector4(this->x / o, this->y / o, this->z / o, this->w / o); }
+    inline Vector4 operator +(const float o) const { return Vector4(this->x + o, this->y + o, this->z + o, this->w + o); }
+    inline Vector4 operator -(const float o) const { return Vector4(this->x - o, this->y - o, this->z - o, this->w - o); }
+    inline Vector4 operator *(const Vector4& o) const { return Vector4(this->x * o.x, this->y * o.y, this->z * o.z, this->w * o.w); }
+    inline Vector4 operator /(const Vector4& o) const { return Vector4(this->x / o.x, this->y / o.y, this->z / o.z, this->w / o.w); }
     inline Vector4 operator +(const Vector4& o) const { return Vector4(this->x + o.x, this->y + o.y, this->z + o.z, this->w + o.w); }
     inline Vector4 operator -(const Vector4& o) const { return Vector4(this->x - o.x, this->y - o.y, this->z - o.z, this->w - o.w); }
 
@@ -212,8 +229,12 @@ public:
     inline Vector3Int operator /(const int o) const { return Vector3Int(this->x / o, this->y / o, this->z / o); }
     inline Vector3Int operator +(const int o) const { return Vector3Int(this->x + o, this->y + o, this->z + o); }
     inline Vector3Int operator -(const int o) const { return Vector3Int(this->x - o, this->y - o, this->z - o); }
+    inline Vector3 operator *(const Vector3& o) const { return Vector3(this->x * o.x, this->y * o.y, this->z * o.z); }
+    inline Vector3 operator /(const Vector3& o) const { return Vector3(this->x / o.x, this->y / o.y, this->z / o.z); }
     inline Vector3 operator +(const Vector3& o) const { return Vector3(this->x + o.x, this->y + o.y, this->z + o.z); }
     inline Vector3 operator -(const Vector3& o) const { return Vector3(this->x - o.x, this->y - o.y, this->z - o.z); }
+    inline Vector3Int operator *(const Vector3Int& o) const { return Vector3Int(this->x * o.x, this->y * o.y, this->z * o.z); }
+    inline Vector3Int operator /(const Vector3Int& o) const { return Vector3Int(this->x / o.x, this->y / o.y, this->z / o.z); }
     inline Vector3Int operator +(const Vector3Int& o) const { return Vector3Int(this->x + o.x, this->y + o.y, this->z + o.z); }
     inline Vector3Int operator -(const Vector3Int& o) const { return Vector3Int(this->x - o.x, this->y - o.y, this->z - o.z); }
 
