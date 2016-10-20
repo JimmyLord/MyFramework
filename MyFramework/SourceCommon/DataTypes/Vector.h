@@ -57,7 +57,10 @@ public:
     float& operator[] (int i) { MyAssert(i>=0 && i<2); return *(&x + i); }
 };
 
-inline Vector2 operator *(float scalar, const Vector2& vector) { return vector * scalar; }
+inline Vector2 operator *(float scalar, const Vector2& vector) { return Vector2(scalar * vector.x, scalar * vector.y); }
+inline Vector2 operator /(float scalar, const Vector2& vector) { return Vector2(scalar / vector.x, scalar / vector.y); }
+inline Vector2 operator +(float scalar, const Vector2& vector) { return Vector2(scalar + vector.x, scalar + vector.y); }
+inline Vector2 operator -(float scalar, const Vector2& vector) { return Vector2(scalar - vector.x, scalar - vector.y); }
 
 class Vector3
 {
@@ -118,6 +121,11 @@ public:
     //inline void operator =(const Vector2& o) { x = o.x; y = o.y; z = 0; } // couldn't make this work, used a constructor instead.
 };
 
+inline Vector3 operator *(float scalar, const Vector3& vector) { return Vector3(scalar * vector.x, scalar * vector.y, scalar * vector.z); }
+inline Vector3 operator /(float scalar, const Vector3& vector) { return Vector3(scalar / vector.x, scalar / vector.y, scalar / vector.z); }
+inline Vector3 operator +(float scalar, const Vector3& vector) { return Vector3(scalar + vector.x, scalar + vector.y, scalar + vector.z); }
+inline Vector3 operator -(float scalar, const Vector3& vector) { return Vector3(scalar - vector.x, scalar - vector.y, scalar - vector.z); }
+
 class Vector4
 {
 public:
@@ -172,6 +180,11 @@ public:
     float& operator[] (int i) { MyAssert(i>=0 && i<4); return *(&x + i); }
 };
 
+inline Vector4 operator *(float scalar, const Vector4& vector) { return Vector4(scalar * vector.x, scalar * vector.y, scalar * vector.z, scalar * vector.w); }
+inline Vector4 operator /(float scalar, const Vector4& vector) { return Vector4(scalar / vector.x, scalar / vector.y, scalar / vector.z, scalar / vector.w); }
+inline Vector4 operator +(float scalar, const Vector4& vector) { return Vector4(scalar + vector.x, scalar + vector.y, scalar + vector.z, scalar + vector.w); }
+inline Vector4 operator -(float scalar, const Vector4& vector) { return Vector4(scalar - vector.x, scalar - vector.y, scalar - vector.z, scalar - vector.w); }
+
 class Vector2Int
 {
 public:
@@ -194,6 +207,11 @@ public:
     inline Vector2Int operator +(const Vector2Int& o) const { return Vector2Int(this->x + o.x, this->y + o.y); }
     inline Vector2Int operator -(const Vector2Int& o) const { return Vector2Int(this->x - o.x, this->y - o.y); }
 };
+
+inline Vector2Int operator *(int scalar, const Vector2Int& vector) { return Vector2Int(scalar * vector.x, scalar * vector.y); }
+inline Vector2Int operator /(int scalar, const Vector2Int& vector) { return Vector2Int(scalar / vector.x, scalar / vector.y); }
+inline Vector2Int operator +(int scalar, const Vector2Int& vector) { return Vector2Int(scalar + vector.x, scalar + vector.y); }
+inline Vector2Int operator -(int scalar, const Vector2Int& vector) { return Vector2Int(scalar - vector.x, scalar - vector.y); }
 
 class Vector3Int
 {
@@ -250,6 +268,15 @@ public:
     int& operator[] (int i) { MyAssert(i>=0 && i<3); return *(&x + i); }
 };
 
+inline Vector3 operator *(float scalar, const Vector3Int& vector) { return Vector3(scalar * vector.x, scalar * vector.y, scalar * vector.z); }
+inline Vector3 operator /(float scalar, const Vector3Int& vector) { return Vector3(scalar / vector.x, scalar / vector.y, scalar / vector.z); }
+inline Vector3 operator +(float scalar, const Vector3Int& vector) { return Vector3(scalar + vector.x, scalar + vector.y, scalar + vector.z); }
+inline Vector3 operator -(float scalar, const Vector3Int& vector) { return Vector3(scalar - vector.x, scalar - vector.y, scalar - vector.z); }
+inline Vector3Int operator *(int scalar, const Vector3Int& vector) { return Vector3Int(scalar * vector.x, scalar * vector.y, scalar * vector.z); }
+inline Vector3Int operator /(int scalar, const Vector3Int& vector) { return Vector3Int(scalar / vector.x, scalar / vector.y, scalar / vector.z); }
+inline Vector3Int operator +(int scalar, const Vector3Int& vector) { return Vector3Int(scalar + vector.x, scalar + vector.y, scalar + vector.z); }
+inline Vector3Int operator -(int scalar, const Vector3Int& vector) { return Vector3Int(scalar - vector.x, scalar - vector.y, scalar - vector.z); }
+
 class Vector4Int
 {
 public:
@@ -275,6 +302,11 @@ public:
     inline Vector4Int operator +(const Vector4Int& o) const { return Vector4Int(this->x + o.x, this->y + o.y, this->z + o.z, this->w + o.w); }
     inline Vector4Int operator -(const Vector4Int& o) const { return Vector4Int(this->x - o.x, this->y - o.y, this->z - o.z, this->w - o.w); }
 };
+
+inline Vector4Int operator *(int scalar, const Vector4Int& vector) { return Vector4Int(scalar * vector.x, scalar * vector.y, scalar * vector.z, scalar * vector.w); }
+inline Vector4Int operator /(int scalar, const Vector4Int& vector) { return Vector4Int(scalar / vector.x, scalar / vector.y, scalar / vector.z, scalar / vector.w); }
+inline Vector4Int operator +(int scalar, const Vector4Int& vector) { return Vector4Int(scalar + vector.x, scalar + vector.y, scalar + vector.z, scalar + vector.w); }
+inline Vector4Int operator -(int scalar, const Vector4Int& vector) { return Vector4Int(scalar - vector.x, scalar - vector.y, scalar - vector.z, scalar - vector.w); }
 
 class MyRect
 {
