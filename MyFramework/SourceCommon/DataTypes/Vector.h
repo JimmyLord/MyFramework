@@ -36,6 +36,7 @@ public:
     inline bool operator ==(const Vector2& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y); }
     inline bool operator !=(const Vector2& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y); }
 
+    inline Vector2 operator -() const { return Vector2(-this->x, -this->y); }
     inline Vector2 operator *(const float o) const { return Vector2(this->x * o, this->y * o); }
     inline Vector2 operator /(const float o) const { return Vector2(this->x / o, this->y / o); }
     inline Vector2 operator +(const float o) const { return Vector2(this->x + o, this->y + o); }
@@ -98,6 +99,7 @@ public:
     inline bool operator ==(const Vector3& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z); }
     inline bool operator !=(const Vector3& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z); }
 
+    inline Vector3 operator -() const { return Vector3(-this->x, -this->y, -this->z); }
     inline Vector3 operator *(const float o) const { return Vector3(this->x * o, this->y * o, this->z * o); }
     inline Vector3 operator /(const float o) const { return Vector3(this->x / o, this->y / o, this->z / o); }
     inline Vector3 operator +(const float o) const { return Vector3(this->x + o, this->y + o, this->z + o); }
@@ -168,6 +170,7 @@ public:
     //        );
     //}
 
+    inline Vector4 operator -() const { return Vector4(-this->x, -this->y, -this->z, -this->w); }
     inline Vector4 operator *(const float o) const { return Vector4(this->x * o, this->y * o, this->z * o, this->w * o); }
     inline Vector4 operator /(const float o) const { return Vector4(this->x / o, this->y / o, this->z / o, this->w / o); }
     inline Vector4 operator +(const float o) const { return Vector4(this->x + o, this->y + o, this->z + o, this->w + o); }
@@ -204,6 +207,8 @@ public:
 
     inline bool operator ==(const Vector2Int& o) const { return this->x == o.x && this->y == o.y; }
     inline bool operator !=(const Vector2Int& o) const { return this->x != o.x || this->y != o.y; }
+
+    inline Vector2Int operator -() const { return Vector2Int(-this->x, -this->y); }
     inline Vector2Int operator +(const Vector2Int& o) const { return Vector2Int(this->x + o.x, this->y + o.y); }
     inline Vector2Int operator -(const Vector2Int& o) const { return Vector2Int(this->x - o.x, this->y - o.y); }
 };
@@ -239,6 +244,7 @@ public:
     inline bool operator ==(const Vector3Int& o) const { return this->x == o.x && this->y == o.y && this->z == o.z; }
     inline bool operator !=(const Vector3Int& o) const { return this->x != o.x || this->y != o.y || this->z != o.z; }
 
+    inline Vector3Int operator -() const { return Vector3Int(-this->x, -this->y, -this->z); }
     inline Vector3 operator *(const float o) const { return Vector3(this->x * o, this->y * o, this->z * o); }
     inline Vector3 operator /(const float o) const { return Vector3(this->x / o, this->y / o, this->z / o); }
     inline Vector3 operator +(const float o) const { return Vector3(this->x + o, this->y + o, this->z + o); }
@@ -299,6 +305,8 @@ public:
 
     inline bool operator ==(const Vector4Int& o) const { return this->x == o.x && this->y == o.y && this->z == o.z && this->w == o.w; }
     inline bool operator !=(const Vector4Int& o) const { return this->x != o.x || this->y != o.y || this->z != o.z || this->w != o.w; }
+
+    inline Vector4Int operator -() const { return Vector4Int(-this->x, -this->y, -this->z, -this->w); }
     inline Vector4Int operator +(const Vector4Int& o) const { return Vector4Int(this->x + o.x, this->y + o.y, this->z + o.z, this->w + o.w); }
     inline Vector4Int operator -(const Vector4Int& o) const { return Vector4Int(this->x - o.x, this->y - o.y, this->z - o.z, this->w - o.w); }
 };
@@ -344,6 +352,8 @@ public:
 
     inline bool operator ==(const Vector2T<MyType>& o) const { return this->x == o.x && this->y == o.y; }
     inline bool operator !=(const Vector2T<MyType>& o) const { return this->x != o.x || this->y != o.y; }
+
+    inline Vector2T<MyType> operator -() const { return Vector2T<MyType>(-this->x, -this->y); }
 
     inline Vector2T<MyType> operator *(const float o) const { return Vector2T<MyType>(this->x * o, this->y * o); }
     inline Vector2T<MyType> operator /(const float o) const { return Vector2T<MyType>(this->x / o, this->y / o); }
