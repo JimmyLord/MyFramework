@@ -486,6 +486,14 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
     return newid;
 }
 
+void PanelObjectList::SetIcon(wxTreeItemId id, int iconindex)
+{
+    if( id.IsOk() )
+    {
+        m_pTree_Objects->SetItemImage( id, iconindex );
+    }
+}
+
 void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction)
 {
     //wxTreeItemId idroot = m_pTree_Objects->GetRootItem();

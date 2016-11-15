@@ -122,6 +122,7 @@ public:
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
     wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
 
+    void SetIcon(wxTreeItemId id, int iconindex);
     void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction);
     void SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabelEditCallback pLabelEditFunction);
     void SetCustomObjectForCallback_LeftClick(wxTreeItemId id, void* pObject);
