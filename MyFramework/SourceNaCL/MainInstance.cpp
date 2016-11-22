@@ -375,6 +375,11 @@ void MainInstance::SetMouseLock(bool lock)
     }
 }
 
+bool MainInstance::IsMouseLocked()
+{
+    return m_SystemMouseIsLocked;
+}
+
 void MainInstance::MouseLocked(int32_t somevaluethecallbackfactorywants)
 {
     LOGInfo( LOGTag, "Mouse locked\n" );

@@ -87,6 +87,7 @@ extern unsigned int g_GLCanvasIDActive;
 extern wxDataFormat* g_pMyDataFormat;
 
 void SetMouseLock(bool lock);
+bool IsMouseLocked();
 
 extern MainApp* g_pMainApp;
 

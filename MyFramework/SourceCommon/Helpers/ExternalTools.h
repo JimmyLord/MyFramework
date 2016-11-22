@@ -151,5 +151,6 @@ void ShowKeyboard(bool show);
 bool PlatformSpecific_CheckKeyState(int keycode);
 void PlatformSpecific_SetMousePosition(float x, float y);
 void PlatformSpecific_SetMouseLock(bool lock);
+bool PlatformSpecific_IsMouseLocked();
 
 #endif //__ExternalTools_H__

@@ -318,6 +318,11 @@ void GameCore::SetMouseLock(bool lock)
     PlatformSpecific_SetMouseLock( lock );
 }
 
+bool GameCore::IsMouseLocked()
+{
+    return PlatformSpecific_IsMouseLocked();
+}
+
 bool GameCore::OnTouch(int action, int id, float x, float y, float pressure, float size)
 {
     m_LastInputMethodUsed = InputMethod_Touch;

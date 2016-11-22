@@ -59,6 +59,11 @@ void SetMouseLock(bool lock)
     }
 }
 
+bool IsMouseLocked()
+{
+    return g_SystemMouseIsLocked;
+}
+
 MainFrame::MainFrame(wxWindow* parent)
 : wxFrame( parent, -1, "wxWindow Title", wxPoint( -1, -1 ), wxSize( 1, 1 ), wxDEFAULT_FRAME_STYLE )
 {

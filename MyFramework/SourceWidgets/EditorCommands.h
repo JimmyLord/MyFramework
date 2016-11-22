@@ -10,6 +10,11 @@
 #ifndef __EditorCommands_H__
 #define __EditorCommands_H__
 
+class EditorCommand;
+class EditorCommand_PanelWatchNumberValueChanged;
+class EditorCommand_PanelWatchColorChanged;
+class EditorCommand_PanelWatchPointerChanged;
+
 class EditorCommand
 {
     friend class CommandStack;
