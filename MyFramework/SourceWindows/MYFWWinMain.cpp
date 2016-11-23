@@ -209,6 +209,11 @@ void SetMouseLock(bool lock)
     }
 }
 
+bool IsMouseLocked()
+{
+    return g_SystemMouseIsLocked;
+}
+
 void GenerateMouseEvents(GameCore* pGameCore)
 {
     static unsigned int buttons[3];

@@ -146,6 +146,7 @@ void SetRenderMode(bool continuous);
 void SetExitOnBackButton(bool exit);
 void SetMusicVolume(float volume);
 void LaunchURL(const char* url);
+void LaunchApplication(const char* appname, const char* arguments);
 void ShareString(const char* subject, const char* body);
 void ShowKeyboard(bool show);
 bool PlatformSpecific_CheckKeyState(int keycode);

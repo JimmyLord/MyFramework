@@ -141,7 +141,7 @@ void LaunchURL(const char* url)
     IOSLaunchURL( url );
 #elif MYFW_WINDOWS
     wchar_t urlwide[512];
-    swprintf_s( urlwide, L"%s", url );
+    mbstowcs_s( 0, urlwide, url, 512 );
     ShellExecute( NULL, L"open", urlwide, NULL, NULL, SW_SHOWNORMAL );
 #elif MYFW_BLACKBERRY
     navigator_invoke( url, 0 );
@@ -170,6 +170,17 @@ void LaunchURL(const char* url)
     //MarketplaceDetailTask marketplaceDetailTask = new MarketplaceDetailTask();
     //marketplaceDetailTask.ContentIdentifier = null;
     //marketplaceDetailTask.Show();
+#endif
+}
+
+void LaunchApplication(const char* appname, const char* arguments)
+{
+#if MYFW_WINDOWS
+    wchar_t exewide[512];
+    mbstowcs_s( 0, exewide, appname, 512 );
+    wchar_t argswide[512];
+    mbstowcs_s( 0, argswide, arguments, 512 );
+    ShellExecute( NULL, L"open", exewide, argswide, NULL, SW_SHOWNORMAL );
 #endif
 }
 
