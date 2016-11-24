@@ -16,7 +16,10 @@ Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* 
     m_pMatViewProj = matviewproj;
 
     m_pMaterial = debugdrawmaterial;
-    m_pMaterial->AddRef();
+    if( m_pMaterial )
+    {
+        m_pMaterial->AddRef();
+    }
 }
 
 Box2DDebugDraw::~Box2DDebugDraw()

@@ -14,6 +14,8 @@
 
 Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
 {
+    m_pDebugDraw = 0;
+
     CreateWorld( debugdrawmaterial, matviewproj, pContactListener );
 }
 
@@ -27,6 +29,7 @@ void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* ma
     m_pWorld = MyNew b2World( b2Vec2( 0, -10 ) );
 
     // Setup debug draw object.
+    if( debugdrawmaterial != 0 )
     {
         m_pDebugDraw = MyNew Box2DDebugDraw( debugdrawmaterial, matviewproj );
         m_pWorld->SetDebugDraw( m_pDebugDraw );
