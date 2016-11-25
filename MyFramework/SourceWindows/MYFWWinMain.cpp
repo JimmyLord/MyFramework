@@ -113,8 +113,16 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
             // If the game is set to quit on escape, then quit.
             if( i == MYKEYCODE_ESC )
             {
-                if( g_EscapeButtonWillQuit )
-                    g_CloseProgramRequested = true;
+                if( g_SystemMouseIsLocked == true )
+                {
+                    g_SystemMouseIsLocked = false;
+                    ShowCursor( true );
+                }
+                else
+                {
+                    if( g_EscapeButtonWillQuit )
+                        g_CloseProgramRequested = true;
+                }
             }
             
             //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
@@ -189,17 +197,6 @@ void SetMouseLock(bool lock)
         LOGInfo( LOGTag, "SetMouseLock( true );\n" );
 
         g_GameWantsLockedMouse = true;
-
-        POINT p;
-        p.x = g_WindowWidth/2;
-        p.y = g_WindowHeight/2;
-        ClientToScreen( hWnd, &p );
-
-        g_MouseXPositionWhenLocked = p.x;
-        g_MouseYPositionWhenLocked = p.y;
-
-        SetCursorPos( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
-        g_SystemMouseIsLocked = true;
     }
     else
     {
@@ -239,7 +236,22 @@ void GenerateMouseEvents(GameCore* pGameCore)
     for( int i=0; i<3; i++ )
     {
         if( buttons[i] == 1 && buttonsold[i] == 0 )
-            pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
+        {
+            if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
+            {
+                g_SystemMouseIsLocked = true;
+                ShowCursor( false );
+                
+                POINT p;
+                GetCursorPos( &p );
+                g_MouseXPositionWhenLocked = p.x;
+                g_MouseYPositionWhenLocked = p.y;
+            }
+            else
+            {
+                pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
+            }
+        }
 
         if( buttons[i] == 0 && buttonsold[i] == 1 )
             pGameCore->OnTouch( GCBA_Up, i, (float)px, (float)py, 0, 0 ); // new release
@@ -521,11 +533,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SETFOCUS:
         {
             g_pGameCore->OnFocusGained();
-
-            if( g_GameWantsLockedMouse )
-            {
-                SetMouseLock( true );
-            }
         }
         break;
 
@@ -543,6 +550,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if( g_GameWantsLockedMouse )
             {
                 g_SystemMouseIsLocked = false;
+                ShowCursor( true );
             }
         }
         break;
@@ -622,11 +630,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         {
             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
-
-            if( g_GameWantsLockedMouse )
-            {
-                SetMouseLock( true );
-            }
         }
         return 0;
     }
