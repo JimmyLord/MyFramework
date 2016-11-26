@@ -17,6 +17,13 @@ typedef unsigned __int32 uint32;
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 
+#elif MYFW_NACL
+
+typedef __int32_t int32;
+typedef __uint32_t uint32;
+typedef __int64_t int64;
+typedef __uint64_t uint64;
+
 #else
 
 typedef int32_t int32;

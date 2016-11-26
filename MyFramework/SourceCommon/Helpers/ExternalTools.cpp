@@ -303,7 +303,7 @@ bool PlatformSpecific_IsMouseLocked()
 #if MYFW_USING_WX || MYFW_WINDOWS
     return IsMouseLocked();
 #elif MYFW_NACL
-    g_pInstance->IsMouseLocked( lock );
+    return g_pInstance->IsMouseLocked();
 #else
     MyAssert( false ); // TODO: fix me on everything else...
 #endif

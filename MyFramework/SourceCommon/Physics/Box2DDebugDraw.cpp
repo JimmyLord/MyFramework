@@ -44,7 +44,9 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     pShader->ProgramBaseUniforms( m_pMatViewProj, 0, 0, m_pMaterial->m_ColorDiffuse, m_pMaterial->m_ColorSpecular, m_pMaterial->m_Shininess );
 
     glLineWidth( pointorlinesize );
+#ifndef MYFW_OPENGLES2
     glPointSize( pointorlinesize );
+#endif
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
