@@ -1548,6 +1548,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Sprites\AnimatedSprite.cpp" />
     <ClCompile Include="SourceCommon\Sprites\AnimationKeys.cpp" />
+    <ClCompile Include="SourceCommon\Sprites\My2DAnimInfo.cpp" />
     <ClCompile Include="SourceCommon\Sprites\MySprite.cpp" />
     <ClCompile Include="SourceCommon\Sprites\MySprite_XYZVertexColor.cpp" />
     <ClCompile Include="SourceCommon\Sprites\MySprite9.cpp" />
@@ -2638,6 +2639,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Sprites\AnimatedSprite.h" />
     <ClInclude Include="SourceCommon\Sprites\AnimationKeys.h" />
+    <ClInclude Include="SourceCommon\Sprites\My2DAnimInfo.h" />
     <ClInclude Include="SourceCommon\Sprites\MySprite.h" />
     <ClInclude Include="SourceCommon\Sprites\MySprite_XYZVertexColor.h" />
     <ClInclude Include="SourceCommon\Sprites\MySprite9.h" />

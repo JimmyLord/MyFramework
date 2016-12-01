@@ -504,6 +504,8 @@ typedef int socklen_t;
 #include "Textures/MaterialManager.h"
 #include "Textures/FBODefinition.h"
 
+#include "Sprites/My2DAnimInfo.h" // requires MaterialDefinition
+
 #include "Networking/StunClient.h"
 #include "Networking/GameServiceManager.h"
 
