@@ -16,16 +16,23 @@ My2DAnimInfo::My2DAnimInfo()
 
 My2DAnimInfo::~My2DAnimInfo()
 {
-    for( unsigned int i=0; i<m_pAnimations.Length(); i++ )
+    for( unsigned int i=0; i<m_Animations.Length(); i++ )
     {
-        for( unsigned int j=0; j<m_pAnimations[i]->m_Frames.Length(); j++ )
+        for( unsigned int j=0; j<m_Animations[i]->m_Frames.Length(); j++ )
         {
-            delete m_pAnimations[i]->m_Frames[j];
+            delete m_Animations[i]->m_Frames[j];
         }
 
-        delete m_pAnimations[i];
+        delete m_Animations[i];
     }
     SAFE_RELEASE( m_pSourceFile );
+}
+
+My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 index)
+{
+    MyAssert( index < m_Animations.Count() );
+
+    return m_Animations[index];
 }
 
 #if MYFW_USING_WX
@@ -39,13 +46,13 @@ void My2DAnimInfo::SaveAnimationControlFile()
     cJSON* jAnimArray = cJSON_CreateArray();
     cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
 
-    for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
+    for( unsigned int i=0; i<m_Animations.Count(); i++ )
     {
         cJSON* jAnim = cJSON_CreateObject();
 
         cJSON_AddItemToArray( jAnimArray, jAnim );
 
-        cJSON_AddStringToObject( jAnim, "Name", m_pAnimations[i]->m_Name );
+        cJSON_AddStringToObject( jAnim, "Name", m_Animations[i]->m_Name );
 
         // TODO: write out frame info
         MyAssert( false );
@@ -71,11 +78,12 @@ void My2DAnimInfo::SaveAnimationControlFile()
 void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
 {
     MyAssert( buffer != 0 );
+    MyAssert( m_Animations.Count() == 0 );
 
     // if the file doesn't exist, do nothing for now.
     if( buffer == 0 )
     {
-        MyAssert( m_pAnimations.Count() == 0 );
+        MyAssert( m_Animations.Count() == 0 );
     }
     else
     {
@@ -86,19 +94,19 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
             cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
 
             int numanims = cJSON_GetArraySize( jAnimArray );
-            m_pAnimations.AllocateObjects( numanims );
+            m_Animations.AllocateObjects( numanims );
             for( int i=0; i<numanims; i++ )
             {
                 cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );
 
                 My2DAnimation* pAnim = MyNew My2DAnimation;
-                m_pAnimations.Add( pAnim );
+                m_Animations.Add( pAnim );
 
                 cJSON* jName = cJSON_GetObjectItem( jAnim, "Name" );
                 if( jName )
                     pAnim->SetName( jName->valuestring );
 
-                cJSON* jFrameArray = cJSON_GetObjectItem( jRoot, "Anims" );
+                cJSON* jFrameArray = cJSON_GetObjectItem( jAnim, "Frames" );
 
                 int numframes = cJSON_GetArraySize( jFrameArray );
                 pAnim->m_Frames.AllocateObjects( numframes );
@@ -109,7 +117,7 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
                     My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame();
                     pAnim->m_Frames.Add( pFrame );
 
-                    cJSON* jMatName = cJSON_GetObjectItem( jAnim, "Material" );
+                    cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
                     if( jMatName )
                         pFrame->SetMaterialName( jMatName->valuestring );
 

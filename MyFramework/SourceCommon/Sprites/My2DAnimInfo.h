@@ -20,7 +20,7 @@ struct My2DAnimationFrame
     void SetMaterialName(const char* name)
     {
         if( strlen(name) > (unsigned int)MaterialDefinition::MAX_MATERIAL_NAME_LEN )
-            LOGInfo( LOGTag, "Warning: material name longer than 32 characters - %s - truncating\n", name );
+            LOGInfo( LOGTag, "Warning: material name longer than %d characters - %s - truncating\n", MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
         strncpy_s( m_MaterialName, MaterialDefinition::MAX_MATERIAL_NAME_LEN+1, name, MaterialDefinition::MAX_MATERIAL_NAME_LEN );
     }
 };
@@ -47,11 +47,13 @@ class My2DAnimInfo
 
 protected:
     MyFileObject* m_pSourceFile;
-    MyList<My2DAnimation*> m_pAnimations;
+    MyList<My2DAnimation*> m_Animations;
 
 public:
     My2DAnimInfo();
     virtual ~My2DAnimInfo();
+
+    My2DAnimation* GetAnimationByIndex(uint32 index);
 
 #if MYFW_USING_WX
     void SaveAnimationControlFile();

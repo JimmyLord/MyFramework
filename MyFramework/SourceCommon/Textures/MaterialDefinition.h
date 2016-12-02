@@ -19,7 +19,7 @@ class MaterialDefinition : public CPPListNode, public RefCount
     friend class MaterialManager;
 
 public:
-    static const int MAX_MATERIAL_NAME_LEN = 32;
+    static const int MAX_MATERIAL_NAME_LEN = 128;
 
 public: // for now.
     bool m_UnsavedChanges;
