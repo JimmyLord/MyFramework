@@ -28,6 +28,11 @@ My2DAnimInfo::~My2DAnimInfo()
     SAFE_RELEASE( m_pSourceFile );
 }
 
+uint32 My2DAnimInfo::GetNumberOfAnimations()
+{
+    return m_Animations.Count();
+}
+
 My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 index)
 {
     MyAssert( index < m_Animations.Count() );

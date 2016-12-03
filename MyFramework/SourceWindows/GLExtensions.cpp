@@ -32,6 +32,7 @@ PFNGLUNIFORM2IVPROC                 glUniform2iv = 0;
 PFNGLUNIFORM3IVPROC                 glUniform3iv = 0;
 PFNGLUNIFORM4IVPROC                 glUniform4iv = 0;
 
+PFNGLUNIFORMMATRIX3FVPROC           glUniformMatrix3fv = 0;
 PFNGLUNIFORMMATRIX4FVPROC           glUniformMatrix4fv = 0;
 PFNGLVERTEXATTRIB1FPROC             glVertexAttrib1f = 0;
 PFNGLVERTEXATTRIB2FPROC             glVertexAttrib2f = 0;
@@ -123,6 +124,7 @@ void OpenGL_InitExtensions()
     glUniform2fv                    = (PFNGLUNIFORM2FVPROC)                 wglGetProcAddress( "glUniform2fv" );
     glUniform3fv                    = (PFNGLUNIFORM3FVPROC)                 wglGetProcAddress( "glUniform3fv" );
     glUniform4fv                    = (PFNGLUNIFORM4FVPROC)                 wglGetProcAddress( "glUniform4fv" );
+    glUniformMatrix3fv              = (PFNGLUNIFORMMATRIX3FVPROC)           wglGetProcAddress( "glUniformMatrix3fv" );
     glUniformMatrix4fv              = (PFNGLUNIFORMMATRIX4FVPROC)           wglGetProcAddress( "glUniformMatrix4fv" );
     glVertexAttrib1f                = (PFNGLVERTEXATTRIB1FPROC)             wglGetProcAddress( "glVertexAttrib1f" );
     glVertexAttrib2f                = (PFNGLVERTEXATTRIB2FPROC)             wglGetProcAddress( "glVertexAttrib2f" );

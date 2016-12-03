@@ -53,6 +53,7 @@ public:
     My2DAnimInfo();
     virtual ~My2DAnimInfo();
 
+    uint32 GetNumberOfAnimations();
     My2DAnimation* GetAnimationByIndex(uint32 index);
 
 #if MYFW_USING_WX

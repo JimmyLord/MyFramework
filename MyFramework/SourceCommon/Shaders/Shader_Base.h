@@ -31,6 +31,7 @@ public:
 
     GLint m_uHandle_PointSize;
 
+    GLint m_uHandle_UVTransform;
     GLint m_uHandle_UVScale;
     GLint m_uHandle_UVOffset;
 

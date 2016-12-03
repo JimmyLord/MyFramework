@@ -39,6 +39,7 @@ void Shader_Base::Init_Shader_Base()
 
     m_uHandle_PointSize = -1;
 
+    m_uHandle_UVTransform = -1;
     m_uHandle_UVScale = -1;
     m_uHandle_UVOffset = -1;
 
@@ -112,6 +113,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
 
     m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
 
+    m_uHandle_UVTransform =   GetUniformLocation( m_ProgramHandle, "u_UVTransform" );
     m_uHandle_UVScale =       GetUniformLocation( m_ProgramHandle, "u_UVScale" );
     m_uHandle_UVOffset =      GetUniformLocation( m_ProgramHandle, "u_UVOffset" );
 
@@ -620,6 +622,12 @@ void Shader_Base::ProgramPointSize(float pointsize)
 
 void Shader_Base::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
 {
+    if( m_uHandle_UVTransform != -1 )
+    {
+        float matrix[3*3] = { scale.x, 0, 0, 0, scale.y, 0, offset.x, offset.y, 0 };
+        glUniformMatrix3fv( m_uHandle_UVTransform, 1, false, matrix );
+    }
+
     if( m_uHandle_UVScale != -1 )
         glUniform2f( m_uHandle_UVScale, scale.x, scale.y );
     

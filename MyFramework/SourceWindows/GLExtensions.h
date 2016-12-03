@@ -34,6 +34,7 @@ extern PFNGLUNIFORM2IVPROC                  glUniform2iv;
 extern PFNGLUNIFORM3IVPROC                  glUniform3iv;
 extern PFNGLUNIFORM4IVPROC                  glUniform4iv;
 
+extern PFNGLUNIFORMMATRIX3FVPROC            glUniformMatrix3fv;
 extern PFNGLUNIFORMMATRIX4FVPROC            glUniformMatrix4fv;
 extern PFNGLVERTEXATTRIB1FPROC              glVertexAttrib1f;
 extern PFNGLVERTEXATTRIB2FPROC              glVertexAttrib2f;
