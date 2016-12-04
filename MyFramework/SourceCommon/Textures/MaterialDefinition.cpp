@@ -257,6 +257,23 @@ void MaterialDefinition::SetName(const char* name)
 #endif //MYFW_USING_WX
 }
 
+
+const char* MaterialDefinition::GetMaterialDescription()
+{
+    if( m_pFile )
+        return m_pFile->m_FullPath;
+
+    return 0;
+}
+
+const char* MaterialDefinition::GetMaterialShortDescription()
+{
+    if( m_pFile )
+        return m_pFile->m_FilenameWithoutExtension;
+
+    return 0;
+}
+
 void MaterialDefinition::SetShader(ShaderGroup* pShader)
 {
     if( pShader )

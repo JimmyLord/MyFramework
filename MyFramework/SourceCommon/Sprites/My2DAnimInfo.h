@@ -10,34 +10,45 @@
 #ifndef __My2DAnimInfo_H__
 #define __My2DAnimInfo_H__
 
-struct My2DAnimationFrame
+class My2DAnimationFrame
 {
-    char m_MaterialName[MaterialDefinition::MAX_MATERIAL_NAME_LEN+1];
+    friend class My2DAnimation;
+    friend class My2DAnimInfo;
+
+protected:
+    MaterialDefinition* m_pMaterial;
     float m_Duration;
     Vector2 m_UVScale;
     Vector2 m_UVOffset;
 
-    void SetMaterialName(const char* name)
-    {
-        if( strlen(name) > (unsigned int)MaterialDefinition::MAX_MATERIAL_NAME_LEN )
-            LOGInfo( LOGTag, "Warning: material name longer than %d characters - %s - truncating\n", MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
-        strncpy_s( m_MaterialName, MaterialDefinition::MAX_MATERIAL_NAME_LEN+1, name, MaterialDefinition::MAX_MATERIAL_NAME_LEN );
-    }
+public:
+    My2DAnimationFrame();
+    ~My2DAnimationFrame();
+
+    MaterialDefinition* GetMaterial() { return m_pMaterial; }
+    float GetDuration() { return m_Duration; }
+    Vector2 GetUVScale() { return m_UVScale; }
+    Vector2 GetUVOffset() { return m_UVOffset; }
+
+    void SetMaterial(MaterialDefinition* pMaterial);
 };
 
-struct My2DAnimation
+class My2DAnimation
 {
+    friend class My2DAnimInfo;
+
+protected:
     static const int MAX_ANIMATION_NAME_LEN = 32;
 
     char m_Name[MAX_ANIMATION_NAME_LEN+1];
     MyList<My2DAnimationFrame*> m_Frames;
 
-    void SetName(const char* name)
-    {
-        if( strlen(name) > (unsigned int)MAX_ANIMATION_NAME_LEN )
-            LOGInfo( LOGTag, "Warning: name longer than 32 characters - %s - truncating\n", name );
-        strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
-    }
+public:
+    void SetName(const char* name);
+
+    uint32 GetFrameCount();
+    My2DAnimationFrame* GetFrameByIndex(uint32 frameindex);
+    My2DAnimationFrame* GetFrameByIndexClamped(uint32 frameindex);
 };
 
 class My2DAnimInfo
@@ -54,7 +65,8 @@ public:
     virtual ~My2DAnimInfo();
 
     uint32 GetNumberOfAnimations();
-    My2DAnimation* GetAnimationByIndex(uint32 index);
+    My2DAnimation* GetAnimationByIndex(uint32 animindex);
+    My2DAnimation* GetAnimationByIndexClamped(uint32 animindex);
 
 #if MYFW_USING_WX
     void SaveAnimationControlFile();

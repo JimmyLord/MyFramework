@@ -21,13 +21,12 @@ class MaterialDefinition : public CPPListNode, public RefCount
 public:
     static const int MAX_MATERIAL_NAME_LEN = 128;
 
-public: // for now.
+protected:
     bool m_UnsavedChanges;
 
     char m_Name[MAX_MATERIAL_NAME_LEN]; // if [0] == 0, material won't save to disk.
     MyFileObject* m_pFile;
 
-protected:
     ShaderGroup* m_pShaderGroup;
     ShaderGroup* m_pShaderGroupInstanced;
     TextureDefinition* m_pTextureColor;
@@ -61,6 +60,10 @@ public:
 
     const char* GetName() { return m_Name; }
     void SetName(const char* name);
+
+    MyFileObject* GetFile() { return m_pFile; }
+    const char* GetMaterialDescription();
+    const char* GetMaterialShortDescription();
 
     void SetShader(ShaderGroup* pShader);
     ShaderGroup* GetShader() const { return m_pShaderGroup; }

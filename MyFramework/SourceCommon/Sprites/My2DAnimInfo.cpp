@@ -9,6 +9,52 @@
 
 #include "CommonHeader.h"
 
+My2DAnimationFrame::My2DAnimationFrame()
+{
+    m_pMaterial = 0;
+}
+
+My2DAnimationFrame::~My2DAnimationFrame()
+{
+    SAFE_RELEASE( m_pMaterial );
+}
+
+void My2DAnimationFrame::SetMaterial(MaterialDefinition* pMaterial)
+{
+    if( m_pMaterial == pMaterial )
+        return;
+
+    SAFE_RELEASE( m_pMaterial );
+    m_pMaterial = pMaterial;
+    m_pMaterial->AddRef();
+}
+
+void My2DAnimation::SetName(const char* name)
+{
+    if( strlen(name) > (unsigned int)MAX_ANIMATION_NAME_LEN )
+        LOGInfo( LOGTag, "Warning: name longer than 32 characters - %s - truncating\n", name );
+    strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
+}
+
+uint32 My2DAnimation::GetFrameCount()
+{
+    return m_Frames.Count();
+}
+
+My2DAnimationFrame* My2DAnimation::GetFrameByIndex(uint32 frameindex)
+{
+    MyAssert( frameindex < m_Frames.Count() );
+
+    return m_Frames[frameindex];
+}
+
+My2DAnimationFrame* My2DAnimation::GetFrameByIndexClamped(uint32 frameindex)
+{
+    MyClamp( frameindex, (uint32)0, m_Frames.Count()-1 );
+
+    return m_Frames[frameindex];
+}
+
 My2DAnimInfo::My2DAnimInfo()
 {
     m_pSourceFile = 0;
@@ -33,11 +79,18 @@ uint32 My2DAnimInfo::GetNumberOfAnimations()
     return m_Animations.Count();
 }
 
-My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 index)
+My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 animindex)
 {
-    MyAssert( index < m_Animations.Count() );
+    MyAssert( animindex < m_Animations.Count() );
 
-    return m_Animations[index];
+    return m_Animations[animindex];
+}
+
+My2DAnimation* My2DAnimInfo::GetAnimationByIndexClamped(uint32 animindex)
+{
+    MyClamp( animindex, (uint32)0, GetNumberOfAnimations()-1 );
+
+    return m_Animations[animindex];
 }
 
 #if MYFW_USING_WX
@@ -109,7 +162,9 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
 
                 cJSON* jName = cJSON_GetObjectItem( jAnim, "Name" );
                 if( jName )
+                {
                     pAnim->SetName( jName->valuestring );
+                }
 
                 cJSON* jFrameArray = cJSON_GetObjectItem( jAnim, "Frames" );
 
@@ -123,8 +178,12 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
                     pAnim->m_Frames.Add( pFrame );
 
                     cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
-                    if( jMatName )
-                        pFrame->SetMaterialName( jMatName->valuestring );
+                    MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
+                    if( pMaterial )
+                    {
+                        pFrame->SetMaterial( pMaterial );
+                        pMaterial->Release();
+                    }
 
                     cJSONExt_GetFloat( jFrame, "Duration", &pFrame->m_Duration );
                     cJSONExt_GetFloatArray( jFrame, "UVScale", &pFrame->m_UVScale.x, 2 );
