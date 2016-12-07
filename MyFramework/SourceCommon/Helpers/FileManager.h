@@ -53,6 +53,7 @@ public:
 
     unsigned int CalculateTotalMemoryUsedByFiles();
 
+    MyFileObject* CreateFileObject(const char* fullpath);
     virtual MyFileObject* RequestFile(const char* filename); // will add a ref.
     MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
@@ -65,7 +66,7 @@ public:
     void MoveFileToFrontOfFileLoadedList(MyFileObject* pFile);
 
 #if MYFW_USING_WX
-    bool DoesFileExist(const char* filename);
+    bool DoesFileExist(const char* fullpath);
 #endif
 };
 

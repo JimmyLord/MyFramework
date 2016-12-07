@@ -69,6 +69,15 @@ void MaterialManager::Tick()
             }
         }
 
+        // file loading errors
+        if( pMaterial->m_pFile->m_FileLoadStatus > FileLoadStatus_Success ) //== FileLoadStatus_Error_FileNotFound )
+        {
+            //LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->m_FullPath );
+            
+            // TODO: ? just create the material if the old one was deleted?
+            //       ATM, this material pointer will sit in the loading list forever.
+        }
+
         if( pMaterial->m_FullyLoaded )
         {
             m_Materials.MoveTail( pMaterial );
@@ -107,6 +116,28 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
     }
 }
 #endif
+
+MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
+{
+    MyAssert( pFile != 0 );
+
+    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    m_Materials.AddTail( pMaterial );
+
+    pMaterial->m_FullyLoaded = true;
+
+    pMaterial->m_UnsavedChanges = true;
+    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pFile->m_FilenameWithoutExtension );
+    pMaterial->m_pFile = pFile;
+    pMaterial->m_pFile->AddRef();
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+#endif
+
+    return pMaterial;
+}
 
 MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
 {

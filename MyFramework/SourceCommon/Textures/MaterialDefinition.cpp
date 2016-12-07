@@ -126,24 +126,27 @@ void MaterialDefinition::ImportFromFile()
     if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
         return;
 
-    cJSON* root = cJSON_Parse( m_pFile->m_pBuffer );
+    cJSON* jRoot = cJSON_Parse( m_pFile->m_pBuffer );
 
-    cJSON* material = cJSON_GetObjectItem( root, "Material" );
-    if( material )
+    if( jRoot == 0 )
+        return;
+
+    cJSON* jMaterial = cJSON_GetObjectItem( jRoot, "Material" );
+    if( jMaterial )
     {
-        cJSONExt_GetString( material, "Name", m_Name, MAX_MATERIAL_NAME_LEN );
+        cJSONExt_GetString( jMaterial, "Name", m_Name, MAX_MATERIAL_NAME_LEN );
 
-        cJSON* shaderstringobj = cJSON_GetObjectItem( material, "Shader" );
-        if( shaderstringobj )
+        cJSON* jShaderString = cJSON_GetObjectItem( jMaterial, "Shader" );
+        if( jShaderString )
         {
-            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( shaderstringobj->valuestring );
+            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
             if( pShaderGroup != 0 )
             {
                 SetShader( pShaderGroup );
             }
             else
             {
-                MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
+                MyFileObject* pFile = g_pFileManager->RequestFile( jShaderString->valuestring );
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
@@ -159,17 +162,17 @@ void MaterialDefinition::ImportFromFile()
             }
         }
 
-        shaderstringobj = cJSON_GetObjectItem( material, "ShaderInstanced" );
-        if( shaderstringobj )
+        jShaderString = cJSON_GetObjectItem( jMaterial, "ShaderInstanced" );
+        if( jShaderString )
         {
-            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( shaderstringobj->valuestring );
+            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
             if( pShaderGroup != 0 )
             {
                 SetShaderInstanced( pShaderGroup );
             }
             else
             {
-                MyFileObject* pFile = g_pFileManager->RequestFile( shaderstringobj->valuestring );
+                MyFileObject* pFile = g_pFileManager->RequestFile( jShaderString->valuestring );
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
@@ -185,10 +188,10 @@ void MaterialDefinition::ImportFromFile()
             }
         }
 
-        cJSON* texcolorstringobj = cJSON_GetObjectItem( material, "TexColor" );
-        if( texcolorstringobj && texcolorstringobj->valuestring[0] != 0 )
+        cJSON* jTexColor = cJSON_GetObjectItem( jMaterial, "TexColor" );
+        if( jTexColor && jTexColor->valuestring[0] != 0 )
         {
-            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( texcolorstringobj->valuestring ); // adds a ref.
+            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( jTexColor->valuestring ); // adds a ref.
             MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.
             if( pTexture )
             {
@@ -199,23 +202,23 @@ void MaterialDefinition::ImportFromFile()
 
         ColorFloat tempcolor;
         
-        cJSONExt_GetFloatArray( material, "ColorAmbient", &tempcolor.r, 4 );
+        cJSONExt_GetFloatArray( jMaterial, "ColorAmbient", &tempcolor.r, 4 );
         m_ColorAmbient = tempcolor.AsColorByte();
 
-        cJSONExt_GetFloatArray( material, "ColorDiffuse", &tempcolor.r, 4 );
+        cJSONExt_GetFloatArray( jMaterial, "ColorDiffuse", &tempcolor.r, 4 );
         m_ColorDiffuse = tempcolor.AsColorByte();
 
-        cJSONExt_GetFloatArray( material, "ColorSpecular", &tempcolor.r, 4 );
+        cJSONExt_GetFloatArray( jMaterial, "ColorSpecular", &tempcolor.r, 4 );
         m_ColorSpecular = tempcolor.AsColorByte();
 
-        cJSONExt_GetFloat( material, "Shininess", &m_Shininess );
+        cJSONExt_GetFloat( jMaterial, "Shininess", &m_Shininess );
 
-        cJSONExt_GetInt( material, "Blend", (int*)&m_BlendType );
+        cJSONExt_GetInt( jMaterial, "Blend", (int*)&m_BlendType );
 
         m_FullyLoaded = true;
     }
 
-    cJSON_Delete( root );
+    cJSON_Delete( jRoot );
 }
 
 void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()

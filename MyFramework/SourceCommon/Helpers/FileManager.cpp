@@ -145,6 +145,17 @@ unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
     return totalsize;
 }
 
+MyFileObject* FileManager::CreateFileObject(const char* fullpath)
+{
+    MyFileObject* pFile = MyNew MyFileObject;
+
+    pFile->ParseName( fullpath );
+
+    m_FilesLoaded.AddTail( pFile );
+
+    return pFile;
+}
+
 MyFileObject* FileManager::RequestFile(const char* filename)
 {
     MyAssert( filename != 0 );
@@ -380,7 +391,7 @@ void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
 }
 
 #if MYFW_USING_WX
-bool FileManager::DoesFileExist(const char* filename)
+bool FileManager::DoesFileExist(const char* fullpath)
 {
 #if MYFW_WINDOWS
     WIN32_FIND_DATAA data;
@@ -388,7 +399,7 @@ bool FileManager::DoesFileExist(const char* filename)
 
     void GetFileData(const char* path, WIN32_FIND_DATAA* data); // in MyFileObject.cpp
 
-    GetFileData( filename, &data );
+    GetFileData( fullpath, &data );
 
     if( data.dwFileAttributes != 0 )
         return true;

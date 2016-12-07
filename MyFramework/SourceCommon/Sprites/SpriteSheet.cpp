@@ -88,6 +88,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
         strcmp( pFile->m_ExtensionWithDot, ".myspritesheet" ) == 0 )
     {
         pJSONFile = pFile;
+        pJSONFile->AddRef();
 
         char otherpath[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".png", otherpath, MAX_PATH );
@@ -96,6 +97,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     else if( strcmp( pFile->m_ExtensionWithDot, ".png" ) == 0 )
     {
         pTextureFile = pFile;
+        pTextureFile->AddRef();
 
         char otherpath[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".json", otherpath, MAX_PATH );
@@ -112,6 +114,9 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_pMaterial->SetTextureColor( pTextureDef );
     m_pMaterial->SetShader( pShader );
+    
+    pTextureDef->Release();
+    pTextureFile->Release();
 
     m_CreateSprites = createsprites;
     m_CreateMaterials = creatematerials;
@@ -235,8 +240,26 @@ void SpriteSheet::Tick(double TimePassed)
                                 char fullpath[MAX_PATH];
                                 m_pJSONFile->GenerateNewFullPathFilenameInSameFolder( matname, fullpath, MAX_PATH );
 
+#if MYFW_USING_WX
+                                // In editor mode, check if the file exists before loading
+                                if( g_pFileManager->DoesFileExist( fullpath ) == false )
+                                {
+                                    MyFileObject* pFile = g_pFileManager->CreateFileObject( fullpath );
+                                    
+                                    m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( pFile );
+
+                                    pFile->Release();
+                                }
+                                else
+                                {
+                                    // Load the existing material if it exists
+                                    m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
+                                }
+#else
                                 // Load the existing material if it exists
                                 m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
+#endif
+
                                 //*m_pMaterialList[i] = *m_pMaterial;
 
                                 MyAssert( m_pMaterialList[i] );
