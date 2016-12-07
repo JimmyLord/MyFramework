@@ -65,10 +65,7 @@ void MaterialManager::Tick()
             }
             else
             {
-                // deal with spritesheets
-                MyAssert( strcmp( pMaterial->m_pFile->m_ExtensionWithDot, ".myspritesheet" ) == 0 );
-
-                // TODO: create a material for each element in spritesheet
+                MyAssert( false );
             }
         }
 
@@ -140,14 +137,6 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
 
     MaterialDefinition* pMaterial;
 
-    for( unsigned int i=0; i<strlen(fullpath); i++ )
-    {
-        if( strncmp( fullpath, ".myspritesheet:", strlen(".myspritesheet:") ) == 0 )
-        {
-            return LoadSpriteSheet( fullpath );
-        }
-    }
-
     // check if this file was already loaded.
     pMaterial = FindMaterialByFilename( fullpath );
     if( pMaterial )
@@ -160,50 +149,6 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     m_MaterialsStillLoading.AddTail( pMaterial );
 
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
-
-    MyAssert( pMaterial->m_pFile );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->m_FilenameWithoutExtension, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif
-
-    return pMaterial;
-}
-
-MaterialDefinition* MaterialManager::LoadSpriteSheet(const char* fullpath)
-{
-    MyAssert( fullpath );
-
-    char fullpathcopy[MAX_PATH];
-
-    // make a copy of the fullpath passed in, stop at a ':'
-    //   paths for spritesheets might look like: "Data/SpriteSheets/Stickman.myspritesheet:Idle1.png"
-    //   we only want the actual file on disk
-    strcpy_s( fullpathcopy, MAX_PATH, fullpath );
-    for( unsigned int i=0; i<strlen(fullpath); i++ )
-    {
-        if( fullpathcopy[i] == ':' )
-        {
-            fullpathcopy[i] = 0;
-            break;
-        }
-    }
-
-    MaterialDefinition* pMaterial;
-
-    // check if this file was already loaded.
-    pMaterial = FindMaterialByFilename( fullpathcopy );
-    if( pMaterial )
-    {
-        pMaterial->AddRef();
-        return pMaterial;
-    }
-
-    pMaterial = MyNew MaterialDefinition();
-    m_MaterialsStillLoading.AddTail( pMaterial );
-
-    pMaterial->m_pFile = g_pFileManager->RequestFile( fullpathcopy );
 
     MyAssert( pMaterial->m_pFile );
 

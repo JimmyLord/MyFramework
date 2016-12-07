@@ -68,14 +68,24 @@ void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, int minfilt
     MyAssert( m_pSprites == 0 );
     MyAssert( m_pMaterialList == 0 );
 
-    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", fullpath );
+    MyFileObject* pFile = RequestFile( fullpath );
+
+    Create( pFile, pShader, minfilter, magfilter, createsprites, creatematerials );
+}
+
+void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials)
+{
+    MyAssert( m_pMaterial == 0 );
+    MyAssert( m_pSprites == 0 );
+    MyAssert( m_pMaterialList == 0 );
+
+    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->m_FullPath );
 
     MyFileObject* pJSONFile = 0;
     MyFileObject* pTextureFile = 0;
 
-    MyFileObject* pFile = RequestFile( fullpath );
-
-    if( strcmp( pFile->m_ExtensionWithDot, ".json" ) == 0 )
+    if( strcmp( pFile->m_ExtensionWithDot, ".json" ) == 0 ||
+        strcmp( pFile->m_ExtensionWithDot, ".myspritesheet" ) == 0 )
     {
         pJSONFile = pFile;
 
@@ -153,7 +163,7 @@ void SpriteSheet::Tick(double TimePassed)
                     m_NumSprites = numfiles;
 
                     CreateSprites();
-                    CreateMaterials();
+                    CreateMaterials( false );
 
                     for( int i=0; i<numfiles; i++ )
                     {
@@ -171,12 +181,10 @@ void SpriteSheet::Tick(double TimePassed)
                             // "trimy": 43,
                             // "trimw": 137,
                             // "trimh": 105
-                            cJSON* obj;
-
-                            obj = cJSON_GetObjectItem( file, "filename" );
-                            if( obj )
+                            cJSON* jFilename = cJSON_GetObjectItem( file, "filename" );
+                            if( jFilename )
                             {
-                                strcpy_s( &m_pSpriteNames[i*64], 64, obj->valuestring );
+                                strcpy_s( &m_pSpriteNames[i*64], 64, jFilename->valuestring );
                             }
 
                             cJSON* subobj;
@@ -221,6 +229,16 @@ void SpriteSheet::Tick(double TimePassed)
 
                             if( m_CreateMaterials )
                             {
+                                char matname[MaterialDefinition::MAX_MATERIAL_NAME_LEN+1];
+                                sprintf_s( matname, MaterialDefinition::MAX_MATERIAL_NAME_LEN+1, "%s_%s.mymaterial", 
+                                           m_pJSONFile->m_FilenameWithoutExtension, jFilename->valuestring );
+                                char fullpath[MAX_PATH];
+                                m_pJSONFile->GenerateNewFullPathFilenameInSameFolder( matname, fullpath, MAX_PATH );
+
+                                // Load the existing material if it exists
+                                m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
+                                //*m_pMaterialList[i] = *m_pMaterial;
+
                                 MyAssert( m_pMaterialList[i] );
 
                                 Vector4 uvs = m_pSpriteUVs[i];
@@ -270,7 +288,7 @@ void SpriteSheet::Tick(double TimePassed)
                         m_NumSprites = numframes;
 
                         CreateSprites();
-                        CreateMaterials();
+                        CreateMaterials( true );
 
                         for( int i=0; i<numframes; i++ )
                         {
@@ -356,7 +374,7 @@ void SpriteSheet::CreateSprites()
     }
 }
 
-void SpriteSheet::CreateMaterials()
+void SpriteSheet::CreateMaterials(bool creatematerials)
 {
     if( m_CreateMaterials == false )
         return;
@@ -364,10 +382,14 @@ void SpriteSheet::CreateMaterials()
     MyAssert( m_pSprites == 0 );
 
     m_pMaterialList = MyNew MaterialDefinition*[m_NumSprites];
-    for( int i=0; i<m_NumSprites; i++ )
+
+    if( creatematerials )
     {
-        m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( "SpriteSheet" );
-        *m_pMaterialList[i] = *m_pMaterial;
+        for( int i=0; i<m_NumSprites; i++ )
+        {
+            m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( "SpriteSheet" );
+            *m_pMaterialList[i] = *m_pMaterial;
+        }
     }
 }
 

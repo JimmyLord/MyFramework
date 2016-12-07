@@ -40,7 +40,7 @@ protected:
 
 protected:
     virtual void CreateSprites();
-    virtual void CreateMaterials();
+    virtual void CreateMaterials(bool creatematerials);
 
 public:
     SpriteSheet();
@@ -48,6 +48,7 @@ public:
     
     void SetScale(float scale) { m_SpriteScale = scale; }
     virtual void Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
+    virtual void Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
     //virtual void Create(MaterialDefinition* pMaterial, bool createsprites, bool creatematerials);
     virtual void Tick(double TimePassed);
 
