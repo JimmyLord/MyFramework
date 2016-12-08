@@ -186,8 +186,6 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
                     }
 
                     cJSONExt_GetFloat( jFrame, "Duration", &pFrame->m_Duration );
-                    cJSONExt_GetFloatArray( jFrame, "UVScale", &pFrame->m_UVScale.x, 2 );
-                    cJSONExt_GetFloatArray( jFrame, "UVOffset", &pFrame->m_UVOffset.x, 2 );
                 }
             }
         }

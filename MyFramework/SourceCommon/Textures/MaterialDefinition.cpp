@@ -215,6 +215,9 @@ void MaterialDefinition::ImportFromFile()
 
         cJSONExt_GetInt( jMaterial, "Blend", (int*)&m_BlendType );
 
+        cJSONExt_GetFloatArray( jMaterial, "UVScale", &m_UVScale.x, 2 );
+        cJSONExt_GetFloatArray( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
+
         m_FullyLoaded = true;
     }
 
@@ -365,6 +368,9 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
 
             g_pPanelWatch->AddEnum( "Blend", (int*)&pMaterial->m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
 
+            g_pPanelWatch->AddVector2( "UVScale", &pMaterial->m_UVScale, 0, 1 );
+            g_pPanelWatch->AddVector2( "UVOffset", &pMaterial->m_UVOffset, 0, 1 );
+
             const char* desc = "no shader";
             if( pMaterial->m_pShaderGroup && pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
                 desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
@@ -456,37 +462,40 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
     // Create the json string to save into the material file
     char* jsonstr = 0;
     {
-        cJSON* root = cJSON_CreateObject();
+        cJSON* jRoot = cJSON_CreateObject();
 
-        cJSON* material = cJSON_CreateObject();
-        cJSON_AddItemToObject( root, "Material", material );
+        cJSON* jMaterial = cJSON_CreateObject();
+        cJSON_AddItemToObject( jRoot, "Material", jMaterial );
 
-        cJSON_AddStringToObject( material, "Name", m_Name );
+        cJSON_AddStringToObject( jMaterial, "Name", m_Name );
         if( m_pShaderGroup )
-            cJSON_AddStringToObject( material, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
+            cJSON_AddStringToObject( jMaterial, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
         if( m_pShaderGroupInstanced )
-            cJSON_AddStringToObject( material, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->m_FullPath );
+            cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->m_FullPath );
         if( m_pTextureColor )
-            cJSON_AddStringToObject( material, "TexColor", m_pTextureColor->m_Filename );
+            cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->m_Filename );
 
         ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( material, "ColorAmbient", &tempcolor.r, 4 );
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorAmbient", &tempcolor.r, 4 );
 
         tempcolor = m_ColorDiffuse.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( material, "ColorDiffuse", &tempcolor.r, 4 );
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorDiffuse", &tempcolor.r, 4 );
 
         tempcolor = m_ColorSpecular.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( material, "ColorSpecular", &tempcolor.r, 4 );
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorSpecular", &tempcolor.r, 4 );
 
-        //cJSONExt_AddUnsignedCharArrayToObject( material, "Tint", &m_Tint.r, 4 );
-        //cJSONExt_AddUnsignedCharArrayToObject( material, "SpecColor", &m_SpecColor.r, 4 );
-        cJSON_AddNumberToObject( material, "Shininess", m_Shininess );
+        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "Tint", &m_Tint.r, 4 );
+        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "SpecColor", &m_SpecColor.r, 4 );
+        cJSON_AddNumberToObject( jMaterial, "Shininess", m_Shininess );
 
-        cJSON_AddNumberToObject( material, "Blend", m_BlendType );
+        cJSON_AddNumberToObject( jMaterial, "Blend", m_BlendType );
+
+        cJSONExt_AddFloatArrayToObject( jMaterial, "UVScale", &m_UVScale.x, 2 );
+        cJSONExt_AddFloatArrayToObject( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
 
         // dump material json structure to disk
-        jsonstr = cJSON_Print( root );
-        cJSON_Delete( root );
+        jsonstr = cJSON_Print( jRoot );
+        cJSON_Delete( jRoot );
     }
 
     if( jsonstr != 0 )

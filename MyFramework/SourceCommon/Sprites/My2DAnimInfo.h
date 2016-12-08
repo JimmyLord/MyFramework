@@ -18,8 +18,6 @@ class My2DAnimationFrame
 protected:
     MaterialDefinition* m_pMaterial;
     float m_Duration;
-    Vector2 m_UVScale;
-    Vector2 m_UVOffset;
 
 public:
     My2DAnimationFrame();
@@ -27,8 +25,6 @@ public:
 
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     float GetDuration() { return m_Duration; }
-    Vector2 GetUVScale() { return m_UVScale; }
-    Vector2 GetUVOffset() { return m_UVOffset; }
 
     void SetMaterial(MaterialDefinition* pMaterial);
 };

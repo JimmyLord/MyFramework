@@ -260,7 +260,7 @@ void SpriteSheet::Tick(double TimePassed)
                                 m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
 #endif
 
-                                //*m_pMaterialList[i] = *m_pMaterial;
+                                *m_pMaterialList[i] = *m_pMaterial;
 
                                 MyAssert( m_pMaterialList[i] );
 
