@@ -72,10 +72,16 @@ void MaterialManager::Tick()
         // file loading errors
         if( pMaterial->m_pFile->m_FileLoadStatus > FileLoadStatus_Success ) //== FileLoadStatus_Error_FileNotFound )
         {
-            //LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->m_FullPath );
+            LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->m_FullPath );
             
-            // TODO: ? just create the material if the old one was deleted?
-            //       ATM, this material pointer will sit in the loading list forever.
+            // move the material to the unsaved list
+            strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pMaterial->m_pFile->m_FilenameWithoutExtension );
+
+            g_pPanelMemory->RemoveMaterial( pMaterial );
+            g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+            g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
+
+            m_Materials.MoveTail( pMaterial );
         }
 
         if( pMaterial->m_FullyLoaded )

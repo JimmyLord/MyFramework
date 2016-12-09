@@ -244,11 +244,20 @@ void SpriteSheet::Tick(double TimePassed)
                                 // In editor mode, check if the file exists before loading
                                 if( g_pFileManager->DoesFileExist( fullpath ) == false )
                                 {
-                                    MyFileObject* pFile = g_pFileManager->CreateFileObject( fullpath );
-                                    
-                                    m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( pFile );
+                                    // the material might not exist on disk but a load was previously attempted, so find that object
+                                    m_pMaterialList[i] = g_pMaterialManager->FindMaterialByFilename( fullpath );
+                                    if( m_pMaterialList[i] )
+                                        m_pMaterialList[i]->AddRef();
 
-                                    pFile->Release();
+                                    // if the material still isn't there, create a new one along with a file for it.
+                                    if( m_pMaterialList[i] == 0 )
+                                    {
+                                        MyFileObject* pFile = g_pFileManager->CreateFileObject( fullpath );
+                                    
+                                        m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( pFile );
+
+                                        pFile->Release();
+                                    }
                                 }
                                 else
                                 {

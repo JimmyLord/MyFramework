@@ -80,8 +80,10 @@ public:
     void RemoveSoundObject(SoundObject* pSound);
     void SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
 
+    wxTreeItemId FindFile(MyFileObject* pFile);
     void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
+    void SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
 
     void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
     void UpdateBuffer(BufferDefinition* pBufferDef);

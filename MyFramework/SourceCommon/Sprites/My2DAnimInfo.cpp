@@ -93,7 +93,118 @@ My2DAnimation* My2DAnimInfo::GetAnimationByIndexClamped(uint32 animindex)
     return m_Animations[animindex];
 }
 
+void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
+{
+    if( m_pSourceFile == pSourceFile )
+        return;
+
+    SAFE_RELEASE( m_pSourceFile );
+    m_pSourceFile = pSourceFile;
+    m_pSourceFile->AddRef();
+
+    wxTreeItemId treeid = g_pPanelMemory->FindFile( m_pSourceFile );
+    if( treeid.IsOk() )
+        g_pPanelMemory->SetFilePanelCallbacks( treeid, this, MyFileObject::StaticOnLeftClick, My2DAnimInfo::StaticOnRightClick, MyFileObject::StaticOnDrag );
+}
+
 #if MYFW_USING_WX
+void My2DAnimInfo::RefreshWatchWindow()
+{
+    FillPropertiesWindow( true );
+}
+
+void My2DAnimInfo::FillPropertiesWindow(bool clear)
+{
+    g_pPanelWatch->SetRefreshCallback( this, My2DAnimInfo::StaticRefreshWatchWindow );
+
+    g_pPanelWatch->Freeze();
+
+    g_pPanelWatch->ClearAllVariables();
+
+    g_pPanelWatch->AddButton( "Save Animations", this, My2DAnimInfo::StaticOnSaveAnimationsPressed );
+
+    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
+    {
+        My2DAnimation* pAnim = m_Animations[animindex];
+        g_pPanelWatch->AddSpace( pAnim->m_Name );
+        g_pPanelWatch->AddString( "Animation Name", pAnim->m_Name, My2DAnimation::MAX_ANIMATION_NAME_LEN );
+
+        unsigned int numframes = m_Animations[animindex]->GetFrameCount();
+
+        for( unsigned int frameindex=0; frameindex<numframes; frameindex++ )
+        {
+            My2DAnimationFrame* pFrame = m_Animations[animindex]->GetFrameByIndex( frameindex );
+
+            g_pPanelWatch->AddFloat( "Frame", &pFrame->m_Duration, 0, 1 );
+
+            const char* desc = "no material";
+            if( pFrame->m_pMaterial != 0 )
+                desc = pFrame->m_pMaterial->GetName();
+            //pFrame->m_pMaterial->m_ControlID_Shader = 
+            g_pPanelWatch->AddPointerWithDescription( "Material", 0, desc, pFrame->m_pMaterial );//MaterialDefinition::StaticOnDropShader );
+        }
+
+        if( m_Animations[animindex]->m_Frames.Count() < MAX_FRAMES_IN_ANIMATION )
+            g_pPanelWatch->AddButton( "Add Frame", this, My2DAnimInfo::StaticOnAddFramePressed );
+    }
+
+    if( m_Animations.Count() < MAX_ANIMATIONS )
+        g_pPanelWatch->AddButton( "Add Animation", this, My2DAnimInfo::StaticOnAddAnimationPressed );
+
+    g_pPanelWatch->Thaw();
+}
+
+void My2DAnimInfo::OnRightClick()
+{
+ 	wxMenu menu;
+    menu.SetClientData( this );
+    
+    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&My2DAnimInfo::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void My2DAnimInfo::OnPopupClick(wxEvent &evt)
+{
+    My2DAnimInfo* pAnimInfo = (My2DAnimInfo*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+
+    int id = evt.GetId();
+    switch( id )
+    {
+    case RightClick_ViewInWatchWindow:
+        {
+            pAnimInfo->FillPropertiesWindow( false );
+        }
+        break;
+    }
+}
+
+void My2DAnimInfo::OnAddAnimationPressed()
+{
+    if( m_Animations.Count() >= MAX_ANIMATIONS )
+        return;
+
+    My2DAnimation* pAnim = MyNew My2DAnimation;
+
+    pAnim->SetName( "New" );
+
+    m_Animations.Add( pAnim );
+
+    g_pPanelWatch->SetNeedsRefresh();
+}
+
+void My2DAnimInfo::OnAddFramePressed()
+{
+    
+}
+
+void My2DAnimInfo::OnSaveAnimationsPressed()
+{
+    SaveAnimationControlFile();
+}
+
 void My2DAnimInfo::SaveAnimationControlFile()
 {
     char filename[MAX_PATH];
@@ -152,7 +263,11 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
             cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
 
             int numanims = cJSON_GetArraySize( jAnimArray );
+#if MYFW_USING_WX
+            m_Animations.AllocateObjects( MAX_ANIMATIONS );
+#else
             m_Animations.AllocateObjects( numanims );
+#endif
             for( int i=0; i<numanims; i++ )
             {
                 cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );

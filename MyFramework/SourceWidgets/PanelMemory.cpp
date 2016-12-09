@@ -484,6 +484,14 @@ void PanelMemory::UpdateRootNodeMaterialCount()
     m_pNotebook->SetPageText( PanelMemoryPage_Materials, tempstr );
 }
 
+wxTreeItemId PanelMemory::FindFile(MyFileObject* pFile)
+{
+    wxTreeItemId idroot = m_pTree_Files->GetRootItem();
+    wxTreeItemId id = FindObject( m_pTree_Files, pFile, idroot );
+
+    return id;
+}
+
 void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pFile != 0 );
@@ -552,6 +560,25 @@ void PanelMemory::RemoveFile(MyFileObject* pFile)
             m_pTree_Files->Delete( parentid );
 
         UpdateRootNodeFileCount();
+    }
+}
+
+void PanelMemory::SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction)
+{
+    MyAssert( pObject != 0 );
+
+    if( treeid.IsOk() )
+    {
+        TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Files->GetItemData( treeid );
+        if( pData == 0 )
+            pData = MyNew TreeItemDataGenericObjectInfo();
+
+        pData->m_pObject = pObject;
+        pData->m_pLeftClickFunction = pLeftClickFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
+        pData->m_pDragFunction = pDragFunction;
+
+        m_pTree_Files->SetItemData( treeid, pData );
     }
 }
 

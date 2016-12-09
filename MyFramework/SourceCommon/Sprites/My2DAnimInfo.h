@@ -48,6 +48,9 @@ public:
 };
 
 class My2DAnimInfo
+#if MYFW_USING_WX
+: public wxEvtHandler
+#endif
 {
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
     static const unsigned int MAX_FRAMES_IN_ANIMATION = 10; // TODO: fix this hardcodedness
@@ -64,7 +67,33 @@ public:
     My2DAnimation* GetAnimationByIndex(uint32 animindex);
     My2DAnimation* GetAnimationByIndexClamped(uint32 animindex);
 
+    void SetSourceFile(MyFileObject* pSourceFile);
+
 #if MYFW_USING_WX
+    enum RightClickOptions
+    {
+        RightClick_ViewInWatchWindow = 1000,
+    };
+
+    // Memory panel callbacks
+    void FillPropertiesWindow(bool clear);
+
+    static void StaticRefreshWatchWindow(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->RefreshWatchWindow(); }
+    void RefreshWatchWindow();
+
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((My2DAnimInfo*)pObjectPtr)->OnRightClick(); }
+    void OnRightClick();
+    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
+
+    static void StaticOnAddAnimationPressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed(); }
+    void OnAddAnimationPressed();
+
+    static void StaticOnAddFramePressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed(); }
+    void OnAddFramePressed();
+
+    static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed(); }
+    void OnSaveAnimationsPressed();
+
     void SaveAnimationControlFile();
     void LoadAnimationControlFile(char* buffer);
 #endif
