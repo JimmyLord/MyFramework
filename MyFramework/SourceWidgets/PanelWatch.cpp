@@ -284,7 +284,7 @@ int PanelWatch::AddVariableOfTypeRange(PanelWatch_Types type, const char* name, 
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallback pOnButtonPressedCallbackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
+int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackButtonPressed pOnButtonPressedCallbackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -299,6 +299,7 @@ int PanelWatch::AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, v
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
     m_pVariables[m_NumVariables].m_pOnDropCallbackFunc = pOnDropCallBackFunc;
     m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = pOnButtonPressedCallbackFunc;
+    m_pVariables[m_NumVariables].m_ButtonID = -1;
     m_pVariables[m_NumVariables].m_pOnValueChangedCallbackFunc = pOnValueChangedCallBackFunc;
     m_pVariables[m_NumVariables].m_pRightClickCallbackFunc = pRightClickCallbackFunc;
 
@@ -558,7 +559,7 @@ int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbac
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallback pOnButtonPressedCallBackFunc)
+int PanelWatch::AddButton(const char* label, void* pCallbackObj, int buttonid, PanelWatchCallbackButtonPressed pOnButtonPressedCallBackFunc)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -567,6 +568,7 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, PanelWatchCallb
     m_pVariables[m_NumVariables].m_Type = PanelWatchType_Button;
     m_pVariables[m_NumVariables].m_pOnButtonPressedCallbackFunc = pOnButtonPressedCallBackFunc;
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
+    m_pVariables[m_NumVariables].m_ButtonID = buttonid;
 
     AddControlsForVariable( label, m_NumVariables, -1, 0 );
 
@@ -1085,7 +1087,7 @@ void PanelWatch::OnButtonPressed(wxCommandEvent& event)
     int controlid = event.GetId();
     if( m_pVariables[controlid].m_pOnButtonPressedCallbackFunc )
     {
-        m_pVariables[controlid].m_pOnButtonPressedCallbackFunc( m_pVariables[controlid].m_pCallbackObj );
+        m_pVariables[controlid].m_pOnButtonPressedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, m_pVariables[controlid].m_ButtonID );
     }
 }
 

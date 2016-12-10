@@ -343,7 +343,7 @@ void MyMesh::FillPropertiesWindow(bool clear)
     if( clear )
         g_pPanelWatch->ClearAllVariables();
 
-    g_pPanelWatch->AddButton( "Save Animations", this, MyMesh::StaticOnSaveAnimationsPressed );
+    g_pPanelWatch->AddButton( "Save Animations", this, -1, MyMesh::StaticOnSaveAnimationsPressed );
 
     for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
     {
@@ -353,12 +353,12 @@ void MyMesh::FillPropertiesWindow(bool clear)
         g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 0 );
     }
 
-    g_pPanelWatch->AddButton( "Add Animation", this, MyMesh::StaticOnAddAnimationPressed );
+    g_pPanelWatch->AddButton( "Add Animation", this, -1, MyMesh::StaticOnAddAnimationPressed );
 
     g_pPanelWatch->Thaw();
 }
 
-void MyMesh::OnAddAnimationPressed()
+void MyMesh::OnAddAnimationPressed(int buttonid)
 {
     MyAnimation* pAnim = MyNew MyAnimation;
 
@@ -373,7 +373,7 @@ void MyMesh::OnAddAnimationPressed()
     //FillPropertiesWindow( true ); // crashed since in button press callback and button would be recreated.
 }
 
-void MyMesh::OnSaveAnimationsPressed()
+void MyMesh::OnSaveAnimationsPressed(int buttonid)
 {
     SaveAnimationControlFile();
 }

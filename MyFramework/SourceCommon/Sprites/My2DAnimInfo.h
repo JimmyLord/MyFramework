@@ -27,6 +27,10 @@ public:
     float GetDuration() { return m_Duration; }
 
     void SetMaterial(MaterialDefinition* pMaterial);
+
+#if MYFW_USING_WX
+    int m_ControlID_Material;
+#endif
 };
 
 class My2DAnimation
@@ -85,18 +89,23 @@ public:
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
 
-    static void StaticOnAddAnimationPressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed(); }
-    void OnAddAnimationPressed();
+    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed( buttonid ); }
+    void OnAddAnimationPressed(int buttonid);
 
-    static void StaticOnAddFramePressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed(); }
-    void OnAddFramePressed();
+    static void StaticOnAddFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed( buttonid ); }
+    void OnAddFramePressed(int buttonid);
 
-    static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed(); }
-    void OnSaveAnimationsPressed();
+    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed( buttonid ); }
+    void OnSaveAnimationsPressed(int buttonid);
+
+    // Watch panel callbacks.
+    static void StaticOnDropMaterial(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }
+    void OnDropMaterial(int controlid, wxCoord x, wxCoord y);
 
     void SaveAnimationControlFile();
-    void LoadAnimationControlFile(char* buffer);
 #endif
+
+    void LoadAnimationControlFile(char* buffer);
 };
 
 #endif //__My2DAnimInfo_H__

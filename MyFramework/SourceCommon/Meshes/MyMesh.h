@@ -156,11 +156,11 @@ public:
     static void StaticRefreshWatchWindow(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->RefreshWatchWindow(); }
     void RefreshWatchWindow();
 
-    static void StaticOnAddAnimationPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnAddAnimationPressed(); }
-    void OnAddAnimationPressed();
+    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((MyMesh*)pObjectPtr)->OnAddAnimationPressed( buttonid ); }
+    void OnAddAnimationPressed(int buttonid);
 
-    static void StaticOnSaveAnimationsPressed(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed(); }
-    void OnSaveAnimationsPressed();
+    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed( buttonid ); }
+    void OnSaveAnimationsPressed(int buttonid);
 
     static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool finishedchanging, double oldvalue) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
     void OnValueChanged(int controlid, bool finishedchanging);
