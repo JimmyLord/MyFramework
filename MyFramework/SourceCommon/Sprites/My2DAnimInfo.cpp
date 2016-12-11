@@ -261,16 +261,30 @@ void My2DAnimInfo::SaveAnimationControlFile()
     cJSON* jAnimArray = cJSON_CreateArray();
     cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
 
-    for( unsigned int i=0; i<m_Animations.Count(); i++ )
+    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
     {
-        cJSON* jAnim = cJSON_CreateObject();
+        My2DAnimation* pAnim = m_Animations[animindex];
 
+        cJSON* jAnim = cJSON_CreateObject();
         cJSON_AddItemToArray( jAnimArray, jAnim );
 
-        cJSON_AddStringToObject( jAnim, "Name", m_Animations[i]->m_Name );
+        cJSON_AddStringToObject( jAnim, "Name", pAnim->m_Name );
 
-        // TODO: write out frame info
-        MyAssert( false );
+        // write out frame info
+        cJSON* jFrameArray = cJSON_CreateArray();
+        cJSON_AddItemToObject( jAnim, "Frames", jFrameArray );
+
+        for( unsigned int frameindex=0; frameindex<pAnim->m_Frames.Count(); frameindex++ )
+        {
+            My2DAnimationFrame* pFrame = pAnim->m_Frames[frameindex];
+
+            cJSON* jFrame = cJSON_CreateObject();
+            cJSON_AddItemToArray( jFrameArray, jFrame );
+
+            if( pFrame->GetMaterial() )
+                cJSON_AddStringToObject( jFrame, "Material", pFrame->GetMaterial()->GetMaterialDescription() );
+            cJSON_AddNumberToObject( jFrame, "Duration", pFrame->m_Duration );
+        }
     }
 
     // dump animarray to disk
@@ -343,11 +357,14 @@ void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
                     pAnim->m_Frames.Add( pFrame );
 
                     cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
-                    MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
-                    if( pMaterial )
+                    if( jMatName )
                     {
-                        pFrame->SetMaterial( pMaterial );
-                        pMaterial->Release();
+                        MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
+                        if( pMaterial )
+                        {
+                            pFrame->SetMaterial( pMaterial );
+                            pMaterial->Release();
+                        }
                     }
 
                     cJSONExt_GetFloat( jFrame, "Duration", &pFrame->m_Duration );
