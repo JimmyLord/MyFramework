@@ -1086,6 +1086,11 @@ void MainGLCanvas::Draw()
             m_LastTimeTicked = currtime;
 
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
+
+            // Hacks on top of hacks, popping up a wx popup menu inside g_pGameCore->Tick is blocking
+            //   other event messages will still change the value of g_GLCanvasIDActive which will trip assert before OnDrawFrame below
+            if( g_GLCanvasIDActive != m_GLCanvasID )
+                return;
         }
         else
         {
