@@ -26,7 +26,8 @@ void My2DAnimationFrame::SetMaterial(MaterialDefinition* pMaterial)
 
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
-    m_pMaterial->AddRef();
+    if( pMaterial )
+        m_pMaterial->AddRef();
 }
 
 void My2DAnimation::SetName(const char* name)
@@ -142,6 +143,8 @@ void My2DAnimInfo::FillPropertiesWindow(bool clear)
             sprintf_s( tempname, 20, "Frame %d", frameindex );
             g_pPanelWatch->AddFloat( tempname, &pFrame->m_Duration, 0, 1 );
 
+            int controlid = g_pPanelWatch->AddButton( "Remove", this, animindex * 1000 + frameindex, My2DAnimInfo::StaticOnRemoveFramePressed, Vector2Int( 200, -23 ), Vector2Int( 70, 20 ) );
+
             const char* desc = "no material";
             if( pFrame->m_pMaterial != 0 )
                 desc = pFrame->m_pMaterial->GetName();
@@ -196,6 +199,22 @@ void My2DAnimInfo::OnAddAnimationPressed(int buttonid)
     pAnim->m_Frames.AllocateObjects( MAX_FRAMES_IN_ANIMATION );
 
     m_Animations.Add( pAnim );
+
+    g_pPanelWatch->SetNeedsRefresh();
+}
+
+void My2DAnimInfo::OnRemoveFramePressed(int buttonid)
+{
+    unsigned int animindex = buttonid / 1000;
+    unsigned int frameindex = buttonid % 1000;
+
+    if( animindex >= m_Animations.Count() )
+        return;
+    if( frameindex >= m_Animations[animindex]->m_Frames.Count() )
+        return;
+
+    My2DAnimationFrame* pFrame = m_Animations[animindex]->m_Frames.RemoveIndex_MaintainOrder( frameindex );
+    delete pFrame;
 
     g_pPanelWatch->SetNeedsRefresh();
 }

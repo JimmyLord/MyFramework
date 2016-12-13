@@ -559,7 +559,7 @@ int PanelWatch::AddSpace(const char* name, void* pCallbackObj, PanelWatchCallbac
     return m_NumVariables-1;
 }
 
-int PanelWatch::AddButton(const char* label, void* pCallbackObj, int buttonid, PanelWatchCallbackButtonPressed pOnButtonPressedCallBackFunc)
+int PanelWatch::AddButton(const char* label, void* pCallbackObj, int buttonid, PanelWatchCallbackButtonPressed pOnButtonPressedCallBackFunc, Vector2Int offset, Vector2Int size)
 {
     MyAssert( m_NumVariables < MAX_PanelWatch_VARIABLES );
     if( m_NumVariables >= MAX_PanelWatch_VARIABLES )
@@ -570,7 +570,7 @@ int PanelWatch::AddButton(const char* label, void* pCallbackObj, int buttonid, P
     m_pVariables[m_NumVariables].m_pCallbackObj = pCallbackObj;
     m_pVariables[m_NumVariables].m_ButtonID = buttonid;
 
-    AddControlsForVariable( label, m_NumVariables, -1, 0 );
+    AddControlsForVariable( label, m_NumVariables, -1, 0, offset, size );
 
     m_NumVariables++;
 
@@ -786,7 +786,7 @@ int PanelWatch::SetupStaticTextControl(wxStaticText* pStaticText, const char* na
     return (int)LabelWidth;
 }
 
-void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname)
+void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname, Vector2Int offset, Vector2Int size)
 {
     int PaddingTop = 3;
     int PaddingBottom = 3;
@@ -852,6 +852,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     m_pVariables[variablenum].m_Rect_XYWH.y = PosY;
     m_pVariables[variablenum].m_Rect_XYWH.z = LabelWidth + 10 + ColorPickerWidth + /*SliderWidth +*/ TextCtrlWidth;
     m_pVariables[variablenum].m_Rect_XYWH.w = ControlHeight;
+
+    m_pVariables[variablenum].m_Rect_XYWH.y += offset.y;
 
     // Text label
     if( m_pVariables[variablenum].m_Type != PanelWatchType_Button )
@@ -1008,9 +1010,13 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         m_pVariables[variablenum].m_Handle_Button = (wxButton*)GetControlOfType( PanelWatchControlType_Button );
         MyAssert( dynamic_cast<wxButton*>( m_pVariables[variablenum].m_Handle_Button ) != 0 );
 
+        Vector2Int controlsize = Vector2Int( LabelWidth, LabelHeight );
+        if( size.x != -1 )
+            controlsize = size;
+
         m_pVariables[variablenum].m_Handle_Button->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_Button->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_Button->SetInitialSize( wxSize(LabelWidth, LabelHeight) );
+        m_pVariables[variablenum].m_Handle_Button->SetPosition( wxPoint(PosX+offset.x, PosY+offset.y) );
+        m_pVariables[variablenum].m_Handle_Button->SetInitialSize( wxSize(controlsize.x, controlsize.y) );
         m_pVariables[variablenum].m_Handle_Button->SetLabel( variablename );
 
         PosX += TextCtrlWidth;

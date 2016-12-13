@@ -160,7 +160,7 @@ protected:
 protected:
     wxControl* GetControlOfType(PanelWatchControlTypes type);
     int SetupStaticTextControl(wxStaticText* pStaticText, const char* name, int variablenum, float PosX, float PosY, float LabelWidth, float LabelHeight, wxString variablename, PanelWatchControlInfo* pInfo);
-    void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname);
+    void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname, Vector2Int offset = Vector2Int(0,0), Vector2Int size = Vector2Int(-1,-1));
 
 public:
     void UpdatePanel(int controltoupdate = -1);
@@ -231,7 +231,7 @@ public:
     int AddEnum(const char* name, int* pInt, int numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddFlags(const char* name, unsigned int* pUInt, int numtypes, const char** ppStrings, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
     int AddSpace(const char* name, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
-    int AddButton(const char* label, void* pCallbackObj, int buttonid, PanelWatchCallbackButtonPressed pOnButtonPressedCallBackFunc);
+    int AddButton(const char* label, void* pCallbackObj, int buttonid, PanelWatchCallbackButtonPressed pOnButtonPressedCallBackFunc, Vector2Int offset = Vector2Int(0,0), Vector2Int size = Vector2Int(-1,-1));
     int AddString(const char* name, const char* pString, int maxlength, void* pCallbackObj = 0, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc = 0, PanelWatchCallbackRightClick pRightClickCallbackFunc = 0);
 
     void SetRightClickFunction(int controlid, PanelWatchCallbackRightClick pRightClickCallbackFunc);

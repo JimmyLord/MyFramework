@@ -92,6 +92,9 @@ public:
     static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed( buttonid ); }
     void OnAddAnimationPressed(int buttonid);
 
+    static void StaticOnRemoveFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnRemoveFramePressed( buttonid ); }
+    void OnRemoveFramePressed(int buttonid);
+
     static void StaticOnAddFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed( buttonid ); }
     void OnAddFramePressed(int buttonid);
 
