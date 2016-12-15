@@ -777,6 +777,10 @@ void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
 
 void Shader_Base::ProgramBoneTransforms(MyMatrix* transforms, int numtransforms)
 {
+    // TODO: make this less rigid...
+    // Blackberry has limit of 251 uniform vectors, 50*4 + extras is less than that.
+    MyAssert( numtransforms <= 50 ); // currently set to 50 bones in Bone_AttribsAndUniforms.glsl
+
     if( m_uHandle_BoneTransforms != -1 )
         glUniformMatrix4fv( m_uHandle_BoneTransforms, numtransforms, GL_FALSE, &transforms[0].m11 );
 }

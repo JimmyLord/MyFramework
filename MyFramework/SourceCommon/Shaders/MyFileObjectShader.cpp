@@ -99,26 +99,31 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                 m_NumIncludes++;
             }
         }
-        else if( m_pBuffer[i] == '#' && strncmp( &m_pBuffer[i], "#endif", 6 ) == 0 )
+        else if( m_pBuffer[i] == '#' && ( strncmp( &m_pBuffer[i], "#endif", 6 ) == 0 ||
+                                          strncmp( &m_pBuffer[i], "#else", 5 ) == 0 ) )
         {
             // Some Android .glsl compilers are strict about characters appearing after an #endif
             // I like to put comments on some #endif's like so: "#endif //comment"
             // This code will insert a newline in the space after the #endif if there is one
             // or assert if the character immediately following the #endif isn't a space.
 
-            // If there's any code after an #endif
-            if( m_pBuffer[i+6] != '\r' && m_pBuffer[i+6] != '\n' )
+            int tokenlen = 6;
+            if( strncmp( &m_pBuffer[i], "#else", 5 ) == 0 )
+                tokenlen = 5;
+
+            // if there's any code after an #endif or #else
+            if( m_pBuffer[i+tokenlen] != '\r' && m_pBuffer[i+tokenlen] != '\n' )
             {
-                if( m_pBuffer[i+6] == ' ' )
+                if( m_pBuffer[i+tokenlen] == ' ' )
                 {
                     // if the next character is a space, then put in a newline
-                    m_pBuffer[i+6] = '\n';
+                    m_pBuffer[i+tokenlen] = '\n';
                 }
                 else
                 {
                     // Assert, since there may be an issue compiling the shader
                     // it could be fine, since there may be whitespace and this code doesn't check for all types.
-                    LOGError( LOGTag, "Characters found after #endif\n" );
+                    LOGError( LOGTag, "Characters found after #endif or #else\n" );
                     MyAssert( false );
                 }
             }
@@ -133,7 +138,15 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
         MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
         if( m_pIncludes[i].m_pIncludedFile->m_FileLoadStatus != FileLoadStatus_Success )
+        {
             return false;
+        }
+        else
+        {
+            // scan file for #includes and add them to the list
+            if( m_pIncludes[i].m_pIncludedFile->m_ScannedForIncludes == false )
+                m_pIncludes[i].m_pIncludedFile->CheckFileForIncludesAndAddToList();
+        }
     }
 
     return true;
