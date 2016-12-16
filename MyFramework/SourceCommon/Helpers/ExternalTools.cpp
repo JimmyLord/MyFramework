@@ -28,6 +28,7 @@
 #if MYFW_BLACKBERRY
 #include <bps/virtualkeyboard.h>
 #include <bps/navigator.h>
+#include "../../SourceBlackBerry/BBMain.h"
 #endif
 
 #if MYFW_WP8
@@ -289,7 +290,7 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 
 void PlatformSpecific_SetMouseLock(bool lock)
 {
-#if MYFW_USING_WX || MYFW_WINDOWS
+#if MYFW_USING_WX || MYFW_WINDOWS || MYFW_BLACKBERRY
     SetMouseLock( lock );
 #elif MYFW_NACL
     g_pInstance->SetMouseLock( lock );
@@ -300,7 +301,7 @@ void PlatformSpecific_SetMouseLock(bool lock)
 
 bool PlatformSpecific_IsMouseLocked()
 {
-#if MYFW_USING_WX || MYFW_WINDOWS
+#if MYFW_USING_WX || MYFW_WINDOWS || MYFW_BLACKBERRY
     return IsMouseLocked();
 #elif MYFW_NACL
     return g_pInstance->IsMouseLocked();

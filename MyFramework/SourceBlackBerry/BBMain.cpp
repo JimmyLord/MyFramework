@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -33,6 +33,9 @@
 static screen_context_t screen_cxt;
 
 bool h_mouseisdown = false;
+
+static Vector2 g_LastMousePosition;
+static bool g_SystemMouseIsLocked = false;
 
 #define MAX_KEYS_WE_HANDLE_HELD_EVENTS_FOR  255
 bool h_keysheld[MAX_KEYS_WE_HANDLE_HELD_EVENTS_FOR];
@@ -129,6 +132,29 @@ void handleNavigatorEvent(bps_event_t *event)
     //}
 }
 
+void SetMouseLock(bool lock)
+{
+    if( lock )
+    {
+        if( g_SystemMouseIsLocked == false )
+            LOGInfo( LOGTag, "SetMouseLock( true );\n" );
+
+        g_SystemMouseIsLocked = true;
+    }
+    else
+    {
+        if( g_SystemMouseIsLocked == true )
+            LOGInfo( LOGTag, "SetMouseLock( false );\n" );
+
+        g_SystemMouseIsLocked = false;
+    }
+}
+
+bool IsMouseLocked()
+{
+    return g_SystemMouseIsLocked;
+}
+
 void handleScreenEvent(bps_event_t *event)
 {
     screen_event_t screen_event = screen_event_get_event( event );
@@ -152,6 +178,11 @@ void handleScreenEvent(bps_event_t *event)
 
         id = mtouch_event.contact_id;
 
+        if( g_SystemMouseIsLocked )
+        {
+            g_LastMousePosition = Vector2( (float)pair[0], (float)pair[1] );
+        }
+
         g_pGameCore->OnTouch( GCBA_Down, id, (float)pair[0], (float)pair[1], 0, 0 ); // new press
         break;
 
@@ -162,7 +193,22 @@ void handleScreenEvent(bps_event_t *event)
 
         id = mtouch_event.contact_id;
 
-        g_pGameCore->OnTouch( GCBA_Held, id, (float)pair[0], (float)pair[1], 0, 0 ); // new release
+        if( g_SystemMouseIsLocked )
+        {
+            float xdiff = (float)pair[0] - g_LastMousePosition.x;
+            float ydiff = (float)pair[1] - g_LastMousePosition.y;
+
+            g_LastMousePosition = Vector2( (float)pair[0], (float)pair[1] );
+
+            if( xdiff != 0 || ydiff != 0 )
+            {
+                g_pGameCore->OnTouch( GCBA_Held, id, xdiff, ydiff, 0, 0 ); // new release
+            }
+        }
+        else
+        {
+            g_pGameCore->OnTouch( GCBA_Held, id, (float)pair[0], (float)pair[1], 0, 0 ); // new release
+        }
         break;
 
     case SCREEN_EVENT_MTOUCH_RELEASE:

@@ -225,12 +225,6 @@ void GenerateMouseEvents(GameCore* pGameCore)
     int px;
     int py;
     GetMouseCoordinates( &px, &py );
-    //int w;
-    //int h;
-    //glfwGetWindowSize( &w, &h );
-
-    //float x = ((float)px*480)/w; // map the input to an x/y range of 480x800, starting at top-left
-    //float y = ((float)py*800)/h;
 
     // buttons/fingers
     for( int i=0; i<3; i++ )
@@ -247,10 +241,8 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 g_MouseXPositionWhenLocked = p.x;
                 g_MouseYPositionWhenLocked = p.y;
             }
-            else
-            {
-                pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
-            }
+
+            pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
         }
 
         if( buttons[i] == 0 && buttonsold[i] == 1 )
