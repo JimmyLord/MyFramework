@@ -62,7 +62,9 @@ void* MyStackAllocator::AllocateBlock(unsigned int byteswanted, MyStackPointer* 
         *pStartLocation = m_pCurrentPointer;
 
     void* pPointer = m_pCurrentPointer;
-    m_pCurrentPointer += byteswanted;
+
+    // always place the current pointer on the next 8 byte boundary
+    m_pCurrentPointer += byteswanted + (8 - byteswanted%8);
 
     return pPointer;
 }
