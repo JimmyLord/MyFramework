@@ -398,55 +398,83 @@ void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
 }
 #endif
 
+void MyMesh::CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic)
+{
+    MyAssert( m_SubmeshList.Length() == 0 );
+
+    CreateSubmeshes( 1 );
+    CreateVertexBuffer( 0, pVertexFormatDesc, numverts, dynamic );
+    CreateIndexBuffer( 0, bytesperindex, numindices, dynamic );
+}
+
 void MyMesh::CreateSubmeshes(int numsubmeshes)
 {
     MyAssert( m_SubmeshList.Length() == 0 );
+
     m_SubmeshList.AllocateObjects( numsubmeshes );
     for( int i=0; i<numsubmeshes; i++ )
         m_SubmeshList.Add( MyNew MySubmesh() );
 }
 
-void MyMesh::CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic)
+void MyMesh::CreateVertexBuffer(int meshindex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, bool dynamic)
 {
-    MyAssert( m_SubmeshList.Length() == 0 );
+    MyAssert( m_SubmeshList[meshindex]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[meshindex]->m_pIndexBuffer == 0 );
 
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+    GLenum usage = GL_STATIC_DRAW;
+    int numbuffers = 1;
 
-    GLenum usage;
-    int numbuffers;
     if( dynamic )
     {
         usage = GL_DYNAMIC_DRAW;
         numbuffers = 2;
     }
-    else
-    {
-        usage = GL_STATIC_DRAW;
-        numbuffers = 1;
-    }
 
-    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
     {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Dynamic;
+        m_SubmeshList[meshindex]->m_NumVertsToDraw = numverts;
+        m_SubmeshList[meshindex]->m_VertexFormat = VertexFormat_Dynamic;
 
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
+        m_SubmeshList[meshindex]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
             0, pVertexFormatDesc->stride*numverts, GL_ARRAY_BUFFER, usage,
             false, numbuffers, VertexFormat_Dynamic, pVertexFormatDesc, "MyMesh", "Verts" );
     }
+}
 
-    if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
+void MyMesh::CreateIndexBuffer(int meshindex, int bytesperindex, unsigned int numindices, bool dynamic)
+{
+    MyAssert( m_SubmeshList[meshindex]->m_pIndexBuffer == 0 );
+
+    GLenum usage = GL_STATIC_DRAW;
+    int numbuffers = 1;
+
+    if( dynamic )
     {
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+        usage = GL_DYNAMIC_DRAW;
+        numbuffers = 2;
+    }
 
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
+    {
+        m_SubmeshList[meshindex]->m_NumIndicesToDraw = numindices;
+
+        m_SubmeshList[meshindex]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
             0, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, usage,
             false, numbuffers, bytesperindex, "MyMesh", "Verts" );
     }
 }
 
+void MyMesh::SetIndexBuffer(BufferDefinition* pBuffer)
+{
+    MyAssert( m_SubmeshList[0] );
+
+    if( m_SubmeshList[0]->m_pIndexBuffer == pBuffer )
+        return;
+
+    if( m_SubmeshList[0]->m_pIndexBuffer )
+        m_SubmeshList[0]->m_pIndexBuffer->Release();
+
+    m_SubmeshList[0]->m_pIndexBuffer = pBuffer;
+    pBuffer->AddRef();
+}
 
 void MyMesh::SetSourceFile(MyFileObject* pFile)
 {

@@ -112,8 +112,17 @@ public:
 
     void Clear();
 
+#if MYFW_WINDOWS
+    // TODO: CreateBuffers is now CreateOneSubmeshWithBuffers... remove this todo once old projects are updated
+    __declspec( deprecated("Use CreateOneSubmeshWithBuffers() instead")) void CreateBuffers();
+#endif
+
+    void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic = false);
     void CreateSubmeshes(int numsubmeshes);
-    void CreateBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic = false);
+    void CreateVertexBuffer(int meshindex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, bool dynamic = false);
+    void CreateIndexBuffer(int meshindex, int bytesperindex, unsigned int numindices, bool dynamic = false);
+
+    void SetIndexBuffer(BufferDefinition* pBuffer);
 
     void SetSourceFile(MyFileObject* pFile);
 
