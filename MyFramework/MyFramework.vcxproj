@@ -1445,6 +1445,8 @@
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMeshLoader.cpp" />
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp" />
+    <ClCompile Include="SourceCommon\Multithreading\MyThread.cpp" />
+    <ClCompile Include="SourceCommon\Multithreading\MyJobManager.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameServiceManager.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp" />
     <ClCompile Include="SourceCommon\Networking\GameService_ScoreLoop.cpp" />
@@ -2551,6 +2553,8 @@
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h" />
     <ClInclude Include="SourceCommon\Meshes\MyMeshLoader.h" />
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h" />
+    <ClInclude Include="SourceCommon\Multithreading\MyThread.h" />
+    <ClInclude Include="SourceCommon\Multithreading\MyJobManager.h" />
     <ClInclude Include="SourceCommon\Networking\GameServiceManager.h" />
     <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h" />
     <ClInclude Include="SourceCommon\Networking\GameService_ScoreLoop.h" />

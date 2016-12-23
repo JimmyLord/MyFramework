@@ -27,6 +27,7 @@ GameCore::GameCore()
 
     m_pSoundPlayer = 0;
     m_pSoundManager = 0;
+    m_pMyJobManager = 0;
 #if MYFW_BLACKBERRY
     m_pMediaPlayer = 0;
 #endif
@@ -56,6 +57,8 @@ GameCore::GameCore()
 GameCore::~GameCore()
 {
     LOGInfo( LOGTag, "GameCore::~GameCore()\n" );
+
+    SAFE_DELETE( m_pMyJobManager );
 
     g_pFontManager->FreeAllFonts();
 
@@ -145,6 +148,7 @@ void GameCore::OneTimeInit()
 
     m_pSoundPlayer = MyNew SoundPlayer;
     m_pSoundManager = MyNew SoundManager;
+    m_pMyJobManager = MyNew MyJobManager;
 
 #if MYFW_BLACKBERRY
     m_pMediaPlayer = MyNew MediaPlayer;

@@ -454,6 +454,9 @@ typedef int socklen_t;
 #define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
+#include "Multithreading/MyThread.h"
+#include "Multithreading/MyJobManager.h"
+
 #include "Noise/SimplexNoise.h"
 
 #include "Helpers/MyFileObject.h"

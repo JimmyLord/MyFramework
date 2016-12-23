@@ -124,6 +124,9 @@
     <Filter Include="Source\Noise">
       <UniqueIdentifier>{32feb027-2a83-4ce4-b799-fde4eecbb30b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Multithreading">
+      <UniqueIdentifier>{2cabcba5-766d-4d7a-856e-4cd0607e9f65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -497,6 +500,12 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Sprites\My2DAnimInfo.cpp">
       <Filter>Source\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Multithreading\MyThread.cpp">
+      <Filter>Source\Multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Multithreading\MyJobManager.cpp">
+      <Filter>Source\Multithreading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1051,6 +1060,12 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Sprites\My2DAnimInfo.h">
       <Filter>Source\Sprites</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Multithreading\MyThread.h">
+      <Filter>Source\Multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Multithreading\MyJobManager.h">
+      <Filter>Source\Multithreading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

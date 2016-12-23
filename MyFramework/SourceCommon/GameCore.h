@@ -85,6 +85,9 @@ public:
     float m_TimeSinceGameStarted;
     float m_TimePassedUnpausedLastFrame;
 
+protected:
+    MyJobManager* m_pMyJobManager;
+
 public:
     SoundPlayer* m_pSoundPlayer;
     SoundManager* m_pSoundManager;
