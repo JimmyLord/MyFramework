@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -179,34 +179,34 @@ public:
 
     inline ColorByte operator *(const float o) const
     {
-        return ColorByte( (unsigned char)MyClamp_Return((float)(this->r * o), 0.0f, 255.0f),
-                          (unsigned char)MyClamp_Return((float)(this->g * o), 0.0f, 255.0f),
-                          (unsigned char)MyClamp_Return((float)(this->b * o), 0.0f, 255.0f),
-                          (unsigned char)MyClamp_Return((float)(this->a * o), 0.0f, 255.0f) );
+        return ColorByte( this->r * o < 255 ? (unsigned char)(this->r * o) : 255,
+                          this->g * o < 255 ? (unsigned char)(this->g * o) : 255,
+                          this->b * o < 255 ? (unsigned char)(this->b * o) : 255,
+                          this->a * o < 255 ? (unsigned char)(this->a * o) : 255 );
     }
 
     inline ColorByte operator *(const ColorByte o) const
     {
-        return ColorByte( (unsigned char)((float)(this->r * o.r) / 255.0f),
-                          (unsigned char)((float)(this->g * o.g) / 255.0f),
-                          (unsigned char)((float)(this->b * o.b) / 255.0f),
-                          (unsigned char)((float)(this->a * o.a) / 255.0f) );
+        return ColorByte( this->r * o.r < 255 ? this->r * o.r : 255,
+                          this->g * o.g < 255 ? this->g * o.g : 255,
+                          this->b * o.b < 255 ? this->b * o.b : 255,
+                          this->a * o.a < 255 ? this->a * o.a : 255 );
     }
 
     inline ColorByte operator +(const ColorByte o) const
     {
-        return ColorByte( (unsigned char)MyClamp_Return( (int)(this->r + o.r), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->g + o.g), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->b + o.b), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->a + o.a), 0, 255 ) );
+        return ColorByte( this->r + o.r < 255 ? this->r + o.r : 255,
+                          this->g + o.g < 255 ? this->g + o.g : 255,
+                          this->b + o.b < 255 ? this->b + o.b : 255,
+                          this->a + o.a < 255 ? this->a + o.a : 255 );
     }
 
     inline ColorByte operator -(const ColorByte o) const
     {
-        return ColorByte( (unsigned char)MyClamp_Return( (int)(this->r - o.r), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->g - o.g), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->b - o.b), 0, 255 ),
-                          (unsigned char)MyClamp_Return( (int)(this->a - o.a), 0, 255 ) );
+        return ColorByte( this->r > o.r ? this->r - o.r : 0,
+                          this->g > o.g ? this->g - o.g : 0,
+                          this->b > o.b ? this->b - o.b : 0,
+                          this->a > o.a ? this->a - o.a : 0 );
     }
 
     inline ColorFloat operator *(const ColorFloat o) const
@@ -219,50 +219,50 @@ public:
 
     inline ColorByte operator *=(const ColorByte o)
     {
-        this->r = (unsigned char)((float)(this->r * o.r) / 255.0f);
-        this->g = (unsigned char)((float)(this->g * o.g) / 255.0f);
-        this->b = (unsigned char)((float)(this->b * o.b) / 255.0f);
-        this->a = (unsigned char)((float)(this->a * o.a) / 255.0f);
+        this->r = this->r * o.r < 255 ? this->r * o.r : 255;
+        this->g = this->g * o.g < 255 ? this->g * o.g : 255;
+        this->b = this->b * o.b < 255 ? this->b * o.b : 255;
+        this->a = this->a * o.a < 255 ? this->a * o.a : 255;
 
         return *this;
     }
 
     inline ColorByte operator +=(const ColorByte o)
     {
-        this->r = (unsigned char)MyClamp_Return((float)(this->r + o.r), 0.0f, 255.0f);
-        this->g = (unsigned char)MyClamp_Return((float)(this->g + o.g), 0.0f, 255.0f);
-        this->b = (unsigned char)MyClamp_Return((float)(this->b + o.b), 0.0f, 255.0f);
-        this->a = (unsigned char)MyClamp_Return((float)(this->a + o.a), 0.0f, 255.0f);
+        this->r = this->r + o.r < 255 ? this->r + o.r : 255;
+        this->g = this->g + o.g < 255 ? this->g + o.g : 255;
+        this->b = this->b + o.b < 255 ? this->b + o.b : 255;
+        this->a = this->a + o.a < 255 ? this->a + o.a : 255;
 
         return *this;
     }
 
     inline ColorByte operator -=(const ColorByte o)
     {
-        this->r = (unsigned char)MyClamp_Return((float)(this->r - o.r), 0.0f, 255.0f);
-        this->g = (unsigned char)MyClamp_Return((float)(this->g - o.g), 0.0f, 255.0f);
-        this->b = (unsigned char)MyClamp_Return((float)(this->b - o.b), 0.0f, 255.0f);
-        this->a = (unsigned char)MyClamp_Return((float)(this->a - o.a), 0.0f, 255.0f);
+        this->r = this->r > o.r ? this->r - o.r : 0;
+        this->g = this->g > o.g ? this->g - o.g : 0;
+        this->b = this->b > o.b ? this->b - o.b : 0;
+        this->a = this->a > o.a ? this->a - o.a : 0;
 
         return *this;
     }
 
     inline ColorByte operator -=(const unsigned char o)
     {
-        this->r = (unsigned char)MyClamp_Return((float)(this->r - o), 0.0f, 255.0f);
-        this->g = (unsigned char)MyClamp_Return((float)(this->g - o), 0.0f, 255.0f);
-        this->b = (unsigned char)MyClamp_Return((float)(this->b - o), 0.0f, 255.0f);
-        this->a = (unsigned char)MyClamp_Return((float)(this->a - o), 0.0f, 255.0f);
+        this->r = this->r > o ? this->r - o : 0;
+        this->g = this->g > o ? this->g - o : 0;
+        this->b = this->b > o ? this->b - o : 0;
+        this->a = this->a > o ? this->a - o : 0;
 
         return *this;
     }
 
     inline ColorByte operator *=(const float o)
     {
-        this->r = (unsigned char)MyClamp_Return((float)(this->r * o), 0.0f, 255.0f);
-        this->g = (unsigned char)MyClamp_Return((float)(this->g * o), 0.0f, 255.0f);
-        this->b = (unsigned char)MyClamp_Return((float)(this->b * o), 0.0f, 255.0f);
-        this->a = (unsigned char)MyClamp_Return((float)(this->a * o), 0.0f, 255.0f);
+        this->r = this->r * o < 255 ? (unsigned char)(this->r * o) : 255;
+        this->g = this->g * o < 255 ? (unsigned char)(this->g * o) : 255;
+        this->b = this->b * o < 255 ? (unsigned char)(this->b * o) : 255;
+        this->a = this->a * o < 255 ? (unsigned char)(this->a * o) : 255;
 
         return *this;
     }
