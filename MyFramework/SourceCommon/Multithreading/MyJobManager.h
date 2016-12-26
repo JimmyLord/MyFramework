@@ -11,7 +11,7 @@
 
 class MyJobManager;
 
-extern MyJobManager* g_pMyJobManager;
+extern MyJobManager* g_pJobManager;
 
 class MyJob : public CPPListNode
 {
@@ -23,7 +23,7 @@ public:
     MyJob()
     {
         m_IsStarted = false;
-        m_IsFinished = false;
+        m_IsFinished = true;
     }
 
     virtual ~MyJob()

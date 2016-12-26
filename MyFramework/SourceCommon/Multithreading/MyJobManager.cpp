@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-MyJobManager* g_pMyJobManager = 0;
+MyJobManager* g_pJobManager = 0;
 
 class MyJobThread : public MyThread
 {
@@ -20,7 +20,7 @@ public:
         while( 1 )
         {
             // ask for a job, block while waiting for one to come in
-            MyJob* pJob = g_pMyJobManager->RemoveJob( m_ThreadID );
+            MyJob* pJob = g_pJobManager->RemoveJob( m_ThreadID );
 
             // if the job given by the manager is 0, then exit the thread
             if( pJob == 0 )
@@ -43,7 +43,7 @@ public:
 
 MyJobManager::MyJobManager()
 {
-    g_pMyJobManager = this;
+    g_pJobManager = this;
 
     pthread_mutex_init( &m_JobListMutex, 0 );
     pthread_cond_init( &m_JobAvailableConditional, 0 );
