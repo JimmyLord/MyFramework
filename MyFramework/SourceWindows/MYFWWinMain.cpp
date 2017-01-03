@@ -222,9 +222,9 @@ void GenerateMouseEvents(GameCore* pGameCore)
         buttons[i] = g_MouseButtonStates[i];
     }
 
-    int px;
-    int py;
-    GetMouseCoordinates( &px, &py );
+    int mousex;
+    int mousey;
+    GetMouseCoordinates( &mousex, &mousey );
 
     // buttons/fingers
     for( int i=0; i<3; i++ )
@@ -236,17 +236,18 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 g_SystemMouseIsLocked = true;
                 ShowCursor( false );
                 
-                POINT p;
-                GetCursorPos( &p );
-                g_MouseXPositionWhenLocked = p.x;
-                g_MouseYPositionWhenLocked = p.y;
+                g_MouseXPositionWhenLocked = g_WindowWidth/2; //mousex;
+                g_MouseYPositionWhenLocked = g_WindowHeight/2; //mousey;
+
+                mousex = g_WindowWidth/2;
+                mousey = g_WindowHeight/2;
             }
 
-            pGameCore->OnTouch( GCBA_Down, i, (float)px, (float)py, 0, 0 ); // new press
+            pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
         }
 
         if( buttons[i] == 0 && buttonsold[i] == 1 )
-            pGameCore->OnTouch( GCBA_Up, i, (float)px, (float)py, 0, 0 ); // new release
+            pGameCore->OnTouch( GCBA_Up, i, (float)mousex, (float)mousey, 0, 0 ); // new release
     }
 
     int buttonstates = 0;
@@ -262,20 +263,24 @@ void GenerateMouseEvents(GameCore* pGameCore)
         // Only send mouse movement messages (position diffs) if the system mouse is locked
         if( g_SystemMouseIsLocked )
         {
+            // Set the mouse back to it's screen space position
             POINT p;
-            p.x = px;
-            p.y = py;
+            p.x = g_MouseXPositionWhenLocked;
+            p.y = g_MouseYPositionWhenLocked;
             ClientToScreen( hWnd, &p );
+            SetCursorPos( p.x, p.y );
 
-            float xdiff = (float)p.x - g_MouseXPositionWhenLocked;
-            float ydiff = (float)p.y - g_MouseYPositionWhenLocked;
-
-            SetCursorPos( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
+            float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
+            float ydiff = (float)mousey - g_MouseYPositionWhenLocked;
 
             if( xdiff != 0 || ydiff != 0 )
             {
                 pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
             }
+        }
+        else
+        {
+            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
         }
     }
     else
@@ -283,7 +288,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
         // Only send mouse positions if system mouse isn't locked
         if( g_SystemMouseIsLocked == false )
         {
-            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)px, (float)py, 0, 0 );
+            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
         }
     }
 }

@@ -76,6 +76,8 @@ public:
     bool m_KeyboardOpenRequested;
     bool m_KeyboardCloseRequested; 
 
+    bool m_MouseLockRequested;
+
     int m_LastInputMethodUsed;
 
     bool m_ButtonsHeld[GCBI_NumButtons];
@@ -118,6 +120,7 @@ public:
     virtual bool OnEvent(MyEvent* pEvent) { return false; }
 
     virtual void SetMouseLock(bool lock);
+    virtual bool WasMouseLockRequested();
     virtual bool IsMouseLocked();
     virtual bool OnTouch(int action, int id, float x, float y, float pressure, float size);
     virtual bool OnButtons(GameCoreButtonActions action, GameCoreButtonIDs id);

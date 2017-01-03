@@ -42,6 +42,8 @@ GameCore::GameCore()
     m_KeyboardOpenRequested = false;
     m_KeyboardCloseRequested = false;
 
+    m_MouseLockRequested = false;
+
     m_LastInputMethodUsed = InputMethod_Touch;
 
     for( int i=0; i<GCBI_NumButtons; i++ )
@@ -319,7 +321,14 @@ void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathaft
 
 void GameCore::SetMouseLock(bool lock)
 {
+    m_MouseLockRequested = lock;
+
     PlatformSpecific_SetMouseLock( lock );
+}
+
+bool GameCore::WasMouseLockRequested()
+{
+    return m_MouseLockRequested;
 }
 
 bool GameCore::IsMouseLocked()
