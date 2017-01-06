@@ -25,7 +25,7 @@ FileManager::FileManager()
 #if USE_PTHREAD
     for( int threadid=0; threadid<1; threadid++ )
     {
-        m_FileIOThreadLocks[threadid] = PTHREAD_MUTEX_INITIALIZER;
+        pthread_mutex_init( &m_FileIOThreadLocks[threadid], 0 );
         pthread_mutex_lock( &m_FileIOThreadLocks[threadid] );
         m_FileIOThreadIsLocked[threadid] = true;
 
@@ -58,6 +58,11 @@ FileManager::~FileManager()
         pthread_join( m_FileIOThreads[threadid], 0 );
     }
 #endif //USE_PTHREAD
+
+    for( int threadid=0; threadid<1; threadid++ )
+    {
+        pthread_mutex_destroy( &m_FileIOThreadLocks[threadid] );
+    }
 }
 
 #if USE_PTHREAD

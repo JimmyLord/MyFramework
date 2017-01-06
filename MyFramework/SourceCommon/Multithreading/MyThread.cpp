@@ -33,7 +33,9 @@ MyThread::~MyThread()
 
     if( m_IsRunning == true )
     {
+#if !MYFW_NACL // TODO: is there an alternative for NACL?
         pthread_cancel( m_ThreadID );
+#endif
     }
 }
 

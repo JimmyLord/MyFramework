@@ -221,8 +221,6 @@ typedef unsigned char byte;
 
 #if MYFW_NACL
 #define MYFW_OPENGLES2 1
-#undef USE_PTHREAD
-#define USE_PTHREAD 0
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 0
 #include <GLES2/gl2.h>
@@ -231,6 +229,7 @@ typedef unsigned char byte;
 #else //MYFW_PPAPI
 #include <time.h>
 #endif //MYFW_PPAPI
+#include <pthread.h>
 #include "ppapi/c/ppb_opengles2.h"
 #include "ppapi/cpp/graphics_3d_client.h"
 #include "ppapi/cpp/graphics_3d.h"
