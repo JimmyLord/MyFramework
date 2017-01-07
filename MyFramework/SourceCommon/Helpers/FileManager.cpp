@@ -22,7 +22,7 @@ FileManager* g_pFileManager = 0;
 
 FileManager::FileManager()
 {
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
     for( int threadid=0; threadid<1; threadid++ )
     {
         pthread_mutex_init( &m_FileIOThreadLocks[threadid], 0 );
@@ -35,7 +35,7 @@ FileManager::FileManager()
         m_pLastFileLoadedByThread[threadid] = 0;
         m_pFileThisFileIOThreadIsLoading[threadid] = 0;
     }
-#endif //USE_PTHREAD
+#endif //USE_PTHREAD && !MYFW_NACL
 }
 
 FileManager::~FileManager()
@@ -45,7 +45,7 @@ FileManager::~FileManager()
     MyAssert( m_FilesStillLoading.GetHead() == 0 );
     //FreeAllFiles();
 
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
     // grab the thread mutex... small chance we have to wait for a file to finish loading.
     for( int threadid=0; threadid<1; threadid++ )
     {
@@ -57,7 +57,7 @@ FileManager::~FileManager()
         pthread_mutex_unlock( &m_FileIOThreadLocks[threadid] );
         pthread_join( m_FileIOThreads[threadid], 0 );
     }
-#endif //USE_PTHREAD
+#endif //USE_PTHREAD && !MYFW_NACL
 
     for( int threadid=0; threadid<1; threadid++ )
     {
@@ -65,7 +65,7 @@ FileManager::~FileManager()
     }
 }
 
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
 void* FileManager::Thread_FileIO(void* obj)
 {
     FileManager* pthis = (FileManager*)obj;
@@ -94,7 +94,7 @@ void* FileManager::Thread_FileIO(void* obj)
 
     return 0;
 }
-#endif //USE_PTHREAD
+#endif //USE_PTHREAD && !MYFW_NACL
 
 void FileManager::PrintListOfOpenFiles()
 {
@@ -194,7 +194,7 @@ MyFileObject* FileManager::RequestFile(const char* filename)
     m_FilesStillLoading.AddTail( pFile );
 
 #if MYFW_NACL
-    LOGInfo( LOGTag, "Creating new NaCLFileObject\n" );
+    //LOGInfo( LOGTag, "Creating new NaCLFileObject\n" );
 
     NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
     naclfile->GetURL( filename );
@@ -237,7 +237,7 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
 
 void FileManager::Tick()
 {
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
     int threadindex = 0;
 
     // if there are no files to load, grab the mutex to lock the loading thread until there are.
@@ -273,14 +273,14 @@ void FileManager::Tick()
 
         m_pLastFileLoadedByThread[threadindex] = 0;
     }
-#endif //USE_PTHREAD
+#endif //USE_PTHREAD && !MYFW_NACL
 
     // check if there are more files to load.
     {
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
         // the file being loaded should be 0 if we have the mutex.
         MyAssert( m_pFileThisFileIOThreadIsLoading[threadindex] == 0 );
-#endif //USE_PTHREAD
+#endif //USE_PTHREAD && !MYFW_NACL
 
         // continue to tick any files still in the "loading" queue.
         CPPListNode* pNextNode;
@@ -312,7 +312,7 @@ void FileManager::Tick()
             }
             else
             {
-#if USE_PTHREAD
+#if USE_PTHREAD && !MYFW_NACL
                 // release the mutex so the fileio thread can load the file we want.
                 m_pLastFileLoadedByThread[threadindex] = pFile;
                 m_pFileThisFileIOThreadIsLoading[threadindex] = pFile;
@@ -330,7 +330,7 @@ void FileManager::Tick()
                         pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
                     }
                 }
-#endif
+#endif // USE_PTHREAD && !MYFW_NACL
 
                 break; // file io thread only loads one file at a time.
             }

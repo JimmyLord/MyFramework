@@ -118,7 +118,8 @@ void LOGError(const char* tag, const char* message, ...)
 #if MYFW_EMSCRIPTEN
     printf( "%s", szBuff );
 #elif MYFW_NACL && !MYFW_PPAPI
-    g_pInstance->PostMessage( pp::Var( szBuff ) );
+    fprintf( stderr, "%s", szBuff );
+    //g_pInstance->PostMessage( pp::Var( szBuff ) );
 #else
     fprintf( stderr, "%s", szBuff );
 #endif

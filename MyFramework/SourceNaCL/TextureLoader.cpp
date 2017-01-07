@@ -24,7 +24,7 @@ NaCLFileObject::~NaCLFileObject()
 
 void NaCLFileObject::GetURL( const char* url )
 {
-    LOGInfo( LOGTag, "GetURL %s\n", url );
+    //LOGInfo( LOGTag, "GetURL %s\n", url );
 
     m_URLRequest.SetURL( url );
     m_URLRequest.SetMethod( "GET" );
@@ -41,11 +41,11 @@ void NaCLFileObject::GetURL( const char* url )
 // <ppapi/cpp/url_loader.h> for more information about pp::URLLoader.
 void NaCLFileObject::OnOpen(int32_t result)
 {
-    LOGInfo( LOGTag, "OnOpen - result=%d\n", result );
+    //LOGInfo( LOGTag, "OnOpen - result=%d\n", result );
 
     if( result != PP_OK )
     {
-        LOGInfo( LOGTag, "OnOpen failed\n" );
+        //LOGInfo( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
         m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
@@ -55,11 +55,11 @@ void NaCLFileObject::OnOpen(int32_t result)
     // check the HTTP code and potentially cancel the request.
     pp::URLResponseInfo response = m_URLLoader.GetResponseInfo();
     int32_t status = response.GetStatusCode();
-    LOGInfo( LOGTag, "OnOpen - status=%d\n", status );
+    //LOGInfo( LOGTag, "OnOpen - status=%d\n", status );
 
     if( status != 200 )
     {
-        LOGInfo( LOGTag, "OnOpen failed\n" );
+        //LOGError( LOGTag, "OnOpen failed\n" );
         //ReportResultAndDie(url_, "pp::URLLoader::Open() failed", false);
         m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
@@ -69,23 +69,23 @@ void NaCLFileObject::OnOpen(int32_t result)
         // look for "Content-Length: 1995" in the header
         pp::Var headers_var = response.GetHeaders();
         const char* headers = headers_var.AsString().c_str();
-        LOGInfo( LOGTag, "OnOpen Headers -> %s\n", headers );
+        //LOGInfo( LOGTag, "OnOpen Headers -> %s\n", headers );
 
         const char* lengthstr = strstr( headers, "Content-Length:" );
         if( lengthstr )
         {
             lengthstr += strlen("Content-Length:");
-            LOGInfo( LOGTag, "Content-Length: found %s\n", lengthstr );
+            //LOGInfo( LOGTag, "Content-Length: found %s\n", lengthstr );
             m_pFile->m_FileLength = atoi( lengthstr );
-            LOGInfo( LOGTag, "Content-Length: found %d\n", m_pFile->m_FileLength );
+            //LOGInfo( LOGTag, "Content-Length: found %d\n", m_pFile->m_FileLength );
         }
         else
         {
-            LOGInfo( LOGTag, "File Length not reported by web server -> using 10000 will crash if loading file bigger\n" );
+            //LOGInfo( LOGTag, "File Length not reported by web server -> using 10000 will crash if loading file bigger\n" );
             m_pFile->m_FileLength = 10000;
         }
 
-        LOGInfo( LOGTag, "OnOpen File Length -> %d\n", m_pFile->m_FileLength );
+        //LOGInfo( LOGTag, "OnOpen File Length -> %d\n", m_pFile->m_FileLength );
         // 1 extra character for null terminator for cases where the file buffer is passed as a string, to Lua or glsl parser for example.
         m_pFile->m_pBuffer = MyNew char[m_pFile->m_FileLength+1];
         m_pFile->m_BytesRead = 0;
@@ -100,11 +100,11 @@ void NaCLFileObject::OnOpen(int32_t result)
 // Appends data from this->buffer_ to this->url_response_body_.
 void NaCLFileObject::OnRead(int32_t result)
 {
-    LOGInfo( LOGTag, "OnRead - result=%d\n", result );
+    //LOGInfo( LOGTag, "OnRead - result=%d\n", result );
 
     if( result == PP_OK )
     {
-        LOGInfo( LOGTag, "OnRead - File Load Complete\n" );
+        //LOGInfo( LOGTag, "OnRead - File Load Complete\n" );
 
         // Streaming the file is complete... null terminate the string stored in the file
         m_pFile->m_pBuffer[m_pFile->m_FileLength] = 0;
@@ -122,7 +122,7 @@ void NaCLFileObject::OnRead(int32_t result)
     else
     {
         // A read error occurred.
-        LOGInfo( LOGTag, "OnRead - Load Failed\n" );
+        LOGError( LOGTag, "OnRead - Load Failed\n" );
         m_pFile->m_FileLoadStatus = FileLoadStatus_Error_Other;
         //ReportResultAndDie(url_, "pp::URLLoader::ReadResponseBody() result<0", false);
     }
@@ -132,7 +132,7 @@ void NaCLFileObject::OnRead(int32_t result)
 // OnRead() will be called when bytes are received or when an error occurs.
 void NaCLFileObject::ReadBody()
 {
-    LOGInfo( LOGTag, "ReadBody\n" );
+    //LOGInfo( LOGTag, "ReadBody\n" );
 
     // Note that you specifically want an "optional" callback here. This will
     // allow ReadBody() to return synchronously, ignoring your completion
@@ -146,7 +146,7 @@ void NaCLFileObject::ReadBody()
     while( result > 0 )
     {
         result = m_URLLoader.ReadResponseBody( m_TempReadBuffer, sizeof(m_TempReadBuffer), cc );
-        LOGInfo( LOGTag, "ReadResponseBody result=%d\n", result );
+        //LOGInfo( LOGTag, "ReadResponseBody result=%d\n", result );
 
         // Handle streaming data directly. Note that we *don't* want to call
         // OnRead here, since in the case of result > 0 it will schedule
@@ -160,7 +160,7 @@ void NaCLFileObject::ReadBody()
 
     if( result != PP_OK_COMPLETIONPENDING )
     {
-        LOGInfo( LOGTag, "result != PP_OK_COMPLETIONPENDING\n" );
+        //LOGInfo( LOGTag, "result != PP_OK_COMPLETIONPENDING\n" );
 
         // Either we reached the end of the stream (result == PP_OK) or there was
         // an error. We want OnRead to get called no matter what to handle
@@ -171,7 +171,7 @@ void NaCLFileObject::ReadBody()
     }
     else
     {
-        LOGInfo( LOGTag, "result = PP_OK_COMPLETIONPENDING\n" );
+        //LOGInfo( LOGTag, "result = PP_OK_COMPLETIONPENDING\n" );
     }
 }
 
@@ -180,7 +180,7 @@ void NaCLFileObject::ReadBody()
 void NaCLFileObject::AppendDataBytes(const char* buffer, int32_t num_bytes)
 {
     //LOGInfo( LOGTag, "AppendDataBytes - %d, %s\n", num_bytes, buffer );
-    LOGInfo( LOGTag, "AppendDataBytes - %d, total %d\n", num_bytes, m_pFile->m_BytesRead + num_bytes );
+    //LOGInfo( LOGTag, "AppendDataBytes - %d, total %d\n", num_bytes, m_pFile->m_BytesRead + num_bytes );
 
     if( num_bytes <= 0 )
         return;
@@ -188,7 +188,7 @@ void NaCLFileObject::AppendDataBytes(const char* buffer, int32_t num_bytes)
     // Make sure we don't get a buffer overrun.
     if( m_pFile->m_BytesRead + num_bytes > m_pFile->m_FileLength )
     {
-        LOGInfo( LOGTag, "AppendDataBytes - m_BytesRead + num_bytes > m_FileLength %d + %d > %d\n", m_pFile->m_BytesRead, num_bytes, m_pFile->m_FileLength );
+        //LOGInfo( LOGTag, "AppendDataBytes - m_BytesRead + num_bytes > m_FileLength %d + %d > %d\n", m_pFile->m_BytesRead, num_bytes, m_pFile->m_FileLength );
         //MyAssert( false );
         return;
     }
