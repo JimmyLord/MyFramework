@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 #include "MainInstance.h"
-#include "TextureLoader.h"
+#include "NaCLFileObject.h"
 
 #include "../SourceCommon/Networking/URLEncode.h"
 

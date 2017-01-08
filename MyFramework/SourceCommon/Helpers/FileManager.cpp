@@ -306,6 +306,14 @@ void FileManager::Tick()
 
                 m_FilesLoaded.MoveTail( pFile );
 
+                // inform all registered objects that the file finished loading.
+                for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+                {
+                    FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+                    pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
+                }
+
 #if MYFW_USING_WX
                 g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
 #endif
@@ -320,15 +328,13 @@ void FileManager::Tick()
                 m_FileIOThreadIsLocked[threadindex] = false;
 #else
                 {
+#if !MYFW_NACL
                     pFile->Tick();
 
-                    // inform all registered objects that the file finished loading.
-                    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
-                    {
-                        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
-
-                        pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
-                    }
+#if !USE_PTHREAD
+                    pFile->m_FileLoadStatus = FileLoadStatus_Success;
+#endif !USE_PTHREAD
+#endif //!MYFW_NACL
                 }
 #endif // USE_PTHREAD && !MYFW_NACL
 

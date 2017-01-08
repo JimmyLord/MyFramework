@@ -144,9 +144,6 @@
     <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp">
       <Filter>Source\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="SourceNaCL\TextureLoader.cpp">
-      <Filter>Source-Platform\Source - NaCL</Filter>
-    </ClCompile>
     <ClCompile Include="SourceNaCL\MainInstance.cpp">
       <Filter>Source-Platform\Source - NaCL</Filter>
     </ClCompile>
@@ -507,6 +504,9 @@
     <ClCompile Include="SourceCommon\Multithreading\MyJobManager.cpp">
       <Filter>Source\Multithreading</Filter>
     </ClCompile>
+    <ClCompile Include="SourceNaCL\NaCLFileObject.cpp">
+      <Filter>Source-Platform\Source - NaCL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -529,9 +529,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Shaders\ShaderManager.h">
       <Filter>Source\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceNaCL\TextureLoader.h">
-      <Filter>Source-Platform\Source - NaCL</Filter>
     </ClInclude>
     <ClInclude Include="SourceNaCL\MainInstance.h">
       <Filter>Source-Platform\Source - NaCL</Filter>
@@ -1066,6 +1063,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Multithreading\MyJobManager.h">
       <Filter>Source\Multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceNaCL\NaCLFileObject.h">
+      <Filter>Source-Platform\Source - NaCL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
