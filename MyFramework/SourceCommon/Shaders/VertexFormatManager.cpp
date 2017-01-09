@@ -35,16 +35,16 @@ VertexFormat_Dynamic_Desc* VertexFormatManager::FindDynamicVertexFormat(int numu
         if( pDesc->num_uv_channels != numuvs )
             continue;
 
-        if( normals && pDesc->offset_normal == 0 )
+        if( (normals == true && pDesc->offset_normal == 0) || (normals == false && pDesc->offset_normal != 0) )
             continue;
 
-        if( color && pDesc->offset_color == 0 )
+        if( (color == true && pDesc->offset_color == 0) || (color == false && pDesc->offset_color != 0) )
             continue;
 
-        if( tangents && pDesc->offset_tangent == 0 )
+        if( (tangents == true && pDesc->offset_tangent == 0) || (tangents == false && pDesc->offset_tangent != 0) )
             continue;
 
-        if( bitangents && pDesc->offset_bitangent == 0 )
+        if( (bitangents == true && pDesc->offset_bitangent == 0) || (bitangents == false && pDesc->offset_bitangent != 0) )
             continue;
 
         return pDesc;
