@@ -146,6 +146,7 @@ public:
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
     //void SetPosition(float x, float y, float z);
     //void SetTransform(MyMatrix& matrix);
+    virtual void PreDraw() {}
     void Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 
     void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);

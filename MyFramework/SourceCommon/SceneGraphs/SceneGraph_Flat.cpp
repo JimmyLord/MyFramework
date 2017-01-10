@@ -176,6 +176,11 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
             (*pPreDrawCallbackFunc)( pObject, pShaderOverride );
         }
 
+        if( pMesh )
+        {
+            pMesh->PreDraw();
+        }
+
         checkGlError( "SceneGraph_Flat::Draw() before pSubmesh->Draw()" );
 
         pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
