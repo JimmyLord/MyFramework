@@ -89,16 +89,28 @@ MyJobManager::~MyJobManager()
     pthread_cond_destroy( &m_JobAvailableConditional );
 }
 
-void MyJobManager::AddJob(MyJob* pItem)
+void MyJobManager::GetJobListMutexLock()
 {
     pthread_mutex_lock( &m_JobListMutex );
+}
+
+void MyJobManager::ReleaseJobListMutexLock()
+{
+    pthread_mutex_unlock( &m_JobListMutex );
+}
+
+void MyJobManager::AddJob(MyJob* pItem, bool lockmutex)
+{
+    if( lockmutex )
+        pthread_mutex_lock( &m_JobListMutex );
     
     m_JobList.AddTail( pItem );
 
     // Wake up a single thread so it can do this job.
     pthread_cond_signal( &m_JobAvailableConditional );
 
-    pthread_mutex_unlock( &m_JobListMutex );
+    if( lockmutex )
+        pthread_mutex_unlock( &m_JobListMutex );
 }
 
 MyJob* MyJobManager::RemoveJob(pthread_t threadid)

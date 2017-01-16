@@ -351,6 +351,10 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         m_ShaderFailedToCompile = true;
         return false;
     }
+    else
+    {
+        LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->m_FullPath );
+    }
 
     MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );
     g_pEventManager->SendEventNow( pEvent );

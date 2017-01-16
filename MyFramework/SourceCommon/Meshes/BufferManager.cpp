@@ -208,7 +208,17 @@ void BufferDefinition::Invalidate(bool cleanglallocs)
     {
         m_BufferIDs[i] = 0;
         m_VAOHandles[i] = 0;
+        m_VAOInitialized[i] = 0;
     }
+
+#if _DEBUG && MYFW_WINDOWS
+    m_DEBUG_CurrentVAOIndex = 0;
+    for( int i=0; i<3; i++ )
+    {
+        m_DEBUG_VBOUsedOnCreation[i] = 0;
+        m_DEBUG_IBOUsedOnCreation[i] = 0;
+    }
+#endif
 
     m_CurrentBufferID = 0;
     m_Dirty = true;

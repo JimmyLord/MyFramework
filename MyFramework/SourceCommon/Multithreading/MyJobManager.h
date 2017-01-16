@@ -46,7 +46,7 @@ public:
 class MyJobManager
 {
     friend class MyJobThread;
-    static const int MAX_THREADS = 8;
+    static const int MAX_THREADS = 3;
 
 protected:
     MyThread* m_pThreads[MAX_THREADS];
@@ -64,5 +64,8 @@ public:
     MyJobManager();
     virtual ~MyJobManager();
 
-    void AddJob(MyJob* pItem);
+    void GetJobListMutexLock();
+    void ReleaseJobListMutexLock();
+
+    void AddJob(MyJob* pItem, bool lockmutex = true);
 };
