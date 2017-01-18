@@ -1501,6 +1501,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
+    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp" />
     <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp" />
     <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
@@ -2593,6 +2594,7 @@
     <ClInclude Include="SourceCommon\Random\mtrand.h" />
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Base.h" />
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h" />
+    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
     <ClInclude Include="SourceCommon\Shaders\GLHelpers.h" />
