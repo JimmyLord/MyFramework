@@ -41,7 +41,7 @@ OctreeNode::~OctreeNode()
 
 }
 
-SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth)
+SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, int minx, int miny, int minz, int maxx, int maxy, int maxz)
 {
     m_MaxDepth = treedepth;
 
@@ -56,11 +56,81 @@ SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth)
     m_NodePool.AllocateObjects( maxnodes );
 
     m_RootNode = m_NodePool.GetObjectFromPool();
+
+    Vector3 halfsize( (minx + maxx)/2.0f, (miny + maxy)/2.0f, (minz + maxz)/2.0f );
+    Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
+
+    m_RootNode->m_Bounds.Set( center, halfsize );
+    m_RootNode->m_pSceneGraph = this;
 }
 
 SceneGraph_Octree::~SceneGraph_Octree()
 {
     m_NodePool.ReturnObjectToPool( m_RootNode );
+}
+
+bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds)
+{
+    return false;
+}
+
+void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
+{
+    // move all objects in pOctreeNode node down as far as they can go.
+    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        SceneGraphObject* pObject = (SceneGraphObject*)pNode;
+        MyAABounds* meshbounds = pObject->m_pMesh->GetBounds();
+
+        for( int i=0; i<8; i++ )
+        {
+            MyAABounds childbounds;
+
+            if( pOctreeNode->m_pChildNodes[i] == 0 )
+            {
+                MyAABounds* currentbounds = &pOctreeNode->m_Bounds;
+                Vector3 center = currentbounds->GetCenter();
+                Vector3 quartersize = currentbounds->GetHalfSize()/2;
+
+                if( i == 0 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y + quartersize.y, center.z + quartersize.z ), quartersize );
+                if( i == 1 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y + quartersize.y, center.z + quartersize.z ), quartersize );
+                if( i == 2 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y + quartersize.y, center.z - quartersize.z ), quartersize );
+                if( i == 3 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y + quartersize.y, center.z - quartersize.z ), quartersize );
+                if( i == 4 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y - quartersize.y, center.z + quartersize.z ), quartersize );
+                if( i == 5 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y - quartersize.y, center.z + quartersize.z ), quartersize );
+                if( i == 6 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y - quartersize.y, center.z - quartersize.z ), quartersize );
+                if( i == 7 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y - quartersize.y, center.z - quartersize.z ), quartersize );
+            }
+            else
+            {
+                childbounds = pOctreeNode->m_pChildNodes[i]->m_Bounds;
+            }
+
+            if( FitsInsideAABB( &childbounds, meshbounds ) )
+            {
+                if( pOctreeNode->m_pChildNodes[i] == 0 )
+                {
+                    pOctreeNode->m_pChildNodes[i] = m_NodePool.GetObjectFromPool();
+                    pOctreeNode->m_pChildNodes[i]->m_Bounds = childbounds;
+                    pOctreeNode->m_pChildNodes[i]->m_pParentNode = pOctreeNode;
+                    pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = this;
+                }
+
+                pOctreeNode->m_pChildNodes[i]->m_Renderables.MoveTail( pObject );
+                pOctreeNode->m_NumRenderables--;
+                pOctreeNode->m_pChildNodes[i]->m_NumRenderables++;
+            }
+        }
+    }
+
+    // recurse through children
+    for( int i=0; i<8; i++ )
+    {
+        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        {
+            UpdateTree( pOctreeNode->m_pChildNodes[i] );
+        }
+    }
 }
 
 SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
@@ -94,6 +164,8 @@ SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMe
     {
         LOGInfo( "Scene Graph", "Not enough renderable objects in list\n" );
     }
+
+    UpdateTree( m_RootNode );
 
     return pObject;
 }

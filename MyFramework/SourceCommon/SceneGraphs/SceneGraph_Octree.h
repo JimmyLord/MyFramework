@@ -19,6 +19,8 @@ class OctreeNode
 protected:
     SceneGraph_Octree* m_pSceneGraph;
 
+    MyAABounds m_Bounds;
+
     OctreeNode* m_pChildNodes[8];
     OctreeNode* m_pParentNode;
 
@@ -41,8 +43,10 @@ protected:
 
     OctreeNode* m_RootNode;
 
+    void UpdateTree(OctreeNode* pOctreeNode);
+
 public:
-    SceneGraph_Octree(unsigned int treedepth);
+    SceneGraph_Octree(unsigned int treedepth, int minx, int miny, int minz, int maxx, int maxy, int maxz);
     virtual ~SceneGraph_Octree();
 
     virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
