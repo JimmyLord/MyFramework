@@ -18,6 +18,7 @@ class OctreeNode
 
 protected:
     SceneGraph_Octree* m_pSceneGraph;
+    unsigned int m_NodeDepth;
 
     MyAABounds m_Bounds;
 

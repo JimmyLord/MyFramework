@@ -57,11 +57,12 @@ SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, int minx, int miny,
 
     m_RootNode = m_NodePool.GetObjectFromPool();
 
-    Vector3 halfsize( (minx + maxx)/2.0f, (miny + maxy)/2.0f, (minz + maxz)/2.0f );
+    Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
     Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
 
     m_RootNode->m_Bounds.Set( center, halfsize );
     m_RootNode->m_pSceneGraph = this;
+    m_RootNode->m_NodeDepth = 0;
 }
 
 SceneGraph_Octree::~SceneGraph_Octree()
@@ -69,18 +70,43 @@ SceneGraph_Octree::~SceneGraph_Octree()
     m_NodePool.ReturnObjectToPool( m_RootNode );
 }
 
-bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds)
+bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 innerOffset)
 {
-    return false;
+    Vector3 outercenter = pOuterBounds->GetCenter();
+    Vector3 outerhalfsize = pOuterBounds->GetHalfSize();
+    Vector3 innercenter = pInnerBounds->GetCenter();
+    Vector3 innerhalfsize = pInnerBounds->GetHalfSize();
+
+    Vector3 outermin = outercenter - outerhalfsize;
+    Vector3 outermax = outercenter + outerhalfsize;
+    Vector3 innermin = innercenter - innerhalfsize + innerOffset;
+    Vector3 innermax = innercenter + innerhalfsize + innerOffset;
+    
+    if( innermin.x < outermin.x ) return false;
+    if( innermin.y < outermin.y ) return false;
+    if( innermin.z < outermin.z ) return false;
+    if( innermax.x > outermax.x ) return false;
+    if( innermax.y > outermax.y ) return false;
+    if( innermax.z > outermax.z ) return false;
+
+    return true;
 }
 
 void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
 {
+    if( pOctreeNode->m_NodeDepth >= m_MaxDepth - 1 )
+        return;
+
     // move all objects in pOctreeNode node down as far as they can go.
     for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
+        
+        if( pObject->m_pMesh == 0 )
+            continue;
+
         MyAABounds* meshbounds = pObject->m_pMesh->GetBounds();
+        Vector3 meshpos = pObject->m_pTransform->GetTranslation();
 
         for( int i=0; i<8; i++ )
         {
@@ -106,7 +132,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
                 childbounds = pOctreeNode->m_pChildNodes[i]->m_Bounds;
             }
 
-            if( FitsInsideAABB( &childbounds, meshbounds ) )
+            if( FitsInsideAABB( &childbounds, meshbounds, meshpos ) )
             {
                 if( pOctreeNode->m_pChildNodes[i] == 0 )
                 {
@@ -114,6 +140,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
                     pOctreeNode->m_pChildNodes[i]->m_Bounds = childbounds;
                     pOctreeNode->m_pChildNodes[i]->m_pParentNode = pOctreeNode;
                     pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = this;
+                    pOctreeNode->m_pChildNodes[i]->m_NodeDepth = pOctreeNode->m_NodeDepth + 1;
                 }
 
                 pOctreeNode->m_pChildNodes[i]->m_Renderables.MoveTail( pObject );
@@ -165,8 +192,6 @@ SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMe
         LOGInfo( "Scene Graph", "Not enough renderable objects in list\n" );
     }
 
-    UpdateTree( m_RootNode );
-
     return pObject;
 }
 
@@ -185,6 +210,8 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
 void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Octree::Draw()" );
+
+    UpdateTree( m_RootNode );
 
     for( CPPListNode* pNode = m_RootNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
