@@ -42,9 +42,12 @@ protected:
 
     MySimplePool<OctreeNode> m_NodePool; 
 
-    OctreeNode* m_RootNode;
+    OctreeNode* m_pRootNode;
+
+    bool m_Dirty;
 
     void UpdateTree(OctreeNode* pOctreeNode);
+    void DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc);
 
 public:
     SceneGraph_Octree(unsigned int treedepth, int minx, int miny, int minz, int maxx, int maxy, int maxz);

@@ -53,21 +53,23 @@ SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, int minx, int miny,
         numatdepth *= 8;
     }
 
+    m_Dirty = false;
+
     m_NodePool.AllocateObjects( maxnodes );
 
-    m_RootNode = m_NodePool.GetObjectFromPool();
+    m_pRootNode = m_NodePool.GetObjectFromPool();
 
     Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
     Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
 
-    m_RootNode->m_Bounds.Set( center, halfsize );
-    m_RootNode->m_pSceneGraph = this;
-    m_RootNode->m_NodeDepth = 0;
+    m_pRootNode->m_Bounds.Set( center, halfsize );
+    m_pRootNode->m_pSceneGraph = this;
+    m_pRootNode->m_NodeDepth = 0;
 }
 
 SceneGraph_Octree::~SceneGraph_Octree()
 {
-    m_NodePool.ReturnObjectToPool( m_RootNode );
+    m_NodePool.ReturnObjectToPool( m_pRootNode );
 }
 
 bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 innerOffset)
@@ -184,13 +186,15 @@ SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMe
 
         pObject->m_pUserData = pUserData;
 
-        m_RootNode->m_Renderables.AddTail( pObject );
-        m_RootNode->m_NumRenderables++;
+        m_pRootNode->m_Renderables.AddTail( pObject );
+        m_pRootNode->m_NumRenderables++;
     }
     else
     {
         LOGInfo( "Scene Graph", "Not enough renderable objects in list\n" );
     }
+
+    m_Dirty = true;
 
     return pObject;
 }
@@ -202,7 +206,7 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
     MyAssert( pObject != 0 );
 
     pObject->Remove();
-    m_RootNode->m_NumRenderables--;
+    m_pRootNode->m_NumRenderables--;
 
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
@@ -211,9 +215,22 @@ void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender,
 {
     checkGlError( "Start of SceneGraph_Octree::Draw()" );
 
-    UpdateTree( m_RootNode );
+    if( m_Dirty )
+    {
+        UpdateTree( m_pRootNode );
+    }
 
-    for( CPPListNode* pNode = m_RootNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    DrawNode( m_pRootNode, flags, layerstorender, campos, camrot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+}
+
+void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+{
+    // Draw all scene graph objects contained in this node.
+    // TODO:
+    //    Check if node is at least partially visible in frustum
+    //    Remove frustum check for each individual object
+
+    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
@@ -321,4 +338,13 @@ void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender,
     }
 
     checkGlError( "End of SceneGraph_Octree::Draw()" );
+
+    // recurse through children
+    for( int i=0; i<8; i++ )
+    {
+        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        {
+            DrawNode( pOctreeNode->m_pChildNodes[i], flags, layerstorender, campos, camrot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+        }
+    }
 }
