@@ -94,6 +94,66 @@ bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 
     return true;
 }
 
+bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatViewProj, MyMatrix* pWorldTransform)
+{
+    Vector3 center = pBounds->GetCenter();
+    Vector3 half = pBounds->GetHalfSize();
+
+    // create a wvp matrix for pBounds
+    MyMatrix wvp = *pMatViewProj;    
+    if( pWorldTransform )
+        wvp = wvp * *pWorldTransform;
+
+    Vector4 clippos[8];
+
+    // transform AABB extents into clip space.
+    clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
+    clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
+    clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
+    clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
+    clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
+    clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
+    clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
+    clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
+
+    // check visibility two planes at a time
+    bool visible;
+    for( int component=0; component<3; component++ ) // loop through x/y/z
+    {
+        // check if all 8 points are less than the -w extent of it's axis
+        visible = false;
+        for( int i=0; i<8; i++ )
+        {
+            if( clippos[i][component] >= -clippos[i].w )
+            {
+                visible = true; // this point is on the visible side of the plane, skip to next plane
+                break;
+            }
+        }
+        if( visible == false ) // all points are on outside of plane, don't draw object
+            break;
+
+        // check if all 8 points are greater than the -w extent of it's axis
+        visible = false;
+        for( int i=0; i<8; i++ )
+        {
+            if( clippos[i][component] <= clippos[i].w )
+            {
+                visible = true; // this point is on the visible side of the plane, skip to next plane
+                break;
+            }
+        }
+        if( visible == false ) // all points are on outside of plane, don't draw object
+            break;
+    }
+
+    // if all points are on outside of frustum, don't draw mesh.
+    if( visible == false )
+        return false;
+
+    return true;
+}
+
 void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
 {
     if( pOctreeNode->m_NodeDepth >= m_MaxDepth - 1 )
@@ -227,8 +287,12 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
 {
     // Draw all scene graph objects contained in this node.
     // TODO:
-    //    Check if node is at least partially visible in frustum
     //    Remove frustum check for each individual object
+    //    2118, 1355(319)
+
+    // If node is not in frustum, return
+    if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatViewProj, 0 ) == false )
+        return;
 
     for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
@@ -258,56 +322,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
         if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
         {
             MyAABounds* bounds = pMesh->GetBounds();
-            Vector3 center = bounds->GetCenter();
-            Vector3 half = bounds->GetHalfSize();
 
-            MyMatrix wvp = *pMatViewProj * worldtransform;
-
-            Vector4 clippos[8];
-
-            // transform AABB extents into clip space.
-            clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
-            clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
-            clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
-            clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
-            clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
-            clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
-            clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
-            clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
-
-            // check visibility two planes at a time
-            bool visible;
-            for( int component=0; component<3; component++ ) // loop through x/y/z
-            {
-                // check if all 8 points are less than the -w extent of it's axis
-                visible = false;
-                for( int i=0; i<8; i++ )
-                {
-                    if( clippos[i][component] >= -clippos[i].w )
-                    {
-                        visible = true; // this point is on the visible side of the plane, skip to next plane
-                        break;
-                    }
-                }
-                if( visible == false ) // all points are on outside of plane, don't draw object
-                    break;
-
-                // check if all 8 points are greater than the -w extent of it's axis
-                visible = false;
-                for( int i=0; i<8; i++ )
-                {
-                    if( clippos[i][component] <= clippos[i].w )
-                    {
-                        visible = true; // this point is on the visible side of the plane, skip to next plane
-                        break;
-                    }
-                }
-                if( visible == false ) // all points are on outside of plane, don't draw object
-                    break;
-            }
-
-            // if all points are on outside of frustum, don't draw mesh.
-            if( visible == false )
+            if( FitsInFrustum( bounds, pMatViewProj, &worldtransform ) == false )
                 continue;
         }
 
