@@ -21,8 +21,6 @@ OctreeNode::OctreeNode()
         m_pChildNodes[i] = 0;
     }
     m_pParentNode = 0;
-
-    m_NumRenderables = 0;
 }
 
 OctreeNode::~OctreeNode()
@@ -30,8 +28,6 @@ OctreeNode::~OctreeNode()
     while( m_Renderables.GetHead() )
     {
         m_pSceneGraph->m_pObjectPool.ReturnObjectToPool( (SceneGraphObject*)m_Renderables.RemHead() );
-
-        m_NumRenderables--;
     }
 
     for( int i=0; i<8; i++ )
@@ -41,7 +37,7 @@ OctreeNode::~OctreeNode()
 
 }
 
-SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, int minx, int miny, int minz, int maxx, int maxy, int maxz)
+SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz)
 {
     m_MaxDepth = treedepth;
 
@@ -87,9 +83,9 @@ bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 
     if( innermin.x < outermin.x ) return false;
     if( innermin.y < outermin.y ) return false;
     if( innermin.z < outermin.z ) return false;
-    if( innermax.x > outermax.x ) return false;
-    if( innermax.y > outermax.y ) return false;
-    if( innermax.z > outermax.z ) return false;
+    if( innermax.x >= outermax.x ) return false;
+    if( innermax.y >= outermax.y ) return false;
+    if( innermax.z >= outermax.z ) return false;
 
     return true;
 }
@@ -160,8 +156,11 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
         return;
 
     // move all objects in pOctreeNode node down as far as they can go.
-    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    CPPListNode* pNextNode;
+    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNextNode )
     {
+        pNextNode = pNode->GetNext();
+
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
         
         if( pObject->m_pMesh == 0 )
@@ -206,8 +205,6 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
                 }
 
                 pOctreeNode->m_pChildNodes[i]->m_Renderables.MoveTail( pObject );
-                pOctreeNode->m_NumRenderables--;
-                pOctreeNode->m_pChildNodes[i]->m_NumRenderables++;
             }
         }
     }
@@ -247,7 +244,6 @@ SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMe
         pObject->m_pUserData = pUserData;
 
         m_pRootNode->m_Renderables.AddTail( pObject );
-        m_pRootNode->m_NumRenderables++;
     }
     else
     {
@@ -265,8 +261,8 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
 
     MyAssert( pObject != 0 );
 
+    MyAssert( pObject->Next != 0 );
     pObject->Remove();
-    m_pRootNode->m_NumRenderables--;
 
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
@@ -288,7 +284,6 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
     // Draw all scene graph objects contained in this node.
     // TODO:
     //    Remove frustum check for each individual object
-    //    2118, 1355(319)
 
     // If node is not in frustum, return
     if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatViewProj, 0 ) == false )

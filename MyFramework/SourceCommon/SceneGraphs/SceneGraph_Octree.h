@@ -26,7 +26,6 @@ protected:
     OctreeNode* m_pParentNode;
 
     CPPListHead m_Renderables;
-    unsigned int m_NumRenderables;
 
 public:
     OctreeNode();
@@ -50,7 +49,7 @@ protected:
     void DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc);
 
 public:
-    SceneGraph_Octree(unsigned int treedepth, int minx, int miny, int minz, int maxx, int maxy, int maxz);
+    SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz);
     virtual ~SceneGraph_Octree();
 
     virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
