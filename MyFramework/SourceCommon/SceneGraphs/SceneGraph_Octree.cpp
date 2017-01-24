@@ -25,6 +25,12 @@ OctreeNode::OctreeNode()
 
 OctreeNode::~OctreeNode()
 {
+    MyAssert( m_pSceneGraph == 0 );
+    MyAssert( m_pParentNode == 0 );    
+}
+
+void OctreeNode::Cleanup()
+{
     while( m_Renderables.GetHead() )
     {
         m_pSceneGraph->m_pObjectPool.ReturnObjectToPool( (SceneGraphObject*)m_Renderables.RemHead() );
@@ -32,9 +38,16 @@ OctreeNode::~OctreeNode()
 
     for( int i=0; i<8; i++ )
     {
-        m_pSceneGraph->m_NodePool.ReturnObjectToPool( m_pChildNodes[i] );
+        if( m_pChildNodes[i] )
+        {
+            m_pChildNodes[i]->Cleanup();
+            m_pChildNodes[i] = 0;
+        }
     }
 
+    m_pSceneGraph->m_NodePool.ReturnObjectToPool( this );
+    m_pSceneGraph = 0;
+    m_pParentNode = 0;
 }
 
 SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz)
@@ -65,7 +78,7 @@ SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float m
 
 SceneGraph_Octree::~SceneGraph_Octree()
 {
-    m_NodePool.ReturnObjectToPool( m_pRootNode );
+    m_pRootNode->Cleanup();
 }
 
 bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 innerOffset)

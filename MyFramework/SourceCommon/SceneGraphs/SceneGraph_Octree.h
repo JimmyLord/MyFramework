@@ -27,6 +27,8 @@ protected:
 
     CPPListHead m_Renderables;
 
+    void Cleanup();
+
 public:
     OctreeNode();
     ~OctreeNode();
