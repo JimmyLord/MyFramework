@@ -96,9 +96,9 @@ bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 
     if( innermin.x < outermin.x ) return false;
     if( innermin.y < outermin.y ) return false;
     if( innermin.z < outermin.z ) return false;
-    if( innermax.x >= outermax.x ) return false;
-    if( innermax.y >= outermax.y ) return false;
-    if( innermax.z >= outermax.z ) return false;
+    if( innermax.x > outermax.x ) return false;
+    if( innermax.y > outermax.y ) return false;
+    if( innermax.z > outermax.z ) return false;
 
     return true;
 }
@@ -327,13 +327,13 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
         MaterialDefinition* pMaterial = pObject->m_pMaterial;
 
         // simple frustum check
-        if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
-        {
-            MyAABounds* bounds = pMesh->GetBounds();
+        //if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
+        //{
+        //    MyAABounds* bounds = pMesh->GetBounds();
 
-            if( FitsInFrustum( bounds, pMatViewProj, &worldtransform ) == false )
-                continue;
-        }
+        //    if( FitsInFrustum( bounds, pMatViewProj, &worldtransform ) == false )
+        //        continue;
+        //}
 
         pSubmesh->SetMaterial( pMaterial );
         pSubmesh->m_PrimitiveType = pObject->m_GLPrimitiveType;
