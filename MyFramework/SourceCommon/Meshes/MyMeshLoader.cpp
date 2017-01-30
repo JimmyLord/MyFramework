@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -281,10 +281,15 @@ void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float sc
 
     cJSON_Delete( root );
 
-    Vector3 center = (minvert + maxvert) / 2;
-    m_AABounds.Set( center, maxvert - center );
+    // if something failed to load, don't consider the mesh ready.
+    // TODO: add better error handling... maybe
+    if( pSubmeshList->Count() > 0 )
+    {
+        Vector3 center = (minvert + maxvert) / 2;
+        m_AABounds.Set( center, maxvert - center );
 
-    m_MeshReady = true;
+        m_MeshReady = true;
+    }
 }
 
 int MyMesh::FindBoneIndexByName(char* name)
