@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -39,5 +39,16 @@ struct DragAndDropStruct
 };
 
 extern DragAndDropStruct g_DragAndDropStruct;
+
+// Attempt to add a visual marker when I drag/drop from the trees
+//   idea taken from: https://forums.wxwidgets.org/viewtopic.php?t=40168
+class DragAndDropTreeMarker : public wxPanel
+{
+protected:
+    void onPaint(wxPaintEvent &evt);
+
+public:
+    DragAndDropTreeMarker(wxWindow* pParent);
+};
 
 #endif // __DragAndDropHackery_H__

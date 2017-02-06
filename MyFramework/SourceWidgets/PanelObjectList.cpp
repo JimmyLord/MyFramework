@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -45,11 +45,15 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler( PanelObjectList::OnDragBegin ) );
     Connect( wxEVT_COMMAND_TREE_ITEM_ACTIVATED, wxTreeEventHandler( PanelObjectList::OnActivate ) );
     Connect( wxEVT_TREE_KEY_DOWN, wxTreeEventHandler( PanelObjectList::OnKeyDown ) );
+
+    m_pDragAndDropTreeMarker = new DragAndDropTreeMarker( this );
+    m_pDragAndDropTreeMarker->Hide();
 }
 
 PanelObjectList::~PanelObjectList()
 {
-    SAFE_DELETE( m_pTree_Objects );
+    delete m_pDragAndDropTreeMarker;
+    delete m_pTree_Objects;
 }
 
 void PanelObjectList::OnTreeItemLeftDown(wxMouseEvent& event)
@@ -255,11 +259,33 @@ PanelObjectListDropTarget::PanelObjectListDropTarget()
 
 wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
 {
+    wxTreeItemId id = m_pPanelObjectList->m_pTree_Objects->HitTest( wxPoint(x, y) );
+    if( id.IsOk() )
+    {
+        wxRect rect;
+        m_pPanelObjectList->m_pTree_Objects->GetBoundingRect( id, rect, false );
+        wxRect textrect;
+        m_pPanelObjectList->m_pTree_Objects->GetBoundingRect( id, textrect, true );
+
+        // TODO: fix hard-coded range. currently used in GameObject::OnDrop, must match up
+        if( y > rect.GetBottom() - 10 )
+        {
+            m_pPanelObjectList->m_pDragAndDropTreeMarker->Show();
+            m_pPanelObjectList->m_pDragAndDropTreeMarker->SetPosition( wxPoint( textrect.GetLeft(), rect.GetBottom() + 3 ) );
+        }
+        else
+        {
+            m_pPanelObjectList->m_pDragAndDropTreeMarker->Hide();
+        }
+    }
+
     return wxDragCopy;
 }
 
 wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
 {
+    m_pPanelObjectList->m_pDragAndDropTreeMarker->Hide();
+
     // figure out which object the stuff was dropped on and let it know.
     wxTreeItemId id = m_pPanelObjectList->m_pTree_Objects->HitTest( wxPoint(x, y) );
     if( id.IsOk() )
