@@ -87,6 +87,7 @@ public:
 
     void* m_pCallbackFunctionObject;
     PanelObjectListCallback m_pOnTreeSelectionChangedFunction;
+    PanelObjectListCallback m_pOnTreeMultipleSelectionFunction;
 
     // Function panel watch will call if it needs a refresh.
     //static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { ((PanelObjectList*)pObjectPtr)->UpdatePanelWatchWithSelectedItems(); }

@@ -31,6 +31,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
 
     m_pCallbackFunctionObject = 0;
     m_pOnTreeSelectionChangedFunction = 0;
+    m_pOnTreeMultipleSelectionFunction = 0;
     m_UpdatePanelWatchOnSelection = true;
 
     Update();
@@ -103,17 +104,28 @@ void UpdatePanelWatchWithSelectedItems()
 
 	// TODO: if multiple selected, show common properties.
     //unsigned int i = 0;
-    //if( numselected > 0 )
-    for( unsigned int i=0; i<numselected; i++ )
+    if( numselected == 1 )
     {
         // pass left click event through to the item.
-        wxTreeItemId id = selecteditems[i].GetID();  //event.GetItem();
+        wxTreeItemId id = selecteditems[0].GetID();  //event.GetItem();
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)g_pPanelObjectList->m_pTree_Objects->GetItemData( id );
         //g_pPanelWatch->ClearAllVariables(); // should be done by item itself, in case it doesn't want to update watch window.
 
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject_LeftClick ? pData->m_pObject_LeftClick : pData->m_pObject, id, i );
+            pData->m_pLeftClickFunction( pData->m_pObject_LeftClick ? pData->m_pObject_LeftClick : pData->m_pObject, id, 0 );
+        }
+    }
+    else
+    {
+        g_pPanelWatch->ClearAllVariables();
+        char temp[30];
+        snprintf_s( temp, 29, "%d objects selected", numselected );
+        g_pPanelWatch->AddSpace( temp, 0, 0, 0 );
+
+        if( g_pPanelObjectList->m_pOnTreeMultipleSelectionFunction )
+        {
+            g_pPanelObjectList->m_pOnTreeMultipleSelectionFunction( g_pPanelObjectList->m_pCallbackFunctionObject );
         }
     }
 
