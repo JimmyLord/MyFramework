@@ -113,7 +113,7 @@ void UpdatePanelWatchWithSelectedItems()
 
         if( pData && pData->m_pLeftClickFunction )
         {
-            pData->m_pLeftClickFunction( pData->m_pObject_LeftClick ? pData->m_pObject_LeftClick : pData->m_pObject, id, 0 );
+            pData->m_pLeftClickFunction( pData->m_pObject_LeftClick ? pData->m_pObject_LeftClick : pData->m_pObject, id, numselected );
         }
     }
     else
