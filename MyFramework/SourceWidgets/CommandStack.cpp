@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -13,11 +13,17 @@
 
 CommandStack::CommandStack()
 {
+    m_CurrentFrame = 0;
 }
 
 CommandStack::~CommandStack()
 {
     ClearStacks();
+}
+
+void CommandStack::IncrementFrameCount()
+{
+    m_CurrentFrame++;
 }
 
 void CommandStack::ClearStacks()
@@ -81,20 +87,34 @@ void CommandStack::Redo(unsigned int levels)
     }
 }
 
-void CommandStack::Do(EditorCommand* pCommand, bool linktoprevious)
+void CommandStack::Do(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
 {
     pCommand->Do();
 
-    Add( pCommand, linktoprevious );
+    Add( pCommand, linktoprevious, autolinkifsameframeasprevious );
 }
 
-void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious)
+void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
 {
     MyAssert( pCommand );
     if( pCommand == 0 )
         return;
 
-    pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
+    pCommand->m_LinkedToPreviousCommandOnUndoStack = false;
+
+    // Set command to be linked to the previous command if it was executed on same frame (and link wanted)
+    pCommand->m_FrameExecuted = m_CurrentFrame;
+    if( autolinkifsameframeasprevious && m_UndoStack.size() > 0 )
+    {
+        if( pCommand->m_FrameExecuted == m_UndoStack.back()->m_FrameExecuted )
+            pCommand->m_LinkedToPreviousCommandOnUndoStack = true;
+    }
+
+    // Force link
+    if( linktoprevious )
+    {
+        pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
+    }
 
     m_UndoStack.push_back( pCommand );
 

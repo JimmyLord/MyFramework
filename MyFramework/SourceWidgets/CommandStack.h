@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -18,17 +18,21 @@ public:
     std::vector<EditorCommand*> m_UndoStack;
     std::vector<EditorCommand*> m_RedoStack;
 
+    unsigned int m_CurrentFrame;
+
 public:
     CommandStack();
     virtual ~CommandStack();
+
+    virtual void IncrementFrameCount();
 
     virtual void ClearStacks();
 
     virtual void Undo(unsigned int levels);
     virtual void Redo(unsigned int levels);
 
-    virtual void Do(EditorCommand* pCommand, bool linktoprevious = false);
-    virtual void Add(EditorCommand* pCommand, bool linktoprevious = false);
+    virtual void Do(EditorCommand* pCommand, bool linktoprevious = false, bool autolinkifsameframeasprevious = true);
+    virtual void Add(EditorCommand* pCommand, bool linktoprevious = false, bool autolinkifsameframeasprevious = true);
 };
 
 #endif // __CommandStack_H__

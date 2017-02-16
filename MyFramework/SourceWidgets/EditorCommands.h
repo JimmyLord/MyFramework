@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -24,11 +24,14 @@ protected:
     bool m_LinkedToPreviousCommandOnUndoStack;
     bool m_LinkedToNextCommandOnRedoStack; // assigned a value during an undo op before being places on redo stack.
 
+    unsigned int m_FrameExecuted;
+
 public:
     EditorCommand()
     {
         m_LinkedToPreviousCommandOnUndoStack = false;
         m_LinkedToNextCommandOnRedoStack = false;
+        m_FrameExecuted = 0;
     }
     virtual ~EditorCommand() {}
 
