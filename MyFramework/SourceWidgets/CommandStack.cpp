@@ -41,6 +41,15 @@ void CommandStack::ClearStacks()
     }
 }
 
+void CommandStack::ClearUndoStack(unsigned int numtoleave)
+{
+    while( m_UndoStack.size() > numtoleave )
+    {
+        delete m_UndoStack.back();
+        m_UndoStack.pop_back();
+    }
+}
+
 void CommandStack::Undo(unsigned int levels)
 {
     MyAssert( m_UndoStack.size() >= levels );

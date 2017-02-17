@@ -294,12 +294,12 @@ void MainFrame::OnMenu(wxCommandEvent& event)
     switch( id )
     {
     case myID_Undo:
-        if( m_pCommandStack->m_UndoStack.size() > 0 )
+        if( m_pCommandStack->GetUndoStackSize() > 0 )
             m_pCommandStack->Undo( 1 );
         break;
 
     case myID_Redo:
-        if( m_pCommandStack->m_RedoStack.size() > 0 )
+        if( m_pCommandStack->GetRedoStackSize() > 0 )
             m_pCommandStack->Redo( 1 );
         break;
 

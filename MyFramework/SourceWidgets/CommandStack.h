@@ -14,7 +14,7 @@ class EditorCommand;
 
 class CommandStack
 {
-public:
+protected:
     std::vector<EditorCommand*> m_UndoStack;
     std::vector<EditorCommand*> m_RedoStack;
 
@@ -24,9 +24,14 @@ public:
     CommandStack();
     virtual ~CommandStack();
 
-    virtual void IncrementFrameCount();
+    void IncrementFrameCount();
 
-    virtual void ClearStacks();
+    unsigned int GetUndoStackSize() { return m_UndoStack.size(); }
+    unsigned int GetRedoStackSize() { return m_RedoStack.size(); }
+    EditorCommand* GetUndoCommandAtIndex(unsigned int index) { return m_UndoStack[index]; }
+
+    void ClearStacks();
+    void ClearUndoStack(unsigned int numtoleave = 0);
 
     virtual void Undo(unsigned int levels);
     virtual void Redo(unsigned int levels);
