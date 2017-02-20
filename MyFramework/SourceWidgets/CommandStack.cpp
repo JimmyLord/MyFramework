@@ -98,9 +98,10 @@ void CommandStack::Redo(unsigned int levels)
 
 void CommandStack::Do(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
 {
-    pCommand->Do();
-
+    // Add the command to the undo stack before executing, allowing redo stack to be wiped
     Add( pCommand, linktoprevious, autolinkifsameframeasprevious );
+
+    pCommand->Do();
 }
 
 void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
@@ -109,26 +110,33 @@ void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autoli
     if( pCommand == 0 )
         return;
 
-    pCommand->m_LinkedToPreviousCommandOnUndoStack = false;
-
-    // Set command to be linked to the previous command if it was executed on same frame (and link wanted)
-    pCommand->m_FrameExecuted = m_CurrentFrame;
-    if( autolinkifsameframeasprevious && m_UndoStack.size() > 0 )
+    // Figure out if command should be linked to previous
     {
-        if( pCommand->m_FrameExecuted == m_UndoStack.back()->m_FrameExecuted )
-            pCommand->m_LinkedToPreviousCommandOnUndoStack = true;
+        pCommand->m_LinkedToPreviousCommandOnUndoStack = false;
+
+        // Set command to be linked to the previous command if it was executed on same frame (and link wanted)
+        pCommand->m_FrameExecuted = m_CurrentFrame;
+        if( autolinkifsameframeasprevious && m_UndoStack.size() > 0 )
+        {
+            if( pCommand->m_FrameExecuted == m_UndoStack.back()->m_FrameExecuted )
+                pCommand->m_LinkedToPreviousCommandOnUndoStack = true;
+        }
+
+        // Force link
+        if( linktoprevious )
+        {
+            pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
+        }
     }
 
-    // Force link
-    if( linktoprevious )
-    {
-        pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
-    }
-
+    // Add to undo stack
     m_UndoStack.push_back( pCommand );
 
-    for( unsigned int i=0; i<m_RedoStack.size(); i++ )
-        delete( m_RedoStack[i] );
+    // Wipe out the redo stack
+    {
+        for( unsigned int i=0; i<m_RedoStack.size(); i++ )
+            delete( m_RedoStack[i] );
     
-    m_RedoStack.clear();
+        m_RedoStack.clear();
+    }
 }
