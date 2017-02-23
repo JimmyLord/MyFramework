@@ -290,6 +290,10 @@ wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragR
             m_pPanelObjectList->m_pDragAndDropTreeMarker->Hide();
         }
     }
+    else
+    {
+        m_pPanelObjectList->m_pDragAndDropTreeMarker->Hide();
+    }
 
     return wxDragCopy;
 }
