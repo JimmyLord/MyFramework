@@ -1194,6 +1194,14 @@ void PanelWatch::OnKillFocus(wxFocusEvent& event)
 
 void PanelWatch::OnEditBoxKillFocus(wxFocusEvent& event)
 {
+    // I don't like this check, but it's a working solution for now
+    //    the issue is when a textctrl is in focus and is hidden by ClearAllVariables(), it remains in focus
+    //    clicking any other control is what removes the focus, then that control handler will call ClearAllVariables() if necessary
+    //    in some cases, such as another scene being loaded, focus will not be lost, but ClearAllVariables() will be called
+    //    so later, clicking any other control (and losing focus) will cause a crash in a few callbacks in this class
+    if( m_NumVariables == 0 )
+        return;
+
     int controlid = event.GetId();
     OnTextCtrlChanged( controlid );
 

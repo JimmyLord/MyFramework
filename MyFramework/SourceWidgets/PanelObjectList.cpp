@@ -431,9 +431,19 @@ void PanelObjectList::UpdateRootNodeObjectCount()
 
     if( idroot.IsOk() )
     {
+        int childcount = 0;
+
+        // count children of the children of the root node (i.e. count GameObjects in root/Scenes/GameObjects heirarchy)
+        wxTreeItemIdValue cookie;
+        wxTreeItemId idchild = m_pTree_Objects->GetFirstChild( idroot, cookie );
+        while( idchild.IsOk() )
+        {
+            childcount += m_pTree_Objects->GetChildrenCount( idchild, false );
+            idchild = m_pTree_Objects->GetNextChild( idroot, cookie );
+        }
+
         // update root node object count.
-        sprintf_s( tempstr, 100, "Objects(%d)",
-            (int)m_pTree_Objects->GetChildrenCount( idroot, true ) - (int)m_pTree_Objects->GetChildrenCount( idroot, false ) );
+        sprintf_s( tempstr, 100, "Objects(%d)", childcount );
         m_pTree_Objects->SetItemText( idroot, tempstr );
     }
 }
