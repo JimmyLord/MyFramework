@@ -235,6 +235,26 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
     return 0;
 }
 
+// Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
+{
+    MyAssert( pFile->m_FileLoadStatus == FileLoadStatus_Success );
+
+    m_FilesLoaded.MoveTail( pFile );
+
+    // inform all registered objects that the file finished loading.
+    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    {
+        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+        pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
+    }
+
+#if MYFW_USING_WX
+    g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
+#endif
+}
+
 void FileManager::Tick()
 {
 #if USE_PTHREAD && !MYFW_NACL
@@ -254,21 +274,13 @@ void FileManager::Tick()
     if( m_FileIOThreadIsLocked[threadindex] == false )
         return;
 
-    // The previously loading file is now loaded, so call it's "finished loading" callbacks.
+    // The previously loading file is now loaded, mark it as successfully loaded, will "FinishSuccessfullyLoadingFile" below
     if( m_pLastFileLoadedByThread[threadindex] )
     {
         // if the file was successfully loaded by the other thread, then mark it loaded and call it's callbacks.
         if( m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
         {
             m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
-        }
-
-        // inform all registered objects that the file finished loading.
-        for( CPPListNode* pNode = m_pLastFileLoadedByThread[threadindex]->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
-        {
-            FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
-
-            pCallbackStruct->pFunc( pCallbackStruct->pObj, m_pLastFileLoadedByThread[threadindex] );
         }
 
         m_pLastFileLoadedByThread[threadindex] = 0;
@@ -291,9 +303,6 @@ void FileManager::Tick()
             MyFileObject* pFile = (MyFileObject*)pNode;
             //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
-            // sanity check, make sure file isn't already loaded.
-            //MyAssert( pFile->m_FileLoadStatus != FileLoadStatus_Success );
-
             // if the file already failed to load, give up on it.
             //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
             if( pFile->m_FileLoadStatus > FileLoadStatus_Success )
@@ -304,19 +313,8 @@ void FileManager::Tick()
             {
                 //LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
 
-                m_FilesLoaded.MoveTail( pFile );
-
-                // inform all registered objects that the file finished loading.
-                for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
-                {
-                    FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
-
-                    pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
-                }
-
-#if MYFW_USING_WX
-                g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
-#endif
+                // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+                FinishSuccessfullyLoadingFile( pFile );
             }
             else
             {
@@ -330,7 +328,6 @@ void FileManager::Tick()
                 {
 #if !MYFW_NACL
                     pFile->Tick();
-
 #if !USE_PTHREAD
                     pFile->m_FileLoadStatus = FileLoadStatus_Success;
 #endif !USE_PTHREAD
@@ -419,6 +416,29 @@ bool FileManager::DoesFileExist(const char* fullpath)
 #endif
 
     return false;
+}
+
+MyFileObject* FileManager::LoadFileNow(const char* fullpath)
+{
+    MyAssert( DoesFileExist( fullpath ) );
+
+    MyFileObject* pFile = RequestFile( fullpath );
+
+    while( pFile->m_FileLoadStatus < FileLoadStatus_Success )
+    {
+        pFile->Tick();
+
+        if( pFile->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
+            pFile->m_FileLoadStatus = FileLoadStatus_Success;
+    }
+
+    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+    {
+        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+        FinishSuccessfullyLoadingFile( pFile );
+    }
+
+    return pFile;
 }
 #endif
 

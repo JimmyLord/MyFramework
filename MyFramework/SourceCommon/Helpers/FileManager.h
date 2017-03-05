@@ -57,6 +57,7 @@ public:
     virtual MyFileObject* RequestFile(const char* filename); // will add a ref.
     MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
+    void FinishSuccessfullyLoadingFile(MyFileObject* pFile);
     void Tick();
     int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc);
 
@@ -67,6 +68,7 @@ public:
 
 #if MYFW_USING_WX
     bool DoesFileExist(const char* fullpath);
+    MyFileObject* LoadFileNow(const char* fullpath);
 #endif
 };
 
