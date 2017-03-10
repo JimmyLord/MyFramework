@@ -22,6 +22,8 @@ enum DragAndDropTypes
     DragAndDropType_TextureDefinitionPointer,
     DragAndDropType_SoundCuePointer,
     DragAndDropType_MenuItem,
+
+    DragAndDropType_UserDefinedTypes,
 };
 
 struct DragAndDropStruct
