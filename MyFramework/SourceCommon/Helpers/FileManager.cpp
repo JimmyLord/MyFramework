@@ -243,11 +243,15 @@ void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
     m_FilesLoaded.MoveTail( pFile );
 
     // inform all registered objects that the file finished loading.
-    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
     {
+        CPPListNode* pNextNode = pNode->GetNext();
+
         FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
 
         pCallbackStruct->pFunc( pCallbackStruct->pObj, pFile );
+
+        pNode = pNextNode;
     }
 
 #if MYFW_USING_WX
