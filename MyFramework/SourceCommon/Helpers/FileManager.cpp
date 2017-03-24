@@ -299,12 +299,12 @@ void FileManager::Tick()
 #endif //USE_PTHREAD && !MYFW_NACL
 
         // continue to tick any files still in the "loading" queue.
-        CPPListNode* pNextNode;
-        for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+        MyFileObject* pNextFile;
+        for( MyFileObject* pFile = (MyFileObject*)m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
         {
-            pNextNode = pNode->GetNext();
+            // Add a ref to this file to prevent it from being deleted while in this loop
+            pFile->AddRef();
 
-            MyFileObject* pFile = (MyFileObject*)pNode;
             //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
             // if the file already failed to load, give up on it.
@@ -341,6 +341,10 @@ void FileManager::Tick()
 
                 break; // file io thread only loads one file at a time.
             }
+
+            // Get the next file and release the ref added to this file up above
+            pNextFile = (MyFileObject*)pFile->GetNext();
+            pFile->Release();
         }
     }
 }
