@@ -302,12 +302,17 @@ void FileManager::Tick()
         MyFileObject* pNextFile;
         for( MyFileObject* pFile = (MyFileObject*)m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
         {
+			// Get the next file pointer
+            pNextFile = (MyFileObject*)pFile->GetNext();
+
             //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
 
             // if the file already failed to load, give up on it.
             //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
             if( pFile->m_FileLoadStatus > FileLoadStatus_Success )
+            {
                 continue;
+            }
 
             // Add a ref to this file to prevent it from being deleted while in this loop
             pFile->AddRef();
@@ -343,8 +348,7 @@ void FileManager::Tick()
                 break; // file io thread only loads one file at a time.
             }
 
-            // Get the next file and release the ref added to this file up above
-            pNextFile = (MyFileObject*)pFile->GetNext();
+            // Release the ref added to this file up above
             pFile->Release();
         }
     }
