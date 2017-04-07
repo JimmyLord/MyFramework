@@ -214,15 +214,15 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         return false;
     }
 
-    if( m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
+    if( m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
     {
-        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->m_FullPath );
+        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->GetFullPath() );
         return false;
     }
 
     // if the file isn't loaded, come back next frame and check again.
-    if( m_pFile->m_FileLoadStatus != FileLoadStatus_Success ||
-        (m_pFilePixelShader != 0 && m_pFilePixelShader->m_FileLoadStatus != FileLoadStatus_Success) )
+    if( m_pFile->GetFileLoadStatus() != FileLoadStatus_Success ||
+        (m_pFilePixelShader != 0 && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
     {
         return false;
     }
@@ -233,22 +233,23 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     bool creategeometryshader = false;
 
-    for( unsigned int i=0; i<m_pFile->m_FileLength; i++ )
+    const char* buffer = m_pFile->GetBuffer();
+    for( unsigned int i=0; i<m_pFile->GetFileLength(); i++ )
     {
         // TODO: actually parse shader files properly, looking for some setting like these.
-        if( (i == 0 || m_pFile->m_pBuffer[i-1] != '/') &&
-            m_pFile->m_pBuffer[i] == '#' )
+        if( (i == 0 || buffer[i-1] != '/') &&
+            buffer[i] == '#' )
         {
             char blendstr[] = "#define BLENDING On";
-            if( i + strlen(blendstr) < m_pFile->m_FileLength &&
-                strncmp( &m_pFile->m_pBuffer[i], blendstr, strlen( blendstr ) ) == 0 )
+            if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
+                strncmp( &buffer[i], blendstr, strlen( blendstr ) ) == 0 )
             {
                 m_BlendType = MaterialBlendType_On; 
             }
 
             char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";
-            if( i + strlen(blendstr) < m_pFile->m_FileLength &&
-                strncmp( &m_pFile->m_pBuffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
+            if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
+                strncmp( &buffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
             {
                 creategeometryshader = true; 
             }
@@ -344,7 +345,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     if( m_ProgramHandle == 0 )
     {
-        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->m_FullPath );
+        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->GetFullPath() );
         LOGError( LOGTag, "\n" );
 
         //LOGError( LOGTag, "Could not create program.\n");
@@ -353,7 +354,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     }
     else
     {
-        LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->m_FullPath );
+        LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->GetFullPath() );
     }
 
     MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );

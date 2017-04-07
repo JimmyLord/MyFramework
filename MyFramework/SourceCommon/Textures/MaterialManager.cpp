@@ -40,9 +40,9 @@ void MaterialManager::Tick()
 
         MyAssert( pMaterial->m_pFile );
 
-        if( pMaterial->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( pMaterial->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
-            if( strcmp( pMaterial->m_pFile->m_ExtensionWithDot, ".mymaterial" ) == 0 )
+            if( strcmp( pMaterial->m_pFile->GetExtensionWithDot(), ".mymaterial" ) == 0 )
             {
                 pMaterial->ImportFromFile();
 
@@ -70,12 +70,12 @@ void MaterialManager::Tick()
         }
 
         // file loading errors
-        if( pMaterial->m_pFile->m_FileLoadStatus > FileLoadStatus_Success ) //== FileLoadStatus_Error_FileNotFound )
+        if( pMaterial->m_pFile->GetFileLoadStatus() > FileLoadStatus_Success ) //== FileLoadStatus_Error_FileNotFound )
         {
-            LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->m_FullPath );
+            LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->GetFullPath() );
             
             // move the material to the unsaved list
-            strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pMaterial->m_pFile->m_FilenameWithoutExtension );
+            strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pMaterial->m_pFile->GetFilenameWithoutExtension() );
 
 #if MYFW_USING_WX
             g_pPanelMemory->RemoveMaterial( pMaterial );
@@ -135,7 +135,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
     pMaterial->m_FullyLoaded = true;
 
     pMaterial->m_UnsavedChanges = true;
-    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pFile->m_FilenameWithoutExtension );
+    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pFile->GetFilenameWithoutExtension() );
     pMaterial->m_pFile = pFile;
     pMaterial->m_pFile->AddRef();
 
@@ -192,7 +192,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     MyAssert( pMaterial->m_pFile );
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->m_FilenameWithoutExtension, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->GetFilenameWithoutExtension(), MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 #endif
 
@@ -203,7 +203,7 @@ void MaterialManager::ReloadMaterial(MaterialDefinition* pMaterial)
 {
     MyAssert( pMaterial );
     MyAssert( pMaterial->m_pFile );
-    MyAssert( pMaterial->m_pFile->m_FileLoadStatus != FileLoadStatus_Success );
+    MyAssert( pMaterial->m_pFile->GetFileLoadStatus() != FileLoadStatus_Success );
 
     m_MaterialsStillLoading.MoveTail( pMaterial );
     pMaterial->m_FullyLoaded = false;
@@ -247,7 +247,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( strcmp( pMaterial->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( pMaterial->m_pFile->GetFullPath(), fullpath ) == 0 )
             return pMaterial;
     }
 
@@ -255,7 +255,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->GetFullPath(), fullpath ) == 0 )
             return pMaterial;
     }
 

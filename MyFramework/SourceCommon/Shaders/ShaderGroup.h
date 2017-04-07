@@ -51,7 +51,7 @@ public:
 
     ~ShaderGroup();
 
-    const char* GetName() { return m_pFile->m_FilenameWithoutExtension; }
+    const char* GetName() { return m_pFile->GetFilenameWithoutExtension(); }
     MyFileObjectShader* GetFile() { return m_pFile; }
 
     BaseShader* GlobalPass(int numlights = 0, int numbones = 0);

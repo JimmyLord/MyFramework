@@ -52,8 +52,8 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
 #if MYFW_USING_WX
     if( pShaderFile->m_IsAnIncludeFile == false )
     {
-        MyAssert( m_pFile->m_FilenameWithoutExtension != 0 );
-        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->m_FilenameWithoutExtension, StaticOnDrag );
+        MyAssert( m_pFile->GetFilenameWithoutExtension() != 0 );
+        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->GetFilenameWithoutExtension(), StaticOnDrag );
     }
 #endif
 }
@@ -250,7 +250,7 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFilename(const char* fullpath)
         ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
 
         MyFileObject* pFile = pShaderGroup->GetFile();
-        if( strcmp( pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pShaderGroup;
         }

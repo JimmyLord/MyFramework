@@ -157,7 +157,7 @@ public:
         return m_Objects[i];
     }
 
-    void BlockFill(void* ptr, unsigned int size, unsigned int count)
+    void BlockFill(const void* ptr, unsigned int size, unsigned int count)
     {
         MyAssert( m_Count == 0 );
         MyAssert( size == sizeof(MyType) * count );

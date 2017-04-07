@@ -526,7 +526,7 @@ void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char*
 
     // insert the File into it's category
     {
-        sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, pFile->m_FileLength );
+        sprintf_s( tempstr, 100, "%s %d - size(%d)", desc, categorycount, pFile->GetFileLength() );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pFile;
         pData->m_pLeftClickFunction = pLeftClickFunction;

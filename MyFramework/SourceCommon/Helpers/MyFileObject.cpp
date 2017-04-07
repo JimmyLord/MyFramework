@@ -135,6 +135,283 @@ MyFileObject::~MyFileObject()
 #endif
 }
 
+void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
+{
+    MyAssert( buffer != 0 );
+    sprintf_s( buffer, buffersize, "%s", m_FullPath );
+    int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
+    sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
+}
+
+void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
+{
+    MyAssert( buffer != 0 );
+    sprintf_s( buffer, buffersize, "%s", m_FullPath );
+    int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
+    sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
+}
+
+static char g_FolderName[MAX_PATH];
+
+const char* MyFileObject::GetNameOfDeepestFolderPath()
+{
+    int len = (int)strlen( m_FullPath );
+    MyAssert( len > 0 );
+    if( len <= 0 )
+        return "";
+
+    int folderstartlocation = len;
+    int i = folderstartlocation;
+    while( i >= 0 )
+    {
+        if( m_FullPath[i] == '/' )
+        {
+            folderstartlocation = i;
+            i--;
+            break;
+        }
+        i--;
+    }
+
+    while( i >= 0 )
+    {
+        if( i == 0 || m_FullPath[i] == '/' )
+        {
+            if( m_FullPath[i] == '/' )
+                i++;
+            int namelen = folderstartlocation-i;
+            strncpy_s( g_FolderName, namelen+1, &m_FullPath[i], namelen );
+            g_FolderName[namelen] = 0;
+            return g_FolderName;
+        }
+        i--;
+    }
+
+    return "";
+}
+
+void MyFileObject::Rename(const char* newnamewithoutextension)
+{
+#if MYFW_USING_WX
+    char fullpathbefore[MAX_PATH];
+    sprintf_s( fullpathbefore, MAX_PATH, "%s", m_FullPath );
+#endif
+
+    char newfullpath[MAX_PATH];
+
+    int fullpathlen = (int)strlen( m_FullPath );
+    int nameextlen = (int)strlen( m_FilenameWithoutExtension ) + (int)strlen( m_ExtensionWithDot );
+    int pathlen = fullpathlen - nameextlen;
+
+    sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );
+    sprintf_s( &newfullpath[pathlen], MAX_PATH-pathlen, "%s%s", newnamewithoutextension, m_ExtensionWithDot );
+
+    rename( m_FullPath, newfullpath );
+
+    ParseName( newfullpath );
+
+#if MYFW_USING_WX
+    g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
+#endif
+}
+
+bool MyFileObject::IsFinishedLoading()
+{
+    if( m_FileLoadStatus < FileLoadStatus_Success )
+        return true;
+
+    return false;
+}
+
+void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
+{
+    MyAssert( pCallback != 0 );
+
+    FileFinishedLoadingCallbackStruct* pCallbackStruct = g_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
+
+    if( pCallbackStruct != 0 )
+    {
+        pCallbackStruct->pObj = pObj;
+        pCallbackStruct->pFunc = pCallback;
+
+        m_FileFinishedLoadingCallbackList.AddTail( pCallbackStruct );
+    }
+}
+
+void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
+{
+    for( CPPListNode* pNode = m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
+    {
+        CPPListNode* pNextNode = pNode->GetNext();
+
+        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+
+        if( pCallbackStruct->pObj == pObj )
+        {
+            pCallbackStruct->Remove();
+            g_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
+        }
+
+        pNode = pNextNode;
+    }
+}
+
+
+void MyFileObject::RequestFile(const char* filename)
+{
+    MyAssert( filename != 0 );
+    if( filename == 0 )
+        return;
+    MyAssert( filename[0] != 0 );
+    if( filename[0] == 0 )
+        return;
+
+    LOGInfo( LOGTag, "RequestFile %s\n", filename );
+
+    ParseName( filename );
+}
+
+void MyFileObject::ParseName(const char* filename)
+{
+    SAFE_DELETE_ARRAY( m_FullPath );
+    SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
+    SAFE_DELETE_ARRAY( m_ExtensionWithDot );
+
+    int len = (int)strlen( filename );
+    MyAssert( len > 0 );
+    if( len <= 0 )
+        return;
+
+    m_FullPath = MyNew char[len+1];
+    strcpy_s( m_FullPath, len+1, filename );
+
+    int extensionstartlocation = len;
+    {
+        while( extensionstartlocation > 0 )
+        {
+            if( filename[extensionstartlocation] == '.' )
+            {
+                int extensionlen = len-extensionstartlocation;
+                m_ExtensionWithDot = MyNew char[extensionlen+1];
+                strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
+                m_ExtensionWithDot[extensionlen] = 0;
+                break;
+            }
+            extensionstartlocation--;
+        }
+
+        if( m_ExtensionWithDot == 0 )
+        {
+            m_ExtensionWithDot = MyNew char[2];
+            m_ExtensionWithDot[0] = '.';
+            m_ExtensionWithDot[1] = 0;
+
+            extensionstartlocation = len;
+        }
+    }
+
+    {
+        int i = extensionstartlocation;
+        while( i >= 0 )
+        {
+            if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
+            {
+                if( filename[i] == '/' || filename[i] == '\\' )
+                    i++;
+                int namelen = extensionstartlocation-i;
+                m_FilenameWithoutExtension = MyNew char[namelen+1];
+                strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
+                m_FilenameWithoutExtension[namelen] = 0;
+                break;
+            }
+            i--;
+        }
+    }
+}
+
+void MyFileObject::Tick()
+{
+    if( m_FileLoadStatus != FileLoadStatus_Success && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
+    {
+        int length = 0;
+
+        char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
+
+        if( buffer == 0 )
+        {
+            m_FileLoadStatus = FileLoadStatus_Error_FileNotFound; // file not found.
+            return;
+        }
+
+        if( length > 0 && buffer != 0 )
+            FakeFileLoad( buffer, length );
+
+#if MYFW_WINDOWS
+        WIN32_FIND_DATAA data;
+        GetFileData( m_FullPath, &data );
+
+        m_FileLastWriteTime = data.ftLastWriteTime;
+#endif
+    }
+
+    if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )
+        m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading--;
+}
+
+bool MyFileObject::IsNewVersionAvailable()
+{
+    bool updated = false;
+    if( m_FileLoadStatus > FileLoadStatus_Success )
+        m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
+
+#if MYFW_WINDOWS
+    WIN32_FIND_DATAA data;
+    memset( &data, 0, sizeof( data ) );
+    GetFileData( m_FullPath, &data );
+
+    if( data.ftLastWriteTime.dwHighDateTime != m_FileLastWriteTime.dwHighDateTime ||
+        data.ftLastWriteTime.dwLowDateTime != m_FileLastWriteTime.dwLowDateTime )
+    {
+        updated = true;
+    }
+
+    m_FileLastWriteTime = data.ftLastWriteTime;
+#endif
+
+    return updated;
+}
+
+void MyFileObject::UnloadContents()
+{
+    SAFE_DELETE_ARRAY( m_pBuffer );
+    m_FileLength = 0;
+    m_BytesRead = 0;
+    m_FileLoadStatus = FileLoadStatus_Loading;
+
+#if _DEBUG
+    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
+#else
+    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
+#endif
+
+#if MYFW_USING_WX
+    if( g_pPanelMemory )
+        g_pPanelMemory->RemoveFile( this );
+#endif
+}
+
+void MyFileObject::FakeFileLoad(char* buffer, int length)
+{
+    MyAssert( buffer != 0 && length > 0 );
+    if( buffer == 0 || length <= 0 )
+        return;
+
+    m_pBuffer = buffer;
+    m_FileLength = length;
+    m_BytesRead = length;
+    m_FileLoadStatus = FileLoadStatus_LoadedButNotFinalized;
+}
+
 #if MYFW_USING_WX
 void MyFileObject::OnLeftClick(unsigned int count)
 {
@@ -259,271 +536,3 @@ void MyFileObject::SetCustomLeftClickCallback(PanelObjectListCallback callback, 
     m_CustomLeftClickCallback = callback;
 }
 #endif //MYFW_USING_WX
-
-void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
-{
-    MyAssert( buffer != 0 );
-    sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
-    sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
-}
-
-void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
-{
-    MyAssert( buffer != 0 );
-    sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
-    sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
-}
-
-static char g_FolderName[MAX_PATH];
-
-const char* MyFileObject::GetNameOfDeepestFolderPath()
-{
-    int len = (int)strlen( m_FullPath );
-    MyAssert( len > 0 );
-    if( len <= 0 )
-        return "";
-
-    int folderstartlocation = len;
-    int i = folderstartlocation;
-    while( i >= 0 )
-    {
-        if( m_FullPath[i] == '/' )
-        {
-            folderstartlocation = i;
-            i--;
-            break;
-        }
-        i--;
-    }
-
-    while( i >= 0 )
-    {
-        if( i == 0 || m_FullPath[i] == '/' )
-        {
-            if( m_FullPath[i] == '/' )
-                i++;
-            int namelen = folderstartlocation-i;
-            strncpy_s( g_FolderName, namelen+1, &m_FullPath[i], namelen );
-            g_FolderName[namelen] = 0;
-            return g_FolderName;
-        }
-        i--;
-    }
-
-    return "";
-}
-
-void MyFileObject::RequestFile(const char* filename)
-{
-    MyAssert( filename != 0 );
-    if( filename == 0 )
-        return;
-    MyAssert( filename[0] != 0 );
-    if( filename[0] == 0 )
-        return;
-
-    LOGInfo( LOGTag, "RequestFile %s\n", filename );
-
-    ParseName( filename );
-}
-
-void MyFileObject::ParseName(const char* filename)
-{
-    SAFE_DELETE_ARRAY( m_FullPath );
-    SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
-    SAFE_DELETE_ARRAY( m_ExtensionWithDot );
-
-    int len = (int)strlen( filename );
-    MyAssert( len > 0 );
-    if( len <= 0 )
-        return;
-
-    m_FullPath = MyNew char[len+1];
-    strcpy_s( m_FullPath, len+1, filename );
-
-    int extensionstartlocation = len;
-    {
-        while( extensionstartlocation > 0 )
-        {
-            if( filename[extensionstartlocation] == '.' )
-            {
-                int extensionlen = len-extensionstartlocation;
-                m_ExtensionWithDot = MyNew char[extensionlen+1];
-                strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
-                m_ExtensionWithDot[extensionlen] = 0;
-                break;
-            }
-            extensionstartlocation--;
-        }
-
-        if( m_ExtensionWithDot == 0 )
-        {
-            m_ExtensionWithDot = MyNew char[2];
-            m_ExtensionWithDot[0] = '.';
-            m_ExtensionWithDot[1] = 0;
-
-            extensionstartlocation = len;
-        }
-    }
-
-    {
-        int i = extensionstartlocation;
-        while( i >= 0 )
-        {
-            if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
-            {
-                if( filename[i] == '/' || filename[i] == '\\' )
-                    i++;
-                int namelen = extensionstartlocation-i;
-                m_FilenameWithoutExtension = MyNew char[namelen+1];
-                strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
-                m_FilenameWithoutExtension[namelen] = 0;
-                break;
-            }
-            i--;
-        }
-    }
-}
-
-void MyFileObject::Rename(const char* newnamewithoutextension)
-{
-#if MYFW_USING_WX
-    char fullpathbefore[MAX_PATH];
-    sprintf_s( fullpathbefore, MAX_PATH, "%s", m_FullPath );
-#endif
-
-    char newfullpath[MAX_PATH];
-
-    int fullpathlen = (int)strlen( m_FullPath );
-    int nameextlen = (int)strlen( m_FilenameWithoutExtension ) + (int)strlen( m_ExtensionWithDot );
-    int pathlen = fullpathlen - nameextlen;
-
-    sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );
-    sprintf_s( &newfullpath[pathlen], MAX_PATH-pathlen, "%s%s", newnamewithoutextension, m_ExtensionWithDot );
-
-    rename( m_FullPath, newfullpath );
-
-    ParseName( newfullpath );
-
-#if MYFW_USING_WX
-    g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
-#endif
-}
-
-void MyFileObject::Tick()
-{
-    if( m_FileLoadStatus != FileLoadStatus_Success && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
-    {
-        int length = 0;
-
-        char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
-
-        if( buffer == 0 )
-        {
-            m_FileLoadStatus = FileLoadStatus_Error_FileNotFound; // file not found.
-            return;
-        }
-
-        if( length > 0 && buffer != 0 )
-            FakeFileLoad( buffer, length );
-
-#if MYFW_WINDOWS
-        WIN32_FIND_DATAA data;
-        GetFileData( m_FullPath, &data );
-
-        m_FileLastWriteTime = data.ftLastWriteTime;
-#endif
-    }
-
-    if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )
-        m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading--;
-}
-
-bool MyFileObject::IsNewVersionAvailable()
-{
-    bool updated = false;
-    if( m_FileLoadStatus > FileLoadStatus_Success )
-        m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
-
-#if MYFW_WINDOWS
-    WIN32_FIND_DATAA data;
-    memset( &data, 0, sizeof( data ) );
-    GetFileData( m_FullPath, &data );
-
-    if( data.ftLastWriteTime.dwHighDateTime != m_FileLastWriteTime.dwHighDateTime ||
-        data.ftLastWriteTime.dwLowDateTime != m_FileLastWriteTime.dwLowDateTime )
-    {
-        updated = true;
-    }
-
-    m_FileLastWriteTime = data.ftLastWriteTime;
-#endif
-
-    return updated;
-}
-
-void MyFileObject::FakeFileLoad(char* buffer, int length)
-{
-    MyAssert( buffer != 0 && length > 0 );
-    if( buffer == 0 || length <= 0 )
-        return;
-
-    m_pBuffer = buffer;
-    m_FileLength = length;
-    m_BytesRead = length;
-    m_FileLoadStatus = FileLoadStatus_LoadedButNotFinalized;
-}
-
-void MyFileObject::UnloadContents()
-{
-    SAFE_DELETE_ARRAY( m_pBuffer );
-    m_FileLength = 0;
-    m_BytesRead = 0;
-    m_FileLoadStatus = FileLoadStatus_Loading;
-
-#if _DEBUG
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
-#else
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
-#endif
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveFile( this );
-#endif
-}
-
-void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
-{
-    MyAssert( pCallback != 0 );
-
-    FileFinishedLoadingCallbackStruct* pCallbackStruct = g_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
-
-    if( pCallbackStruct != 0 )
-    {
-        pCallbackStruct->pObj = pObj;
-        pCallbackStruct->pFunc = pCallback;
-
-        m_FileFinishedLoadingCallbackList.AddTail( pCallbackStruct );
-    }
-}
-
-void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
-{
-    for( CPPListNode* pNode = m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
-    {
-        CPPListNode* pNextNode = pNode->GetNext();
-
-        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
-
-        if( pCallbackStruct->pObj == pObj )
-        {
-            pCallbackStruct->Remove();
-            g_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
-        }
-
-        pNode = pNextNode;
-    }
-}

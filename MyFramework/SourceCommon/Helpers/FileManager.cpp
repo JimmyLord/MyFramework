@@ -102,12 +102,12 @@ void FileManager::PrintListOfOpenFiles()
     for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
-        LOGInfo( LOGTag, "   %s\n", pFile->m_FullPath );
+        LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
     for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
-        LOGInfo( LOGTag, "   %s\n", pFile->m_FullPath );
+        LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
 }
 
@@ -220,7 +220,7 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
 
-        if( strcmp( filename, pFile->m_FullPath ) == 0 )
+        if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
 
@@ -228,7 +228,7 @@ MyFileObject* FileManager::FindFileByName(const char* filename)
     {
         MyFileObject* pFile = (MyFileObject*)pNode;
 
-        if( strcmp( filename, pFile->m_FullPath ) == 0 )
+        if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
 
@@ -255,7 +255,7 @@ void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
     }
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddFile( pFile, pFile->m_ExtensionWithDot, pFile->m_FullPath, MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
+    g_pPanelMemory->AddFile( pFile, pFile->GetExtensionWithDot(), pFile->GetFullPath(), MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
 #endif
 }
 
@@ -305,7 +305,7 @@ void FileManager::Tick()
 			// Get the next file pointer
             pNextFile = (MyFileObject*)pFile->GetNext();
 
-            //LOGInfo( LOGTag, "Loading File: %s\n", pFile->m_FullPath );
+            //LOGInfo( LOGTag, "Loading File: %s\n", pFile->GetFullPath() );
 
             // if the file already failed to load, give up on it.
             //   in editor mode: we reset m_LoadFailed when focus regained and try all files again.
@@ -320,7 +320,7 @@ void FileManager::Tick()
             // if we're done loading, move the file into the loaded list.
             if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
             {
-                //LOGInfo( LOGTag, "Finished loading: %s\n", pFile->m_FullPath );
+                //LOGInfo( LOGTag, "Finished loading: %s\n", pFile->GetFullPath() );
 
                 // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
                 FinishSuccessfullyLoadingFile( pFile );
@@ -600,10 +600,10 @@ GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
 {
     //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef(%d)", texturedef );
     //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef->m_pFile(%d)", texturedef->m_pFile );
-    //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef->m_pFile->m_pBuffer(%d)", texturedef->m_pFile->m_pBuffer );
+    //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef->m_pFile->GetBuffer()(%d)", texturedef->m_pFile->m_pBuffer );
 
-    unsigned char* buffer = (unsigned char*)texturedef->m_pFile->m_pBuffer;
-    int length = texturedef->m_pFile->m_FileLength;
+    unsigned char* buffer = (unsigned char*)texturedef->m_pFile->GetBuffer();
+    int length = texturedef->m_pFile->GetFileLength();
 
     unsigned char* pngbuffer;
     unsigned int width, height;

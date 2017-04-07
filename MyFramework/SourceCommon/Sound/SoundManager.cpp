@@ -40,11 +40,11 @@ void SoundCue::Release()
 
 void SoundCue::ImportFromFile()
 {
-    MyAssert( m_pFile && m_pFile->m_FileLoadStatus == FileLoadStatus_Success );
-    if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
+    MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
+    if( m_pFile == 0 || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
         return;
 
-    cJSON* jRoot = cJSON_Parse( m_pFile->m_pBuffer );
+    cJSON* jRoot = cJSON_Parse( m_pFile->GetBuffer() );
 
     cJSON* jCue = cJSON_GetObjectItem( jRoot, "Cue" );
     if( jCue )
@@ -95,7 +95,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
     if( m_pFile != 0 )
     {
         // if a file exists, use the existing file's fullpath
-        strcpy_s( filename, MAX_PATH, m_pFile->m_FullPath );
+        strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
     }
     else
     {
@@ -214,7 +214,7 @@ void SoundManager::Tick()
     {
         SoundCue* pCue = (SoundCue*)pNode;
 
-        if( pCue->m_pFile && pCue->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( pCue->m_pFile && pCue->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
             pCue->ImportFromFile();
 
@@ -301,7 +301,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
         m_CuesStillLoading.AddTail( pCue );
 
 #if MYFW_USING_WX
-        g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->m_FilenameWithoutExtension, SoundCue::StaticOnDrag );
+        g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->GetFilenameWithoutExtension(), SoundCue::StaticOnDrag );
         //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 #endif
     }
@@ -355,7 +355,7 @@ SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
     {
         SoundCue* pCue = (SoundCue*)pNode;
 
-        if( strcmp( pCue->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pCue;
         }
@@ -365,7 +365,7 @@ SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
     {
         SoundCue* pCue = (SoundCue*)pNode;
 
-        if( strcmp( pCue->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pCue;
         }

@@ -10,7 +10,7 @@
 #include "CommonHeader.h"
 #include "MyMeshLoader.h"
 
-void MyMesh::LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
+void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
     checkGlError( "MyMesh::LoadMyMesh" );
 
@@ -382,7 +382,7 @@ void MyMesh::SaveAnimationControlFile()
 }
 #endif
 
-void MyMesh::LoadAnimationControlFile(char* buffer)
+void MyMesh::LoadAnimationControlFile(const char* buffer)
 {
     // if the file doesn't exist, create a single animation for each timeline
     if( buffer == 0 )

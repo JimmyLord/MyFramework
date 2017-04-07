@@ -17,6 +17,6 @@ void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool
 #endif
 
 // return 2 BufferDefinition pointers.
-void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
 
 #endif //__OBJLoader_H__

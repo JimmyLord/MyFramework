@@ -39,7 +39,7 @@ void MyAnimationTimeline::ImportFromJSON(cJSON* pAnimObj)
     SetNumberOfChannels( numchannels );
 }
 
-int MyAnimationTimeline::ImportChannelsFromBuffer(char* pBuffer, float scale)
+int MyAnimationTimeline::ImportChannelsFromBuffer(const char* pBuffer, float scale)
 {
     int byteoffset = 0;
 
@@ -161,7 +161,7 @@ Vector3 MyAnimationTimeline::GetInterpolatedScaling(float time, unsigned int cha
 
 //==================================
 
-int MyChannel::ImportFromBuffer(char* pBuffer, float scale)
+int MyChannel::ImportFromBuffer(const char* pBuffer, float scale)
 {
     // channel id
     // num pos keys

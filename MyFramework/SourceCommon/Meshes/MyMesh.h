@@ -154,9 +154,9 @@ public:
 
     int FindBoneIndexByName(char* name);
 
-    void LoadMyMesh(char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale);
+    void LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
-    void LoadAnimationControlFile(char* buffer);
+    void LoadAnimationControlFile(const char* buffer);
 #if MYFW_USING_WX
     int m_ControlID_AnimationName[MAX_ANIMATIONS];
 

@@ -323,7 +323,7 @@ void My2DAnimInfo::SaveAnimationControlFile()
 }
 #endif
 
-void My2DAnimInfo::LoadAnimationControlFile(char* buffer)
+void My2DAnimInfo::LoadAnimationControlFile(const char* buffer)
 {
     MyAssert( buffer != 0 );
     MyAssert( m_Animations.Count() == 0 );

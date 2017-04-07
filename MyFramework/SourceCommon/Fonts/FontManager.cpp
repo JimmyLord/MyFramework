@@ -81,15 +81,15 @@ void FontManager::Tick()
         FontDefinition* pFontDef = (FontDefinition*)pNode;
 
         // check if the actual font description file(*.fnt) file is done loading.
-        if( pFontDef->m_pFile && pFontDef->m_pBMFont == 0 && pFontDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( pFontDef->m_pFile && pFontDef->m_pBMFont == 0 && pFontDef->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
             // create the font description object.
-            pFontDef->m_pBMFont = MyNew BMFont( pFontDef->m_pFile->m_pBuffer, pFontDef->m_pFile->m_FileLength );
+            pFontDef->m_pBMFont = MyNew BMFont( pFontDef->m_pFile->GetBuffer(), pFontDef->m_pFile->GetFileLength() );
 
             // load the texture the font is stored on.
             char tempname[MAX_PATH];
-            strcpy_s( tempname, MAX_PATH, pFontDef->m_pFile->m_FullPath );
-            for( int i=(int)strlen(pFontDef->m_pFile->m_FullPath)-1; i>=0; i-- )
+            strcpy_s( tempname, MAX_PATH, pFontDef->m_pFile->GetFullPath() );
+            for( int i=(int)strlen(pFontDef->m_pFile->GetFullPath())-1; i>=0; i-- )
             {
                 if( tempname[i] == '/' || tempname[i] == '\\' )
                     break;
@@ -159,13 +159,13 @@ FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
 {
     for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( ((FontDefinition*)pNode)->m_pFile->GetFullPath(), fullpath ) == 0 )
             return (FontDefinition*)pNode;
     }
 
     for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_pFile->m_FullPath, fullpath ) == 0 )
+        if( strcmp( ((FontDefinition*)pNode)->m_pFile->GetFullPath(), fullpath ) == 0 )
             return (FontDefinition*)pNode;
     }
 

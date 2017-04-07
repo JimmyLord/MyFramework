@@ -108,7 +108,7 @@ public:
     void SaveAnimationControlFile();
 #endif
 
-    void LoadAnimationControlFile(char* buffer);
+    void LoadAnimationControlFile(const char* buffer);
 };
 
 #endif //__My2DAnimInfo_H__

@@ -137,7 +137,7 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
     {
         MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
-        if( m_pIncludes[i].m_pIncludedFile->m_FileLoadStatus != FileLoadStatus_Success )
+        if( m_pIncludes[i].m_pIncludedFile->GetFileLoadStatus() != FileLoadStatus_Success )
         {
             return false;
         }

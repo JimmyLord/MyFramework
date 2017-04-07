@@ -79,13 +79,13 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     MyAssert( m_pSprites == 0 );
     MyAssert( m_pMaterialList == 0 );
 
-    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->m_FullPath );
+    LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->GetFullPath() );
 
     MyFileObject* pJSONFile = 0;
     MyFileObject* pTextureFile = 0;
 
-    if( strcmp( pFile->m_ExtensionWithDot, ".json" ) == 0 ||
-        strcmp( pFile->m_ExtensionWithDot, ".myspritesheet" ) == 0 )
+    if( strcmp( pFile->GetExtensionWithDot(), ".json" ) == 0 ||
+        strcmp( pFile->GetExtensionWithDot(), ".myspritesheet" ) == 0 )
     {
         pJSONFile = pFile;
         pJSONFile->AddRef();
@@ -94,7 +94,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".png", otherpath, MAX_PATH );
         pTextureFile = RequestFile( otherpath );
     }
-    else if( strcmp( pFile->m_ExtensionWithDot, ".png" ) == 0 )
+    else if( strcmp( pFile->GetExtensionWithDot(), ".png" ) == 0 )
     {
         pTextureFile = pFile;
         pTextureFile->AddRef();
@@ -130,9 +130,9 @@ void SpriteSheet::Tick(double TimePassed)
         return;
 
     // parse json and create array of sprites.
-    if( m_pJSONFile->m_FileLoadStatus == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->m_FullyLoaded )
+    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->m_FullyLoaded )
     {
-        cJSON* root = cJSON_Parse( m_pJSONFile->m_pBuffer );
+        cJSON* root = cJSON_Parse( m_pJSONFile->GetBuffer() );
 
         if( root == 0 )
             return;
@@ -236,7 +236,7 @@ void SpriteSheet::Tick(double TimePassed)
                             {
                                 char matname[MaterialDefinition::MAX_MATERIAL_NAME_LEN+1];
                                 sprintf_s( matname, MaterialDefinition::MAX_MATERIAL_NAME_LEN+1, "%s_%s.mymaterial", 
-                                           m_pJSONFile->m_FilenameWithoutExtension, jFilename->valuestring );
+                                           m_pJSONFile->GetFilenameWithoutExtension(), jFilename->valuestring );
                                 char fullpath[MAX_PATH];
                                 m_pJSONFile->GenerateNewFullPathFilenameInSameFolder( matname, fullpath, MAX_PATH );
 

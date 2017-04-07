@@ -43,8 +43,8 @@ void NaCLFileObject::OnOpen(int32 result)
 
     if( result != PP_OK )
     {
-        LOGError( LOGTag, "NaCLFileObject::OnOpen failed: %s\n", m_pFile->m_FullPath );
-        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
+        LOGError( LOGTag, "NaCLFileObject::OnOpen failed: %s\n", m_pFile->GetFullPath() );
+        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_FileNotFound;
         return;
     }
 
@@ -56,8 +56,8 @@ void NaCLFileObject::OnOpen(int32 result)
 
     if( status != 200 )
     {
-        LOGError( LOGTag, "NaCLFileObject::OnOpen failed %s: status %d\n", m_pFile->m_FullPath, status );
-        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
+        LOGError( LOGTag, "NaCLFileObject::OnOpen failed %s: status %d\n", m_pFile->GetFullPath(), status );
+        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_FileNotFound;
         return;
     }
     else
@@ -77,7 +77,7 @@ void NaCLFileObject::OnOpen(int32 result)
         }
         else
         {
-            LOGError( LOGTag, "NaCLFileObject::OnOpen File Length not reported by web server -> using 10000 will crash if loading file bigger: %s\n", m_pFile->m_FullPath );
+            LOGError( LOGTag, "NaCLFileObject::OnOpen File Length not reported by web server -> using 10000 will crash if loading file bigger: %s\n", m_pFile->GetFullPath() );
             m_pFile->m_FileLength = 10000;
         }
 
@@ -100,11 +100,11 @@ void NaCLFileObject::OnRead(int32 result)
 
     if( result == PP_OK )
     {
-        LOGInfo( LOGTag, "NaCLFileObject::OnRead - File Load Complete: %s\n", m_pFile->m_FullPath );
+        LOGInfo( LOGTag, "NaCLFileObject::OnRead - File Load Complete: %s\n", m_pFile->GetFullPath() );
 
         // Streaming the file is complete... null terminate the string stored in the file
         m_pFile->m_pBuffer[m_pFile->m_FileLength] = 0;
-        m_pFile->m_FileLoadStatus = FileLoadStatus_Success;
+        m_pFile->GetFileLoadStatus() = FileLoadStatus_Success;
     }
     else if( result > 0 )
     {
@@ -116,8 +116,8 @@ void NaCLFileObject::OnRead(int32 result)
     else
     {
         // A read error occurred.
-        LOGError( LOGTag, "NaCLFileObject::OnRead failed %s: result %d\n", m_pFile->m_FullPath, result );
-        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_Other;
+        LOGError( LOGTag, "NaCLFileObject::OnRead failed %s: result %d\n", m_pFile->GetFullPath(), result );
+        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_Other;
     }
 }
 
@@ -181,7 +181,7 @@ void NaCLFileObject::AppendDataBytes(const char* buffer, int32 numbytes)
     // Make sure we don't get a buffer overrun.
     if( m_pFile->m_BytesRead + numbytes > m_pFile->m_FileLength )
     {
-        LOGError( LOGTag, "NaCLFileObject::AppendDataBytes - m_BytesRead + numbytes > m_FileLength %d + %d > %d: %s\n", m_pFile->m_BytesRead, numbytes, m_pFile->m_FileLength, m_pFile->m_FullPath );
+        LOGError( LOGTag, "NaCLFileObject::AppendDataBytes - m_BytesRead + numbytes > m_FileLength %d + %d > %d: %s\n", m_pFile->m_BytesRead, numbytes, m_pFile->m_FileLength, m_pFile->GetFullPath() );
         //MyAssert( false );
         return;
     }

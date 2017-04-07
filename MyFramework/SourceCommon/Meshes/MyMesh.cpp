@@ -503,7 +503,7 @@ void MyMesh::CreateFromOBJFile()
 {
     m_MeshReady = false;
 
-    if( m_pSourceFile->m_FileLoadStatus == FileLoadStatus_Success )
+    if( m_pSourceFile->GetFileLoadStatus() == FileLoadStatus_Success )
     {
         OnFileFinishedLoadingOBJ( m_pSourceFile );
     }
@@ -519,9 +519,9 @@ void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
     {
         pFile->UnregisterFileFinishedLoadingCallback( this );
 
-        if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+        if( pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
-            LoadBasicOBJ( pFile->m_pBuffer, &m_SubmeshList, false, 1.0f, &m_AABounds );
+            LoadBasicOBJ( pFile->GetBuffer(), &m_SubmeshList, false, 1.0f, &m_AABounds );
 
             // TODO: fix if obj loader ever supports submeshes.
             if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
@@ -543,7 +543,7 @@ void MyMesh::CreateFromMyMeshFile()
 {
     m_MeshReady = false;
 
-    if( m_pSourceFile->m_FileLoadStatus == FileLoadStatus_Success )
+    if( m_pSourceFile->GetFileLoadStatus() == FileLoadStatus_Success )
     {
         OnFileFinishedLoadingMyMesh( m_pSourceFile );
     }
@@ -556,7 +556,7 @@ void MyMesh::CreateFromMyMeshFile()
 void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
 {
     MyAssert( pFile == m_pSourceFile );
-    //LOGInfo( LOGTag, "%d: MyMesh::CreateFromMyMeshFile ( %s ) m_pAnimationControlFile = %d\n", this, pFile->m_FilenameWithoutExtension, m_pAnimationControlFile );
+    //LOGInfo( LOGTag, "%d: MyMesh::CreateFromMyMeshFile ( %s ) m_pAnimationControlFile = %d\n", this, pFile->GetFilenameWithoutExtension(), m_pAnimationControlFile );
 
     MyAssert( pFile );
 
@@ -589,9 +589,9 @@ void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
     m_MeshReady = false;
 
     // is the mesh ready and the anim file is loaded or failed to load.
-    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+    if( pFile->GetFileLoadStatus() == FileLoadStatus_Success )
     {
-        LoadMyMesh( pFile->m_pBuffer, &m_SubmeshList, m_InitialScale );
+        LoadMyMesh( pFile->GetBuffer(), &m_SubmeshList, m_InitialScale );
 
         if( m_pAnimationControlFile == 0 )
             LoadAnimationControlFile( 0 );
@@ -600,14 +600,14 @@ void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
 
 void MyMesh::OnFileFinishedLoadingMyAnim(MyFileObject* pFile)
 {
-    MyAssert( m_pAnimationControlFile->m_FileLoadStatus >= FileLoadStatus_Success );
+    MyAssert( m_pAnimationControlFile->GetFileLoadStatus() >= FileLoadStatus_Success );
     MyAssert( m_pAnimationControlFile == pFile );
 
     pFile->UnregisterFileFinishedLoadingCallback( this );
 
     //LOGInfo( LOGTag, "Animation File = %d\n", m_pAnimationControlFile );
 
-    if( m_pAnimationControlFile->m_FileLoadStatus == FileLoadStatus_Error_FileNotFound )
+    if( m_pAnimationControlFile->GetFileLoadStatus() == FileLoadStatus_Error_FileNotFound )
     {
         //LOGInfo( LOGTag, "Animation File - error loading file\n" );
         g_pFileManager->FreeFile( m_pAnimationControlFile );
@@ -617,7 +617,7 @@ void MyMesh::OnFileFinishedLoadingMyAnim(MyFileObject* pFile)
     if( m_pAnimationControlFile )
     {
         //LOGInfo( LOGTag, "LoadAnimationControlFile = %s\n", m_pAnimationControlFile->m_pBuffer );
-        LoadAnimationControlFile( m_pAnimationControlFile->m_pBuffer );
+        LoadAnimationControlFile( m_pAnimationControlFile->GetBuffer() );
     }
     else
     {
@@ -634,11 +634,11 @@ void MyMesh::ParseFile()
     {
         if( m_pSourceFile != 0 )
         {
-            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".obj" ) == 0 )
+            if( strcmp( m_pSourceFile->GetExtensionWithDot(), ".obj" ) == 0 )
             {
                 CreateFromOBJFile();
             }
-            if( strcmp( m_pSourceFile->m_ExtensionWithDot, ".mymesh" ) == 0 )
+            if( strcmp( m_pSourceFile->GetExtensionWithDot(), ".mymesh" ) == 0 )
             {
                 CreateFromMyMeshFile();
             }

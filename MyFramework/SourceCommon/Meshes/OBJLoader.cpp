@@ -52,7 +52,7 @@ char* LoadFile(const char* filename, long* length)
 }
 #endif
 
-int FindIndexOfNextSpaceOrTab(char* buffer, int index)
+int FindIndexOfNextSpaceOrTab(const char* buffer, int index)
 {
     // find first non-whitespace
     while( buffer[index] != '\t' && buffer[index] != ' ' )
@@ -63,7 +63,7 @@ int FindIndexOfNextSpaceOrTab(char* buffer, int index)
     return index;
 }
 
-int FindIndexOfFirstNonWhitespace(char* buffer, int index)
+int FindIndexOfFirstNonWhitespace(const char* buffer, int index)
 {
     // find first non-whitespace
     while( buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == '\t' || buffer[index] == ' ' )
@@ -74,7 +74,7 @@ int FindIndexOfFirstNonWhitespace(char* buffer, int index)
     return index;
 }
 
-int FindIndexOfFirstNonSpaceOrTab(char* buffer, int index)
+int FindIndexOfFirstNonSpaceOrTab(const char* buffer, int index)
 {
     // find first non-whitespace
     while( buffer[index] == '\t' || buffer[index] == ' ' )
@@ -85,7 +85,7 @@ int FindIndexOfFirstNonSpaceOrTab(char* buffer, int index)
     return index;
 }
 
-int FindIndexOfFirstNonWhitespaceOfNextLine(char* buffer, int index)
+int FindIndexOfFirstNonWhitespaceOfNextLine(const char* buffer, int index)
 {
     // find end of line
     while( buffer[index] != '\n' && buffer[index] != 0 )
@@ -96,7 +96,7 @@ int FindIndexOfFirstNonWhitespaceOfNextLine(char* buffer, int index)
     return FindIndexOfFirstNonWhitespace( buffer, index );
 }
 
-float ReadFloatAndMoveOn(char* buffer, int* index)
+float ReadFloatAndMoveOn(const char* buffer, int* index)
 {
     char numberbuffer[100];
     int numberbufferindex = 0;
@@ -113,7 +113,7 @@ float ReadFloatAndMoveOn(char* buffer, int* index)
     return (float)atof( numberbuffer );
 }
 
-int ReadIntAndMoveOn(char* buffer, int* index)
+int ReadIntAndMoveOn(const char* buffer, int* index)
 {
     char numberbuffer[100];
     int numberbufferindex = 0;
@@ -130,7 +130,7 @@ int ReadIntAndMoveOn(char* buffer, int* index)
     return atoi( numberbuffer );
 }
 
-Vector3 ParseVertex(char* buffer, int index)
+Vector3 ParseVertex(const char* buffer, int index)
 {
     MyAssert( buffer[index] == 'v' );
 
@@ -166,7 +166,7 @@ Vector3 ParseVertex(char* buffer, int index)
     return outvector;
 }
 
-int ParseFaceInfo(FaceInfo* faces, char* buffer, int index)
+int ParseFaceInfo(FaceInfo* faces, const char* buffer, int index)
 {
     // divide the face into a bunch of triangles... assumes face is defined as triangle fan, which it isn't.
 
@@ -268,7 +268,7 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
 {
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );

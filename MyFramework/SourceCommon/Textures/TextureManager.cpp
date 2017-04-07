@@ -110,7 +110,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
 TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfilter, int magfilter, int wraps, int wrapt)
 {
     MyAssert( pFile );
-    LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->m_FullPath );
+    LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->GetFullPath() );
 
     // find the texture if it already exists:
     TextureDefinition* pTextureDef = FindTexture( pFile );
@@ -123,7 +123,7 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfil
     // Create a new texture and add it to m_TexturesStillLoading
     pTextureDef = MyNew TextureDefinition();
     pTextureDef->m_ManagedByTextureManager = true;
-    strcpy_s( pTextureDef->m_Filename, MAX_PATH, pFile->m_FullPath );
+    strcpy_s( pTextureDef->m_Filename, MAX_PATH, pFile->GetFullPath() );
     pTextureDef->m_MinFilter = minfilter;
     pTextureDef->m_MagFilter = magfilter;
     pTextureDef->m_WrapS = wraps;
@@ -280,7 +280,7 @@ void TextureManager::Tick()
         else
         {
             // if the file is ready, create an opengl texture from it.
-            if( pTextureDef->m_pFile->m_FileLoadStatus == FileLoadStatus_Success )
+            if( pTextureDef->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
             {
                 //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile->m_FileReady\n" );
                 pTextureDef->m_TextureID = CreateTextureFromBuffer( pTextureDef );
@@ -293,7 +293,7 @@ void TextureManager::Tick()
                 }
             }
 
-            if( pTextureDef->m_pFile->m_FileLoadStatus > FileLoadStatus_Success )
+            if( pTextureDef->m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
             {
                 LOGError( LOGTag, "File load failed %s\n", pTextureDef->m_Filename );
                 SAFE_RELEASE( pTextureDef );

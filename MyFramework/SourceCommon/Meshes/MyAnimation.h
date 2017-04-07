@@ -25,7 +25,7 @@ public:
     MyList<Vector3> m_ScaleValues;
 
 public:
-    int ImportFromBuffer(char* pBuffer, float scale);
+    int ImportFromBuffer(const char* pBuffer, float scale);
 };
 
 class MyAnimation
@@ -62,7 +62,7 @@ public:
     virtual ~MyAnimationTimeline();
 
     void ImportFromJSON(cJSON* pAnimObj);
-    int ImportChannelsFromBuffer(char* pBuffer, float scale);
+    int ImportChannelsFromBuffer(const char* pBuffer, float scale);
 
     void SetNumberOfChannels(unsigned int numchannels);
 

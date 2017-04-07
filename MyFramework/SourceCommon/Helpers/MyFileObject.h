@@ -56,7 +56,6 @@ class MyFileObject : public CPPListNode, public RefCount
 protected:
     CPPListHead m_FileFinishedLoadingCallbackList;
 
-public:
     char* m_FullPath;
     char* m_FilenameWithoutExtension;
     char* m_ExtensionWithDot; // will be "." if no extension
@@ -86,22 +85,34 @@ public:
 
     void Rename(const char* newnamewithoutextension);
 
+    bool IsFinishedLoading();
+    const char* GetFullPath() { return m_FullPath; }
+    const char* GetFilenameWithoutExtension() { return m_FilenameWithoutExtension; }
+    const char* GetExtensionWithDot() { return m_ExtensionWithDot; } // will be "." if no extension
+    FileLoadStatus GetFileLoadStatus() { return m_FileLoadStatus; }
+    unsigned int GetFileLength() { return m_FileLength; }
+    const char* GetBuffer() { return m_pBuffer; }
+
+#if MYFW_WINDOWS
+    FILETIME GetFileLastWriteTime() { return m_FileLastWriteTime; }
+#endif
+
+    // Callbacks
+    void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback);
+    void UnregisterFileFinishedLoadingCallback(void* pObj);
+
 protected:
     void RequestFile(const char* filename);
     void ParseName(const char* filename);
 
     void Tick();
-public:
-    void FakeFileLoad(char* buffer, int length);
-protected:
+
     virtual void UnloadContents();
 
     bool IsNewVersionAvailable();
 
 public:
-    // Callbacks
-    void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback);
-    void UnregisterFileFinishedLoadingCallback(void* pObj);
+    void FakeFileLoad(char* buffer, int length);
 
 public:
 #if MYFW_USING_WX

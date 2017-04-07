@@ -122,11 +122,11 @@ void MaterialDefinition::ImportFromFile()
 {
     // TODO: replace asserts: if a shader or texture isn't found, load it.
 
-    MyAssert( m_pFile && m_pFile->m_FileLoadStatus == FileLoadStatus_Success );
-    if( m_pFile == 0 || m_pFile->m_FileLoadStatus != FileLoadStatus_Success )
+    MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
+    if( m_pFile == 0 || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
         return;
 
-    cJSON* jRoot = cJSON_Parse( m_pFile->m_pBuffer );
+    cJSON* jRoot = cJSON_Parse( m_pFile->GetBuffer() );
 
     if( jRoot == 0 )
         return;
@@ -267,7 +267,7 @@ void MaterialDefinition::SetName(const char* name)
 const char* MaterialDefinition::GetMaterialDescription()
 {
     if( m_pFile )
-        return m_pFile->m_FullPath;
+        return m_pFile->GetFullPath();
 
     return 0;
 }
@@ -275,7 +275,7 @@ const char* MaterialDefinition::GetMaterialDescription()
 const char* MaterialDefinition::GetMaterialShortDescription()
 {
     if( m_pFile )
-        return m_pFile->m_FilenameWithoutExtension;
+        return m_pFile->GetFilenameWithoutExtension();
 
     return 0;
 }
@@ -373,12 +373,12 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
 
             const char* desc = "no shader";
             if( pMaterial->m_pShaderGroup && pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
-                desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+                desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
             pMaterial->m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
 
             desc = "no shader";
             if( pMaterial->m_pShaderGroupInstanced && pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
-                desc = pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+                desc = pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
             pMaterial->m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
 
             desc = "no color texture";
@@ -421,7 +421,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
     if( m_pFile != 0 )
     {
         // if a file exists, use the existing file's fullpath
-        strcpy_s( filename, MAX_PATH, m_pFile->m_FullPath );
+        strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
     }
     else
     {
@@ -469,9 +469,9 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
         cJSON_AddStringToObject( jMaterial, "Name", m_Name );
         if( m_pShaderGroup )
-            cJSON_AddStringToObject( jMaterial, "Shader", m_pShaderGroup->GetFile()->m_FullPath );
+            cJSON_AddStringToObject( jMaterial, "Shader", m_pShaderGroup->GetFile()->GetFullPath() );
         if( m_pShaderGroupInstanced )
-            cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->m_FullPath );
+            cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->GetFullPath() );
         if( m_pTextureColor )
             cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->m_Filename );
 
@@ -545,7 +545,7 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
         }
 
         // update the panel so new Shader name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->m_FilenameWithoutExtension;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
     }
 }
 
@@ -557,12 +557,13 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
         MyAssert( pFile );
         //MyAssert( m_pMesh );
 
-        size_t len = strlen( pFile->m_FullPath );
-        const char* filenameext = &pFile->m_FullPath[len-4];
+        const char* pPath = pFile->GetFullPath();
+        size_t len = strlen( pPath );
+        const char* filenameext = &pPath[len-4];
 
         if( strcmp( filenameext, ".png" ) == 0 )
         {
-            SetTextureColor( g_pTextureManager->FindTexture( pFile->m_FullPath ) );
+            SetTextureColor( g_pTextureManager->FindTexture( pFile->GetFullPath() ) );
         }
 
         // update the panel so new texture name shows up.
