@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -217,10 +217,10 @@ void MyFileObject::Rename(const char* newnamewithoutextension)
 
 bool MyFileObject::IsFinishedLoading()
 {
-    if( m_FileLoadStatus < FileLoadStatus_Success )
-        return true;
+    if( m_FileLoadStatus < FileLoadStatus_Success ) // still loading
+        return false;
 
-    return false;
+    return true;
 }
 
 void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
