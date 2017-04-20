@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -287,21 +287,21 @@ void MyMatrix::CreateFrustum(float left, float right, float bottom, float top, f
     m41 = m42 = m44 = 0.0f;
 }
 
-void MyMatrix::CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ)
+void MyMatrix::CreatePerspectiveVFoV(float vertfovdegrees, float aspect, float nearZ, float farZ)
 {
     GLfloat frustumRight, frustumTop;
    
-    frustumTop = tanf( halfvertfovdegrees / 360.0f * PI ) * nearZ;
+    frustumTop = tanf( vertfovdegrees/2 * PI/180.0f ) * nearZ;
     frustumRight = frustumTop * aspect;
 
     CreateFrustum( -frustumRight, frustumRight, -frustumTop, frustumTop, nearZ, farZ );
 }
 
-void MyMatrix::CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ)
+void MyMatrix::CreatePerspectiveHFoV(float horfovdegrees, float aspect, float nearZ, float farZ)
 {
     GLfloat frustumRight, frustumTop;
    
-    frustumRight = tanf( halfhorfovdegrees / 360.0f * PI ) * nearZ;
+    frustumRight = tanf( horfovdegrees/2 * PI/180.0f ) * nearZ;
     frustumTop = frustumRight / aspect;
 
     CreateFrustum( -frustumRight, frustumRight, -frustumTop, frustumTop, nearZ, farZ );

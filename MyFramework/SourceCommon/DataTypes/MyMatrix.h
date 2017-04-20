@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -70,8 +70,8 @@ public:
     void CreateSRT(Vector3 scale, Vector3 rot, Vector3 pos);
     void CreateSRT(Vector3 scale, MyQuat rot, Vector3 pos);
     void CreateFrustum(float left, float right, float bottom, float top, float nearZ, float farZ);
-    void CreatePerspectiveVFoV(float halfvertfovdegrees, float aspect, float nearZ, float farZ);
-    void CreatePerspectiveHFoV(float halfhorfovdegrees, float aspect, float nearZ, float farZ);
+    void CreatePerspectiveVFoV(float vertfovdegrees, float aspect, float nearZ, float farZ);
+    void CreatePerspectiveHFoV(float horfovdegrees, float aspect, float nearZ, float farZ);
     void CreateOrtho(float left, float right, float bottom, float top, float nearZ, float farZ);
     void CreateLookAtView(const Vector3& eye, const Vector3& up, const Vector3& at);
     void CreateLookAtWorld(const Vector3& eye, const Vector3& up, const Vector3& at);
