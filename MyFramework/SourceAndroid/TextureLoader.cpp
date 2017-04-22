@@ -278,7 +278,7 @@ GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef)
 
     LOGInfo( LOGTag, "Android_LoadTextureFromMemory file(%d)", texturedef->m_pFile );
 
-    char* buffer = texturedef->m_pFile->m_pBuffer;
+    const char* buffer = texturedef->m_pFile->GetBuffer();
     int width = texturedef->m_Width;
     int height = texturedef->m_Height;
     int minfilter = texturedef->m_MinFilter;

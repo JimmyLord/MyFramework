@@ -49,7 +49,9 @@ class MyJobManager
     static const int MAX_THREADS = 3;
 
 protected:
+#if USE_PTHREAD
     MyThread* m_pThreads[MAX_THREADS];
+#endif
 
     CPPListHead m_JobList;
     pthread_mutex_t m_JobListMutex;
@@ -58,7 +60,9 @@ protected:
     bool m_ShuttingDown;
 
 protected:
+#if USE_PTHREAD
     MyJob* RemoveJob(pthread_t threadid);
+#endif
 
 public:
     MyJobManager();

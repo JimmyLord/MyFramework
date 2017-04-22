@@ -57,12 +57,12 @@ FileManager::~FileManager()
         pthread_mutex_unlock( &m_FileIOThreadLocks[threadid] );
         pthread_join( m_FileIOThreads[threadid], 0 );
     }
-#endif //USE_PTHREAD && !MYFW_NACL
 
     for( int threadid=0; threadid<1; threadid++ )
     {
         pthread_mutex_destroy( &m_FileIOThreadLocks[threadid] );
     }
+#endif //USE_PTHREAD && !MYFW_NACL
 }
 
 #if USE_PTHREAD && !MYFW_NACL
@@ -339,7 +339,7 @@ void FileManager::Tick()
                     pFile->Tick();
 #if !USE_PTHREAD
                     pFile->m_FileLoadStatus = FileLoadStatus_Success;
-#endif !USE_PTHREAD
+#endif //!USE_PTHREAD
 #endif //!MYFW_NACL
                 }
 #endif // USE_PTHREAD && !MYFW_NACL

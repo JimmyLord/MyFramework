@@ -11,6 +11,7 @@
 
 MyJobManager* g_pJobManager = 0;
 
+#if USE_PTHREAD
 class MyJobThread : public MyThread
 {
 protected:
@@ -40,7 +41,9 @@ public:
         }
     }
 };
+#endif //USE_PTHREAD
 
+#if USE_PTHREAD
 MyJobManager::MyJobManager()
 {
     g_pJobManager = this;
@@ -132,3 +135,31 @@ MyJob* MyJobManager::RemoveJob(pthread_t threadid)
 
     return pItem;
 }
+#else //USE_PTHREAD
+MyJobManager::MyJobManager()
+{
+    g_pJobManager = this;
+
+    m_ShuttingDown = false;
+}
+
+MyJobManager::~MyJobManager()
+{
+    m_ShuttingDown = true;
+}
+
+void MyJobManager::GetJobListMutexLock()
+{
+}
+
+void MyJobManager::ReleaseJobListMutexLock()
+{
+}
+
+void MyJobManager::AddJob(MyJob* pItem, bool lockmutex)
+{
+    pItem->MarkAsStarted();
+    pItem->DoWork();
+    pItem->MarkAsFinished();
+}
+#endif //USE_PTHREAD

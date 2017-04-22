@@ -510,6 +510,9 @@
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp">
       <Filter>Source\SceneGraphs</Filter>
     </ClCompile>
+    <ClCompile Include="SourceAndroid\SoundPlayerOpenSL.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1072,6 +1075,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h">
       <Filter>Source\SceneGraphs</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\SoundPlayerOpenSL.h">
+      <Filter>Source-Platform\Source - Android</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
