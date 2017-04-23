@@ -72,8 +72,6 @@ protected:
     FILETIME m_FileLastWriteTime;
 #endif
 
-    int m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading;
-
 public:
     MyFileObject();
     virtual ~MyFileObject();

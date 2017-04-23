@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -24,45 +24,28 @@
 
 MyFileObject* RequestFile(const char* filename)
 {
-    // TODO: uncomment next line
     return g_pFileManager->RequestFile( filename );
-
-    //LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
-
-    //MyFileObject* pFile = 0;
-
-    //int length = 0;
-    //
-    //int len = (int)strlen( filename );
-    //if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
-    //    pFile = MyNew MyFileObjectShader;
-    //else
-    //    pFile = MyNew MyFileObject;
-
-    //char* buffer = LoadFile( filename, &length );
-    //pFile->FakeFileLoad( buffer, length );
-
-    //return pFile;
 }
 
-MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef)
-{
-    LOGInfo( LOGTag, "RequestFile %s - texturedef %d\n", filename, texturedef );
-
-    MyFileObject* file = MyNew MyFileObject;
-    
-    char* pBuffer = LoadTexture( filename, &texturedef->m_Width, &texturedef->m_Height );
-    LOGInfo( LOGTag, "RequestTexture - LoadTexture done" );
-    int length = texturedef->m_Width*texturedef->m_Height*4;
-    LOGInfo( LOGTag, "RequestTexture - length = %d", length );
-    file->FakeFileLoad( pBuffer, length );
-    LOGInfo( LOGTag, "RequestTexture - FakeFileLoad done" );
-    
-    texturedef->m_pFile = file;
-    texturedef->m_TextureID = Android_LoadTextureFromMemory( texturedef );
-    
-    return file;
-}
+//MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef)
+//{
+//    // this function should be obsolete...
+//    LOGInfo( LOGTag, "AndroidRequestFile %s - texturedef %d\n", filename, texturedef );
+//
+//    MyFileObject* file = MyNew MyFileObject;
+//    
+//    char* pBuffer = LoadTexture( filename, &texturedef->m_Width, &texturedef->m_Height );
+//    LOGInfo( LOGTag, "RequestTexture - LoadTexture done" );
+//    int length = texturedef->m_Width*texturedef->m_Height*4;
+//    LOGInfo( LOGTag, "RequestTexture - length = %d", length );
+//    file->FakeFileLoad( pBuffer, length );
+//    LOGInfo( LOGTag, "RequestTexture - FakeFileLoad done" );
+//    
+//    texturedef->m_pFile = file;
+//    texturedef->m_TextureID = Android_LoadTextureFromMemory( texturedef );
+//    
+//    return file;
+//}
 
 char* LoadFile(const char* filepath, int* length)
 {
@@ -117,7 +100,7 @@ char* LoadFile(const char* filepath, int* length)
         LOGError( LOGTag, "=========================================================");
         return 0;
     }
-    LOGInfo( LOGTag, "   LoadFile - filelength: %d", (int)filelength );
+    //LOGInfo( LOGTag, "   LoadFile - filelength: %d", (int)filelength );
     if( length )
         *length = filelength;
 
@@ -134,7 +117,7 @@ char* LoadFile(const char* filepath, int* length)
 
     g_pJavaEnvironment->DeleteLocalRef( filename );
 
-    LOGInfo( LOGTag, "   Done: LoadBinaryFile: %s", filepath );
+    //LOGInfo( LOGTag, "   Done: LoadBinaryFile: %s", filepath );
     //LOGInfo( LOGTag, filecontents );
 #endif
 

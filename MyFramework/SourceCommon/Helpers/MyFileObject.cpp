@@ -95,12 +95,6 @@ MyFileObject::MyFileObject()
     m_FileLastWriteTime.dwLowDateTime = 0;
 #endif
 
-#if _DEBUG
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
-#else
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
-#endif
-
 #if MYFW_USING_WX
     m_CustomLeftClickCallback = 0;
     m_CustomLeftClickObject = 0;
@@ -266,8 +260,6 @@ void MyFileObject::RequestFile(const char* filename)
     if( filename[0] == 0 )
         return;
 
-    LOGInfo( LOGTag, "RequestFile %s\n", filename );
-
     ParseName( filename );
 }
 
@@ -331,7 +323,7 @@ void MyFileObject::ParseName(const char* filename)
 
 void MyFileObject::Tick()
 {
-    if( m_FileLoadStatus != FileLoadStatus_Success && m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading == 0 )
+    if( m_FileLoadStatus != FileLoadStatus_Success )
     {
         int length = 0;
 
@@ -339,12 +331,15 @@ void MyFileObject::Tick()
 
         if( buffer == 0 )
         {
+            LOGError( LOGTag, "FileLoadStatus_Error_FileNotFound %s\n", m_FullPath );
             m_FileLoadStatus = FileLoadStatus_Error_FileNotFound; // file not found.
             return;
         }
 
         if( length > 0 && buffer != 0 )
+        {
             FakeFileLoad( buffer, length );
+        }
 
 #if MYFW_WINDOWS
         WIN32_FIND_DATAA data;
@@ -353,9 +348,6 @@ void MyFileObject::Tick()
         m_FileLastWriteTime = data.ftLastWriteTime;
 #endif
     }
-
-    if( m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading > 0 )
-        m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading--;
 }
 
 bool MyFileObject::IsNewVersionAvailable()
@@ -387,12 +379,6 @@ void MyFileObject::UnloadContents()
     m_FileLength = 0;
     m_BytesRead = 0;
     m_FileLoadStatus = FileLoadStatus_Loading;
-
-#if _DEBUG
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 2;
-#else
-    m_Hack_TicksToWaitUntilWeActuallyLoadToSimulateAsyncLoading = 0;
-#endif
 
 #if MYFW_USING_WX
     if( g_pPanelMemory )
