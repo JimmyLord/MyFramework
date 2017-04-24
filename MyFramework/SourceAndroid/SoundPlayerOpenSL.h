@@ -10,6 +10,9 @@
 #ifndef __SoundPlayerOpenSL_H__
 #define __SoundPlayerOpenSL_H__
 
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
+
 struct SoundObject : public CPPListNode
 {
     char m_FullPath[MAX_PATH];
@@ -29,6 +32,11 @@ class SoundPlayer
 protected:
     static const int MAX_SOUNDS = 255;
     static const int MAX_QUEUED_SOUNDS = 10;
+
+    // OpenSL Objects
+    SLObjectItf g_ppOpenSLEngine;
+    SLObjectItf g_ppOutputMix;
+    SLObjectItf g_ppAudioPlayer;
 
     SoundObject m_Sounds[MAX_SOUNDS];
     int m_QueuedSounds[MAX_QUEUED_SOUNDS];
@@ -54,6 +62,8 @@ public:
     void ResumeSound(int soundid);
     void PauseAll();
     void ResumeAll();
+
+    void TestOpenSL_BufferQueue();
 };
 
 #endif //__SoundPlayerOpenSL_H__

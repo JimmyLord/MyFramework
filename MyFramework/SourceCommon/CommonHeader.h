@@ -301,7 +301,7 @@ using namespace Osp::Graphics::Opengl;
 #include "../SourceAndroid/GLExtensions.h"
 #include "../SourceAndroid/IAPManagerAndroid.h"
 #include "../SourceAndroid/TextureLoader.h"
-#if 1
+#if 0
 #include "../SourceAndroid/SoundPlayer.h"
 #else
 #include "../SourceAndroid/SoundPlayerOpenSL.h"
