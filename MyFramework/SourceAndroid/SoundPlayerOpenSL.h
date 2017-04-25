@@ -12,19 +12,25 @@
 
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+#include "../SourceCommon/Sound/WaveLoader.h"
 
 struct SoundObject : public CPPListNode
 {
-    char m_FullPath[MAX_PATH];
-    int m_Sound;
+    MyFileObject* m_pFileObject;
+    MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
 
     SoundObject()
     {
-        m_FullPath[0] = 0;
-        m_Sound = 0;
+        m_pFileObject = 0;
     }
 
     cJSON* ExportAsJSONObject();
+};
+
+class SoundChannel
+{
+public:
+    SLObjectItf m_ppBufferQueue;
 };
 
 class SoundPlayer
@@ -32,11 +38,14 @@ class SoundPlayer
 protected:
     static const int MAX_SOUNDS = 255;
     static const int MAX_QUEUED_SOUNDS = 10;
+    static const int MAX_CHANNELS = 10;
 
     // OpenSL Objects
-    SLObjectItf g_ppOpenSLEngine;
-    SLObjectItf g_ppOutputMix;
-    SLObjectItf g_ppAudioPlayer;
+    SLObjectItf m_ppOpenSLEngine;
+    SLObjectItf m_ppOutputMix;
+    SLObjectItf m_ppAudioPlayer;
+
+    SoundChannel m_Channels[MAX_CHANNELS];
 
     SoundObject m_Sounds[MAX_SOUNDS];
     int m_QueuedSounds[MAX_QUEUED_SOUNDS];
@@ -53,8 +62,9 @@ public:
 
     void Tick(double TimePassed);
 
-    SoundObject* LoadSound(const char* path, const char* ext);
     SoundObject* LoadSound(const char* fullpath);
+    SoundObject* LoadSound(MyFileObject* pFile);
+
     void Shutdown();
     int PlaySound(SoundObject* pSoundObject);
     void StopSound(int soundid);

@@ -1,23 +1,17 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
 #include "WaveLoader.h"
+#if USE_OPENAL
 #include "SoundPlayerOpenAL.h"
+#endif
 
 WaveLoader g_WaveLoader;
 
@@ -122,8 +116,10 @@ ALuint WaveLoader::LoadFromMemoryIntoOpenALBuffer(const char* buffer, unsigned i
 
 MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int buffersize)
 {
-    MyWaveDescriptor m_WaveDesc;
-    m_WaveDesc.valid = false;
+    // This method returns a copy of the wave descriptor.
+    MyWaveDescriptor waveDesc;
+
+    waveDesc.valid = false;
 
     const char* pBuffer = buffer;
     //const char* pDestBuffer = buffer;
@@ -135,7 +131,7 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
         CHUNK_RIFF* pRiffChunk = (CHUNK_RIFF*)pBuffer;
     
         if( strncmp( pRiffChunk->format, "WAVE", 4 ) )
-            return m_WaveDesc;
+            return waveDesc;
     
         pBuffer += sizeof( CHUNK_RIFF );
 
@@ -145,20 +141,20 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
         {
             CHUNK_FORMAT* pFormatChunk = (CHUNK_FORMAT*)pBuffer;
 
-            m_WaveDesc.audioformat = pFormatChunk->audioformat; // using in WP8 code that want full "fmt" block
-            m_WaveDesc.numchannels = pFormatChunk->numchannels;
-            m_WaveDesc.samplerate = pFormatChunk->samplerate;
-            m_WaveDesc.byterate = pFormatChunk->byterate; // using in WP8 code that want full "fmt" block
-            m_WaveDesc.blockalign = pFormatChunk->blockalign; // using in WP8 code that want full "fmt" block
-            m_WaveDesc.bytespersample = pFormatChunk->bitspersample / 8;
+            waveDesc.audioformat = pFormatChunk->audioformat; // using in WP8 code that want full "fmt" block
+            waveDesc.numchannels = pFormatChunk->numchannels;
+            waveDesc.samplerate = pFormatChunk->samplerate;
+            waveDesc.byterate = pFormatChunk->byterate; // using in WP8 code that want full "fmt" block
+            waveDesc.blockalign = pFormatChunk->blockalign; // using in WP8 code that want full "fmt" block
+            waveDesc.bytespersample = pFormatChunk->bitspersample / 8;
 
             int headersize = sizeof( CHUNK_HEADER );
             int formatsize = sizeof( CHUNK_FORMAT );
             int chunksize = pChunk->chunksize;
 
             // check if the format chunk is the right size.
-            if( chunksize != formatsize - headersize )
-                return m_WaveDesc;
+            if( chunksize <= formatsize - headersize )
+                return waveDesc;
 
             pBuffer += pChunk->chunksize + headersize;
 
@@ -177,8 +173,8 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
                 int datasize = pDataChunk->header.chunksize;
                 char* data = &pDataChunk->data;
 
-                m_WaveDesc.data = data;
-                m_WaveDesc.datasize = datasize;
+                waveDesc.data = data;
+                waveDesc.datasize = datasize;
 
                 //// to be marginally safer, don't use memcpy, since we're copying from same memory space
                 //for( int i=0; i<datasize; i++ )
@@ -188,9 +184,9 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
 
                 //pDestBuffer += datasize;
 
-                m_WaveDesc.valid = true;
+                waveDesc.valid = true;
 
-                return m_WaveDesc;
+                return waveDesc;
             }
             else
             {
@@ -200,5 +196,5 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
         }
     }
 
-    return m_WaveDesc;
+    return waveDesc;
 }
