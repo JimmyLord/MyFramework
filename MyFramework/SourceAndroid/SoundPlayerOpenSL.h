@@ -16,21 +16,17 @@
 
 struct SoundObject : public CPPListNode
 {
-    MyFileObject* m_pFileObject;
+    MyFileObject* m_pFile;
     MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
 
-    SoundObject()
-    {
-        m_pFileObject = 0;
-    }
-
+    SoundObject();
     cJSON* ExportAsJSONObject();
 };
 
 class SoundChannel
 {
 public:
-    SLObjectItf m_ppBufferQueue;
+    SLObjectItf m_ppAudioPlayer; // using a buffer queue as input
 };
 
 class SoundPlayer
@@ -43,7 +39,6 @@ protected:
     // OpenSL Objects
     SLObjectItf m_ppOpenSLEngine;
     SLObjectItf m_ppOutputMix;
-    SLObjectItf m_ppAudioPlayer;
 
     SoundChannel m_Channels[MAX_CHANNELS];
 
@@ -74,6 +69,7 @@ public:
     void ResumeAll();
 
     void TestOpenSL_BufferQueue();
+    void TestOpenSL_URILocator();
 };
 
 #endif //__SoundPlayerOpenSL_H__

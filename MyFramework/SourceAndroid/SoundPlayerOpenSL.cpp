@@ -9,10 +9,6 @@
 
 #include "../SourceCommon/CommonHeader.h"
 
-// Interfaces
-SLEngineItf g_ppEngineInterface;
-SLVolumeItf g_ppOutputMixVolume;
-
 void CheckForErrors(SLresult result, const char* string)
 {
     const char* errorstrings[] =
@@ -46,17 +42,23 @@ void CheckForErrors(SLresult result, const char* string)
     }
 }
 
+SoundObject::SoundObject()
+{
+    m_pFile = 0;
+    m_WaveDesc.valid = false;
+}
+
 SoundPlayer::SoundPlayer()
 {
     m_NumQueuedSounds = 0;
 
     m_ppOpenSLEngine = 0;
     m_ppOutputMix = 0;
-    m_ppAudioPlayer = 0;
 
     SLresult result;
 
     // Create the OpenSL Engine
+    SLEngineItf ppEngineInterface;
     {
         SLEngineOption EngineOptions[] =
         { 
@@ -71,7 +73,7 @@ SoundPlayer::SoundPlayer()
         CheckForErrors( result, "(*m_ppOpenSLEngine)->Realize" );
 
         // Get the engine interface
-        result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&g_ppEngineInterface ); 
+        result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface ); 
         CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
     }
 
@@ -79,23 +81,69 @@ SoundPlayer::SoundPlayer()
     {
         //const SLInterfaceID ids[] = { SL_IID_VOLUME };
         //const SLboolean req[] = { SL_BOOLEAN_FALSE };
-        result = (*g_ppEngineInterface)->CreateOutputMix( g_ppEngineInterface, &m_ppOutputMix, 0, 0, 0 ); //1, ids, req );
-        CheckForErrors( result, "(*g_ppEngineInterface)->CreateOutputMix" );
+        result = (*ppEngineInterface)->CreateOutputMix( ppEngineInterface, &m_ppOutputMix, 0, 0, 0 ); //1, ids, req );
+        CheckForErrors( result, "(*ppEngineInterface)->CreateOutputMix" );
 
         // Allocate the Output Mix object. False for synchronous allocation.
         (*m_ppOutputMix)->Realize( m_ppOutputMix, SL_BOOLEAN_FALSE );
         CheckForErrors( result, "(*m_ppOutputMix)->Realize" );
 
-        //result = (*m_ppOutputMix)->GetInterface( m_ppOutputMix, SL_IID_VOLUME, &g_ppOutputMixVolume );
+        //SLVolumeItf ppOutputMixVolume;
+        //result = (*m_ppOutputMix)->GetInterface( m_ppOutputMix, SL_IID_VOLUME, &ppOutputMixVolume );
         //CheckForErrors( result, "(*m_ppOutputMix)->GetInterface SL_IID_VOLUME" );
         //if( result != SL_RESULT_SUCCESS )
-        //    g_ppOutputMixVolume = 0;
+        //    ppOutputMixVolume = 0;
+    }
+
+    // Create some channels, i.e. buffer queues
+    for( int i=0; i<MAX_CHANNELS; i++ )
+    {
+        SLDataLocator_BufferQueue bufferQueue;
+        bufferQueue.locatorType = SL_DATALOCATOR_BUFFERQUEUE;
+        bufferQueue.numBuffers = 1;
+    
+        // Setup the format of the content in the buffer queue
+        SLDataFormat_PCM pcmDataFormat;
+        pcmDataFormat.formatType = SL_DATAFORMAT_PCM;
+        pcmDataFormat.numChannels = 1;
+        pcmDataFormat.samplesPerSec = SL_SAMPLINGRATE_44_1;
+        pcmDataFormat.bitsPerSample = SL_PCMSAMPLEFORMAT_FIXED_16;
+        pcmDataFormat.containerSize = 16;
+        pcmDataFormat.channelMask = SL_SPEAKER_FRONT_CENTER;
+        pcmDataFormat.endianness = SL_BYTEORDER_LITTLEENDIAN;
+
+        SLDataSource audioSource;
+        audioSource.pFormat = &pcmDataFormat;
+        audioSource.pLocator = &bufferQueue;
+
+        // Setup the data sink structure
+        SLDataLocator_OutputMix locatorOutputMix;
+        locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
+        locatorOutputMix.outputMix = m_ppOutputMix;
+    
+        SLDataSink audioSink;
+        audioSink.pLocator = &locatorOutputMix;
+        audioSink.pFormat = 0;
+
+        // Create an audio player
+        {
+            // Set ids required for audioPlayer interface
+            const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE };
+            const SLboolean req[] = { SL_BOOLEAN_TRUE };
+
+            result = (*ppEngineInterface)->CreateAudioPlayer( ppEngineInterface, &m_Channels[i].m_ppAudioPlayer, &audioSource, &audioSink, 1, ids, req );
+            CheckForErrors( result, "(*ppEngineInterface)->CreateAudioPlayer" );
+
+            // Realize the player in synchronous mode.
+            result = (*m_Channels[i].m_ppAudioPlayer)->Realize( m_Channels[i].m_ppAudioPlayer, SL_BOOLEAN_FALSE );
+            CheckForErrors( result, "(*m_Channels[i].m_ppAudioPlayer)->Realize" );
+        }
     }
 
     //LOGInfo( LOGTag, "SoundPlayer::SoundPlayer() Done\n" );
 
-    //PlaySound( 0 );
-    TestOpenSL_BufferQueue();
+    //TestOpenSL_URILocator( 0 );
+    //TestOpenSL_BufferQueue();
 }
 
 SoundPlayer::~SoundPlayer()
@@ -105,7 +153,10 @@ SoundPlayer::~SoundPlayer()
 
 void SoundPlayer::Shutdown()
 {
-    (*m_ppAudioPlayer)->Destroy( m_ppAudioPlayer );
+    for( int i=0; i<MAX_CHANNELS; i++ )
+    {
+        (*m_Channels[i].m_ppAudioPlayer)->Destroy( m_Channels[i].m_ppAudioPlayer );
+    }
     (*m_ppOutputMix)->Destroy( m_ppOutputMix );
     (*m_ppOpenSLEngine)->Destroy( m_ppOpenSLEngine );
 }
@@ -128,31 +179,37 @@ void SoundPlayer::ReallyPlaySound(int soundid)
 
 SoundObject* SoundPlayer::LoadSound(const char* fullpath)
 {
-    // TODO: fix this, it will fail since file io is async
-    //MyFileObject* pFile = g_pFileManager->RequestFile( fullpath );
-    //return LoadSound( pFile );
-
-    return 0;
+    MyFileObject* pFile = g_pFileManager->RequestFile( fullpath );
+    return LoadSound( pFile );
 }
 
 SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
 {
-    MyAssert( pFile->IsFinishedLoading() );
-    if( pFile->IsFinishedLoading() == false )
-        return 0;
-
     int i=0;
     for( i=0; i<MAX_SOUNDS; i++ )
     {
-        if( m_Sounds[i].m_pFileObject == 0 )
+        if( m_Sounds[i].m_pFile == 0 )
             break;
     }
 
     if( i < MAX_SOUNDS )
     {
-        // store the wave file and info into a soundobject and return the soundobject.
-        m_Sounds[i].m_pFileObject = pFile;
-        m_Sounds[i].m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
+        // store the wave file and wave desc into a soundobject and return the soundobject.
+        // file may not be fully loaded, so m_WaveDesc.valid == false
+        //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
+
+        m_Sounds[i].m_pFile = pFile;
+        m_Sounds[i].m_WaveDesc.valid = false;
+
+        if( pFile->IsFinishedLoading() )
+        {
+            m_Sounds[i].m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
+            if( m_Sounds[i].m_WaveDesc.valid == false )
+            {
+                LOGError( LOGTag, "WAV file parsing failed (%s)", pFile->GetFullPath() );
+            }
+        }
+
         return &m_Sounds[i];
     }
 
@@ -162,73 +219,53 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
 int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 {
     //LOGInfo( LOGTag, "PlaySound - %d", soundid );
+    
+    // Attempt to parse the file again in case it wasn't loaded the first time.
+    if( pSoundObject->m_WaveDesc.valid == false )
+    {
+        MyAssert( pSoundObject->m_pFile );
+        if( pSoundObject->m_pFile->IsFinishedLoading() )
+        {
+            pSoundObject->m_WaveDesc = WaveLoader::ParseWaveBuffer( pSoundObject->m_pFile->GetBuffer(), pSoundObject->m_pFile->GetFileLength() );
+            if( pSoundObject->m_WaveDesc.valid == false )
+            {
+                LOGError( LOGTag, "WAV file parsing failed (%s)", pSoundObject->m_pFile->GetFullPath() );
+            }
+        }
+    }
+
+    if( pSoundObject->m_WaveDesc.valid == false )
+    {
+        return -1; // sound didn't play
+    }
+
+    // TODO: pick a channel properly.
+    int channelindex = 0;
+
+    SLObjectItf ppAudioPlayer = m_Channels[channelindex].m_ppAudioPlayer;
 
     SLresult result;
 
-    // Setup the audio source, trying to decode a wav from assets folder.
-    SLDataLocator_URI uri;
-    //SLDataLocator_AndroidFD androidfd;
-    SLDataFormat_MIME mime;
-    SLDataSource audioSource;
-    {
-        uri.locatorType = SL_DATALOCATOR_URI;
-        //uri.URI = (SLchar*)"file:///android_asset/Data/Audio/test.wav";
-        uri.URI = (SLchar*)"/assets/Data/Audio/test.wav";
-        //uri.URI = (SLchar*)"assets/Data/Audio/test.wav";
+    // Get interfaces
+    SLPlayItf playInterface;
+    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface ); 
+    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
 
-        //AAssetManager* pManager = AAssetManager_fromJava( g_pJavaEnvironment, g_pAssetManager );
-        //androidfd.locatorType = SL_DATALOCATOR_ANDROIDFD;
-        //androidfd.fd;
-        //androidfd.offset;
-        //androidfd.length;
+    SLBufferQueueItf bufferQueueInterface;
+    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
+    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
 
-        mime.formatType = SL_DATAFORMAT_MIME;
-        mime.mimeType = 0; //(SLchar*)"audio/x-wav";
-        mime.containerType = SL_CONTAINERTYPE_UNSPECIFIED; //SL_CONTAINERTYPE_WAV;
+    // Enqueue our entire buffer
+    const void* pcmData = pSoundObject->m_WaveDesc.data;
+    SLuint32 pcmDataSize = pSoundObject->m_WaveDesc.datasize;
+    result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, pcmDataSize );
+    CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
 
-        audioSource.pLocator = (void*)&uri;
-        //audioSource.pLocator = (void*)&androidfd;
-        audioSource.pFormat = (void*)&mime;
-    }
+    // Start playback
+    result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
+    CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
 
-    // Setup the data sink structure
-    SLDataLocator_OutputMix locatorOutputMix;
-    SLDataSink audioSink;
-    {
-        locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
-        locatorOutputMix.outputMix = m_ppOutputMix;
- 
-        audioSink.pLocator = &locatorOutputMix;
-        audioSink.pFormat = 0;
-    }
-
-    // Create an audio player
-    {
-        LOGInfo( LOGTag, "About to create Audio Player\n" );
-
-        // Set ids required for audioPlayer interface
-        const SLInterfaceID ids[] = { SL_IID_PREFETCHSTATUS, SL_IID_VOLUME };
-        const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
-
-        result = (*g_ppEngineInterface)->CreateAudioPlayer( g_ppEngineInterface, &m_ppAudioPlayer, &audioSource, &audioSink, 0, 0, 0 );//2, ids, req );
-        CheckForErrors( result, "(*g_ppEngineInterface)->CreateAudioPlayer" );
- 
-        // Realize the player in synchronous mode.
-        result = (*m_ppAudioPlayer)->Realize( m_ppAudioPlayer, SL_BOOLEAN_FALSE );
-        CheckForErrors( result, "(*m_ppAudioPlayer)->Realize" );
-    }
- 
-    // Get play interface and play the sound
-    {
-        SLPlayItf playInterface;
-        result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_PLAY, &playInterface );
-        CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_PLAY" );
-
-        result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
-        CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
-    }
-
-    return 0; // TODO: should return some unique id for the sound, so it can be stopped/paused/etc.
+    return channelindex;
 }
 
 void SoundPlayer::StopSound(int soundid)
@@ -335,28 +372,34 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     audioSink.pLocator = &locatorOutputMix;
     audioSink.pFormat = 0;
 
+    // Get the engine interface
+    SLEngineItf ppEngineInterface;
+    result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface ); 
+    CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
+
     // Create an audio player
+    SLObjectItf ppAudioPlayer;
     {
         // Set ids required for audioPlayer interface
         const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE };
         const SLboolean req[] = { SL_BOOLEAN_TRUE };
 
-        result = (*g_ppEngineInterface)->CreateAudioPlayer( g_ppEngineInterface, &m_ppAudioPlayer, &audioSource, &audioSink, 1, ids, req );
-        CheckForErrors( result, "(*g_ppEngineInterface)->CreateAudioPlayer" );
+        result = (*ppEngineInterface)->CreateAudioPlayer( ppEngineInterface, &ppAudioPlayer, &audioSource, &audioSink, 1, ids, req );
+        CheckForErrors( result, "(*ppEngineInterface)->CreateAudioPlayer" );
 
         // Realize the player in synchronous mode.
-        result = (*m_ppAudioPlayer)->Realize( m_ppAudioPlayer, SL_BOOLEAN_FALSE );
-        CheckForErrors( result, "(*m_ppAudioPlayer)->Realize" );
+        result = (*ppAudioPlayer)->Realize( ppAudioPlayer, SL_BOOLEAN_FALSE );
+        CheckForErrors( result, "(*ppAudioPlayer)->Realize" );
     }
 
     // Get interfaces
     SLPlayItf playInterface;
-    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_PLAY, &playInterface ); 
-    CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_PLAY" );
+    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface ); 
+    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
 
     SLBufferQueueItf bufferQueueInterface;
-    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
-    CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
+    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
+    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
 
     //// Register a BufferQueue callback
     //// Initialize the context for Buffer queue callback functions
@@ -376,9 +419,9 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     //CheckForErrors( result, "(*playInterface)->SetCallbackEventsMask" );
 
     //// Before we start set volume to -3dB (-300mB)
-    //if( g_ppOutputMixVolume != 0 )
+    //if( ppOutputMixVolume != 0 )
     //{
-    //    result = (*g_ppOutputMixVolume)->SetVolumeLevel( g_ppOutputMixVolume, -300 );
+    //    result = (*ppOutputMixVolume)->SetVolumeLevel( ppOutputMixVolume, -300 );
     //}
 
     // Enqueue our entire buffer
@@ -436,4 +479,85 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     //CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_STOPPED" );
 
     //LOGInfo( LOGTag, "SetPlayState to stop\n" );
+
+    // TODO: test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
+    //(*ppAudioPlayer)->Destroy( ppAudioPlayer );
+}
+
+void SoundPlayer::TestOpenSL_URILocator()
+{
+    SLresult result;
+
+    // Setup the audio source, trying to decode a wav from assets folder.
+    SLDataLocator_URI uri;
+    //SLDataLocator_AndroidFD androidfd;
+    SLDataFormat_MIME mime;
+    SLDataSource audioSource;
+    {
+        // Can't figure out the proper URI for a wav file sitting in assets folder.
+        uri.locatorType = SL_DATALOCATOR_URI;
+        //uri.URI = (SLchar*)"file:///android_asset/Data/Audio/test.wav";
+        uri.URI = (SLchar*)"/assets/Data/Audio/test.wav";
+        //uri.URI = (SLchar*)"assets/Data/Audio/test.wav";
+
+        //AAssetManager* pManager = AAssetManager_fromJava( g_pJavaEnvironment, g_pAssetManager );
+        //androidfd.locatorType = SL_DATALOCATOR_ANDROIDFD;
+        //androidfd.fd;
+        //androidfd.offset;
+        //androidfd.length;
+
+        mime.formatType = SL_DATAFORMAT_MIME;
+        mime.mimeType = 0; //(SLchar*)"audio/x-wav";
+        mime.containerType = SL_CONTAINERTYPE_UNSPECIFIED; //SL_CONTAINERTYPE_WAV;
+
+        audioSource.pLocator = (void*)&uri;
+        //audioSource.pLocator = (void*)&androidfd;
+        audioSource.pFormat = (void*)&mime;
+    }
+
+    // Setup the data sink structure
+    SLDataLocator_OutputMix locatorOutputMix;
+    SLDataSink audioSink;
+    {
+        locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
+        locatorOutputMix.outputMix = m_ppOutputMix;
+ 
+        audioSink.pLocator = &locatorOutputMix;
+        audioSink.pFormat = 0;
+    }
+
+    // Get the engine interface
+    SLEngineItf ppEngineInterface;
+    result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface ); 
+    CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
+
+    // Create an audio player
+    SLObjectItf ppAudioPlayer;
+    {
+        LOGInfo( LOGTag, "About to create Audio Player\n" );
+
+        // Set ids required for audioPlayer interface
+        const SLInterfaceID ids[] = { SL_IID_PREFETCHSTATUS, SL_IID_VOLUME };
+        const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
+
+        result = (*ppEngineInterface)->CreateAudioPlayer( ppEngineInterface, &ppAudioPlayer, &audioSource, &audioSink, 0, 0, 0 );//2, ids, req );
+        CheckForErrors( result, "(*ppEngineInterface)->CreateAudioPlayer" );
+ 
+        // Realize the player in synchronous mode.
+        result = (*ppAudioPlayer)->Realize( ppAudioPlayer, SL_BOOLEAN_FALSE );
+        CheckForErrors( result, "(*ppAudioPlayer)->Realize" );
+    }
+ 
+    // Get play interface and play the sound
+    {
+        SLPlayItf playInterface;
+        result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface );
+        CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
+
+        result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
+        CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
+    }
+
+    // TODO: test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
+    //(*ppAudioPlayer)->Destroy( ppAudioPlayer );
 }
