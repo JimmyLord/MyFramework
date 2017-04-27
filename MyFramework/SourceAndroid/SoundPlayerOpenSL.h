@@ -26,7 +26,26 @@ struct SoundObject : public CPPListNode
 class SoundChannel
 {
 public:
+    enum SoundChannelStates
+    {
+        SoundChannelState_Free,
+        SoundChannelState_Playing,
+        SoundChannelState_Paused,
+    };
+
+protected:
     SLObjectItf m_ppAudioPlayer; // using a buffer queue as input
+
+    SoundChannelStates m_CurrentState;
+
+public:
+    SoundChannel();
+
+    SLObjectItf GetAudioPlayer() { return m_ppAudioPlayer; }
+    void SetAudioPlayer(SLObjectItf player) { m_ppAudioPlayer = player; }
+
+    SoundChannelStates GetState() { return m_CurrentState; }
+    void SetState(SoundChannelStates state) { m_CurrentState = state; }
 };
 
 class SoundPlayer
