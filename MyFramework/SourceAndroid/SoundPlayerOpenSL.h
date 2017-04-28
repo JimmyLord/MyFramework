@@ -37,15 +37,21 @@ protected:
     SLObjectItf m_ppAudioPlayer; // using a buffer queue as input
 
     SoundChannelStates m_CurrentState;
+    double m_TimePlaybackStarted;
 
 public:
     SoundChannel();
+
+    void PlaySound(SoundObject* pSoundObject);
+    void StopSound();
 
     SLObjectItf GetAudioPlayer() { return m_ppAudioPlayer; }
     void SetAudioPlayer(SLObjectItf player) { m_ppAudioPlayer = player; }
 
     SoundChannelStates GetState() { return m_CurrentState; }
     void SetState(SoundChannelStates state) { m_CurrentState = state; }
+
+    double GetTimePlaybackStarted() { return m_TimePlaybackStarted; }
 };
 
 class SoundPlayer

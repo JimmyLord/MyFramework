@@ -50,8 +50,68 @@ SoundObject::SoundObject()
 
 SoundChannel::SoundChannel()
 {
-    m_CurrentState = SoundChannelState_Free;
     m_ppAudioPlayer = 0;
+
+    m_CurrentState = SoundChannelState_Free;
+    m_TimePlaybackStarted = 0;
+}
+
+void SoundChannel::PlaySound(SoundObject* pSoundObject)
+{
+    SLresult result;
+
+    // Get interfaces
+    SLBufferQueueItf bufferQueueInterface;
+    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
+    CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
+
+    SLPlayItf playInterface;
+    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_PLAY, &playInterface );
+    CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_PLAY" );
+
+    SLVolumeItf volumeInterface;
+    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_VOLUME, &playInterface );
+    if( result != SL_RESULT_SUCCESS )
+    {
+        CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_VOLUME" );
+        volumeInterface = 0;
+    }
+
+    // Clear the existing sound from the buffer. TODO: check if this is needed.
+    result = (*bufferQueueInterface)->Clear( bufferQueueInterface );
+    CheckForErrors( result, "(*bufferQueueInterface)->Clear" );
+
+    // Enqueue our entire buffer
+    const void* pcmData = pSoundObject->m_WaveDesc.data;
+    SLuint32 pcmDataSize = pSoundObject->m_WaveDesc.datasize;
+    result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, pcmDataSize );
+    CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
+
+    // Start playback
+    result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
+    CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
+
+    // Set Volume
+    //result = (*volumeInterface)->SetVolumeLevel( volumeInterface, volume );
+    //CheckForErrors( result, "(*volumeInterface)->SetVolumeLevel" );
+
+    m_TimePlaybackStarted = MyTime_GetUnpausedTime();
+}
+
+void SoundChannel::StopSound()
+{
+    SLresult result;
+
+    // Get interfaces
+    SLBufferQueueItf bufferQueueInterface;
+    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
+    CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
+
+    // Clear the existing sound from the buffer. TODO: check if this is needed.
+    result = (*bufferQueueInterface)->Clear( bufferQueueInterface );
+    CheckForErrors( result, "(*bufferQueueInterface)->Clear" );
+
+    m_TimePlaybackStarted = 0;
 }
 
 void PlayCallback(SLPlayItf player, void* context, SLuint32 event)
@@ -143,8 +203,8 @@ SoundPlayer::SoundPlayer()
         // Create an audio player
         {
             // Set ids required for audioPlayer interface
-            const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE };
-            const SLboolean req[] = { SL_BOOLEAN_TRUE };
+            const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE, SL_IID_VOLUME };
+            const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
 
             SLObjectItf ppAudioPlayer = 0;
 
@@ -270,7 +330,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
         return -1; // sound didn't play
     }
 
-    // find a free channel.
+    // find a free channel
     int channelindex;
     for( channelindex = 0; channelindex < MAX_CHANNELS; channelindex++ )
     {
@@ -278,38 +338,29 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
             break;
     }
 
-    // if all channels are busy, return... TODO: stop the oldest one and use it.
-    if( channelindex == MAX_CHANNELS )
-        return -1; // sound didn't play
+    // if all channels are in use, find and use the oldest sound channel
+    if( channelindex == -1 )
+    {
+        double oldesttime = DBL_MAX;
+        for( int i = 0; i < MAX_CHANNELS; i++ )
+        {
+            double thistime = m_Channels[channelindex].GetTimePlaybackStarted();
+            if( thistime < oldesttime )
+            {
+                oldesttime = thistime;
+                channelindex = i;
+            }
+        }
+    }
 
-    SLObjectItf ppAudioPlayer = m_Channels[channelindex].GetAudioPlayer();
-
-    SLresult result;
-
-    // Get interfaces
-    SLPlayItf playInterface;
-    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface );
-    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
-
-    SLBufferQueueItf bufferQueueInterface;
-    result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
-    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
-
-    // Enqueue our entire buffer
-    const void* pcmData = pSoundObject->m_WaveDesc.data;
-    SLuint32 pcmDataSize = pSoundObject->m_WaveDesc.datasize;
-    result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, pcmDataSize );
-    CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
-
-    // Start playback
-    result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
-    CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
+    m_Channels[channelindex].PlaySound( pSoundObject );
 
     return channelindex;
 }
 
 void SoundPlayer::StopSound(int soundid)
 {
+    m_Channels[soundid].StopSound();
 }
 
 void SoundPlayer::PauseSound(int soundid)
