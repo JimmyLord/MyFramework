@@ -207,6 +207,20 @@ SoundManager::SoundManager()
 
 SoundManager::~SoundManager()
 {
+    CPPListNode* pNextNode;
+
+    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNextNode )
+    {
+        pNextNode = pNode->GetNext();
+        ((SoundCue*)pNode)->Release();
+    }
+
+    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNextNode )
+    {
+        pNextNode = pNode->GetNext();
+        ((SoundCue*)pNode)->Release();
+    }
+
     m_pSoundCueCreatedCallbackList.FreeAllInList();
 }
 
@@ -291,13 +305,14 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     pCue = FindCueByFilename( fullpath );
     if( pCue )
     {
-        pCue->AddRef();
+        pCue->AddRef(); // Automatically add a ref for the calling code.
         return pCue;
     }
 
     pCue = GetCueFromPool();
     if( pCue )
     {
+        pCue->AddRef(); // Automatically add a ref for the calling code.
         pCue->m_pFile = g_pFileManager->RequestFile( fullpath );
 
         m_CuesStillLoading.AddTail( pCue );
@@ -494,10 +509,12 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
 
     if( id == RightClick_CreateNewCue )
     {
-        pSoundManager->CreateCue( "new cue" );
+        pSoundCue = pSoundManager->CreateCue( "new cue" );
 
         for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+        {
             pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
+        }
     }
 }
 #endif
