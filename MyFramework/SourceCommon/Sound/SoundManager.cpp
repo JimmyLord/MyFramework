@@ -243,7 +243,7 @@ void SoundManager::Tick()
             g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
 
             // Add all the sounds to the tree.
-            for( CPPListNode* pSoundNode = pCue->m_SoundObjects.GetHead(); pSoundNode; pSoundNode = pNode->GetNext() )
+            for( CPPListNode* pSoundNode = pCue->m_SoundObjects.GetHead(); pSoundNode; pSoundNode = pSoundNode->GetNext() )
             {
                 SoundObject* pSoundObject = (SoundObject*)pSoundNode;
                 g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->m_FullPath, 0 );
@@ -462,14 +462,13 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
 {
     SoundManagerWxEventHandler* pEvtHandler = (SoundManagerWxEventHandler*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
     SoundManager* pSoundManager = pEvtHandler->m_pSoundManager;
-    SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
     SoundObject* m_pSoundObject = pEvtHandler->m_pSoundObject;
 
     int id = evt.GetId();
     if( id == RightClick_LoadSoundFile )
     {
         // multiple select file open dialog
-        wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data", "", "Sound files(*.wav)|*.wav", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
+        wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data/Audio", "", "Waves and Cues(*.wav;*.mycue)|*.wav;*.mycue", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
 
         if( FileDialog.ShowModal() == wxID_CANCEL )
             return;
@@ -478,6 +477,8 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
         // TODO: typecasting will likely cause issues with multibyte names
         wxArrayString patharray;
         FileDialog.GetPaths( patharray );
+
+        SoundCue* pNewCue = 0;
 
         char fullpath[MAX_PATH];
         for( unsigned int filenum=0; filenum<patharray.Count(); filenum++ )
@@ -499,16 +500,38 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
             char extension[10];
             ParseFilename( fullpath, filename, 32, extension, 10 );
 
-            SoundCue* pCue = pSoundManager->CreateCue( filename );
-            g_pGameCore->m_pSoundManager->AddSoundToCue( pCue, relativepath );
+            // Add all wav's selected to a new cue.
+            if( strcmp( extension, ".wav" ) == 0 )
+            {
+                // Create a cue for the first wav selected.
+                if( pNewCue == 0 )
+                {
+                    pNewCue = pSoundManager->CreateCue( filename );
+                }
+
+                // Add each wav.
+                g_pGameCore->m_pSoundManager->AddSoundToCue( pNewCue, relativepath );
+            }
+
+            if( strcmp( extension, ".mycue" ) == 0 )
+            {
+                // TODO: load cue files
+            }
+        }
+
+        // If we made a new cue, save it and inform all observers.
+        if( pNewCue )
+        {
+            pNewCue->SaveSoundCue( 0 );
 
             for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
-                pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
+                pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pNewCue );
         }
     }
 
     if( id == RightClick_CreateNewCue )
     {
+        SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
         pSoundCue = pSoundManager->CreateCue( "new cue" );
 
         for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
