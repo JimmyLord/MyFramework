@@ -78,6 +78,30 @@ void SoundCue::ImportFromFile()
     cJSON_Delete( jRoot );
 }
 
+void SoundCue::SetName(const char* name)
+{
+    MyAssert( name );
+
+    if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
+        return;
+
+    const char* newfilename = 0;
+    if( m_pFile )
+    {
+        // if file rename fails, we'll keep the original name
+        newfilename = m_pFile->Rename( name );
+    }
+
+    strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newfilename );
+
+#if MYFW_USING_WX
+    if( g_pPanelMemory )
+    {
+        g_pPanelMemory->RenameObject( g_pPanelMemory->m_pTree_SoundCues, this, m_Name );
+    }
+#endif //MYFW_USING_WX
+}
+
 #if MYFW_USING_WX
 void SoundCue::OnDrag()
 {
@@ -188,11 +212,10 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 
 void SoundCue::OnLabelEdit(wxString newlabel)
 {
-    // TODO: rename the object and the file.
     size_t len = newlabel.length();
     if( len > 0 )
     {
-        //SetName( newlabel );
+        SetName( newlabel );
     }
 }
 

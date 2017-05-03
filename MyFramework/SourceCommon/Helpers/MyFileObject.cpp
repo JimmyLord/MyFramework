@@ -184,7 +184,7 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
     return "";
 }
 
-void MyFileObject::Rename(const char* newnamewithoutextension)
+const char* MyFileObject::Rename(const char* newnamewithoutextension)
 {
 #if MYFW_USING_WX
     char fullpathbefore[MAX_PATH];
@@ -200,13 +200,23 @@ void MyFileObject::Rename(const char* newnamewithoutextension)
     sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );
     sprintf_s( &newfullpath[pathlen], MAX_PATH-pathlen, "%s%s", newnamewithoutextension, m_ExtensionWithDot );
 
-    rename( m_FullPath, newfullpath );
-
-    ParseName( newfullpath );
+    int result = rename( m_FullPath, newfullpath );
+    if( result == 0 )
+    {
+        // successfully renamed
+        ParseName( newfullpath );
 
 #if MYFW_USING_WX
-    g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
+        g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
 #endif
+    }
+    else
+    {
+        // failed to rename
+        LOGError( LOGTag, "Failed to rename %s to %s", m_FullPath, newnamewithoutextension );
+    }
+
+    return m_FilenameWithoutExtension;
 }
 
 bool MyFileObject::IsFinishedLoading()

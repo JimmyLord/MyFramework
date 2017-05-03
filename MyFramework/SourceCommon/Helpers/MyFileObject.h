@@ -81,7 +81,7 @@ public:
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
     const char* GetNameOfDeepestFolderPath();
 
-    void Rename(const char* newnamewithoutextension);
+    const char* Rename(const char* newnamewithoutextension);
 
     bool IsFinishedLoading();
     const char* GetFullPath() { return m_FullPath; }

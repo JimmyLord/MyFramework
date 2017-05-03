@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -1017,18 +1017,19 @@ void PanelMemory::OnTreeEndLabelEdit(wxTreeEvent& event)
 
     if( pData && pData->m_pLabelEditFunction )
     {
-        //// end the edit to commit the new name
-        //m_pTree_Objects->EndEditLabel( id );
-
         wxString newlabel = event.GetLabel();
 
         if( event.IsEditCancelled() == false )
         {
-            // manually set the item to the new name, so the callback func can query for the name.
-            //    the edit process seems to happen later
+            // Manually set the item to the new name, so the callback func can query for the name.
+            //    The actual label edit process seems to happen later.
             RenameObject( pTree, pData->m_pObject, newlabel );
+            
+            // Since the new label was forced into the edit box by the call above,
+            //    we'll cancel the label edit here so the callback can rename it again if needed.
+            event.Veto();
 
-            // Call the callback and let game code handle the new name
+            // Call the callback and let game code handle the new name.
             pData->m_pLabelEditFunction( pData->m_pObject, id, newlabel );
         }
     }
