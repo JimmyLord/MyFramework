@@ -33,7 +33,8 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
     idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
     m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
 
-    m_pTree_SoundCues = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_SoundCues = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
+        wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
     idroot = m_pTree_SoundCues->AddRoot( "Sound Cues" );
     m_pNotebook->AddPage( m_pTree_SoundCues, "Cues" );
 
@@ -56,12 +57,13 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
     Update();
 
-    Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(PanelMemory::OnTabSelected) );
-    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler(PanelMemory::OnTreeSelectionChanged) );
-    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeBeginLabelEdit) );
-    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler(PanelMemory::OnTreeEndLabelEdit) );
-    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler(PanelMemory::OnTreeContextMenuRequested) );
-    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler(PanelMemory::OnDragBegin) );
+    Connect( wxEVT_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler( PanelMemory::OnTabSelected ) );
+    Connect( wxEVT_TREE_SEL_CHANGED, wxTreeEventHandler( PanelMemory::OnTreeSelectionChanged ) );
+    Connect( wxEVT_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler( PanelMemory::OnTreeBeginLabelEdit ) );
+    Connect( wxEVT_TREE_END_LABEL_EDIT, wxTreeEventHandler( PanelMemory::OnTreeEndLabelEdit ) );
+    Connect( wxEVT_TREE_ITEM_MENU, wxTreeEventHandler( PanelMemory::OnTreeContextMenuRequested ) );
+    Connect( wxEVT_TREE_BEGIN_DRAG, wxTreeEventHandler( PanelMemory::OnDragBegin ) );
+    Connect( wxEVT_TREE_KEY_DOWN, wxTreeEventHandler( PanelMemory::OnKeyDown ) );
 
     m_DrawCallListDirty = false;
     m_DrawCallIndexToDraw = -1;
@@ -852,7 +854,7 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
     m_pNotebook->SetPageText( PanelMemoryPage_ShaderGroups, tempstr );
 }
 
-void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
+wxTreeItemId PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pSoundCue != 0 );
 
@@ -861,6 +863,8 @@ void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const c
     wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
     int count = (int)m_pTree_SoundCues->GetChildrenCount( idroot, false );
 
+    wxTreeItemId newid;
+
     // insert the SoundCue
     {
         sprintf_s( tempstr, 100, "%s", desc );
@@ -868,7 +872,7 @@ void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const c
         pData->m_pObject = pSoundCue;
         pData->m_pDragFunction = pDragFunction;
 
-        m_pTree_SoundCues->AppendItem( idroot, tempstr, -1, -1, pData );
+        newid = m_pTree_SoundCues->AppendItem( idroot, tempstr, -1, -1, pData );
 
         // if inserting the first item, then expand the tree.
         if( count == 0 )
@@ -876,6 +880,8 @@ void PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const c
     }
 
     UpdateRootNodeSoundCueCount();
+
+    return newid;
 }
 
 void PanelMemory::RemoveSoundCue(SoundCue* pSoundCue)
@@ -1026,6 +1032,32 @@ void PanelMemory::OnTreeEndLabelEdit(wxTreeEvent& event)
             pData->m_pLabelEditFunction( pData->m_pObject, id, newlabel );
         }
     }
+}
+
+void PanelMemory::OnKeyDown(wxTreeEvent& event)
+{
+    if( event.GetKeyCode() == WXK_F2 )
+    {
+        wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
+
+        wxArrayTreeItemIds selecteditems;
+        unsigned int numselected = (unsigned int)pTree->GetSelections( selecteditems );
+
+        if( numselected == 1 )
+        {
+            wxTreeItemId id = selecteditems[0].GetID();
+            pTree->EditLabel( id );
+        }
+
+        return;
+    }
+
+    if( event.GetKeyCode() == WXK_DELETE )
+    {
+        //return;
+    }
+
+    event.Skip();
 }
 
 wxString PanelMemory::GetObjectName(wxTreeCtrl* pTree, void* pObject)

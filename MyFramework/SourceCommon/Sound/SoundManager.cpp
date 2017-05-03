@@ -185,6 +185,41 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         }
     }
 }
+
+void SoundCue::OnLabelEdit(wxString newlabel)
+{
+    // TODO: rename the object and the file.
+    size_t len = newlabel.length();
+    if( len > 0 )
+    {
+        //SetName( newlabel );
+    }
+}
+
+void SoundCue::OnLeftClick(unsigned int count)
+{
+}
+
+void SoundCue::OnRightClick(wxTreeItemId treeid)
+{
+ 	wxMenu menu;
+    menu.SetClientData( &m_WxEventHandler );
+
+    m_WxEventHandler.m_pSoundCue = this;
+
+    //m_TreeIDRightClicked = treeid;
+
+    menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundCueWxEventHandler::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
+{
+}
 #endif //MYFW_USING_WX
 
 SoundManager::SoundManager()
@@ -240,7 +275,9 @@ void SoundManager::Tick()
             //    foldername = pCue->m_pFile->GetNameOfDeepestFolderPath();
 
             g_pPanelMemory->RemoveSoundCue( pCue );
-            g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
+            wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
+            g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, 0 );
+            g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 
             // Add all the sounds to the tree.
             for( CPPListNode* pSoundNode = pCue->m_SoundObjects.GetHead(); pSoundNode; pSoundNode = pSoundNode->GetNext() )
@@ -289,7 +326,9 @@ SoundCue* SoundManager::CreateCue(const char* name)
     m_Cues.AddTail( pCue );
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
+    wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
+    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, 0 );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 #endif //MYFW_USING_WX
 
     return pCue;
@@ -318,7 +357,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
         m_CuesStillLoading.AddTail( pCue );
 
 #if MYFW_USING_WX
-        g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->GetFilenameWithoutExtension(), SoundCue::StaticOnDrag );
+        wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->GetFilenameWithoutExtension(), SoundCue::StaticOnDrag );
         //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 #endif
     }

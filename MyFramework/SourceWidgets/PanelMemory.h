@@ -54,6 +54,7 @@ protected:
     void OnTreeSelectionChanged(wxTreeEvent& event);
     void OnTreeContextMenuRequested(wxTreeEvent& event);
     void OnDragBegin(wxTreeEvent& event);
+    void OnKeyDown(wxTreeEvent& event);
 
 public:
     PanelMemory(wxFrame* parentframe);
@@ -74,7 +75,7 @@ public:
     void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveShaderGroup(ShaderGroup* pShaderGroup);
 
-    void AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    wxTreeItemId AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveSoundCue(SoundCue* pSoundCue);
     void AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction);
     void RemoveSoundObject(SoundObject* pSound);

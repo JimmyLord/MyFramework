@@ -35,6 +35,29 @@ struct SoundCueCreatedCallbackStruct
     SoundCueCreatedCallbackFunc pFunc;
 };
 
+#if MYFW_USING_WX
+class SoundCueWxEventHandler : public wxEvtHandler
+{
+public:
+    enum RightClickOptions
+    {
+        RightClick_Rename = 1000,
+    };
+
+public:
+    SoundCue* m_pSoundCue;
+    SoundObject* m_pSoundObject;
+
+public:
+    SoundCueWxEventHandler()
+    {
+        m_pSoundCue = 0;
+        m_pSoundObject = 0;
+    };
+    void OnPopupClick(wxEvent &evt);
+};
+#endif
+
 class SoundCue : public CPPListNode, public RefCount
 {
 public:
@@ -56,10 +79,21 @@ public:
 
 public:
 #if MYFW_USING_WX
+    void SaveSoundCue(const char* relativefolder);
+
+    SoundCueWxEventHandler m_WxEventHandler;
+
+    static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((SoundCue*)pObjectPtr)->OnLabelEdit( newlabel ); }
+    void OnLabelEdit(wxString newlabel);
+
     static void StaticOnDrag(void* pObjectPtr) { ((SoundCue*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
-    void SaveSoundCue(const char* relativefolder);
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundCue*)pObjectPtr)->OnLeftClick( index ); }
+    void OnLeftClick(unsigned int count);
+
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundCue*)pObjectPtr)->OnRightClick( id ); }
+    void OnRightClick(wxTreeItemId treeid);
 #endif //MYFW_USING_WX
 };
 
