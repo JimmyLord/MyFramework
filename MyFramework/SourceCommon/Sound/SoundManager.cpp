@@ -306,7 +306,9 @@ void SoundManager::Tick()
             for( CPPListNode* pSoundNode = pCue->m_SoundObjects.GetHead(); pSoundNode; pSoundNode = pSoundNode->GetNext() )
             {
                 SoundObject* pSoundObject = (SoundObject*)pSoundNode;
-                g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->m_FullPath, 0 );
+                wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->m_FullPath, 0 );
+                g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
+                //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
             }
 
             //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
@@ -398,8 +400,28 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 #endif
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );
+    wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );
+    g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
+    //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
 #endif //MYFW_USING_WX
+}
+
+void SoundManager::RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject)
+{
+    // TODO: fix this, SoundObject should be allowed to exist in multiple cues.
+    pSoundObject->Remove();
+
+#if MYFW_USING_WX
+    g_pPanelMemory->RemoveSoundObject( pSoundObject );
+#endif //MYFW_USING_WX
+
+    //for( CPPListNode* pNode = pCue->m_SoundObjects.GetHead(); pNode; pNode = pNode->GetNext() )
+    //{
+    //    SoundObject* pSound = (SoundObject*)pNode;
+    //    if( pSound == pSoundObject )
+    //    {
+    //    }
+    //}
 }
 
 SoundCue* SoundManager::FindCueByName(const char* name)
@@ -520,11 +542,44 @@ void SoundManager::OnRightClick(wxTreeItemId treeid)
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
 }
 
+void SoundManager::OnLeftClickSoundObject(unsigned int count)
+{
+}
+
+void SoundManager::OnRightClickSoundObject(wxTreeItemId treeid)
+{
+    TreeItemDataGenericObjectInfo* pData = 0;
+
+    wxMenu menu;
+    menu.SetClientData( &m_WxEventHandler );
+
+    m_WxEventHandler.m_pSoundManager = this;
+
+    // Get the SoundObject pointer from the tree
+    pData = (TreeItemDataGenericObjectInfo*)g_pPanelMemory->m_pTree_SoundCues->GetItemData( treeid );
+    m_WxEventHandler.m_pSoundObject = (SoundObject*)pData->m_pObject;
+
+    // Get the SoundCue pointer from the tree, should be the parent of treeid
+    wxTreeItemId parentid = g_pPanelMemory->m_pTree_SoundCues->GetItemParent( treeid );
+    pData = (TreeItemDataGenericObjectInfo*)g_pPanelMemory->m_pTree_SoundCues->GetItemData( parentid );
+    m_WxEventHandler.m_pSoundCue = (SoundCue*)pData->m_pObject;
+
+    m_TreeIDRightClicked = treeid;
+
+    menu.Append( SoundManagerWxEventHandler::RightClick_RemoveSoundObjectFromCue, "Remove from cue" );
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
 void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
 {
     SoundManagerWxEventHandler* pEvtHandler = (SoundManagerWxEventHandler*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
     SoundManager* pSoundManager = pEvtHandler->m_pSoundManager;
-    SoundObject* m_pSoundObject = pEvtHandler->m_pSoundObject;
+    SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
+    SoundObject* pSoundObject = pEvtHandler->m_pSoundObject;
 
     int id = evt.GetId();
     if( id == RightClick_LoadSoundFile )
@@ -593,13 +648,17 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
 
     if( id == RightClick_CreateNewCue )
     {
-        SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
-        pSoundCue = pSoundManager->CreateCue( "new cue" );
+        SoundCue* pSoundCue = pSoundManager->CreateCue( "new cue" );
 
         for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
         {
             pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
         }
+    }
+
+    if( id == RightClick_RemoveSoundObjectFromCue )
+    {
+        pSoundManager->RemoveSoundFromCue( pSoundCue, pSoundObject );
     }
 }
 #endif

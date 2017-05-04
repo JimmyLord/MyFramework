@@ -919,7 +919,7 @@ void PanelMemory::UpdateRootNodeSoundCueCount()
     m_pNotebook->SetPageText( PanelMemoryPage_SoundCues, tempstr );
 }
 
-void PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction)
+wxTreeItemId PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pSound != 0 );
     MyAssert( pSoundCue != 0 );
@@ -928,11 +928,13 @@ void PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const
     wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
     wxTreeItemId idcue = FindObject( m_pTree_SoundCues, pSoundCue, idroot );
 
+    wxTreeItemId newid;
+
     // the cue should exist, we can't add a sound without one.
     if( idcue.IsOk() == false )
     {
         MyAssert( false );
-        return;
+        return newid;
     }
 
     // insert the SoundCue into it's category
@@ -944,10 +946,12 @@ void PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const
         pData->m_pObject = pSoundCue;
         pData->m_pDragFunction = pDragFunction;
 
-        m_pTree_SoundCues->AppendItem( idcue, tempstr, -1, -1, pData );
+        newid = m_pTree_SoundCues->AppendItem( idcue, tempstr, -1, -1, pData );
     }
 
     UpdateRootNodeSoundCueCount();
+
+    return newid;
 }
 
 void PanelMemory::RemoveSoundObject(SoundObject* pSound)

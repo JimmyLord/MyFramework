@@ -107,6 +107,7 @@ public:
     {
         RightClick_LoadSoundFile = 1000,
         RightClick_CreateNewCue,
+        RightClick_RemoveSoundObjectFromCue,
     };
 
 public:
@@ -153,6 +154,7 @@ public:
     SoundCue* CreateCue(const char* name);
     SoundCue* LoadCue(const char* fullpath);
     void AddSoundToCue(SoundCue* pCue, const char* fullpath);
+    void RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject);
 
     SoundCue* FindCueByName(const char* name);
     SoundCue* FindCueByFilename(const char* fullpath);
@@ -168,11 +170,19 @@ public:
 
     SoundManagerWxEventHandler m_WxEventHandler;
 
+    // Callbacks for root of tree
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }
     void OnLeftClick(unsigned int count);
 
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClick( id ); }
     void OnRightClick(wxTreeItemId treeid);
+
+    // Callbacks for sound object
+    static void StaticOnLeftClickSoundObject(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClickSoundObject( index ); }
+    void OnLeftClickSoundObject(unsigned int count);
+
+    static void StaticOnRightClickSoundObject(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClickSoundObject( id ); }
+    void OnRightClickSoundObject(wxTreeItemId treeid);
 #endif
 };
 
