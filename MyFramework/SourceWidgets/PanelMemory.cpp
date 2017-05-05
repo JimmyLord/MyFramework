@@ -854,6 +854,14 @@ void PanelMemory::UpdateRootNodeShaderGroupCount()
     m_pNotebook->SetPageText( PanelMemoryPage_ShaderGroups, tempstr );
 }
 
+wxTreeItemId PanelMemory::FindSoundCue(SoundCue* pSoundCue)
+{
+    wxTreeItemId idroot = m_pTree_SoundCues->GetRootItem();
+    wxTreeItemId id = FindObject( m_pTree_SoundCues, pSoundCue, idroot );
+
+    return id;
+}
+
 wxTreeItemId PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction)
 {
     MyAssert( pSoundCue != 0 );

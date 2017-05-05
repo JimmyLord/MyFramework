@@ -16,18 +16,6 @@ static const int NUM_SOUND_CUES_TO_POOL = 128;
 class SoundManager;
 class SoundCue;
 
-//struct SoundDefinition
-//{
-//    SoundObject* m_Sound;
-//    char m_FullPath[MAX_PATH];
-//
-//    SoundDefinition()
-//    {
-//        m_Sound = 0;
-//        m_FullPath[0] = 0;
-//    }
-//};
-
 typedef void (*SoundCueCreatedCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
 struct SoundCueCreatedCallbackStruct
 {
@@ -67,7 +55,11 @@ public:
     MyFileObject* m_pFile;
     MySimplePool<SoundCue>* m_pSourcePool;
 
-    CPPListHead m_SoundObjects;
+#if MYFW_USING_WX
+    std::vector<SoundObject*> m_pSoundObjects;
+#else
+    MyList<SoundObject*> m_pSoundObjects;
+#endif
 
 public:
     SoundCue();
@@ -84,6 +76,7 @@ public:
     void SaveSoundCue(const char* relativefolder);
 
     SoundCueWxEventHandler m_WxEventHandler;
+    wxTreeItemId m_TreeIDRightClicked;
 
     static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((SoundCue*)pObjectPtr)->OnLabelEdit( newlabel ); }
     void OnLabelEdit(wxString newlabel);
@@ -132,7 +125,6 @@ class SoundManager
 
 #if MYFW_USING_WX
     friend class SoundManagerWxEventHandler;
-    wxTreeItemId m_TreeIDRightClicked;
 #endif
 
 protected:
@@ -169,6 +161,7 @@ public:
     void SaveAllCues(bool saveunchanged = false);
 
     SoundManagerWxEventHandler m_WxEventHandler;
+    wxTreeItemId m_TreeIDRightClicked;
 
     // Callbacks for root of tree
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }
