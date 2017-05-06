@@ -124,9 +124,6 @@ void VariableProperties::Reset()
     m_pEnumStrings = 0;
     m_Type = PanelWatchType_Unknown;
     m_pCallbackObj = 0;
-    m_pOnDropCallbackFunc = 0;
-    m_pOnButtonPressedCallbackFunc = 0;
-    m_pOnValueChangedCallbackFunc = 0;
     m_ValueOnLeftMouseDown = 0;
     m_ValueChangedSinceMouseWasPressed = false;
     m_CapturedMouse = 0;

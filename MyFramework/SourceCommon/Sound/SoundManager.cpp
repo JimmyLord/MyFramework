@@ -313,7 +313,7 @@ void SoundManager::Tick()
 
             g_pPanelMemory->RemoveSoundCue( pCue );
             wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
-            g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, 0 );
+            g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
             g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 
             // Add all the sounds to the tree.
@@ -366,7 +366,7 @@ SoundCue* SoundManager::CreateCue(const char* name)
 
 #if MYFW_USING_WX
     wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
-    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, 0 );
+    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
     g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 #endif //MYFW_USING_WX
 
