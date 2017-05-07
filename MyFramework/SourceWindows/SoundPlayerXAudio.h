@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,23 +7,30 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __SoundPlayer_H__
-#define __SoundPlayer_H__
+#ifndef __SoundPlayerXAudio_H__
+#define __SoundPlayerXAudio_H__
 
-struct Mix_Chunk;
+#include "../SourceCommon/Sound/WaveLoader.h"
+
+class MyFileObject;
+
+struct IXAudio2;
+struct IXAudio2SourceVoice;
+struct IXAudio2MasteringVoice;
 
 struct SoundObject : public CPPListNode
 {
-    char m_FullPath[MAX_PATH];
-    Mix_Chunk* m_Sound;
+public:
+    MyFileObject* m_pFile;
+    MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
 
-    SoundObject()
-    {
-        m_FullPath[0] = 0;
-        m_Sound = 0;
-    }
+    IXAudio2SourceVoice* m_pSourceVoice;
+
+public:
+    SoundObject();
 
     cJSON* ExportAsJSONObject();
+    const char* GetFullPath() { return m_pFile->GetFullPath(); }
 };
 
 class SoundPlayer
@@ -37,6 +44,9 @@ protected:
 
 #define SoundGroup_Music    0
 #define SoundGroup_Effects  1
+
+    IXAudio2* m_pEngine;
+    IXAudio2MasteringVoice* m_pMasteringVoice;
 
 public:
     SoundPlayer();
@@ -62,4 +72,4 @@ public:
     void ResumeAll();
 };
 
-#endif //__SoundPlayer_H__
+#endif //__SoundPlayerXAudio_H__

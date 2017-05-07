@@ -16,11 +16,15 @@
 
 struct SoundObject : public CPPListNode
 {
+public:
     MyFileObject* m_pFile;
     MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
 
+public:
     SoundObject();
+
     cJSON* ExportAsJSONObject();
+    const char* GetFullPath() { return m_pFile->GetFullPath(); }
 };
 
 class SoundChannel

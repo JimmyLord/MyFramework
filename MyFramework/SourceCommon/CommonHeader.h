@@ -392,14 +392,15 @@ typedef unsigned long   u_long;
 #endif
 
 #if MYFW_WINDOWS
-#define USE_LOADWAVESFROMFILESYSTEM 0
+#define USE_LOADWAVESFROMFILESYSTEM 1 // set to 0 for SDL, 1 for XAudio
 #define USE_OPENAL 0
 #include "../SourceWindows/GLExtensions.h"
 #include "../SourceWindows/WGLExtensions.h"
 #if USE_OPENAL
     #include "Sound/SoundPlayerOpenAL.h"
 #else
-    #include "../SourceWindows/SoundPlayer.h"
+    //#include "../SourceWindows/SoundPlayerSDL.h"
+    #include "../SourceWindows/SoundPlayerXAudio.h"
 #endif
 #include "../SourceWindows/SavedData.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"

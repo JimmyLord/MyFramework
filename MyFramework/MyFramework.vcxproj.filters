@@ -159,9 +159,6 @@
     <ClCompile Include="SourceAndroid\SoundPlayer.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClCompile>
-    <ClCompile Include="SourceWindows\SoundPlayer.cpp">
-      <Filter>Source-Platform\Source - Windows</Filter>
-    </ClCompile>
     <ClCompile Include="SourceNaCL\SoundPlayer.cpp">
       <Filter>Source-Platform\Source - NaCL</Filter>
     </ClCompile>
@@ -513,6 +510,12 @@
     <ClCompile Include="SourceAndroid\SoundPlayerOpenSL.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClCompile>
+    <ClCompile Include="SourceWindows\SoundPlayerXAudio.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWindows\SoundPlayerSDL.cpp">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -556,9 +559,6 @@
     </ClInclude>
     <ClInclude Include="SourceAndroid\SoundPlayer.h">
       <Filter>Source-Platform\Source - Android</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceWindows\SoundPlayer.h">
-      <Filter>Source-Platform\Source - Windows</Filter>
     </ClInclude>
     <ClInclude Include="SourceNaCL\SoundPlayer.h">
       <Filter>Source-Platform\Source - NaCL</Filter>
@@ -1078,6 +1078,12 @@
     </ClInclude>
     <ClInclude Include="SourceAndroid\SoundPlayerOpenSL.h">
       <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SoundPlayerXAudio.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWindows\SoundPlayerSDL.h">
+      <Filter>Source-Platform\Source - Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

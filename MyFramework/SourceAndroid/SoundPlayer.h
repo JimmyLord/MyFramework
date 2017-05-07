@@ -12,9 +12,11 @@
 
 struct SoundObject : public CPPListNode
 {
+public:
     char m_FullPath[MAX_PATH];
     int m_Sound;
 
+public:
     SoundObject()
     {
         m_FullPath[0] = 0;
@@ -22,6 +24,7 @@ struct SoundObject : public CPPListNode
     }
 
     cJSON* ExportAsJSONObject();
+    const char* GetFullPath() { return m_FullPath; }
 };
 
 class SoundPlayer

@@ -320,7 +320,7 @@ void SoundManager::Tick()
             for( unsigned int i=0; i<pCue->m_pSoundObjects.size(); i++ )
             {
                 SoundObject* pSoundObject = pCue->m_pSoundObjects[i];
-                wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->m_FullPath, 0 );
+                wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->GetFullPath(), 0 );
                 g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
                 //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
             }
