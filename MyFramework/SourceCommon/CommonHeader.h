@@ -396,6 +396,10 @@ typedef unsigned long   u_long;
 #define USE_OPENAL 0
 #include "../SourceWindows/GLExtensions.h"
 #include "../SourceWindows/WGLExtensions.h"
+#pragma warning( push )
+#pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
+#include <xaudio2.h>
+#pragma warning( pop )
 #if USE_OPENAL
     #include "Sound/SoundPlayerOpenAL.h"
 #else

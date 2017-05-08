@@ -24,29 +24,64 @@ public:
     MyFileObject* m_pFile;
     MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
 
-    IXAudio2SourceVoice* m_pSourceVoice;
+    XAUDIO2_BUFFER m_XAudioBuffer;
 
 public:
     SoundObject();
 
     cJSON* ExportAsJSONObject();
-    const char* GetFullPath() { return m_pFile->GetFullPath(); }
+    const char* GetFullPath();
+
+    void CreateSourceVoice(IXAudio2* pEngine);
+};
+
+class SoundChannel
+{
+public:
+    enum SoundChannelStates
+    {
+        SoundChannelState_Free,
+        SoundChannelState_Playing,
+        SoundChannelState_Paused,
+    };
+
+protected:
+    IXAudio2SourceVoice* m_pSourceVoice;
+
+    SoundChannelStates m_CurrentState;
+    double m_TimePlaybackStarted;
+
+public:
+    SoundChannel();
+
+    void PlaySound(SoundObject* pSoundObject);
+    void StopSound();
+
+    IXAudio2SourceVoice* GetSourceVoice() { return m_pSourceVoice; }
+    void SetSourceVoice(IXAudio2SourceVoice* voice) { m_pSourceVoice = voice; }
+
+    SoundChannelStates GetState() { return m_CurrentState; }
+    void SetState(SoundChannelStates state) { m_CurrentState = state; }
+
+    double GetTimePlaybackStarted() { return m_TimePlaybackStarted; }
 };
 
 class SoundPlayer
 {
 protected:
-#define MAX_SOUNDS 255
+    static const int MAX_SOUNDS = 255;
+    static const int MAX_CHANNELS = 10;
+
+    IXAudio2* m_pEngine;
+    IXAudio2MasteringVoice* m_pMasteringVoice;
 
     //MySimplePool<SoundObject> m_SoundObjectPool;
     SoundObject m_Sounds[MAX_SOUNDS];
+    SoundChannel m_Channels[MAX_CHANNELS];
     SoundObject m_Music;
 
 #define SoundGroup_Music    0
 #define SoundGroup_Effects  1
-
-    IXAudio2* m_pEngine;
-    IXAudio2MasteringVoice* m_pMasteringVoice;
 
 public:
     SoundPlayer();
@@ -60,8 +95,10 @@ public:
     void UnpauseMusic();
     void StopMusic();
 
-    SoundObject* LoadSound(const char* path, const char* ext);
+    //SoundObject* LoadSound(const char* path, const char* ext);
     SoundObject* LoadSound(const char* fullpath);
+    SoundObject* LoadSound(MyFileObject* pFile);
+
     void Shutdown();
     int PlaySound(SoundObject* pSoundObject);
     int PlaySound(int soundid);

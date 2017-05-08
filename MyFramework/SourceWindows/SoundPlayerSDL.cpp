@@ -32,7 +32,7 @@ SoundPlayer::SoundPlayer()
 
     if( Mix_OpenAudio( audio_rate, audio_format, audio_channels, audio_buffers ) )
     {
-        printf( "Unable to open audio!\n" );
+        LOGError( LOGTag, "Error initializing SDL Audio\n" );
         exit( 1 );
     }
 

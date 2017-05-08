@@ -153,7 +153,7 @@ MyWaveDescriptor WaveLoader::ParseWaveBuffer(const char* buffer, unsigned int bu
             int chunksize = pChunk->chunksize;
 
             // check if the format chunk is the right size.
-            if( chunksize <= formatsize - headersize )
+            if( chunksize < formatsize - headersize )
                 return waveDesc;
 
             pBuffer += pChunk->chunksize + headersize;

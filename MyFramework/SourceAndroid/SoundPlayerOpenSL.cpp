@@ -48,6 +48,11 @@ SoundObject::SoundObject()
     m_WaveDesc.valid = false;
 }
 
+const char* SoundObject::GetFullPath()
+{
+    return m_pFile->GetFullPath();
+}
+
 SoundChannel::SoundChannel()
 {
     m_ppAudioPlayer = 0;
@@ -297,7 +302,7 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
             m_Sounds[i].m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
             if( m_Sounds[i].m_WaveDesc.valid == false )
             {
-                LOGError( LOGTag, "WAV file parsing failed (%s)", pFile->GetFullPath() );
+                LOGError( LOGTag, "WAV file parsing failed (%s)\n", pFile->GetFullPath() );
             }
         }
 
@@ -320,7 +325,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
             pSoundObject->m_WaveDesc = WaveLoader::ParseWaveBuffer( pSoundObject->m_pFile->GetBuffer(), pSoundObject->m_pFile->GetFileLength() );
             if( pSoundObject->m_WaveDesc.valid == false )
             {
-                LOGError( LOGTag, "WAV file parsing failed (%s)", pSoundObject->m_pFile->GetFullPath() );
+                LOGError( LOGTag, "WAV file parsing failed (%s)\n", pSoundObject->m_pFile->GetFullPath() );
             }
         }
     }

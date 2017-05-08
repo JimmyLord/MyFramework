@@ -24,7 +24,7 @@ public:
     SoundObject();
 
     cJSON* ExportAsJSONObject();
-    const char* GetFullPath() { return m_pFile->GetFullPath(); }
+    const char* GetFullPath();
 };
 
 class SoundChannel
