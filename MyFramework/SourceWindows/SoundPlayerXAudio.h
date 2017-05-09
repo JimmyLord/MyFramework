@@ -18,7 +18,7 @@ struct IXAudio2;
 struct IXAudio2SourceVoice;
 struct IXAudio2MasteringVoice;
 
-struct SoundObject : public CPPListNode
+struct SoundObject : public CPPListNode, public RefCount
 {
 public:
     MyFileObject* m_pFile;
@@ -26,8 +26,12 @@ public:
 
     XAUDIO2_BUFFER m_XAudioBuffer;
 
+    MySimplePool<SoundObject>* m_pSourcePool;
+
 public:
     SoundObject();
+
+    virtual void Release(); // override from RefCount
 
     cJSON* ExportAsJSONObject();
     const char* GetFullPath();
@@ -69,14 +73,14 @@ public:
 class SoundPlayer
 {
 protected:
-    static const int MAX_SOUNDS = 255;
+    static const int NUM_SOUNDOBJECTS_IN_POOL = 255;
     static const int MAX_CHANNELS = 10;
 
     IXAudio2* m_pEngine;
     IXAudio2MasteringVoice* m_pMasteringVoice;
 
-    //MySimplePool<SoundObject> m_SoundObjectPool;
-    SoundObject m_Sounds[MAX_SOUNDS];
+    MySimplePool<SoundObject> m_SoundObjectPool;
+    //CPPListHead m_pSounds; // SoundObject*
     SoundChannel m_Channels[MAX_CHANNELS];
     SoundObject m_Music;
 

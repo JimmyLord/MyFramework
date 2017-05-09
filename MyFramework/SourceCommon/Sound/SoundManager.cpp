@@ -30,11 +30,21 @@ void SoundCue::Release()
     if( m_RefCount == 1 )
     {
         m_pSourcePool->ReturnObjectToPool( this );
-        SAFE_RELEASE( m_pFile );
 
         m_FullyLoaded = false;
         m_Name[0] = 0;
+        SAFE_RELEASE( m_pFile );
         m_pSourcePool = 0;
+
+        for( unsigned int i=0; i<m_pSoundObjects.size(); i++ )
+        {
+            m_pSoundObjects[i]->Release();
+        }
+#if MYFW_USING_WX
+        m_pSoundObjects.clear();
+#else
+        m_pSoundObjects.FreeAllInList();
+#endif
     }
 }
 
@@ -236,6 +246,7 @@ void SoundCue::OnRightClick(wxTreeItemId treeid)
     m_TreeIDRightClicked = treeid;
 
     menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
+    menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Delete" );
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundCueWxEventHandler::OnPopupClick );
 
@@ -250,11 +261,21 @@ void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
     SoundObject* pSoundObject = pEvtHandler->m_pSoundObject;
 
     int id = evt.GetId();
-    if( id == RightClick_Rename )
+    switch( id )
     {
-        wxTreeItemId treeid = g_pPanelMemory->FindSoundCue( pSoundCue );
-        MyAssert( treeid == pSoundCue->m_TreeIDRightClicked );
-        g_pPanelMemory->m_pTree_SoundCues->EditLabel( pSoundCue->m_TreeIDRightClicked );
+    case RightClick_Rename:
+        {
+            wxTreeItemId treeid = g_pPanelMemory->FindSoundCue( pSoundCue );
+            MyAssert( treeid == pSoundCue->m_TreeIDRightClicked );
+            g_pPanelMemory->m_pTree_SoundCues->EditLabel( pSoundCue->m_TreeIDRightClicked );
+        }
+        break;
+
+    case RightClick_Unload:
+        {
+            g_pGameCore->m_pSoundManager->UnloadCue( pSoundCue );
+        }
+        break;
     }
 }
 #endif //MYFW_USING_WX
@@ -404,6 +425,15 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     return pCue;
 }
 
+void SoundManager::UnloadCue(SoundCue* pCue)
+{
+    pCue->Release();
+
+#if MYFW_USING_WX
+    g_pPanelMemory->RemoveSoundCue( pCue );
+#endif
+}
+
 void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 {
     // TODO: check if the file was already loaded
@@ -416,6 +446,8 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 
     if( pSoundObject )
     {
+        pSoundObject->AddRef();
+
 #if MYFW_USING_WX
         pCue->m_pSoundObjects.push_back( pSoundObject );
 

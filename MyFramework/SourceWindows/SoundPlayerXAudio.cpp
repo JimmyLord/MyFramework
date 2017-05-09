@@ -9,9 +9,6 @@
 
 #include "CommonHeader.h"
 
-#pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
-#include <xaudio2.h>
-
 //====================================================================================================
 // SoundObject
 //====================================================================================================
@@ -19,6 +16,26 @@ SoundObject::SoundObject()
 {
     m_pFile = 0;
     m_WaveDesc.valid = false;
+
+    m_pSourcePool = 0;
+
+    m_BaseCount = 1; // RefCount hack: since soundobjects are in an array in soundplayer, final ref won't be released.
+}
+
+void SoundObject::Release() // override from RefCount
+{
+    RefCount::Release();
+
+    if( m_RefCount == 1 )
+    {
+        m_pSourcePool->ReturnObjectToPool( this );
+
+        //this->Remove(); // remove from cpplist
+
+        SAFE_RELEASE( m_pFile );
+        m_WaveDesc.valid = false;
+        m_XAudioBuffer.pAudioData = 0;
+    }
 }
 
 cJSON* SoundObject::ExportAsJSONObject()
@@ -93,6 +110,8 @@ void SoundChannel::StopSound()
 //====================================================================================================
 SoundPlayer::SoundPlayer()
 {
+    m_SoundObjectPool.AllocateObjects( NUM_SOUNDOBJECTS_IN_POOL );
+
     CoInitializeEx( NULL, COINIT_MULTITHREADED );
 
     HRESULT result = XAudio2Create( &m_pEngine );
@@ -134,11 +153,11 @@ SoundPlayer::SoundPlayer()
 
 SoundPlayer::~SoundPlayer()
 {
-    for( int i=0; i<MAX_SOUNDS; i++ )
-    {
-        if( m_Sounds[i].m_pFile )
-            m_Sounds[i].m_pFile->Release();
-    }
+    //SoundObject* pSound = 0;
+    //while( pSound = (SoundObject*)m_pSounds.GetHead() )
+    //{
+    //    pSound->Release();
+    //}
 
     m_pEngine->Release();
     CoUninitialize();
@@ -181,39 +200,41 @@ SoundObject* SoundPlayer::LoadSound(const char* fullpath)
 
 SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
 {
-    int i=0;
-    for( i=0; i<MAX_SOUNDS; i++ )
+    SoundObject* pSound = m_SoundObjectPool.GetObjectFromPool();
+
+    if( pSound == 0 )
     {
-        if( m_Sounds[i].m_pFile == 0 )
-            break;
+        LOGError( LOGTag, "Sound pool empty, too many sounds loaded at one time?\n" );
+        return 0;
     }
+    
+    // TODO: avoid duplicate sounds being loaded.
 
-    if( i < MAX_SOUNDS )
+    //m_pSounds.AddTail( pSound );
+
+    pSound->m_pSourcePool = &m_SoundObjectPool;
+
+    // store the wave file and wave desc into a soundobject and return the soundobject.
+    // file may not be fully loaded, so m_WaveDesc.valid == false
+    //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
+
+    pSound->m_pFile = pFile;
+    pSound->m_WaveDesc.valid = false;
+
+    if( pFile->IsFinishedLoading() )
     {
-        // store the wave file and wave desc into a soundobject and return the soundobject.
-        // file may not be fully loaded, so m_WaveDesc.valid == false
-        //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
-
-        m_Sounds[i].m_pFile = pFile;
-        m_Sounds[i].m_WaveDesc.valid = false;
-
-        if( pFile->IsFinishedLoading() )
+        pSound->m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
+        if( pSound->m_WaveDesc.valid == false )
         {
-            m_Sounds[i].m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
-            if( m_Sounds[i].m_WaveDesc.valid == false )
-            {
-                LOGError( LOGTag, "WAV file parsing failed (%s)\n", pFile->GetFullPath() );
-            }
-            else
-            {
-                m_Sounds[i].CreateSourceVoice( m_pEngine );
-            }
+            LOGError( LOGTag, "WAV file parsing failed (%s)\n", pFile->GetFullPath() );
         }
-
-        return &m_Sounds[i];
+        else
+        {
+            pSound->CreateSourceVoice( m_pEngine );
+        }
     }
 
-    return 0;
+    return pSound;
 }
 
 void SoundPlayer::Shutdown()

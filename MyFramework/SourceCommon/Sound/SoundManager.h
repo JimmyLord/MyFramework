@@ -30,6 +30,7 @@ public:
     enum RightClickOptions
     {
         RightClick_Rename = 1000,
+        RightClick_Unload = 1001,
     };
 
 public:
@@ -65,7 +66,7 @@ public:
     SoundCue();
     virtual ~SoundCue();
 
-    virtual void Release();
+    virtual void Release(); // override from RefCount
 
     void ImportFromFile();
 
@@ -145,6 +146,7 @@ public:
 
     SoundCue* CreateCue(const char* name);
     SoundCue* LoadCue(const char* fullpath);
+    void UnloadCue(SoundCue* pCue);
     void AddSoundToCue(SoundCue* pCue, const char* fullpath);
     void RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject);
 
