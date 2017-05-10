@@ -16,11 +16,11 @@ static const int NUM_SOUND_CUES_TO_POOL = 128;
 class SoundManager;
 class SoundCue;
 
-typedef void (*SoundCueCreatedCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
-struct SoundCueCreatedCallbackStruct
+typedef void (*SoundCueCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
+struct SoundCueCallbackStruct
 {
     void* pObj;
-    SoundCueCreatedCallbackFunc pFunc;
+    SoundCueCallbackFunc pFunc;
 };
 
 #if MYFW_USING_WX
@@ -133,7 +133,8 @@ protected:
     CPPListHead m_Cues;
     CPPListHead m_CuesStillLoading;
 
-    MyList<SoundCueCreatedCallbackStruct> m_pSoundCueCreatedCallbackList;
+    MyList<SoundCueCallbackStruct> m_pSoundCueCreatedCallbackList;
+    MyList<SoundCueCallbackStruct> m_pSoundCueUnloadedCallbackList;
 
 protected:
     SoundCue* GetCueFromPool();
@@ -157,7 +158,8 @@ public:
     int PlayCue(SoundCue* pCue);
 
     // Callbacks
-    void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCreatedCallbackFunc pCallback);
+    void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback);
+    void RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback);
 
 #if MYFW_USING_WX
     void SaveAllCues(bool saveunchanged = false);

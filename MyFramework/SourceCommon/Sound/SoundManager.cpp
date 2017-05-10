@@ -246,7 +246,7 @@ void SoundCue::OnRightClick(wxTreeItemId treeid)
     m_TreeIDRightClicked = treeid;
 
     menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
-    menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Delete" );
+    menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundCueWxEventHandler::OnPopupClick );
 
@@ -273,7 +273,10 @@ void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
 
     case RightClick_Unload:
         {
-            g_pGameCore->m_pSoundManager->UnloadCue( pSoundCue );
+            // TODO: check if this cue has any ref's
+            SoundManager* pSoundManager = g_pGameCore->m_pSoundManager;
+
+            pSoundManager->UnloadCue( pSoundCue );
         }
         break;
     }
@@ -291,6 +294,7 @@ SoundManager::SoundManager()
 #endif //_DEBUG
 
     m_pSoundCueCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
+    m_pSoundCueUnloadedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
 
 #if MYFW_USING_WX
     wxTreeItemId idroot = g_pPanelMemory->m_pTree_SoundCues->GetRootItem();
@@ -315,6 +319,7 @@ SoundManager::~SoundManager()
     }
 
     m_pSoundCueCreatedCallbackList.FreeAllInList();
+    m_pSoundCueUnloadedCallbackList.FreeAllInList();
 }
 
 void SoundManager::Tick()
@@ -427,7 +432,16 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
 
 void SoundManager::UnloadCue(SoundCue* pCue)
 {
+    // Remove the cue from the cue list.
+    pCue->Remove();
+
+    // Release our reference to the cue
     pCue->Release();
+
+    for( unsigned int i=0; i<m_pSoundCueUnloadedCallbackList.Count(); i++ )
+    {
+        m_pSoundCueUnloadedCallbackList[i].pFunc( m_pSoundCueUnloadedCallbackList[i].pObj, pCue );
+    }
 
 #if MYFW_USING_WX
     g_pPanelMemory->RemoveSoundCue( pCue );
@@ -557,16 +571,28 @@ int SoundManager::PlayCue(SoundCue* pCue)
     return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
 }
 
-void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCreatedCallbackFunc pCallback)
+void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback)
 {
     MyAssert( pCallback != 0 );
     MyAssert( m_pSoundCueCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
-    SoundCueCreatedCallbackStruct callbackstruct;
+    SoundCueCallbackStruct callbackstruct;
     callbackstruct.pObj = pObj;
     callbackstruct.pFunc = pCallback;
 
     m_pSoundCueCreatedCallbackList.Add( callbackstruct );
+}
+
+void SoundManager::RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback)
+{
+    MyAssert( pCallback != 0 );
+    MyAssert( m_pSoundCueUnloadedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
+
+    SoundCueCallbackStruct callbackstruct;
+    callbackstruct.pObj = pObj;
+    callbackstruct.pFunc = pCallback;
+
+    m_pSoundCueUnloadedCallbackList.Add( callbackstruct );
 }
 
 #if MYFW_USING_WX
@@ -705,7 +731,9 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
             pNewCue->SaveSoundCue( 0 );
 
             for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+            {
                 pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pNewCue );
+            }
         }
     }
 
