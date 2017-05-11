@@ -14,6 +14,7 @@ class EditorCommand;
 class EditorCommand_PanelWatchNumberValueChanged;
 class EditorCommand_PanelWatchColorChanged;
 class EditorCommand_PanelWatchPointerChanged;
+class EditorCommand_UnloadSoundCues;
 
 class EditorCommand
 {
@@ -102,6 +103,24 @@ protected:
 public:
     EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchPointerChanged();
+
+    virtual void Do();
+    virtual void Undo();
+    virtual EditorCommand* Repeat();
+};
+
+//====================================================================================================
+
+class EditorCommand_UnloadSoundCues : public EditorCommand
+{
+protected:
+    // IF this is in undo stack, then this stores the only reference to the unloaded sound cue.
+    std::vector<SoundCue*> m_SoundCues;
+    bool m_ReleaseSoundCuesWhenDestroyed;
+
+public:
+    EditorCommand_UnloadSoundCues(const std::vector<SoundCue*>& selectedsoundcues);
+    virtual ~EditorCommand_UnloadSoundCues();
 
     virtual void Do();
     virtual void Undo();

@@ -9,6 +9,11 @@
 
 #include "CommonHeader.h"
 
+#if MYFW_USING_WX
+#include "../../SourceWidgets/EditorCommands.h"
+#include "../../SourceWidgets/CommandStack.h"
+#endif
+
 SoundCue::SoundCue()
 {
     m_FullyLoaded = false;
@@ -246,7 +251,15 @@ void SoundCue::OnRightClick(wxTreeItemId treeid)
     m_TreeIDRightClicked = treeid;
 
     menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
-    menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
+    if( m_RefCount == g_pGameCore->m_pSoundManager->m_NumRefsPlacedOnSoundCueBySystem )
+    {
+        menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
+    }
+    else
+    {
+        wxMenuItem* pItem = menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Can't unload, still in use" );
+        pItem->Enable( false );
+    }
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundCueWxEventHandler::OnPopupClick );
 
@@ -273,10 +286,18 @@ void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
 
     case RightClick_Unload:
         {
-            // TODO: check if this cue has any ref's
             SoundManager* pSoundManager = g_pGameCore->m_pSoundManager;
 
+            MyAssert( pSoundCue && pSoundCue->GetRefCount() == pSoundManager->m_NumRefsPlacedOnSoundCueBySystem );
+
+#if MYFW_USING_WX
+            // TODO: replace with call to editorcommand
+            std::vector<SoundCue*> cues;
+            cues.push_back( pSoundCue );
+            g_pGameCore->GetCommandStack()->Do( MyNew EditorCommand_UnloadSoundCues( cues ) );
+#else
             pSoundManager->UnloadCue( pSoundCue );
+#endif
         }
         break;
     }
@@ -297,6 +318,12 @@ SoundManager::SoundManager()
     m_pSoundCueUnloadedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
 
 #if MYFW_USING_WX
+    // m_SoundCuePool is responsible for this object, holds 1st reference whether the SoundCue is in use or not.
+    // SoundManager adds a reference when a SoundCue is taken from pool.
+    // This number exists since MyEngine will add another ref when the soundcue is loaded
+    //    and unloading can't happen if other objects are referencing it as well.
+    m_NumRefsPlacedOnSoundCueBySystem = 2;
+
     wxTreeItemId idroot = g_pPanelMemory->m_pTree_SoundCues->GetRootItem();
     g_pPanelMemory->SetSoundPanelCallbacks( idroot, this, SoundManager::StaticOnLeftClick, SoundManager::StaticOnRightClick, 0 );
 #endif
@@ -337,19 +364,7 @@ void SoundManager::Tick()
             //if( pCue->m_pFile )
             //    foldername = pCue->m_pFile->GetNameOfDeepestFolderPath();
 
-            g_pPanelMemory->RemoveSoundCue( pCue );
-            wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
-            g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
-            g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
-
-            // Add all the sounds to the tree.
-            for( unsigned int i=0; i<pCue->m_pSoundObjects.size(); i++ )
-            {
-                SoundObject* pSoundObject = pCue->m_pSoundObjects[i];
-                wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->GetFullPath(), 0 );
-                g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
-                //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
-            }
+            AddSoundCueToMemoryPanel( pCue );
 
             //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
 
@@ -391,9 +406,7 @@ SoundCue* SoundManager::CreateCue(const char* name)
     m_Cues.AddTail( pCue );
 
 #if MYFW_USING_WX
-    wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", name, SoundCue::StaticOnDrag );
-    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
+    AddSoundCueToMemoryPanel( pCue );
 #endif //MYFW_USING_WX
 
     return pCue;
@@ -413,7 +426,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
         return pCue;
     }
 
-    pCue = GetCueFromPool();
+    pCue = GetCueFromPool(); // Ref added
     if( pCue )
     {
         pCue->AddRef(); // Automatically add a ref for the calling code.
@@ -430,6 +443,26 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     return pCue;
 }
 
+SoundCue* SoundManager::LoadExistingCue(SoundCue* pCue)
+{
+    if( pCue )
+    {
+        pCue->AddRef();
+        m_Cues.AddTail( pCue );
+
+        for( unsigned int i=0; i<m_pSoundCueCreatedCallbackList.Count(); i++ )
+        {
+            m_pSoundCueCreatedCallbackList[i].pFunc( m_pSoundCueCreatedCallbackList[i].pObj, pCue );
+        }
+
+#if MYFW_USING_WX
+        AddSoundCueToMemoryPanel( pCue );
+#endif
+    }
+
+    return pCue;
+}
+
 void SoundManager::UnloadCue(SoundCue* pCue)
 {
     // Remove the cue from the cue list.
@@ -438,14 +471,12 @@ void SoundManager::UnloadCue(SoundCue* pCue)
     // Release our reference to the cue
     pCue->Release();
 
+    g_pPanelMemory->RemoveSoundCue( pCue );
+
     for( unsigned int i=0; i<m_pSoundCueUnloadedCallbackList.Count(); i++ )
     {
         m_pSoundCueUnloadedCallbackList[i].pFunc( m_pSoundCueUnloadedCallbackList[i].pObj, pCue );
     }
-
-#if MYFW_USING_WX
-    g_pPanelMemory->RemoveSoundCue( pCue );
-#endif
 }
 
 void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
@@ -606,6 +637,24 @@ void SoundManager::SaveAllCues(bool saveunchanged)
         {
             pCue->SaveSoundCue( 0 );
         }
+    }
+}
+
+void SoundManager::AddSoundCueToMemoryPanel(SoundCue* pCue)
+{
+    // Add the sound cue to the memory panel.
+    g_pPanelMemory->RemoveSoundCue( pCue );
+    wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
+    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
+    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
+
+    // Add all of it's sound objects to the memory panel.
+    for( unsigned int i=0; i<pCue->m_pSoundObjects.size(); i++ )
+    {
+        SoundObject* pSoundObject = pCue->m_pSoundObjects[i];
+        wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->GetFullPath(), 0 );
+        g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
+        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
     }
 }
 

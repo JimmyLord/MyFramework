@@ -147,6 +147,7 @@ public:
 
     SoundCue* CreateCue(const char* name);
     SoundCue* LoadCue(const char* fullpath);
+    SoundCue* LoadExistingCue(SoundCue* pCue);
     void UnloadCue(SoundCue* pCue);
     void AddSoundToCue(SoundCue* pCue, const char* fullpath);
     void RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject);
@@ -164,8 +165,11 @@ public:
 #if MYFW_USING_WX
     void SaveAllCues(bool saveunchanged = false);
 
+    void AddSoundCueToMemoryPanel(SoundCue* pCue);
+
     SoundManagerWxEventHandler m_WxEventHandler;
     wxTreeItemId m_TreeIDRightClicked;
+    unsigned int m_NumRefsPlacedOnSoundCueBySystem; // Stores the lowest refcount required to unload a soundcue in editor.
 
     // Callbacks for root of tree
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }

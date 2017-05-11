@@ -489,6 +489,7 @@ bool MainApp::OnInit()
     g_pGameCore->OnSurfaceCreated();
     g_pGameCore->OnSurfaceChanged( 0, 0, size.x, size.y );
     g_pGameCore->OneTimeInit();
+    g_pGameCore->SetCommandStack( g_pMainApp->m_pMainFrame->m_pCommandStack );
 #endif
 
     m_pMainFrame->ResizeViewport();

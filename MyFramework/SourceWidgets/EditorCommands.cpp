@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -296,6 +296,67 @@ void EditorCommand_PanelWatchPointerChanged::Undo()
 
 EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()
 {
+    return 0;
+}
+
+//====================================================================================================
+// EditorCommand_UnloadSoundCues
+//====================================================================================================
+
+EditorCommand_UnloadSoundCues::EditorCommand_UnloadSoundCues(const std::vector<SoundCue*>& selectedsoundcues)
+{
+    MyAssert( selectedsoundcues.size() > 0 );
+
+    for( unsigned int i=0; i<selectedsoundcues.size(); i++ )
+    {
+        SoundCue* pSoundCue = selectedsoundcues[i];
+        m_SoundCues.push_back( pSoundCue );
+
+        pSoundCue->AddRef();
+    }
+
+    m_ReleaseSoundCuesWhenDestroyed = false;
+}
+
+EditorCommand_UnloadSoundCues::~EditorCommand_UnloadSoundCues()
+{
+    if( m_ReleaseSoundCuesWhenDestroyed )
+    {
+        for( unsigned int i=0; i<m_SoundCues.size(); i++ )
+        {
+            m_SoundCues[i]->Release();
+        }
+    }
+}
+
+void EditorCommand_UnloadSoundCues::Do()
+{
+    for( unsigned int i=0; i<m_SoundCues.size(); i++ )
+    {
+        SoundCue* pSoundCue = m_SoundCues[i];
+
+        g_pGameCore->m_pSoundManager->UnloadCue( m_SoundCues[i] );
+    }
+
+    m_ReleaseSoundCuesWhenDestroyed = true;
+}
+
+void EditorCommand_UnloadSoundCues::Undo()
+{
+    for( unsigned int i=0; i<m_SoundCues.size(); i++ )
+    {
+        SoundCue* pSoundCue = m_SoundCues[i];
+
+        g_pGameCore->m_pSoundManager->LoadExistingCue( m_SoundCues[i] );
+    }
+
+    m_ReleaseSoundCuesWhenDestroyed = false;
+}
+
+EditorCommand* EditorCommand_UnloadSoundCues::Repeat()
+{
+    // Do nothing.
+
     return 0;
 }
 
