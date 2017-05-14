@@ -172,7 +172,7 @@ public:
     static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed( buttonid ); }
     void OnSaveAnimationsPressed(int buttonid);
 
-    static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool finishedchanging, double oldvalue) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
+    static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
     void OnValueChanged(int controlid, bool finishedchanging);
 #endif
 

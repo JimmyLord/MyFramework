@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -80,7 +80,7 @@ extern PanelWatch* g_pPanelWatch;
 
 typedef void (*PanelWatchCallback)(void*);
 typedef void (*PanelWatchCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
-typedef void (*PanelWatchCallbackValueChanged)(void* pObjectPtr, int controlid, bool finishedchanging, double oldvalue);
+typedef void (*PanelWatchCallbackValueChanged)(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue);
 typedef void (*PanelWatchCallbackRightClick)(void* pObjectPtr, int controlid);
 typedef void (*PanelWatchCallbackButtonPressed)(void* pObjectPtr, int buttonid);
 

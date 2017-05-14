@@ -15,12 +15,13 @@
 // EditorCommand_PanelWatchNumberValueChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     m_Difference = difference;
     m_Type = type;
     m_Pointer = pointer;
     m_ControlID = controlid;
+    m_DirectlyChanged = directlychanged;
 
     m_pOnValueChangedCallBackFunc = callbackfunc;
     m_pCallbackObj = callbackobj;
@@ -90,7 +91,10 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, oldvalue );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue );
+        m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
+    }
 }
 
 void EditorCommand_PanelWatchNumberValueChanged::Undo()
@@ -153,7 +157,9 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, oldvalue );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, oldvalue );
+    }
 }
 
 EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
@@ -169,7 +175,7 @@ EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
 // EditorCommand_PanelWatchColorChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     MyAssert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
 
@@ -177,6 +183,7 @@ EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(Color
     m_Type = type;
     m_Pointer = pointer;
     m_ControlID = controlid;
+    m_DirectlyChanged = directlychanged;
 
     if( m_Type == PanelWatchType_ColorFloat )
         m_OldColor = *(ColorFloat*)pointer;
@@ -220,7 +227,8 @@ void EditorCommand_PanelWatchColorChanged::Do()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, oldvalue );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue );
+        m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
     }
 }
 
@@ -237,7 +245,9 @@ void EditorCommand_PanelWatchColorChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, 0 );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0 );
+    }
 }
 
 EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
@@ -249,7 +259,7 @@ EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
 // EditorCommand_PanelWatchPointerChanged
 //====================================================================================================
 
-EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
+EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     MyAssert( type == PanelWatchType_PointerWithDesc );
 
@@ -257,6 +267,7 @@ EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(v
     m_Type = type;
     m_pPointer = ppointer;
     m_ControlID = controlid;
+    m_DirectlyChanged = directlychanged;
 
     m_OldValue = *ppointer;
 
@@ -278,7 +289,10 @@ void EditorCommand_PanelWatchPointerChanged::Do()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, 0 );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, 0 );
+        m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
+    }
 }
 
 void EditorCommand_PanelWatchPointerChanged::Undo()
@@ -291,7 +305,9 @@ void EditorCommand_PanelWatchPointerChanged::Undo()
 
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, -1, true, 0 );
+    {
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0 );
+    }
 }
 
 EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()

@@ -50,12 +50,13 @@ protected:
     PanelWatch_Types m_Type;
     void* m_Pointer;
     int m_ControlID;
+    bool m_DirectlyChanged;
 
     PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
     void* m_pCallbackObj;
 
 public:
-    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
+    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchNumberValueChanged();
 
     virtual void Do();
@@ -73,12 +74,13 @@ protected:
     PanelWatch_Types m_Type;
     void* m_Pointer;
     int m_ControlID;
+    bool m_DirectlyChanged;
 
     PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
     void* m_pCallbackObj;
 
 public:
-    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
+    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchColorChanged();
 
     virtual void Do();
@@ -96,12 +98,13 @@ protected:
     PanelWatch_Types m_Type;
     void** m_pPointer;
     int m_ControlID;
+    bool m_DirectlyChanged;
 
     PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
     void* m_pCallbackObj;
 
 public:
-    EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
+    EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
     virtual ~EditorCommand_PanelWatchPointerChanged();
 
     virtual void Do();
