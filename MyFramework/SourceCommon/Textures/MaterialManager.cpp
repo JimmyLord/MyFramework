@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -211,6 +211,16 @@ void MaterialManager::ReloadMaterial(MaterialDefinition* pMaterial)
 
 MaterialDefinition* MaterialManager::GetFirstMaterial()
 {
+    // Get first material that was loaded from disk
+    for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
+
+        if( pMaterial->GetFile() != 0 )
+            return pMaterial;
+    }
+
+    // If there weren't any, just get the first material (if there is one).
     return (MaterialDefinition*)m_Materials.GetHead();
 }
 
