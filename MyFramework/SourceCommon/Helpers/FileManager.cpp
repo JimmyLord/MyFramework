@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -377,9 +377,9 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
 
     for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNextNode )
     {
-        pNextNode = pNode->GetNext();
-
         MyFileObject* pFile = (MyFileObject*)pNode;
+
+        pFile->AddRef(); // prevent file from being freed below.
 
         bool updateavailable = pFile->IsNewVersionAvailable();
 
@@ -389,6 +389,10 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
             pCallbackFunc( pFile );
             numfilesupdated++;
         }
+
+        pNextNode = pNode->GetNext();
+
+        pFile->Release(); // release ref from above.
     }
 
     return numfilesupdated;

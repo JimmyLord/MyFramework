@@ -28,6 +28,11 @@ void MyFileObjectShader::UnloadContents()
 {
     MyFileObject::UnloadContents();
 
+    if( m_IsAnIncludeFile )
+    {
+        // TODO: mark all shaders using this file as needing to be reloaded.
+    }
+
     ClearIncludedFiles();
 }
 
