@@ -112,6 +112,8 @@ protected:
 public:
     void FakeFileLoad(char* buffer, int length);
 
+    void UpdateTimestamp();
+
 public:
 #if MYFW_USING_WX
     enum RightClickOptions

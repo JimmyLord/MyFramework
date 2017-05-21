@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -519,6 +519,12 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         {
             sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
             m_pFile = g_pFileManager->RequestFile( filename );
+        }
+
+        // Update timestamp when saving a file to disk, so it doesn't reload when alt-tabbing.
+        if( m_pFile != 0 )
+        {
+            m_pFile->UpdateTimestamp();
         }
     }
 }

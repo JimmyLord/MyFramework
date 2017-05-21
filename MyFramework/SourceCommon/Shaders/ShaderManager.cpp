@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -434,12 +434,26 @@ void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
     {
         BaseShader* pShader = (BaseShader*)pNode;
         pShader->Invalidate( cleanglallocs );
-//#if MYFW_WINDOWS && _DEBUG
-//        // force a reload from disk
-//        if( pShader->m_pFile )
-//        {
-//            g_pFileManager->ReloadFile( pShader->m_pFile );
-//        }
-//#endif
+    }
+}
+
+void ShaderManager::InvalidateAllShadersUsingIncludeFile(MyFileObjectShader* pIncludeFile)
+{
+    // Loop through all loaded shaders.
+    for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
+    {
+        BaseShader* pShader = (BaseShader*)pNode;
+
+        MyFileObjectShader* pFile = pShader->m_pFile;
+
+        // Loop through all of their includes.
+        for( int i=0; i<pFile->m_NumIncludes; i++ )
+        {
+            // If it matches ours, invalidate the shader.
+            if( pFile->m_pIncludes[i].m_pIncludedFile == pIncludeFile )
+            {
+                pShader->Invalidate( true );
+            }
+        }
     }
 }

@@ -351,18 +351,15 @@ void MyFileObject::Tick()
             FakeFileLoad( buffer, length );
         }
 
-#if MYFW_WINDOWS
-        WIN32_FIND_DATAA data;
-        GetFileData( m_FullPath, &data );
-
-        m_FileLastWriteTime = data.ftLastWriteTime;
-#endif
+        UpdateTimestamp();
     }
 }
 
 bool MyFileObject::IsNewVersionAvailable()
 {
     bool updated = false;
+
+    // If the file load status was an error.
     if( m_FileLoadStatus > FileLoadStatus_Success )
         m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
 
@@ -375,12 +372,22 @@ bool MyFileObject::IsNewVersionAvailable()
         data.ftLastWriteTime.dwLowDateTime != m_FileLastWriteTime.dwLowDateTime )
     {
         updated = true;
+        
+        m_FileLastWriteTime = data.ftLastWriteTime;
     }
-
-    m_FileLastWriteTime = data.ftLastWriteTime;
 #endif
 
     return updated;
+}
+
+void MyFileObject::UpdateTimestamp()
+{
+#if MYFW_WINDOWS
+    WIN32_FIND_DATAA data;
+    GetFileData( m_FullPath, &data );
+
+    m_FileLastWriteTime = data.ftLastWriteTime;
+#endif
 }
 
 void MyFileObject::UnloadContents()
