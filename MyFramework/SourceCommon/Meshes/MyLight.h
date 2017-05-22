@@ -26,7 +26,7 @@ public:
     LightTypes m_LightType;
     Vector3 m_Position;
     Vector3 m_SpotDirectionVector; // not angles, should be normalized
-    ColorFloat m_Color;
+    ColorFloat m_Color; // alpha ignored
     Vector3 m_Attenuation;
 
 public:

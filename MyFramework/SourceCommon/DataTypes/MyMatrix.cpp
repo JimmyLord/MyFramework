@@ -324,7 +324,7 @@ void MyMatrix::CreateOrtho(float left, float right, float bottom, float top, flo
 #if MYFW_RIGHTHANDED
     m33 = -2.0f / deltaZ;
 #else
-    m33 = -2.0f / deltaZ;
+    m33 = 2.0f / deltaZ;
 #endif
     m31 = m32 = m34 = 0;
 

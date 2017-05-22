@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -34,8 +34,8 @@ public:
     //virtual bool Setup(MyMatrix* matviewproj);
     //virtual void DrawNoSetup();
     //virtual void DeactivateShader();
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
     virtual void Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 
     virtual void SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr );
     virtual void SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr );

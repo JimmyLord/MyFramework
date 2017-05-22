@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -167,12 +167,12 @@ void MySprite_XYZVertexColor::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySprite_XYZVertexColor::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
-    Draw( matworld, matviewproj, pShaderOverride );
+    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride );
 }
 
-void MySprite_XYZVertexColor::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     MyAssert( pShaderOverride == 0 ); // TODO: support overriding shaders
 
