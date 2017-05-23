@@ -551,7 +551,12 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
                 matviewproj, matworld, m_pMaterial ) )
         {
             // Our VBO doesn't have normals, so set normals to face forward.
-            glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
+            // TODO: find better way to handle default attributes, ActivateAndProgramShader sets this to 0,1,0
+            //       so need to set since VAOs don't change these values
+            if( pShader->m_aHandle_Normal != -1 )
+            {
+                glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
+            }
 
             pShader->ProgramLights( lightptrs, numlights, 0 );
             checkGlError( "Drawing Mesh ProgramLights()" );

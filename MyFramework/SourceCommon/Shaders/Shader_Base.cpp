@@ -443,7 +443,16 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
     checkGlError( "glUseProgram" );
 
     if( vbo )
+    {
         SetupAttributes( vbo, ibo, true );
+
+        // TODO: find better way to handle default attributes, MySprite sets this to 0,0,-1
+        //       so need to set since VAOs don't change these values
+        if( m_aHandle_Normal != -1 )
+        {
+            glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
+        }
+    }
     checkGlError( "SetupAttributes" );
 
     ProgramBaseUniforms( viewprojmatrix, worldmatrix, pMaterial->GetTextureColor(),
@@ -476,17 +485,25 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
 {
     if( usevaosifavailable == false || vbo->m_VAOInitialized[vbo->m_CurrentBufferIndex] == false )
     {
-        if( usevaosifavailable && glBindVertexArray != 0 )
+        if( glBindVertexArray != 0 )
         {
-            vbo->m_VAOInitialized[vbo->m_CurrentBufferIndex] = true;
+            if( usevaosifavailable )
+            {
+                vbo->m_VAOInitialized[vbo->m_CurrentBufferIndex] = true;
 
-            // First time using this VAO, so we create a VAO and set up all the attributes.
-            vbo->CreateAndBindVAO();
+                // First time using this VAO, so we create a VAO and set up all the attributes.
+                vbo->CreateAndBindVAO();
 #if _DEBUG && MYFW_WINDOWS
-            vbo->m_DEBUG_VBOUsedOnCreation[vbo->m_CurrentBufferIndex] = vbo->m_CurrentBufferID;
-            if( ibo )
-                vbo->m_DEBUG_IBOUsedOnCreation[ibo->m_CurrentBufferIndex] = ibo->m_CurrentBufferID;
+                vbo->m_DEBUG_VBOUsedOnCreation[vbo->m_CurrentBufferIndex] = vbo->m_CurrentBufferID;
+                if( ibo )
+                    vbo->m_DEBUG_IBOUsedOnCreation[ibo->m_CurrentBufferIndex] = ibo->m_CurrentBufferID;
 #endif
+            }        
+            else
+            {
+                // Ensure objects rendered without a VAO don't mess with current VAO.
+                glBindVertexArray( 0 );
+            }
         }
 
         //MyAssert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
