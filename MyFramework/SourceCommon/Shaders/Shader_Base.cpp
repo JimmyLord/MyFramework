@@ -138,6 +138,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     m_uHandle_WSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
     m_uHandle_LSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
     m_uHandle_CameraRotation =      GetUniformLocation( m_ProgramHandle, "u_CameraRotation" );
+    m_uHandle_InvCameraRotation =   GetUniformLocation( m_ProgramHandle, "u_InvCameraRotation" );
 
     m_uHandle_AmbientLight =        GetUniformLocation( m_ProgramHandle, "u_AmbientLight" );
     m_uHandle_DirLightDir =         GetUniformLocation( m_ProgramHandle, "u_DirLightDir" );
@@ -498,7 +499,7 @@ void Shader_Base::SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, 
                 if( ibo )
                     vbo->m_DEBUG_IBOUsedOnCreation[ibo->m_CurrentBufferIndex] = ibo->m_CurrentBufferID;
 #endif
-            }        
+            }
             else
             {
                 // Ensure objects rendered without a VAO don't mess with current VAO.
@@ -675,8 +676,15 @@ void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inve
     if( m_uHandle_CameraRotation != -1 )
     {
         MyMatrix matcamrot;
-        matcamrot.CreateSRT( Vector3(1), *camrot, Vector3(0) );
+        matcamrot.CreateRotation( *camrot );
         glUniformMatrix4fv( m_uHandle_CameraRotation, 1, false, (GLfloat*)&matcamrot.m11 );
+    }
+
+    if( m_uHandle_InvCameraRotation != -1 )
+    {
+        MyMatrix matinvcamrot;
+        matinvcamrot.CreateRotation( *camrot * -1 );
+        glUniformMatrix4fv( m_uHandle_InvCameraRotation, 1, false, (GLfloat*)&matinvcamrot.m11 );
     }
 #endif
 
