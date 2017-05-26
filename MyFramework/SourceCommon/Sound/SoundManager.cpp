@@ -471,7 +471,9 @@ void SoundManager::UnloadCue(SoundCue* pCue)
     // Release our reference to the cue
     pCue->Release();
 
+#if MYFW_USING_WX
     g_pPanelMemory->RemoveSoundCue( pCue );
+#endif
 
     for( unsigned int i=0; i<m_pSoundCueUnloadedCallbackList.Count(); i++ )
     {
