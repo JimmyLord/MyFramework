@@ -426,10 +426,8 @@ bool Shader_Base::DoVAORequirementsMatch(BaseShader* pShader)
     return false;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial)
+bool Shader_Base::CompileShader()
 {
-    MyAssert( pMaterial );
-
     if( m_Initialized == false )
     {
         if( LoadAndCompile() == false )
@@ -437,6 +435,18 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
             //LOGInfo( LOGTag, "Shader_Base::ActivateAndProgramShader - shader not ready.\n" );
             return false;
         }
+    }
+
+    return true;
+}
+
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial)
+{
+    MyAssert( pMaterial );
+
+    if( CompileShader() == false )
+    {
+        return false;
     }
 
     MyUseProgram( m_ProgramHandle );
@@ -466,13 +476,9 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
 
 bool Shader_Base::ActivateAndProgramShader()
 {
-    if( m_Initialized == false )
+    if( CompileShader() == false )
     {
-        if( LoadAndCompile() == false )
-        {
-            //LOGInfo( LOGTag, "Shader_Base::ActivateAndProgramShader - shader not ready.\n" );
-            return false;
-        }
+        return false;
     }
 
     MyUseProgram( m_ProgramHandle );

@@ -83,6 +83,7 @@ public:
 
     virtual void DeactivateShader(BufferDefinition* vbo = 0, bool usevaosifavailable = true);
 
+    bool CompileShader();
     bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial);
     bool ActivateAndProgramShader();
 
