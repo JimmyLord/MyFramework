@@ -32,7 +32,7 @@ GLViewTypes g_CurrentGLViewType;
 
 const char* g_DefaultEditorWindowTypeMenuLabels[EditorWindow_NumTypes] =
 {
-    "&Game",
+    "&Game View",
     "&Object List Panel",
     "&Watch Panel",
     "&Files Panel",
@@ -131,8 +131,8 @@ void MainFrame::InitFrame()
         m_EditorWindows = MyNew wxMenu;
         for( int i=0; i<EditorWindow_NumTypes; i++ )
         {
-            m_EditorWindowOptions[i] = m_EditorWindows->Append( myID_EditorWindow_Game + i, g_DefaultEditorWindowTypeMenuLabels[i], wxEmptyString );
-            Connect( myID_EditorWindow_Game + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
+            m_EditorWindowOptions[i] = m_EditorWindows->Append( myID_EditorWindow_FirstWindow + i, g_DefaultEditorWindowTypeMenuLabels[i], wxEmptyString );
+            Connect( myID_EditorWindow_FirstWindow + i, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMenu) );
         }
         m_View->Append( myID_View_EditorWindows, "Editor Windows", m_EditorWindows );
 
