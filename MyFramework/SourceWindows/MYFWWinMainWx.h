@@ -148,6 +148,7 @@ public:
     virtual bool OnClose();
 
     virtual bool FilterGlobalEvents(wxEvent& event) { return false; }
+    virtual void OnGLCanvasShownOrHidden(bool shown) {}
     
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
@@ -164,9 +165,6 @@ public:
 
     virtual void ProcessAllGLCanvasInputEventQueues();
 };
-
-extern int m_GLContextRefCount;
-extern wxGLContext* m_GLContext;
 
 // Main gl canvas class
 class MainGLCanvas : public wxGLCanvas

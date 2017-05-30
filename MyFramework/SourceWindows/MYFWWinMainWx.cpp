@@ -502,6 +502,14 @@ int MainApp::FilterEvent(wxEvent& event)
 {
     int ret = wxApp::FilterEvent( event );
 
+    if( event.GetEventType() == wxEVT_SHOW )
+    {
+        if( m_pMainFrame && event.GetEventObject() == m_pMainFrame->m_pGLCanvas )
+        {
+            m_pMainFrame->OnGLCanvasShownOrHidden( false );
+        }
+    }
+
     if( event.GetEventType() == wxEVT_DESTROY )
     {
         wxWindowDestroyEvent& destroyevent = (wxWindowDestroyEvent&)event;
@@ -548,13 +556,13 @@ BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
 
 int g_GLContextRefCount = 0;
-wxGLContext* m_GLContext = 0;
+wxGLContext* g_pGLContext = 0;
 
 MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool tickgamecore)
 : wxGLCanvas( parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE )
 {
-    if( m_GLContext == 0 )
-        m_GLContext = MyNew wxGLContext( this );
+    if( g_pGLContext == 0 )
+        g_pGLContext = MyNew wxGLContext( this );
 
     m_GLCanvasID = ID;
     m_TickGameCore = tickgamecore;
@@ -580,12 +588,12 @@ MainGLCanvas::~MainGLCanvas()
 
     g_GLContextRefCount--;
     if( g_GLContextRefCount == 0 )
-        delete m_GLContext;
+        delete g_pGLContext;
 }
 
 void MainGLCanvas::MakeContextCurrent()
 {
-    SetCurrent( *m_GLContext );
+    SetCurrent( *g_pGLContext );
 }
 
 void MainGLCanvas::MouseMoved(wxMouseEvent& event)
@@ -1024,8 +1032,8 @@ void MainGLCanvas::Draw()
 {
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    m_GLContext->SetCurrent( *this );
-    //SetCurrent( *m_GLContext );
+    g_pGLContext->SetCurrent( *this );
+    //SetCurrent( *g_pGLContext );
     //wxPaintDC( this );
 
 #if TESTING_FRAGCOORDISSUE
@@ -1103,6 +1111,7 @@ void MainGLCanvas::Draw()
         MyAssert( currentframebuffer == 0 );
 
         //if( m_GLCanvasID == 0 )
+        //if( g_pMainApp->m_HasFocus )
         {
             MyAssert( g_GLCanvasIDActive == m_GLCanvasID );
 
