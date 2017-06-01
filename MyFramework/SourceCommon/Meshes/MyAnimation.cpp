@@ -83,22 +83,34 @@ int MyAnimationTimeline::FindChannelIndexForNode(unsigned int nodeindex)
 
 Vector3 MyAnimationTimeline::GetInterpolatedTranslation(float time, unsigned int channelindex)
 {
+    MyAssert( channelindex < m_pChannels.Count() );
+
     MyChannel* pChannel = m_pChannels[channelindex];
 
-    // we need at least two values to interpolate...
-    if( pChannel->m_TranslationTimes.Count() == 1 )
+    // We need at least two values to interpolate...
+    if( pChannel->m_TranslationTimes.Count() == 0 )
+    {
+        return Vector3(0,0,0);
+    }
+    else if( pChannel->m_TranslationTimes.Count() == 1 )
     {
         return m_pChannels[channelindex]->m_TranslationValues[0];
     }
 
     int startindex = 0;
-    while( time > pChannel->m_TranslationTimes[startindex] && startindex < (int)pChannel->m_TranslationTimes.Count()-1 )
+    while( time > pChannel->m_TranslationTimes[startindex] &&
+           startindex < (int)pChannel->m_TranslationTimes.Count()-1 )
+    {
         startindex++;
+    }
     startindex -= 1;
     int endindex = startindex+1;
 
     if( startindex < 0 )
         startindex = 0;
+
+    MyAssert( startindex < (int)pChannel->m_TranslationTimes.Count() );
+    MyAssert( endindex < (int)pChannel->m_TranslationTimes.Count() );
 
     float starttimestamp = pChannel->m_TranslationTimes[startindex];
     float endtimestamp = pChannel->m_TranslationTimes[endindex];
@@ -108,6 +120,9 @@ Vector3 MyAnimationTimeline::GetInterpolatedTranslation(float time, unsigned int
     if( timebetweenframes > 0 )
         perctimepassed = (time - starttimestamp) / timebetweenframes;
     //MyAssert( perctimepassed >= 0.0f && perctimepassed <= 1.0f );
+
+    MyAssert( startindex < (int)pChannel->m_TranslationValues.Count() );
+    MyAssert( endindex < (int)pChannel->m_TranslationValues.Count() );
 
     Vector3& StartTranslation = pChannel->m_TranslationValues[startindex];
     Vector3& EndTranslation = pChannel->m_TranslationValues[endindex];
@@ -120,8 +135,12 @@ MyQuat MyAnimationTimeline::GetInterpolatedRotation(float time, unsigned int cha
 {
     MyChannel* pChannel = m_pChannels[channelindex];
 
-    // we need at least two values to interpolate...
-    if( pChannel->m_RotationTimes.Count() == 1 )
+    // We need at least two values to interpolate...
+    if( pChannel->m_RotationTimes.Count() == 0 )
+    {
+        return MyQuat(0,0,0,1);
+    }
+    else if( pChannel->m_RotationTimes.Count() == 1 )
     {
         return m_pChannels[channelindex]->m_RotationValues[0];
     }

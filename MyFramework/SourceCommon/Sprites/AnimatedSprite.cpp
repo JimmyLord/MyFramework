@@ -264,6 +264,8 @@ Vector3 AnimatedSpriteDefinition::GetPosition(double time)
     }
     else
     {
+        MyAssert( i != 0 );
+
         double prevtime = m_KeysTranslation[i-1]->m_Time;
         double nexttime = m_KeysTranslation[i]->m_Time;
 
@@ -304,6 +306,8 @@ Vector3 AnimatedSpriteDefinition::GetScale(double time)
     }
     else
     {
+        MyAssert( i != 0 );
+        
         double prevtime = m_KeysScale[i-1]->m_Time;
         double nexttime = m_KeysScale[i]->m_Time;
 
@@ -344,6 +348,8 @@ float AnimatedSpriteDefinition::GetAlpha(double time)
     }
     else
     {
+        MyAssert( i != 0 );
+
         double prevtime = m_KeysAlpha[i-1]->m_Time;
         double nexttime = m_KeysAlpha[i]->m_Time;
 
@@ -382,6 +388,8 @@ Vector3 AnimatedSpriteDefinition::GetRotation(double time)
     }
     else
     {
+        MyAssert( i != 0 );
+
         double prevtime = m_KeysRotation[i-1]->m_Time;
         double nexttime = m_KeysRotation[i]->m_Time;
 

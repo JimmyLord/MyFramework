@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,6 +9,33 @@
 
 #include "CommonHeader.h"
 #include "WaveLoader.h"
+
+//====================================================================================================
+// SoundObject
+//====================================================================================================
+SoundObject::SoundObject()
+{
+    m_FullPath[0] = 0;
+    m_Sound = 0;
+
+    m_pSourcePool = 0;
+
+#if _DEBUG
+    m_BaseCount = 1; // RefCount hack: since soundobjects are in an array in soundplayer, final ref won't be released.
+#endif
+}
+
+void SoundObject::Release() // override from RefCount
+{
+    RefCount::Release();
+
+    if( m_RefCount == 1 )
+    {
+        m_pSourcePool->ReturnObjectToPool( this );
+
+        //this->Remove(); // remove from cpplist
+    }
+}
 
 cJSON* SoundObject::ExportAsJSONObject()
 {

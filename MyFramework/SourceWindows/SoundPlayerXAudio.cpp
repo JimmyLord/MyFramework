@@ -19,7 +19,9 @@ SoundObject::SoundObject()
 
     m_pSourcePool = 0;
 
+#if _DEBUG
     m_BaseCount = 1; // RefCount hack: since soundobjects are in an array in soundplayer, final ref won't be released.
+#endif
 }
 
 void SoundObject::Release() // override from RefCount

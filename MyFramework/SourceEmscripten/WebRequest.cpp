@@ -94,7 +94,7 @@ void WebRequestObject::RequestStart(const char* page)
     ClearResult();
     Reset();
 
-    sprintf_s( m_PageWanted, MAX_WebPageLength, page );
+    sprintf_s( m_PageWanted, MAX_WebPageLength, "%s", page );
     strcat_s( m_PageWanted, MAX_WebPageLength, "?" );
 }
 

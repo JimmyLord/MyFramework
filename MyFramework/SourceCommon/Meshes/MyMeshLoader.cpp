@@ -119,6 +119,8 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
         int meshcount = 0;
         while( mesh )
         {
+            MyAssert( meshcount < pSubmeshList->Count() );
+
             MySubmesh* pSubmesh = (*pSubmeshList)[meshcount];
 
             BufferDefinition** ppVBO = &pSubmesh->m_pVertexBuffer;
@@ -260,6 +262,8 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
             // Read in the node transforms
             for( unsigned int ni=0; ni<totalnodes; ni++ )
             {
+                MyAssert( ni < m_pSkeletonNodeTree.Count() );
+
                 // TODO: this line fails on Android(gcc)... no clue why, so did it with a memcpy.
                 //m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
                 memcpy( &m_pSkeletonNodeTree[ni].m_Transform, &buffer[rawbyteoffset], sizeof(MyMatrix) );
@@ -274,6 +278,8 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
             // read animation channels
             for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
             {
+                MyAssert( ai < m_pAnimationTimelines.Count() );
+
                 rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
             }
         }
@@ -295,8 +301,12 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
 int MyMesh::FindBoneIndexByName(char* name)
 {
     for( unsigned int i=0; i<m_BoneNames.Count(); i++ )
+    {
         if( strcmp( m_BoneNames[i], name ) == 0 )
+        {
             return i;
+        }
+    }
 
     return -1;
 }
@@ -306,6 +316,8 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
     MySkeletonNode skelnodetoadd;
     int skelnodeindex = m_pSkeletonNodeTree.Count();
     m_pSkeletonNodeTree.Add( skelnodetoadd );
+
+    MyAssert( skelnodeindex < m_pSkeletonNodeTree.Count() );
 
     MySkeletonNode& skelnode = m_pSkeletonNodeTree[skelnodeindex];
 

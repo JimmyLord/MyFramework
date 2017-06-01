@@ -71,7 +71,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
             int result = 0;
             if( m_pBuffer[i+9] == '<' )
             {
-                strcpy( includefilename, "DataEngine/Shaders/" );
+                strcpy( includefilename, "Data/DataEngine/Shaders/" );
                 int pathlen = (int)( strlen(includefilename) );
                 result = sscanf( &m_pBuffer[i], "#include <%[^>]>%n", &includefilename[pathlen], &charsread );
             }

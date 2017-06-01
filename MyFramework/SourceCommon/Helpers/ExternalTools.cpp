@@ -284,7 +284,7 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 #elif MYFW_NACL
     MyAssert( false ); // TODO: fix me on nacl
 #else
-    MyAssert( false ); // TODO: fix me on everything else...
+    //MyAssert( false ); // TODO: fix me on everything else...
 #endif
 }
 
@@ -295,7 +295,7 @@ void PlatformSpecific_SetMouseLock(bool lock)
 #elif MYFW_NACL
     g_pInstance->SetMouseLock( lock );
 #else
-    MyAssert( false ); // TODO: fix me on everything else...
+    //MyAssert( false ); // TODO: fix me on everything else...
 #endif
 }
 
@@ -306,6 +306,7 @@ bool PlatformSpecific_IsMouseLocked()
 #elif MYFW_NACL
     return g_pInstance->IsMouseLocked();
 #else
-    MyAssert( false ); // TODO: fix me on everything else...
+    //MyAssert( false ); // TODO: fix me on everything else...
+    return false;
 #endif
 }

@@ -597,6 +597,7 @@ int SoundManager::PlayCueByName(const char* name)
 int SoundManager::PlayCue(SoundCue* pCue)
 {
     MyAssert( pCue );
+    MyAssert( pCue->m_pSoundObjects.size() != 0 );
 
     int randindex = rand()%pCue->m_pSoundObjects.size();
 

@@ -466,6 +466,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">
     <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">
     <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
@@ -481,6 +482,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">
     <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WxRelease|Emscripten'">
     <IntDir>$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
@@ -923,7 +925,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">
     <ClCompile>
       <AdditionalIncludeDirectories>SourceCommon;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MYFW_EMSCRIPTEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MYFW_EMSCRIPTEN;NDEBUG</PreprocessorDefinitions>
       <OptimizationLevel>O0</OptimizationLevel>
     </ClCompile>
   </ItemDefinitionGroup>

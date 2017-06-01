@@ -276,6 +276,8 @@ void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool rem
     pSubmeshList->AllocateObjects( 1 );
     pSubmeshList->Add( MyNew MySubmesh() );
 
+    MyAssert( pSubmeshList->Count() > 0 );
+
     // TODO: fix this ugliness from adding submeshes... or relegate obj loading to MeshTool.
     BufferDefinition** ppVBO = &(*pSubmeshList)[0]->m_pVertexBuffer;
     BufferDefinition** ppIBO = &(*pSubmeshList)[0]->m_pIndexBuffer;

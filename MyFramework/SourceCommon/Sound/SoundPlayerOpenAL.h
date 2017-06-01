@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -37,18 +37,17 @@ bool CheckForOpenALCErrors(ALCdevice* pDevice, const char* description);
 bool CheckForALUTErrors(const char* description);
 #endif
 
-struct SoundObject : public CPPListNode
+struct SoundObject : public CPPListNode, public RefCount
 {
 public:
     char m_FullPath[MAX_PATH];
     ALuint m_Sound;
 
+    MySimplePool<SoundObject>* m_pSourcePool;
+
 public:
-    SoundObject()
-    {
-        m_FullPath[0] = 0;
-        m_Sound = 0;
-    }
+    SoundObject();
+    virtual void Release(); // override from RefCount
 
     cJSON* ExportAsJSONObject();
     const char* GetFullPath() { return m_FullPath; }

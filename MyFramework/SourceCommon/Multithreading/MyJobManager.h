@@ -51,11 +51,12 @@ class MyJobManager
 protected:
 #if USE_PTHREAD
     MyThread* m_pThreads[MAX_THREADS];
+
+    pthread_mutex_t m_JobListMutex;
+    pthread_cond_t m_JobAvailableConditional;
 #endif
 
     CPPListHead m_JobList;
-    pthread_mutex_t m_JobListMutex;
-    pthread_cond_t m_JobAvailableConditional;
 
     bool m_ShuttingDown;
 
