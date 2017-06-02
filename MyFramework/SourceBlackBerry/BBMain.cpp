@@ -437,6 +437,7 @@ int bbmain(const char* UUID)
         if( g_pGameCore->m_HasFocus )
         {
             //LOGInfo( LOGTag, "timepassed - %f\n", (float)timepassed );
+            g_pGameCore->OnDrawFrameStart( 0 );
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
             g_pGameCore->OnDrawFrame( 0 );
             g_pGameCore->OnDrawFrameDone();

@@ -185,6 +185,7 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
 
     double timepassed = self.timeSinceLastUpdate;
 
+    g_pGameCore->OnDrawFrameStart( 0 );
     g_UnpausedTime += g_pGameCore->Tick( timepassed );
     
     if( g_pGameCore->IsReadyToRender() )

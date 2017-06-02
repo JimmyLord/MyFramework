@@ -1082,6 +1082,8 @@ void MainGLCanvas::Draw()
             g_pMainApp->m_HasFocus = false;
         }
 
+        g_pGameCore->OnDrawFrameStart( 0 );
+
         // deal with queued up input messages
         if( m_TickGameCore )
         {

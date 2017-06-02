@@ -303,9 +303,13 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
     checkGlError( "glViewport" );
 }
 
-void GameCore::OnDrawFrame(unsigned int canvasid)
+void GameCore::OnDrawFrameStart(unsigned int canvasid)
 {
     g_GLStats.NewFrame( canvasid );
+}
+
+void GameCore::OnDrawFrame(unsigned int canvasid)
+{
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 }
 

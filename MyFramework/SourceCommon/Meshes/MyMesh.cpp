@@ -418,7 +418,7 @@ void MyMesh::CreateSubmeshes(int numsubmeshes)
 
 void MyMesh::CreateVertexBuffer(int meshindex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, bool dynamic)
 {
-    MyAssert( meshindex < m_SubmeshList.Count() );
+    MyAssert( meshindex < (int)m_SubmeshList.Count() );
     MyAssert( m_SubmeshList[meshindex]->m_pVertexBuffer == 0 );
     MyAssert( m_SubmeshList[meshindex]->m_pIndexBuffer == 0 );
 
@@ -443,7 +443,7 @@ void MyMesh::CreateVertexBuffer(int meshindex, VertexFormat_Dynamic_Desc* pVerte
 
 void MyMesh::CreateIndexBuffer(int meshindex, int bytesperindex, unsigned int numindices, bool dynamic)
 {
-    MyAssert( meshindex < m_SubmeshList.Count() );
+    MyAssert( meshindex < (int)m_SubmeshList.Count() );
     MyAssert( m_SubmeshList[meshindex]->m_pIndexBuffer == 0 );
 
     GLenum usage = GL_STATIC_DRAW;

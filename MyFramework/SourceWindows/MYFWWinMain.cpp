@@ -721,6 +721,7 @@ int MYFWWinMain(int width, int height)
                     GenerateKeyboardEvents( g_pGameCore );
                     GenerateMouseEvents( g_pGameCore );
 
+                    g_pGameCore->OnDrawFrameStart( 0 );
                     g_UnpausedTime += g_pGameCore->Tick( timepassed );
                     g_pGameCore->OnDrawFrame( 0 );
                     g_pGameCore->OnDrawFrameDone();

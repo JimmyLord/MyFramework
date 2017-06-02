@@ -348,6 +348,7 @@ void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)
         double timepassed = currtime - lasttime;
         lasttime = currtime;        
 
+        g_pGameCore->OnDrawFrameStart( 0 );
         g_UnpausedTime += g_pGameCore->Tick( timepassed );
         g_pGameCore->OnDrawFrame( 0 );
         g_pGameCore->OnDrawFrameDone();

@@ -119,7 +119,7 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
         int meshcount = 0;
         while( mesh )
         {
-            MyAssert( meshcount < pSubmeshList->Count() );
+            MyAssert( meshcount < (int)pSubmeshList->Count() );
 
             MySubmesh* pSubmesh = (*pSubmeshList)[meshcount];
 
@@ -317,7 +317,7 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
     int skelnodeindex = m_pSkeletonNodeTree.Count();
     m_pSkeletonNodeTree.Add( skelnodetoadd );
 
-    MyAssert( skelnodeindex < m_pSkeletonNodeTree.Count() );
+    MyAssert( skelnodeindex < (int)m_pSkeletonNodeTree.Count() );
 
     MySkeletonNode& skelnode = m_pSkeletonNodeTree[skelnodeindex];
 

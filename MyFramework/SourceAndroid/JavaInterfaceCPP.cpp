@@ -244,8 +244,8 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
     }
     pthread_mutex_unlock( &g_TouchInputMutex );
 
-    g_UnpausedTime += g_pGameCore->Tick(millspassed / 1000.0f);
-
+    g_pGameCore->OnDrawFrameStart( 0 );
+    g_UnpausedTime += g_pGameCore->Tick( millspassed / 1000.0f );
     g_pGameCore->OnDrawFrame( 0 );
     g_pGameCore->OnDrawFrameDone();
 }
