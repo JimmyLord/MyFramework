@@ -40,17 +40,24 @@ void RegisterClassname(const char* name);
 
 #define ClassnameSanityCheck() ((void)0)
 
+// TODO: look into this.
+// Switched calls below to use strcmp instead of just 64-bit compare due to memory alignment issues on non-x86 processors.
+// It's still doing 64-bit (8 character) compares in debug mode in editor builds above.
+
 #define SetClassnameBase(name) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : false ); }
+ virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : false ); }
+ //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : false ); }
 
 #define SetClassnameWithParent(name,parent) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : parent::IsA(classname) ); }
+ virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : parent::IsA(classname) ); }
+ //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : parent::IsA(classname) ); }
 
 #define SetClassnameWith2Parents(name,parent1,parent2) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
+ virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
+ //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
 
 #endif
 

@@ -27,12 +27,24 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
     Vector3 minvert;
     Vector3 maxvert;
 
-    cJSON* root = cJSON_Parse( buffer );
+    // Skip the comments at the top of mymesh files by searching for '{'
+    const char* jsonstart = buffer;
+    {
+        int i=0;
+        while( jsonstart[i] != '{' )
+        {
+            i++;
+        }
+        jsonstart += i;
+    }
+
+    cJSON* root = cJSON_Parse( jsonstart );
+    MyAssert( root );
 
     cJSONExt_GetFloat( root, "InitialScale", &m_InitialScale );
     scale = m_InitialScale;
 
-    // find a line that starts with "#raw" and store it's index.
+    // Find a line that starts with "#RAW" and store it's index.
     unsigned int bufferlen = (int)strlen( buffer );
     unsigned int rawbyteoffset = 0;
     if( bufferlen > 5 )
@@ -41,10 +53,14 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
         {
             if( i > 1 && strncmp( &buffer[i], "\n#RAW", 5 ) == 0 )
             {
-                rawbyteoffset = i+6;
+                rawbyteoffset = i+5;
+                break;
             }
         }
     }
+
+    // Ensure raw data starts on 4-byte boundary.
+    MyAssert( rawbyteoffset%4 == 0 );
 
     {
         cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
@@ -173,12 +189,16 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
 
                 // read the raw data:
                 {
-                    // read vert buffer bytes //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
+                    // Advance the rawbyteoffset to land on next 4-byte boundary.
+                    if( rawbyteoffset%4 != 0 )
+                        rawbyteoffset += 4 - rawbyteoffset%4;
+
+                    // Read vert buffer bytes. //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
                     memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
                     rawbyteoffset += vertbuffersize;
 
-                    // scale the verts if requested... should be done at export or not at all.
-                    // assumes position is the first attribute... ugh. TODO: rip this out.
+                    // Scale the verts if requested... should be done at export or not at all.
+                    // Assumes position is the first attribute... ugh. TODO: rip this out.
                     if( scale != 1.0f )
                     {
                         for( unsigned int i=0; i<totalverts; i++ )
@@ -199,7 +219,11 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                         if( ((float*)(&(verts[pDesc->stride * i])))[2] > maxvert.z || i == 0 ) maxvert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
                     }
 
-                    // read index buffer bytes
+                    // Advance the rawbyteoffset to land on next 4-byte boundary.
+                    if( rawbyteoffset%4 != 0 )
+                        rawbyteoffset += 4 - rawbyteoffset%4;
+
+                    // Read index buffer bytes.
                     memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
                     rawbyteoffset += indexbuffersize;
                 }
@@ -235,6 +259,10 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
         // read in the rest of the raw data.
         if( rawbyteoffset != 0 )
         {
+            // Advance the rawbyteoffset to land on next 4-byte boundary.
+            if( rawbyteoffset%4 != 0 )
+                rawbyteoffset += 4 - rawbyteoffset%4;
+
             // read bone offset matrices
             {
                 if( totalbones > 0 )
@@ -279,6 +307,9 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
             for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
             {
                 MyAssert( ai < m_pAnimationTimelines.Count() );
+
+                // Ensure animation data starts on 4-byte boundary.
+                MyAssert( rawbyteoffset%4 == 0 );
 
                 rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
             }
@@ -404,11 +435,13 @@ void MyMesh::LoadAnimationControlFile(const char* buffer)
         for( unsigned int i=0; i<m_pAnimationTimelines.Count(); i++ )
         {
             MyAnimation* pAnim = MyNew MyAnimation;
-            
+
             pAnim->SetName( m_pAnimationTimelines[i]->m_Name );
             pAnim->m_TimelineIndex = i;
             pAnim->m_StartTime = 0;
             pAnim->m_Duration = m_pAnimationTimelines[i]->m_Duration;
+
+            //LOGInfo( LOGTag, "Creating animation: %s %f seconds\n", m_pAnimationTimelines[i]->m_Name, m_pAnimationTimelines[i]->m_Duration );
 
             m_pAnimations.Add( pAnim );
         }

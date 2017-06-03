@@ -196,6 +196,8 @@ int MyChannel::ImportFromBuffer(const char* pBuffer, float scale)
     int byteoffset = 0;
     unsigned int numkeys;
 
+    MyAssert( (int)pBuffer%4 == 0 ); // Must land on 4-byte boundary for (int*) typecasts below.
+
     m_NodeIndex = *(int*)&pBuffer[byteoffset];
     byteoffset += sizeof( int );
 
