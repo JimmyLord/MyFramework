@@ -198,7 +198,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
                 //if( didinverse == false )
                 //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
-                pShader->ProgramCamera( campos, 0, &invworld );
+                pShader->ProgramCamera( campos, camrot, &invworld );
                 checkGlError( "Drawing Mesh ProgramCamera()" );
 
                 pShader->ProgramLights( lightptrs, numlights, &invworld );
@@ -1917,6 +1917,89 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
 
     m_MeshReady = true;
 }
+
+void SetVertex_XYZUV_RGBA(Vertex_XYZUV_RGBA* pVert, float x, float y, float z, float u, float v, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+    pVert->x = x;
+    pVert->y = y;
+    pVert->z = z;
+    pVert->u = u;
+    pVert->v = v;
+    pVert->r = r;
+    pVert->g = g;
+    pVert->b = b;
+    pVert->a = a;
+}
+
+void MyMesh::CreateGrass(Vector3 topleftpos, Vector2 size, Vector2Int bladecount, Vector2 bladesize)
+{
+    checkGlError( "MyMesh::CreateGrass" );
+
+    int numverts = bladecount.x * bladecount.y * 3;
+
+    LOGInfo( LOGTag, "MyMesh::CreateGrass numverts: %d\n", numverts );
+
+    unsigned int numtris = (bladecount.x) * (bladecount.y);
+    unsigned int numindices = 0;
+
+    if( m_SubmeshList.Length() == 0 )
+    {
+        CreateSubmeshes( 1 );
+    }
+    MyAssert( m_SubmeshList.Count() == 1 );
+
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+
+    if( m_SubmeshList[0]->m_pVertexBuffer == 0 )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+    }
+
+    // delete the old buffers, if we want a plane with more.
+    if( sizeof(Vertex_XYZUV_RGBA)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    {
+        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
+        Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts,
+            GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV_RGBA, 0, "MyMesh_Grass", "Verts" );
+    }
+
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+
+    for( int y = 0; y < bladecount.y; y++ )
+    {
+        for( int x = 0; x < bladecount.x; x++ )
+        {
+            unsigned int index = ((y * bladecount.x + x) * 3);
+
+            float posx = topleftpos.x + size.x / (bladecount.x - 1) * x + (rand()%200/100.0f - 1.0f) * bladesize.x/2;
+            float posz = topleftpos.z + size.y / (bladecount.y - 1) * y + (rand()%200/100.0f - 1.0f) * bladesize.x/2;
+
+            SetVertex_XYZUV_RGBA( &pVerts[index+0],
+                                    posx, topleftpos.y, posz,
+                                    180 * PI/180.0f, bladesize.x,
+                                    40, 192 + rand()%24, 40, 255 );
+
+            SetVertex_XYZUV_RGBA( &pVerts[index+1],
+                                    posx, topleftpos.y + bladesize.y, posz,
+                                    0 * PI/180.0f, 0,
+                                    40, pVerts[index+0].g - 64, 40, 255 );
+
+            SetVertex_XYZUV_RGBA( &pVerts[index+2],
+                                    posx, topleftpos.y, posz,
+                                    0 * PI/180.0f, bladesize.x,
+                                    40, pVerts[index+0].g, 40, 255 );
+        }
+    }
+
+    Vector3 center( topleftpos.x + size.x/2, topleftpos.y + bladesize.y/2, topleftpos.z + size.y/ 2 );
+    m_AABounds.Set( center, Vector3(size.x/2, bladesize.y/2, size.y/2) );
+
+    m_MeshReady = true;
+};
 
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars)
 {

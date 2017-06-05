@@ -63,6 +63,9 @@ void Shader_Base::Init_Shader_Base()
 
     m_uHandle_WSCameraPos = -1;
     m_uHandle_LSCameraPos = -1;
+    m_uHandle_CameraAngle = -1;
+    m_uHandle_CameraRotation = -1;
+    m_uHandle_InvCameraRotation = -1;
 
     m_uHandle_AmbientLight = -1;
     m_uHandle_DirLightDir = -1;
@@ -137,6 +140,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
 
     m_uHandle_WSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_WSCameraPos" );
     m_uHandle_LSCameraPos =         GetUniformLocation( m_ProgramHandle, "u_LSCameraPos" );
+    m_uHandle_CameraAngle =         GetUniformLocation( m_ProgramHandle, "u_CameraAngle" );
     m_uHandle_CameraRotation =      GetUniformLocation( m_ProgramHandle, "u_CameraRotation" );
     m_uHandle_InvCameraRotation =   GetUniformLocation( m_ProgramHandle, "u_InvCameraRotation" );
 
@@ -677,6 +681,12 @@ void Shader_Base::ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inve
 
         Vector3 LScampos = *inverseworldmatrix * *campos;
         glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
+    }
+
+    if( m_uHandle_CameraAngle != -1 )
+    {
+        MyAssert( camrot != 0 );
+        glUniform3f( m_uHandle_CameraAngle, camrot->x * PI/180.0f, camrot->y * PI/180.0f, camrot->z * PI/180.0f );
     }
 
     if( m_uHandle_CameraRotation != -1 )

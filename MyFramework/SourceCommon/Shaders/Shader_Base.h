@@ -55,6 +55,7 @@ public:
 
     GLint m_uHandle_WSCameraPos;
     GLint m_uHandle_LSCameraPos;
+    GLint m_uHandle_CameraAngle;
     GLint m_uHandle_CameraRotation;
     GLint m_uHandle_InvCameraRotation;
 

@@ -137,6 +137,7 @@ public:
     void CreateIcosphere(float radius, unsigned int recursionlevel);
     void Create2DCircle(float radius, unsigned int numberofsegments);
     void Create2DArc(Vector3 origin, float startangle, float endangle, float startradius, float endradius, unsigned int numberofsegments);
+    void CreateGrass(Vector3 topleftpos, Vector2 size, Vector2Int bladecount, Vector2 bladesize);
 
     void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
     void CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color);
