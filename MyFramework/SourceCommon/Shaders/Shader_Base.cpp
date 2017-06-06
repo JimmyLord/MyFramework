@@ -712,7 +712,6 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
     if( numlights == 0 )
         return;
 
-    MyAssert( numlights <= MAX_LIGHTS );
     MyAssert( lightptrs );
 
     if( m_uHandle_AmbientLight != -1 )
@@ -723,12 +722,14 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
 #if USE_D3D
     MyAssert( 0 );
 #else
-    int numdir = 0;
+    int numdirs = 0;
     int numpoints = 0;
     for( int i=0; i<numlights; i++ )
     {
         if( lightptrs[i]->m_LightType == LightType_Directional )
         {
+            MyAssert( numdirs <= 1 ); // MAX 1 dir light. TODO: un-hardcode
+
             if( m_uHandle_DirLightDir != -1 )
             {
                 glUniform3f( m_uHandle_DirLightDir, lightptrs[i]->m_SpotDirectionVector.x, lightptrs[i]->m_SpotDirectionVector.y, lightptrs[i]->m_SpotDirectionVector.z );
@@ -738,10 +739,14 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
             {
                 glUniform3f( m_uHandle_DirLightColor, lightptrs[i]->m_Color.r, lightptrs[i]->m_Color.g, lightptrs[i]->m_Color.b ); //, lightptrs[i]->m_Color.a );
             }
+
+            numdirs++;
         }
 
         if( lightptrs[i]->m_LightType == LightType_Point )
         {
+            MyAssert( numpoints <= MAX_LIGHTS );
+
             if( m_uHandle_LightPos[numpoints] != -1 )
             {
                 //MyAssert( inverseworldmatrix != 0 );
