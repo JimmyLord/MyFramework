@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -244,6 +244,11 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
                     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                 }
 
+                if( pMesh->m_pSetupCustomUniformsCallback )
+                {
+                    pMesh->m_pSetupCustomUniformsCallback( pMesh->m_pSetupCustomUniformsObjectPtr, pShader );
+                }
+
                 if( pIndexBuffer )
                     MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
                 else
@@ -280,6 +285,8 @@ MyMesh::MyMesh()
     m_pAnimations.AllocateObjects( MAX_ANIMATIONS );
 
     m_pAnimationControlFile = 0;
+
+    m_pSetupCustomUniformsCallback = 0;
 }
 
 MyMesh::~MyMesh()
@@ -2222,6 +2229,12 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnima
     {
         RebuildNode( pTimeline, animtime, pOldTimeline, oldanimtime, perc, pNode->m_pChildren[cni]->m_SkeletonNodeIndex, &fulltransform );
     }
+}
+
+void MyMesh::RegisterSetupCustomsUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback)
+{
+    m_pSetupCustomUniformsCallback = pCallback;
+    m_pSetupCustomUniformsObjectPtr = pObjectPtr;
 }
 
 unsigned short MyMesh::GetNumVerts()

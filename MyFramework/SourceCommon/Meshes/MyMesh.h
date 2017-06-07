@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -61,6 +61,8 @@ public:
     virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 };
 
+typedef void (*SetupCustomUniformsCallbackFunc)(void* pObjectPtr, Shader_Base* pShader);
+
 class MyMesh : public CPPListNode, public RefCount
 {
     friend class MySubmesh;
@@ -80,6 +82,10 @@ protected:
     MyList<MyAnimation*> m_pAnimations;
 
     MyFileObject* m_pAnimationControlFile; // a .myaniminfo file that hold control info for the animation data.
+
+    // Custom uniform setup before final draw is called. TODO: replace this with custom uniform array in material.
+    SetupCustomUniformsCallbackFunc m_pSetupCustomUniformsCallback;
+    void* m_pSetupCustomUniformsObjectPtr;
 
 public:
     MyList<MySubmesh*> m_SubmeshList;
@@ -158,6 +164,9 @@ public:
     void LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale);
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(const char* buffer);
+
+    void RegisterSetupCustomsUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
+
 #if MYFW_USING_WX
     int m_ControlID_AnimationName[MAX_ANIMATIONS];
 
