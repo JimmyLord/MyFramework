@@ -118,11 +118,6 @@ void UpdatePanelWatchWithSelectedItems()
     }
     else
     {
-        g_pPanelWatch->ClearAllVariables();
-        char temp[30];
-        snprintf_s( temp, 29, "%d objects selected", numselected );
-        g_pPanelWatch->AddSpace( temp, 0, 0, 0 );
-
         if( g_pPanelObjectList->m_pOnTreeMultipleSelectionFunction )
         {
             g_pPanelObjectList->m_pOnTreeMultipleSelectionFunction( g_pPanelObjectList->m_pCallbackFunctionObject );
