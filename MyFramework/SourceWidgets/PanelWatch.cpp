@@ -105,17 +105,60 @@ PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDI
     {    -1,  -1,  -1, -1, -1,                          0,       0,           0,         0,         0, }, //PanelWatchType_Unknown,
 };
 
+wxTextCtrl* VariableProperties::GetTextCtrl()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_TextCtrl );
+    MyAssert( dynamic_cast<wxTextCtrl*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxTextCtrl*>( m_Handle_Control );
+}
+
+wxSlider* VariableProperties::GetSlider()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_Slider );
+    MyAssert( dynamic_cast<wxSlider*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxSlider*>( m_Handle_Control );
+}
+
+wxButton* VariableProperties::GetButton()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_Button );
+    MyAssert( dynamic_cast<wxButton*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxButton*>( m_Handle_Control );
+}
+
+wxColourPickerCtrl* VariableProperties::GetColourPicker()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_ColourPicker );
+    MyAssert( dynamic_cast<wxColourPickerCtrl*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxColourPickerCtrl*>( m_Handle_Control );
+}
+
+wxChoice* VariableProperties::GetChoiceBox()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_ChoiceBox );
+    MyAssert( dynamic_cast<wxChoice*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxChoice*>( m_Handle_Control );
+}
+
+wxComboCtrl* VariableProperties::GetComboCtrl()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_ComboCtrl );
+    MyAssert( dynamic_cast<wxComboCtrl*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxComboCtrl*>( m_Handle_Control );
+}
+
+wxCheckBox* VariableProperties::GetCheckBox()
+{
+    MyAssert( m_ControlType == PanelWatchControlType_CheckBox );
+    MyAssert( dynamic_cast<wxCheckBox*>( m_Handle_Control ) != 0 );
+    return dynamic_cast<wxCheckBox*>( m_Handle_Control );
+}
+
 void VariableProperties::Reset()
 {
     m_Handle_StaticText = 0;
     m_Handle_StaticTextExtraLabel = 0;
-    m_Handle_TextCtrl = 0;
-    m_Handle_Slider = 0;
-    m_Handle_Button = 0;
-    m_Handle_ColourPicker = 0;
-    m_Handle_ChoiceBox = 0;
-    m_Handle_ComboCtrl = 0;
-    m_Handle_CheckBox = 0;
+    m_Handle_Control = 0;
 
     m_Pointer = 0;
     m_Range.Set( 0, 0 );
@@ -215,33 +258,9 @@ void PanelWatch::ClearAllVariables()
             m_pVariables[i].m_Handle_StaticTextExtraLabel->Show( false );
             //m_pVariables[i].m_Handle_StaticTextExtraLabel->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler(PanelWatch::OnClickStaticText) );
         }
-        if( m_pVariables[i].m_Handle_TextCtrl != 0 )
+        if( m_pVariables[i].m_Handle_Control != 0 )
         {
-            m_pVariables[i].m_Handle_TextCtrl->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_Slider != 0 )
-        {
-            m_pVariables[i].m_Handle_Slider->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_Button != 0 )
-        {
-            m_pVariables[i].m_Handle_Button->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_ColourPicker != 0 )
-        {
-            m_pVariables[i].m_Handle_ColourPicker->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
-        {
-            m_pVariables[i].m_Handle_ChoiceBox->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_ComboCtrl != 0 )
-        {
-            m_pVariables[i].m_Handle_ComboCtrl->Show( false );
-        }
-        if( m_pVariables[i].m_Handle_CheckBox != 0 )
-        {
-            m_pVariables[i].m_Handle_CheckBox->Show( false );
+            m_pVariables[i].m_Handle_Control->Show( false );
         }
 
         SAFE_DELETE_ARRAY( m_pVariables[i].m_pEnumStrings );
@@ -595,36 +614,44 @@ int PanelWatch::AddString(const char* name, const char* pString, int maxlength, 
 
 void PanelWatch::SetRightClickFunction(int controlid, PanelWatchCallbackRightClick pRightClickCallbackFunc)
 {
-    m_pVariables[controlid].m_pRightClickCallbackFunc = pRightClickCallbackFunc;
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    pVar->m_pRightClickCallbackFunc = pRightClickCallbackFunc;
 }
 
 void PanelWatch::ChangeDescriptionForPointerWithDescription(int controlid, const char* pDescription)
 {
-    m_pVariables[controlid].m_Handle_TextCtrl->SetValue( pDescription );
-    m_pVariables[controlid].m_Description = pDescription;
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    pVar->GetTextCtrl()->SetValue( pDescription );
+    pVar->m_Description = pDescription;
 }
 
 void PanelWatch::ChangeStaticTextFontStyle(int controlid, wxFontStyle style, wxFontWeight weight)
 {
+    VariableProperties* pVar = &m_pVariables[controlid];
+
     //pStaticText->SetFont( wxFont(pInfo->labelfontheight, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
-    wxFont font = m_pVariables[controlid].m_Handle_StaticText->GetFont();
+    wxFont font = pVar->m_Handle_StaticText->GetFont();
     font.SetStyle( style );
     font.SetWeight( weight );
 
-    if( m_pVariables[controlid].m_Handle_StaticText )
-        m_pVariables[controlid].m_Handle_StaticText->SetFont( font );
+    if( pVar->m_Handle_StaticText )
+        pVar->m_Handle_StaticText->SetFont( font );
 
-    if( m_pVariables[controlid].m_Handle_StaticTextExtraLabel )
-        m_pVariables[controlid].m_Handle_StaticTextExtraLabel->SetFont( font );
+    if( pVar->m_Handle_StaticTextExtraLabel )
+        pVar->m_Handle_StaticTextExtraLabel->SetFont( font );
 }
 
 void PanelWatch::ChangeStaticTextBGColor(int controlid, wxColour colour)
 {
-    if( m_pVariables[controlid].m_Handle_StaticText )
-        m_pVariables[controlid].m_Handle_StaticText->SetBackgroundColour( colour );
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_Handle_StaticTextExtraLabel )
-        m_pVariables[controlid].m_Handle_StaticTextExtraLabel->SetBackgroundColour( colour );
+    if( pVar->m_Handle_StaticText )
+        pVar->m_Handle_StaticText->SetBackgroundColour( colour );
+
+    if( pVar->m_Handle_StaticTextExtraLabel )
+        pVar->m_Handle_StaticTextExtraLabel->SetBackgroundColour( colour );
 }
 
 wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
@@ -856,8 +883,9 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     if( m_pVariables[variablenum].m_Type != PanelWatchType_Button )
     {
         wxStaticText* pStaticText = (wxStaticText*)GetControlOfType( PanelWatchControlType_StaticText );
+        MyAssert( dynamic_cast<wxStaticText*>( pStaticText ) != 0 );
+
         m_pVariables[variablenum].m_Handle_StaticText = pStaticText;
-        MyAssert( dynamic_cast<wxStaticText*>( m_pVariables[variablenum].m_Handle_StaticText ) != 0 );
 
         PosX += SetupStaticTextControl( pStaticText, name, variablenum, (float)PosX, (float)PosY, (float)LabelWidth, (float)LabelHeight, variablename, pInfo );
     }
@@ -879,14 +907,17 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    wxPoint(PosX, PosY), wxSize(SliderWidth, SliderHeight) );
         //m_pVariables[variablenum].m_Handle_Slider = pSlider;
 
-        m_pVariables[variablenum].m_Handle_Slider = (wxSlider*)GetControlOfType( PanelWatchControlType_Slider );
-        MyAssert( dynamic_cast<wxSlider*>( m_pVariables[variablenum].m_Handle_Slider ) != 0 );
+        wxSlider* pSlider = (wxSlider*)GetControlOfType( PanelWatchControlType_Slider );
+        MyAssert( dynamic_cast<wxSlider*>( pSlider ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_Slider->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_Slider->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_Slider->SetInitialSize( wxSize(SliderWidth, SliderHeight) );
-        m_pVariables[variablenum].m_Handle_Slider->SetRange( (int)(m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier),
-                                                             (int)(m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier) );
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_Slider;
+        m_pVariables[variablenum].m_Handle_Control = pSlider;
+
+        pSlider->SetId( variablenum );
+        pSlider->SetPosition( wxPoint(PosX, PosY) );
+        pSlider->SetInitialSize( wxSize(SliderWidth, SliderHeight) );
+        pSlider->SetRange( (int)(m_pVariables[variablenum].m_Range.x * sliderfloatmultiplier),
+                           (int)(m_pVariables[variablenum].m_Range.y * sliderfloatmultiplier) );
 
         PosX += SliderWidth;
     }
@@ -898,14 +929,17 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight), wxTE_PROCESS_ENTER );
         //m_pVariables[variablenum].m_Handle_TextCtrl = pTextCtrl;
 
-        m_pVariables[variablenum].m_Handle_TextCtrl = (wxTextCtrl*)GetControlOfType( PanelWatchControlType_TextCtrl );
-        MyAssert( dynamic_cast<wxTextCtrl*>( m_pVariables[variablenum].m_Handle_TextCtrl ) != 0 );
+        wxTextCtrl* pTextCtrl = (wxTextCtrl*)GetControlOfType( PanelWatchControlType_TextCtrl );
+        MyAssert( dynamic_cast<wxTextCtrl*>( pTextCtrl ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_TextCtrl->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_TextCtrl->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_TextCtrl->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
-        m_pVariables[variablenum].m_Handle_TextCtrl->SetWindowStyle( wxTE_PROCESS_ENTER );
-        m_pVariables[variablenum].m_Handle_TextCtrl->SetValue( variablename );
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_TextCtrl;
+        m_pVariables[variablenum].m_Handle_Control = pTextCtrl;
+
+        pTextCtrl->SetId( variablenum );
+        pTextCtrl->SetPosition( wxPoint(PosX, PosY) );
+        pTextCtrl->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        pTextCtrl->SetWindowStyle( wxTE_PROCESS_ENTER );
+        pTextCtrl->SetValue( variablename );
 
         PosX += TextCtrlWidth;
 
@@ -916,20 +950,21 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
             pDropTarget->m_ControlIndex = variablenum;
 
-            m_pVariables[variablenum].m_Handle_TextCtrl->SetDropTarget( pDropTarget );            
+            pTextCtrl->SetDropTarget( pDropTarget );            
         }
     }
 
     if( type == PanelWatchType_Bool )
     {
-        m_pVariables[variablenum].m_Handle_CheckBox = (wxCheckBox*)GetControlOfType( PanelWatchControlType_CheckBox );
-        MyAssert( dynamic_cast<wxCheckBox*>( m_pVariables[variablenum].m_Handle_CheckBox ) != 0 );
+        wxCheckBox* pCheckBox = (wxCheckBox*)GetControlOfType( PanelWatchControlType_CheckBox );
+        MyAssert( dynamic_cast<wxCheckBox*>( pCheckBox ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_CheckBox->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_CheckBox->SetPosition( wxPoint(PosX, PosY) );
-        //m_pVariables[variablenum].m_Handle_CheckBox->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
-        //m_pVariables[variablenum].m_Handle_CheckBox->SetWindowStyle( wxTE_PROCESS_ENTER );
-        m_pVariables[variablenum].m_Handle_CheckBox->Set3StateValue( *(bool*)m_pVariables[variablenum].m_Pointer ? wxCHK_CHECKED : wxCHK_UNCHECKED );
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_CheckBox;
+        m_pVariables[variablenum].m_Handle_Control = pCheckBox;
+
+        pCheckBox->SetId( variablenum );
+        pCheckBox->SetPosition( wxPoint(PosX, PosY) );
+        pCheckBox->Set3StateValue( *(bool*)m_pVariables[variablenum].m_Pointer ? wxCHK_CHECKED : wxCHK_UNCHECKED );
 
         if( m_pVariables[variablenum].m_pOnDropCallbackFunc )
         {
@@ -938,7 +973,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
             pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
             pDropTarget->m_ControlIndex = variablenum;
 
-            m_pVariables[variablenum].m_Handle_TextCtrl->SetDropTarget( pDropTarget );            
+            pCheckBox->SetDropTarget( pDropTarget );            
         }
     }
 
@@ -950,16 +985,19 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    m_pVariables[variablenum].m_pEnumStrings, wxTE_PROCESS_ENTER );
         //m_pVariables[variablenum].m_Handle_ChoiceBox = pChoiceBox;
 
-        m_pVariables[variablenum].m_Handle_ChoiceBox = (wxChoice*)GetControlOfType( PanelWatchControlType_ChoiceBox );
-        MyAssert( dynamic_cast<wxChoice*>( m_pVariables[variablenum].m_Handle_ChoiceBox ) != 0 );
+        wxChoice* pChoiceBox = (wxChoice*)GetControlOfType( PanelWatchControlType_ChoiceBox );
+        MyAssert( dynamic_cast<wxChoice*>( pChoiceBox ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_ChoiceBox->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_ChoiceBox->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_ChoiceBox->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
-        m_pVariables[variablenum].m_Handle_ChoiceBox->SetWindowStyle( wxTE_PROCESS_ENTER );
-        m_pVariables[variablenum].m_Handle_ChoiceBox->Set( m_pVariables[variablenum].m_NumEnumTypes, m_pVariables[variablenum].m_pEnumStrings );
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_ChoiceBox;
+        m_pVariables[variablenum].m_Handle_Control = pChoiceBox;
 
-        m_pVariables[variablenum].m_Handle_ChoiceBox->SetSelection( *(int*)m_pVariables[variablenum].m_Pointer );
+        pChoiceBox->SetId( variablenum );
+        pChoiceBox->SetPosition( wxPoint(PosX, PosY) );
+        pChoiceBox->SetInitialSize( wxSize(TextCtrlWidth, TextCtrlHeight) );
+        pChoiceBox->SetWindowStyle( wxTE_PROCESS_ENTER );
+        pChoiceBox->Set( m_pVariables[variablenum].m_NumEnumTypes, m_pVariables[variablenum].m_pEnumStrings );
+
+        pChoiceBox->SetSelection( *(int*)m_pVariables[variablenum].m_Pointer );
 
         PosX += g_PanelWatchControlInfo[type].choiceboxwidth;
     }
@@ -967,9 +1005,11 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
     if( g_PanelWatchControlInfo[type].comboctrlwidth != 0 )
     {
         // add a checkbox drop list for flag types.
-        m_pVariables[variablenum].m_Handle_ComboCtrl = (wxComboCtrl*)GetControlOfType( PanelWatchControlType_ComboCtrl );
-        wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboCtrl;
+        wxComboCtrl* pComboCtrl = (wxComboCtrl*)GetControlOfType( PanelWatchControlType_ComboCtrl );
         MyAssert( dynamic_cast<wxComboCtrl*>( pComboCtrl ) != 0 );
+
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_ComboCtrl;
+        m_pVariables[variablenum].m_Handle_Control = pComboCtrl;
 
         pComboCtrl->SetId( variablenum );
         pComboCtrl->SetPosition( wxPoint(PosX, PosY) );
@@ -1004,17 +1044,20 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    wxPoint(PosX, PosY), wxSize(LabelWidth, LabelHeight) );
         //m_pVariables[variablenum].m_Handle_Button = pButton;
 
-        m_pVariables[variablenum].m_Handle_Button = (wxButton*)GetControlOfType( PanelWatchControlType_Button );
-        MyAssert( dynamic_cast<wxButton*>( m_pVariables[variablenum].m_Handle_Button ) != 0 );
+        wxButton* pButton = (wxButton*)GetControlOfType( PanelWatchControlType_Button );
+        MyAssert( dynamic_cast<wxButton*>( pButton ) != 0 );
+
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_Button;
+        m_pVariables[variablenum].m_Handle_Control = pButton;
 
         Vector2Int controlsize = Vector2Int( LabelWidth, LabelHeight );
         if( size.x != -1 )
             controlsize = size;
 
-        m_pVariables[variablenum].m_Handle_Button->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_Button->SetPosition( wxPoint(PosX+offset.x, PosY+offset.y) );
-        m_pVariables[variablenum].m_Handle_Button->SetInitialSize( wxSize(controlsize.x, controlsize.y) );
-        m_pVariables[variablenum].m_Handle_Button->SetLabel( variablename );
+        pButton->SetId( variablenum );
+        pButton->SetPosition( wxPoint(PosX+offset.x, PosY+offset.y) );
+        pButton->SetInitialSize( wxSize(controlsize.x, controlsize.y) );
+        pButton->SetLabel( variablename );
 
         PosX += TextCtrlWidth;
     }
@@ -1028,12 +1071,15 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    wxPoint(PosX, PosY), wxSize(TextCtrlWidth, TextCtrlHeight) );
         //m_pVariables[variablenum].m_Handle_ColourPicker = pCtrl;
 
-        m_pVariables[variablenum].m_Handle_ColourPicker = (wxColourPickerCtrl*)GetControlOfType( PanelWatchControlType_ColourPicker );
-        MyAssert( dynamic_cast<wxColourPickerCtrl*>( m_pVariables[variablenum].m_Handle_ColourPicker ) != 0 );
+        wxColourPickerCtrl* pColourPicker = (wxColourPickerCtrl*)GetControlOfType( PanelWatchControlType_ColourPicker );
+        MyAssert( dynamic_cast<wxColourPickerCtrl*>( pColourPicker ) != 0 );
 
-        m_pVariables[variablenum].m_Handle_ColourPicker->SetId( variablenum );
-        m_pVariables[variablenum].m_Handle_ColourPicker->SetPosition( wxPoint(PosX, PosY) );
-        m_pVariables[variablenum].m_Handle_ColourPicker->SetInitialSize( wxSize(ColorPickerWidth, TextCtrlHeight) );
+        m_pVariables[variablenum].m_ControlType = PanelWatchControlType_ColourPicker;
+        m_pVariables[variablenum].m_Handle_Control = pColourPicker;
+
+        pColourPicker->SetId( variablenum );
+        pColourPicker->SetPosition( wxPoint(PosX, PosY) );
+        pColourPicker->SetInitialSize( wxSize(ColorPickerWidth, TextCtrlHeight) );
 
         PosX += TextCtrlWidth;
 
@@ -1044,7 +1090,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         //    pDropTarget->m_pCallbackFunc = m_pVariables[variablenum].m_pOnDropCallbackFunc;
         //    pDropTarget->m_ControlIndex = variablenum;
 
-        //    pCtrl->SetDropTarget( pDropTarget );            
+        //    pColourPicker->SetDropTarget( pDropTarget );            
         //}
     }
 
@@ -1052,6 +1098,15 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 
     SetScrollbars( 1, 1, PosX+10, height, 0, 0 );
     SetScrollRate( 1, 20 );
+
+    // Set tab order.
+    if( variablenum != 0 )
+    {
+        if( m_pVariables[variablenum].m_Handle_Control && m_pVariables[variablenum-1].m_Handle_Control )
+        {
+            m_pVariables[variablenum].m_Handle_Control->MoveAfterInTabOrder( m_pVariables[variablenum-1].m_Handle_Control );
+        }
+    }
 }
 
 PanelWatchDropTarget::PanelWatchDropTarget()
@@ -1088,9 +1143,11 @@ void PanelWatch::OnButtonPressed(wxCommandEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
-    if( m_pVariables[controlid].m_pOnButtonPressedCallbackFunc )
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    if( pVar->m_pOnButtonPressedCallbackFunc )
     {
-        m_pVariables[controlid].m_pOnButtonPressedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, m_pVariables[controlid].m_ButtonID );
+        pVar->m_pOnButtonPressedCallbackFunc( pVar->m_pCallbackObj, pVar->m_ButtonID );
     }
 }
 
@@ -1101,8 +1158,9 @@ void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    int valueold = *(int*)m_pVariables[controlid].m_Pointer;
+    int valueold = *(int*)pVar->m_Pointer;
     int valuenew = event.GetSelection();
 
     // call the parent object to say it's value changed.
@@ -1111,8 +1169,8 @@ void PanelWatch::OnChoiceBoxChanged(wxCommandEvent& event)
         // add the command to the undo stack and change the value at the same time.
         m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
             valuenew - valueold,
-            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, true,
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            pVar->m_Type, pVar->m_Pointer, controlid, true,
+            pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
     }
 }
 
@@ -1123,13 +1181,14 @@ void PanelWatch::OnComboCtrlChanged(wxCommandEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    int valueold = *(int*)m_pVariables[controlid].m_Pointer;
+    int valueold = *(int*)pVar->m_Pointer;
     int valuenew = event.GetSelection();
 
     // call the parent object to say it's value changed.
     {
-        MyAssert( m_pVariables[controlid].m_Type == PanelWatchType_Flags );
+        MyAssert( pVar->m_Type == PanelWatchType_Flags );
 
         if( valueold & 1<<valuenew ) // if this bit was selected, unselect it.
         {
@@ -1141,13 +1200,13 @@ void PanelWatch::OnComboCtrlChanged(wxCommandEvent& event)
         }
 
         wxString string = GetFlagsAsString( controlid );
-        m_pVariables[controlid].m_Handle_ComboCtrl->SetText( string );
+        pVar->GetComboCtrl()->SetText( string );
 
         // add the command to the undo stack and change the value at the same time.
         m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
             valuenew - valueold,
-            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, true,
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            pVar->m_Type, pVar->m_Pointer, controlid, true,
+            pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
     }
 }
 
@@ -1158,8 +1217,9 @@ void PanelWatch::OnCheckBoxChanged(wxCommandEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    bool valueold = *(bool*)m_pVariables[controlid].m_Pointer;
+    bool valueold = *(bool*)pVar->m_Pointer;
     bool valuenew = event.IsChecked();
 
     // call the parent object to say it's value changed.
@@ -1168,8 +1228,8 @@ void PanelWatch::OnCheckBoxChanged(wxCommandEvent& event)
         // add the command to the undo stack and change the value at the same time.
         m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
             valuenew - valueold,
-            m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, true,
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+            pVar->m_Type, pVar->m_Pointer, controlid, true,
+            pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
     }
 }
 
@@ -1215,9 +1275,9 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
 
     wxPoint pos = event.GetPosition();
 
-    if( pVar->m_Handle_Slider )
+    if( pVar->m_ControlType == PanelWatchControlType_Slider )
     {
-        int value = pVar->m_Handle_Slider->GetValue();
+        int value = pVar->GetSlider()->GetValue();
 
         MyAssert( false ); // if a slider is used, I'll need to retest all slider code.
         //pVar->m_CapturedMouse = true;
@@ -1227,7 +1287,8 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
     }
-    if( pVar->m_Handle_TextCtrl )
+
+    if( pVar->m_ControlType == PanelWatchControlType_TextCtrl )
     {
         double newvalue, oldvalue;
         //bool isblank =
@@ -1238,7 +1299,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
 
-        pVar->m_Handle_TextCtrl->CaptureMouse();
+        pVar->GetTextCtrl()->CaptureMouse();
         pVar->m_CapturedMouse = true;
     }
 }
@@ -1250,32 +1311,33 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
     //bool showrightclickmenu = true;
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_Handle_TextCtrl )
+    if( pVar->m_ControlType == PanelWatchControlType_TextCtrl )
     {
-        if( m_pVariables[controlid].m_CapturedMouse )
+        if( pVar->m_CapturedMouse )
         {
-            m_pVariables[controlid].m_Handle_TextCtrl->ReleaseMouse();
-            m_pVariables[controlid].m_CapturedMouse = false;
+            pVar->GetTextCtrl()->ReleaseMouse();
+            pVar->m_CapturedMouse = false;
         }
 
         double newvalue, oldvalue;
         bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        if( isblank == false && newvalue != m_pVariables[controlid].m_ValueOnLeftMouseDown )
+        if( isblank == false && newvalue != pVar->m_ValueOnLeftMouseDown )
         {
-            SetControlValueFromDouble( controlid, newvalue, m_pVariables[controlid].m_ValueOnLeftMouseDown, true );
+            SetControlValueFromDouble( controlid, newvalue, pVar->m_ValueOnLeftMouseDown, true );
             //showrightclickmenu = false;
         }
 
         // if the value changed, then don't show the right click menu.
-        if( m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed )
+        if( pVar->m_ValueChangedSinceMouseWasPressed )
             return;
     }
 
-    if( m_pVariables[controlid].m_pRightClickCallbackFunc )
+    if( pVar->m_pRightClickCallbackFunc )
     {
-        m_pVariables[controlid].m_pRightClickCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
+        pVar->m_pRightClickCallbackFunc( pVar->m_pCallbackObj, controlid );
         return;
     }
 
@@ -1287,38 +1349,39 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
     int controlid = event.GetId();
 
     event.Skip();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_CapturedMouse )
+    if( pVar->m_CapturedMouse )
     {
         wxPoint pos = event.GetPosition();
-        wxPoint lastpos = m_pVariables[controlid].m_LastMousePosition;
-        wxPoint startpos = m_pVariables[controlid].m_StartMousePosition;
+        wxPoint lastpos = pVar->m_LastMousePosition;
+        wxPoint startpos = pVar->m_StartMousePosition;
 
         if( pos.x != startpos.x )
         {
-            if( m_pVariables[controlid].m_Handle_TextCtrl )
+            if( pVar->m_ControlType == PanelWatchControlType_TextCtrl )
             {
-                //m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
+                //pVar->GetTextCtrl()->WarpPointer( pVar->m_StartMousePosition.x, pVar->m_StartMousePosition.y );
 
                 double newvalue, oldvalue;
                 GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 int diff = pos.x - lastpos.x;
 
-                if( m_pVariables[controlid].m_Type == PanelWatchType_Int ||
-                    m_pVariables[controlid].m_Type == PanelWatchType_UnsignedInt ||
-                    m_pVariables[controlid].m_Type == PanelWatchType_Char ||
-                    m_pVariables[controlid].m_Type == PanelWatchType_UnsignedChar ||
-                    m_pVariables[controlid].m_Type == PanelWatchType_Bool )
+                if( pVar->m_Type == PanelWatchType_Int ||
+                    pVar->m_Type == PanelWatchType_UnsignedInt ||
+                    pVar->m_Type == PanelWatchType_Char ||
+                    pVar->m_Type == PanelWatchType_UnsignedChar ||
+                    pVar->m_Type == PanelWatchType_Bool )
                 {
                     // whole numbers are handled in OnMouseLeftControl
                     //newvalue += diff;
-                    //m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
+                    //pVar->m_ValueChangedSinceMouseWasPressed = true;
                 }
                 else
                 {
                     newvalue += 0.2f * diff;
-                    m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
+                    pVar->m_ValueChangedSinceMouseWasPressed = true;
                 }
 
                 //LOGInfo( LOGTag, "moved %d %d\n", pos.x, lastpos.x );
@@ -1330,28 +1393,29 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
             }
         }
 
-        m_pVariables[controlid].m_LastMousePosition = pos;
+        pVar->m_LastMousePosition = pos;
     }
 }
 
 void PanelWatch::OnMouseLeftControl(wxMouseEvent& event)
 {
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_CapturedMouse )
+    if( pVar->m_CapturedMouse )
     {
-        if( m_pVariables[controlid].m_Handle_TextCtrl )
+        if( pVar->m_ControlType == PanelWatchControlType_TextCtrl )
         {
             // Change all whole numbers by 1 each time the mouse leaves the control window.
 
-            if( m_pVariables[controlid].m_Type == PanelWatchType_Int ||
-                m_pVariables[controlid].m_Type == PanelWatchType_UnsignedInt ||
-                m_pVariables[controlid].m_Type == PanelWatchType_Char ||
-                m_pVariables[controlid].m_Type == PanelWatchType_UnsignedChar ||
-                m_pVariables[controlid].m_Type == PanelWatchType_Bool )
+            if( pVar->m_Type == PanelWatchType_Int ||
+                pVar->m_Type == PanelWatchType_UnsignedInt ||
+                pVar->m_Type == PanelWatchType_Char ||
+                pVar->m_Type == PanelWatchType_UnsignedChar ||
+                pVar->m_Type == PanelWatchType_Bool )
             {
                 wxPoint pos = event.GetPosition();
-                wxPoint ctrlpos = m_pVariables[controlid].m_StartMousePosition;
+                wxPoint ctrlpos = pVar->m_StartMousePosition;
 
                 int direction = 1;
                 if( pos.x < ctrlpos.x )
@@ -1361,12 +1425,12 @@ void PanelWatch::OnMouseLeftControl(wxMouseEvent& event)
                 GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
                 newvalue += direction;
-                m_pVariables[controlid].m_ValueChangedSinceMouseWasPressed = true;
+                pVar->m_ValueChangedSinceMouseWasPressed = true;
 
                 SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
             }
 
-            m_pVariables[controlid].m_Handle_TextCtrl->WarpPointer( m_pVariables[controlid].m_StartMousePosition.x, m_pVariables[controlid].m_StartMousePosition.y );
+            pVar->GetTextCtrl()->WarpPointer( pVar->m_StartMousePosition.x, pVar->m_StartMousePosition.y );
         }
         return;
     }
@@ -1380,9 +1444,10 @@ void PanelWatch::OnClickStaticText(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-        m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, true, 0 );
+    if( pVar->m_pOnValueChangedCallbackFunc )
+        pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
 }
 
 void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
@@ -1390,9 +1455,10 @@ void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
     event.Skip();
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_pRightClickCallbackFunc )
-        m_pVariables[controlid].m_pRightClickCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid );
+    if( pVar->m_pRightClickCallbackFunc )
+        pVar->m_pRightClickCallbackFunc( pVar->m_pCallbackObj, controlid );
 }
 
 void PanelWatch::Tick(double TimePassed)
@@ -1419,17 +1485,19 @@ void PanelWatch::OnTextCtrlEnter(wxCommandEvent& event)
 {
     int controlid = event.GetId();
 
-    m_pVariables[controlid].m_Handle_TextCtrl->Navigate();
-    if( controlid < m_NumVariables && m_pVariables[controlid+1].m_Handle_Slider )
+    m_pVariables[controlid].GetTextCtrl()->Navigate();
+    if( controlid < m_NumVariables && m_pVariables[controlid+1].m_ControlType == PanelWatchControlType_Slider )
     {
-        m_pVariables[controlid+1].m_Handle_Slider->Navigate();
+        m_pVariables[controlid+1].GetSlider()->Navigate();
     }
 }
 
 // returns true if blank
 bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, double* valueold)
 {
-    wxString wxstr = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    wxString wxstr = pVar->GetTextCtrl()->GetValue();
 
     bool isblank = false;
     if( wxstr == "" )
@@ -1445,70 +1513,70 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
         evaluatedvalue = 0;
 
     //double valueint;
-    switch( m_pVariables[controlid].m_Type )
+    switch( pVar->m_Type )
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
     case PanelWatchType_Flags:
         //if( isblank == false )
         {
-            *valueold = *(int*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(int*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxAtoi( wxstr );
-            //*((int*)m_pVariables[controlid].m_Pointer) = valueint;
+            //*((int*)pVar->m_Pointer) = valueint;
         }
         break;
 
     case PanelWatchType_UnsignedInt:
         //if( isblank == false )
         {
-            *valueold = *(unsigned int*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(unsigned int*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxAtoi( wxstr );
-            //*((unsigned int*)m_pVariables[controlid].m_Pointer) = valueint;
+            //*((unsigned int*)pVar->m_Pointer) = valueint;
         }
         break;
 
     case PanelWatchType_Char:
         //if( isblank == false )
         {
-            *valueold = *(char*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(char*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxAtoi( wxstr );
-            //*((char*)m_pVariables[controlid].m_Pointer) = (char)valueint;
+            //*((char*)pVar->m_Pointer) = (char)valueint;
         }
         break;
 
     case PanelWatchType_UnsignedChar:
         //if( isblank == false )
         {
-            *valueold = *(unsigned char*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(unsigned char*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxAtoi( wxstr );
-            //*((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valueint;
+            //*((unsigned char*)pVar->m_Pointer) = (unsigned char)valueint;
         }
         break;
 
     case PanelWatchType_Bool:
         //if( isblank == false )
         {
-            *valueold = *(bool*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(bool*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxAtoi( wxstr );
-            //*((bool*)m_pVariables[controlid].m_Pointer) = valueint > 0 ? true : false;
+            //*((bool*)pVar->m_Pointer) = valueint > 0 ? true : false;
         }
         break;
 
     case PanelWatchType_Float:
         //if( isblank == false )
         {
-            *valueold = *(float*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(float*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxstr.ToDouble( valuenew );
-            //*((float*)m_pVariables[controlid].m_Pointer) = (float)valuedouble;
+            //*((float*)pVar->m_Pointer) = (float)valuedouble;
         }
         break;
 
     case PanelWatchType_Double:
         //if( isblank == false )
         {
-            *valueold = *(double*)m_pVariables[controlid].m_Pointer;
+            *valueold = *(double*)pVar->m_Pointer;
             *valuenew = evaluatedvalue; //wxstr.ToDouble( valuenew );
-            //*((double*)m_pVariables[controlid].m_Pointer) = valuedouble;
+            //*((double*)pVar->m_Pointer) = valuedouble;
         }
         break;
 
@@ -1535,47 +1603,49 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
 
 void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging)
 {
+    VariableProperties* pVar = &m_pVariables[controlid];
+
     // if a range is specified, clamp the new value to that range.
-    if( !fequal( m_pVariables[controlid].m_Range.x, m_pVariables[controlid].m_Range.y ) )
+    if( !fequal( pVar->m_Range.x, pVar->m_Range.y ) )
     {
-        MyAssert( m_pVariables[controlid].m_Range.x < m_pVariables[controlid].m_Range.y );
-        MyClamp( valuenew, (double)m_pVariables[controlid].m_Range.x, (double)m_pVariables[controlid].m_Range.y );
+        MyAssert( pVar->m_Range.x < pVar->m_Range.y );
+        MyClamp( valuenew, (double)pVar->m_Range.x, (double)pVar->m_Range.y );
     }
 
-    switch( m_pVariables[controlid].m_Type )
+    switch( pVar->m_Type )
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
     case PanelWatchType_Flags:
-        *((int*)m_pVariables[controlid].m_Pointer) = (int)valuenew;
+        *((int*)pVar->m_Pointer) = (int)valuenew;
         break;
 
     case PanelWatchType_UnsignedInt:
-        *((unsigned int*)m_pVariables[controlid].m_Pointer) = (unsigned int)valuenew;
+        *((unsigned int*)pVar->m_Pointer) = (unsigned int)valuenew;
         break;
 
     case PanelWatchType_Char:
-        *((char*)m_pVariables[controlid].m_Pointer) = (char)valuenew;
+        *((char*)pVar->m_Pointer) = (char)valuenew;
         break;
 
     case PanelWatchType_UnsignedChar:
-        *((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)valuenew;
+        *((unsigned char*)pVar->m_Pointer) = (unsigned char)valuenew;
         break;
 
     case PanelWatchType_Bool:
-        *((bool*)m_pVariables[controlid].m_Pointer) = valuenew > 0 ? true : false;
+        *((bool*)pVar->m_Pointer) = valuenew > 0 ? true : false;
         break;
 
     case PanelWatchType_Float:
-        *((float*)m_pVariables[controlid].m_Pointer) = (float)valuenew;
+        *((float*)pVar->m_Pointer) = (float)valuenew;
         break;
 
     case PanelWatchType_Double:
-        *((double*)m_pVariables[controlid].m_Pointer) = valuenew;
+        *((double*)pVar->m_Pointer) = valuenew;
         break;
 
     //case PanelWatchType_Vector3:
-    //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+    //    *((float*)pVar->m_Pointer) = value / WXSlider_Float_Multiplier;
     //    break;
 
     case PanelWatchType_ColorFloat:
@@ -1597,19 +1667,19 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
                 // add the command to the undo stack and value was already changed.
                 m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, false,
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+                    pVar->m_Type, pVar->m_Pointer, controlid, false,
+                    pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
     
                 // call the parent object to say it's value changed... finished changing.
-                if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, true, valueold );
+                if( pVar->m_pOnValueChangedCallbackFunc )
+                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, valueold );
             }
         }
         else
         {
             // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
-            if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, false, valueold );
+            if( pVar->m_pCallbackObj && pVar->m_pOnValueChangedCallbackFunc )
+                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, valueold );
         }
     }
 
@@ -1622,47 +1692,49 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
     double valuenew = 0;
     GetTextCtrlValueAsDouble( controlid, &valuenew, &valueold ); //bool isblank = 
 
-    //LOGInfo( LOGTag, "OnTextCtrlChanged start %f\n", *(float*)m_pVariables[controlid].m_Pointer );
+    //LOGInfo( LOGTag, "OnTextCtrlChanged start %f\n", *(float*)pVar->m_Pointer );
 
-    if( m_pVariables[controlid].m_Handle_Slider )
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    if( pVar->m_ControlType == PanelWatchControlType_Slider )
     {
         float sliderfloatmultiplier = 1;
-        if( m_pVariables[controlid].m_Type == PanelWatchType_Float ||
-            m_pVariables[controlid].m_Type == PanelWatchType_Double ) //||
-            //m_pVariables[controlid].m_Type == PanelWatchType_Vector3 )
+        if( pVar->m_Type == PanelWatchType_Float ||
+            pVar->m_Type == PanelWatchType_Double ) //||
+            //pVar->m_Type == PanelWatchType_Vector3 )
         {
             sliderfloatmultiplier = WXSlider_Float_Multiplier;
         }
 
-        if( valuenew < m_pVariables[controlid].m_Range.x )
+        if( valuenew < pVar->m_Range.x )
         {
-            m_pVariables[controlid].m_Range.x = (float)valuenew;
+            pVar->m_Range.x = (float)valuenew;
         }
-        if( valuenew > m_pVariables[controlid].m_Range.y )
+        if( valuenew > pVar->m_Range.y )
         {
-            m_pVariables[controlid].m_Range.y = (float)valuenew;
+            pVar->m_Range.y = (float)valuenew;
         }
 
-        m_pVariables[controlid].m_Handle_Slider->SetRange( (int)(m_pVariables[controlid].m_Range.x * sliderfloatmultiplier),
-                                                           (int)(m_pVariables[controlid].m_Range.y * sliderfloatmultiplier) );
+        pVar->GetSlider()->SetRange( (int)(pVar->m_Range.x * sliderfloatmultiplier),
+                                         (int)(pVar->m_Range.y * sliderfloatmultiplier) );
     }
 
-    if( m_pVariables[controlid].m_Type == PanelWatchType_String )
+    if( pVar->m_Type == PanelWatchType_String )
     {
-        wxString wxtext = m_pVariables[controlid].m_Handle_TextCtrl->GetValue();
+        wxString wxtext = pVar->GetTextCtrl()->GetValue();
         const char* text = wxtext;
-        sprintf_s( (char*)m_pVariables[controlid].m_Pointer, (size_t)m_pVariables[controlid].m_Range.y, "%s", text );
+        sprintf_s( (char*)pVar->m_Pointer, (size_t)pVar->m_Range.y, "%s", text );
         int bp = 1;
     }
 
     // call the parent object to say it's value changed.
-    //if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
+    //if( pVar->m_pCallbackObj && pVar->m_pOnValueChangedCallbackFunc )
     {
-        if( m_pVariables[controlid].m_Type == PanelWatchType_PointerWithDesc )
+        if( pVar->m_Type == PanelWatchType_PointerWithDesc )
         {
             // TODO: if typed into a pointer box, deal with it... along with undo/redo.
-            if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, true, 0 );
+            if( pVar->m_pOnValueChangedCallbackFunc )
+                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
         }
         else
         {
@@ -1671,13 +1743,13 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
                 // add the command to the undo stack and change the value at the same time.
                 m_pCommandStack->Do( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, true,
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+                    pVar->m_Type, pVar->m_Pointer, controlid, true,
+                    pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
             }
         }
     }
 
-    //LOGInfo( LOGTag, "OnTextCtrlChanged end %f\n", *(float*)m_pVariables[controlid].m_Pointer );
+    //LOGInfo( LOGTag, "OnTextCtrlChanged end %f\n", *(float*)pVar->m_Pointer );
 }
 
 void PanelWatch::OnSliderChanged(wxScrollEvent& event)
@@ -1685,11 +1757,12 @@ void PanelWatch::OnSliderChanged(wxScrollEvent& event)
     MyAssert( false ); // if a slider is used, I'll need to retest all slider code.
 
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    if( m_pVariables[controlid].m_CapturedMouse == false )
+    if( pVar->m_CapturedMouse == false )
         return;
 
-    int value = m_pVariables[controlid].m_Handle_Slider->GetValue();
+    int value = pVar->GetSlider()->GetValue();
 
     //wxEventType eventtype = event.GetEventType();
     //LOGInfo( LOGTag, "OnSliderChanged: type:%d value:%d\n", eventtype, value );
@@ -1699,40 +1772,42 @@ void PanelWatch::OnSliderChanged(wxScrollEvent& event)
 
 void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
 {
-    switch( m_pVariables[controlid].m_Type )
+    VariableProperties* pVar = &m_pVariables[controlid];
+
+    switch( pVar->m_Type )
     {
     case PanelWatchType_Int:
     case PanelWatchType_Enum:
     case PanelWatchType_Flags:
-        *((int*)m_pVariables[controlid].m_Pointer) = value;
+        *((int*)pVar->m_Pointer) = value;
         break;
 
     case PanelWatchType_UnsignedInt:
-        *((unsigned int*)m_pVariables[controlid].m_Pointer) = value;
+        *((unsigned int*)pVar->m_Pointer) = value;
         break;
 
     case PanelWatchType_Char:
-        *((char*)m_pVariables[controlid].m_Pointer) = (char)value;
+        *((char*)pVar->m_Pointer) = (char)value;
         break;
 
     case PanelWatchType_UnsignedChar:
-        *((unsigned char*)m_pVariables[controlid].m_Pointer) = (unsigned char)value;
+        *((unsigned char*)pVar->m_Pointer) = (unsigned char)value;
         break;
 
     case PanelWatchType_Bool:
-        *((bool*)m_pVariables[controlid].m_Pointer) = value > 0 ? true : false;
+        *((bool*)pVar->m_Pointer) = value > 0 ? true : false;
         break;
 
     case PanelWatchType_Float:
-        *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+        *((float*)pVar->m_Pointer) = value / WXSlider_Float_Multiplier;
         break;
 
     case PanelWatchType_Double:
-        *((double*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+        *((double*)pVar->m_Pointer) = value / WXSlider_Float_Multiplier;
         break;
 
     //case PanelWatchType_Vector3:
-    //    *((float*)m_pVariables[controlid].m_Pointer) = value / WXSlider_Float_Multiplier;
+    //    *((float*)pVar->m_Pointer) = value / WXSlider_Float_Multiplier;
     //    break;
 
     case PanelWatchType_ColorFloat:
@@ -1748,17 +1823,17 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
 
     {
         // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
-        if( m_pVariables[controlid].m_pCallbackObj && m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-            m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, false, 0 );
+        if( pVar->m_pCallbackObj && pVar->m_pOnValueChangedCallbackFunc )
+            pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, 0 );
 
         if( addundocommand )
         {
             double valuenew = value;
-            double valueold = m_pVariables[controlid].m_ValueOnLeftMouseDown;
+            double valueold = pVar->m_ValueOnLeftMouseDown;
 
-            if( m_pVariables[controlid].m_Type == PanelWatchType_Float ||
-                m_pVariables[controlid].m_Type == PanelWatchType_Double ) //||
-                //m_pVariables[controlid].m_Type == PanelWatchType_Vector3 )
+            if( pVar->m_Type == PanelWatchType_Float ||
+                pVar->m_Type == PanelWatchType_Double ) //||
+                //pVar->m_Type == PanelWatchType_Vector3 )
             {
                 valuenew /= WXSlider_Float_Multiplier;
                 valueold /= WXSlider_Float_Multiplier;
@@ -1769,12 +1844,12 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
                 // add the command to the undo stack and value was already changed.
                 m_pCommandStack->Add( MyNew EditorCommand_PanelWatchNumberValueChanged(
                     valuenew - valueold,
-                    m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, false,
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+                    pVar->m_Type, pVar->m_Pointer, controlid, false,
+                    pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
     
                 // call the parent object to say it's value changed... finished changing.
-                if( m_pVariables[controlid].m_pOnValueChangedCallbackFunc )
-                    m_pVariables[controlid].m_pOnValueChangedCallbackFunc( m_pVariables[controlid].m_pCallbackObj, controlid, true, true, 0 );
+                if( pVar->m_pOnValueChangedCallbackFunc )
+                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
             }
         }
     }
@@ -1785,26 +1860,27 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
 void PanelWatch::OnColourPickerChanged(wxColourPickerEvent& event)
 {
     int controlid = event.GetId();
+    VariableProperties* pVar = &m_pVariables[controlid];
 
-    MyAssert( m_pVariables[controlid].m_Type == PanelWatchType_ColorFloat ||
-              m_pVariables[controlid].m_Type == PanelWatchType_ColorByte );
+    MyAssert( pVar->m_Type == PanelWatchType_ColorFloat ||
+              pVar->m_Type == PanelWatchType_ColorByte );
 
-    wxColour colour = m_pVariables[controlid].m_Handle_ColourPicker->GetColour();
+    wxColour colour = pVar->GetColourPicker()->GetColour();
 
     ColorFloat asfloats;
     asfloats.r = colour.Red()   / 255.0f;
     asfloats.g = colour.Green() / 255.0f;
     asfloats.b = colour.Blue()  / 255.0f;
-    if( m_pVariables[controlid].m_Type == PanelWatchType_ColorByte )
-        asfloats.a = ((ColorByte*)m_pVariables[controlid].m_Pointer)->a / 255.0f; // colour picker doesn't do alpha.
+    if( pVar->m_Type == PanelWatchType_ColorByte )
+        asfloats.a = ((ColorByte*)pVar->m_Pointer)->a / 255.0f; // colour picker doesn't do alpha.
     else
-        asfloats.a = ((ColorFloat*)m_pVariables[controlid].m_Pointer)->a; // colour picker doesn't do alpha.
+        asfloats.a = ((ColorFloat*)pVar->m_Pointer)->a; // colour picker doesn't do alpha.
 
     // add the command to the undo stack and change the value at the same time.
     m_pCommandStack->Do( MyNew EditorCommand_PanelWatchColorChanged(
         asfloats,
-        m_pVariables[controlid].m_Type, m_pVariables[controlid].m_Pointer, controlid, true,
-        m_pVariables[controlid].m_pOnValueChangedCallbackFunc, m_pVariables[controlid].m_pCallbackObj ) );
+        pVar->m_Type, pVar->m_Pointer, controlid, true,
+        pVar->m_pOnValueChangedCallbackFunc, pVar->m_pCallbackObj ) );
 }
 
 void PanelWatch::UpdatePanel(int controltoupdate)
@@ -1893,7 +1969,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
                                  (unsigned char)(asfloats.g * 255.0f),
                                  (unsigned char)(asfloats.b * 255.0f),
                                  (unsigned char)(asfloats.a * 255.0f) );
-                m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
+                m_pVariables[i].GetColourPicker()->SetColour( colour );
             }
             break;
 
@@ -1901,7 +1977,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
             {
                 ColorByte* colorbyte = (ColorByte*)m_pVariables[i].m_Pointer;
                 wxColour colour( colorbyte->r, colorbyte->g, colorbyte->b, colorbyte->a );
-                m_pVariables[i].m_Handle_ColourPicker->SetColour( colour );
+                m_pVariables[i].GetColourPicker()->SetColour( colour );
             }
             break;
 
@@ -1941,25 +2017,23 @@ void PanelWatch::UpdatePanel(int controltoupdate)
         if( strcmp( tempstring, "not set" ) == 0 )
             int bp = 1;
 
-        if( m_pVariables[i].m_Handle_ChoiceBox == 0 &&
-            m_pVariables[i].m_Handle_ComboCtrl == 0 &&
-            m_pVariables[i].m_Handle_TextCtrl != 0 )
-            m_pVariables[i].m_Handle_TextCtrl->ChangeValue( tempstring );
+        if( m_pVariables[i].m_ControlType == PanelWatchControlType_TextCtrl )
+            m_pVariables[i].GetTextCtrl()->ChangeValue( tempstring );
 
-        if( m_pVariables[i].m_Handle_Slider != 0 )
-            m_pVariables[i].m_Handle_Slider->SetValue( slidervalue );
+        if( m_pVariables[i].m_ControlType == PanelWatchControlType_Slider )
+            m_pVariables[i].GetSlider()->SetValue( slidervalue );
 
-        if( m_pVariables[i].m_Handle_ChoiceBox != 0 )
-            m_pVariables[i].m_Handle_ChoiceBox->SetSelection( slidervalue );
+        if( m_pVariables[i].m_ControlType == PanelWatchControlType_ChoiceBox )
+            m_pVariables[i].GetChoiceBox()->SetSelection( slidervalue );
 
-        if( m_pVariables[i].m_Handle_CheckBox != 0 )
-            m_pVariables[i].m_Handle_CheckBox->SetValue( slidervalue != 0 ? true : false );
+        if( m_pVariables[i].m_ControlType == PanelWatchControlType_CheckBox )
+            m_pVariables[i].GetCheckBox()->SetValue( slidervalue != 0 ? true : false );
     }
 }
 
 wxString PanelWatch::GetFlagsAsString(int variablenum)
 {
-    wxComboCtrl* pComboCtrl = m_pVariables[variablenum].m_Handle_ComboCtrl;
+    wxComboCtrl* pComboCtrl = m_pVariables[variablenum].GetComboCtrl();
     wxCheckListComboPopup* pCheckListComboPopup = (wxCheckListComboPopup*)pComboCtrl->GetPopupControl();
 
     wxString string;

@@ -101,15 +101,11 @@ public:
 
 struct VariableProperties
 {
+    // Each control will have a single control and possible a text label.
     wxStaticText* m_Handle_StaticText;
     wxStaticText* m_Handle_StaticTextExtraLabel;
-    wxTextCtrl* m_Handle_TextCtrl;
-    wxSlider* m_Handle_Slider;
-    wxButton* m_Handle_Button;
-    wxColourPickerCtrl* m_Handle_ColourPicker;
-    wxChoice* m_Handle_ChoiceBox;
-    wxComboCtrl* m_Handle_ComboCtrl;
-    wxCheckBox* m_Handle_CheckBox;
+    PanelWatchControlTypes m_ControlType;
+    wxControl* m_Handle_Control;
 
     void* m_Pointer;
     Vector2 m_Range;
@@ -132,6 +128,14 @@ struct VariableProperties
     wxPoint m_StartMousePosition;
     wxPoint m_LastMousePosition;
     bool m_CapturedMouse;
+
+    wxTextCtrl* GetTextCtrl();
+    wxSlider* GetSlider();
+    wxButton* GetButton();
+    wxColourPickerCtrl* GetColourPicker();
+    wxChoice* GetChoiceBox();
+    wxComboCtrl* GetComboCtrl();
+    wxCheckBox* GetCheckBox();
 
     void Reset();
 };
