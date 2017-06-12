@@ -63,29 +63,29 @@ public:
     //void Refresh();
 
     wxTreeItemId FindMaterialCategory(const char* category);
-    void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
     void RemoveMaterial(MaterialDefinition* pMaterial);
-    void SetMaterialPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void SetMaterialPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
     const char* GetSelectedMaterialTreeItemText();
     MaterialDefinition* GetSelectedMaterial();
 
-    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction);
     void RemoveTexture(TextureDefinition* pTextureDef);
 
-    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction);
     void RemoveShaderGroup(ShaderGroup* pShaderGroup);
 
     wxTreeItemId FindSoundCue(SoundCue* pSoundCue);
-    wxTreeItemId AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListCallback pDragFunction);
+    wxTreeItemId AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction);
     void RemoveSoundCue(SoundCue* pSoundCue);
-    wxTreeItemId AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListCallback pDragFunction);
+    wxTreeItemId AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListObjectCallback pDragFunction);
     void RemoveSoundObject(SoundObject* pSound);
-    void SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
 
     wxTreeItemId FindFile(MyFileObject* pFile);
-    void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
     void RemoveFile(MyFileObject* pFile);
-    void SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, PanelObjectListCallback pDragFunction);
+    void SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
 
     void AddBuffer(BufferDefinition* pBufferDef, const char* category, const char* desc);
     void UpdateBuffer(BufferDefinition* pBufferDef);
@@ -95,7 +95,7 @@ public:
     void RemoveAllDrawCalls();
     void RemoveDrawCall(int index);
 
-    void SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListLabelEditCallback pLabelEditFunction);
+    void SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListObjectCallbackLabelEdit pLabelEditFunction);
     void OnTreeBeginLabelEdit(wxTreeEvent& event);
     void OnTreeEndLabelEdit(wxTreeEvent& event);
     wxString GetObjectName(wxTreeCtrl* pTree, void* pObject);

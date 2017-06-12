@@ -16,7 +16,7 @@ class MyFileObject;
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif
 
-typedef void (*PanelObjectListCallback)(void*);
+typedef void (*PanelObjectListObjectCallback)(void*);
 
 typedef void (*FileFinishedLoadingCallbackFunc)(void* pObjectPtr, MyFileObject* pFile);
 struct FileFinishedLoadingCallbackStruct : public CPPListNode
@@ -136,9 +136,9 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
-    PanelObjectListCallback m_CustomLeftClickCallback;
+    PanelObjectListObjectCallback m_CustomLeftClickCallback;
     void* m_CustomLeftClickObject;
-    void SetCustomLeftClickCallback(PanelObjectListCallback callback, void* object);
+    void SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object);
 #endif //MYFW_USING_WX
 };
 

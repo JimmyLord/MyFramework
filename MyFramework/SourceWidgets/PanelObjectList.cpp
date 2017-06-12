@@ -32,6 +32,7 @@ PanelObjectList::PanelObjectList(wxFrame* parentframe)
     m_pCallbackFunctionObject = 0;
     m_pOnTreeSelectionChangedFunction = 0;
     m_pOnTreeMultipleSelectionFunction = 0;
+    m_pOnTreeDeleteSelectionFunction = 0;
     m_UpdatePanelWatchOnSelection = true;
 
     Update();
@@ -249,9 +250,11 @@ void PanelObjectList::OnKeyDown(wxTreeEvent& event)
 
     if( event.GetKeyCode() == WXK_DELETE )
     {
-        // TODO: send this event to the object/objects selected
-
-        //return;
+        // Send this event to the object registered.
+        if( g_pPanelObjectList->m_pOnTreeDeleteSelectionFunction )
+        {
+            g_pPanelObjectList->m_pOnTreeDeleteSelectionFunction( g_pPanelObjectList->m_pCallbackFunctionObject );
+        }
     }
 
     event.Skip();
@@ -452,7 +455,7 @@ wxTreeItemId PanelObjectList::GetTreeRoot()
     return m_pTree_Objects->GetRootItem();
 }
 
-void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction)
+void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -470,7 +473,7 @@ void PanelObjectList::SetTreeRootData(void* pObject, PanelObjectListCallbackLeft
     }
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex)
 {
     MyAssert( pObject != 0 );
 
@@ -501,7 +504,7 @@ wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLe
     return AddObject( pObject, pLeftClickFunction, pRightClickFunction, idcategory, desc, iconindex );
 }
 
-wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex)
+wxTreeItemId PanelObjectList::AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex)
 {
     MyAssert( pObject != 0 );
 
@@ -541,7 +544,7 @@ void PanelObjectList::SetIcon(wxTreeItemId id, int iconindex)
     }
 }
 
-void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction)
+void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListObjectCallback pDragFunction, PanelObjectListObjectCallbackDropTarget pDropFunction)
 {
     //wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     //wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );
@@ -556,7 +559,7 @@ void PanelObjectList::SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCa
     }
 }
 
-void PanelObjectList::SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabelEditCallback pLabelEditFunction)
+void PanelObjectList::SetLabelEditFunction(wxTreeItemId id, PanelObjectListObjectCallbackLabelEdit pLabelEditFunction)
 {
     //wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
     //wxTreeItemId id = FindObject( m_pTree_Objects, pObject, idroot );

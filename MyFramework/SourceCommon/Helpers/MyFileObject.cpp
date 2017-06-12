@@ -536,7 +536,7 @@ void MyFileObject::OnDrag()
     g_DragAndDropStruct.m_Value = this;
 }
 
-void MyFileObject::SetCustomLeftClickCallback(PanelObjectListCallback callback, void* object)
+void MyFileObject::SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object)
 {
     m_CustomLeftClickObject = object;
     m_CustomLeftClickCallback = callback;

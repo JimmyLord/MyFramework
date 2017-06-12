@@ -15,11 +15,13 @@ class DragAndDropTreeMarker;
 
 extern PanelObjectList* g_pPanelObjectList;
 
-typedef void (*PanelObjectListCallback)(void*);
-typedef void (*PanelObjectListCallbackLeftClick)(void*, wxTreeItemId id, unsigned int count);
-typedef void (*PanelObjectListCallbackRightClick)(void*, wxTreeItemId id);
-typedef void (*PanelObjectListCallbackDropTarget)(void* pObjectPtr, wxTreeItemId id, int controlid, wxCoord x, wxCoord y);
-typedef void (*PanelObjectListLabelEditCallback)(void* pObjectPtr, wxTreeItemId id, wxString);
+typedef void (*PanelObjectListObjectCallback)(void* pObjectPtr);
+typedef void (*PanelObjectListObjectCallbackLeftClick)(void* pObjectPtr, wxTreeItemId id, unsigned int count);
+typedef void (*PanelObjectListObjectCallbackRightClick)(void* pObjectPtr, wxTreeItemId id);
+typedef void (*PanelObjectListObjectCallbackDropTarget)(void* pObjectPtr, wxTreeItemId id, int controlid, wxCoord x, wxCoord y);
+typedef void (*PanelObjectListObjectCallbackLabelEdit)(void* pObjectPtr, wxTreeItemId id, wxString);
+
+typedef void (*PanelObjectListCallback)(void* pObjectPtr);
 
 // Macros to make life easier if I change the params of any of these functions.
 #define MYFW_PANELOBJECTLIST_DEFINE_CALLBACK_ONDROP(FunctionName, ObjectClass) \
@@ -51,11 +53,11 @@ public:
     }
 
     void* m_pObject;
-    PanelObjectListCallbackLeftClick m_pLeftClickFunction;
-    PanelObjectListCallbackRightClick m_pRightClickFunction;
-    PanelObjectListCallback m_pDragFunction;
-    PanelObjectListCallbackDropTarget m_pDropFunction;
-    PanelObjectListLabelEditCallback m_pLabelEditFunction;
+    PanelObjectListObjectCallbackLeftClick m_pLeftClickFunction;
+    PanelObjectListObjectCallbackRightClick m_pRightClickFunction;
+    PanelObjectListObjectCallback m_pDragFunction;
+    PanelObjectListObjectCallbackDropTarget m_pDropFunction;
+    PanelObjectListObjectCallbackLabelEdit m_pLabelEditFunction;
 
     // a different object can receive the callback function if needed.
     void* m_pObject_LeftClick;
@@ -88,6 +90,7 @@ public:
     void* m_pCallbackFunctionObject;
     PanelObjectListCallback m_pOnTreeSelectionChangedFunction;
     PanelObjectListCallback m_pOnTreeMultipleSelectionFunction;
+    PanelObjectListCallback m_pOnTreeDeleteSelectionFunction;
 
     // Function panel watch will call if it needs a refresh.
     //static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { ((PanelObjectList*)pObjectPtr)->UpdatePanelWatchWithSelectedItems(); }
@@ -122,13 +125,13 @@ public:
 
     //void Refresh();
     wxTreeItemId GetTreeRoot();
-    void SetTreeRootData(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListCallbackLeftClick pLeftClickFunction, PanelObjectListCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
+    void SetTreeRootData(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
 
     void SetIcon(wxTreeItemId id, int iconindex);
-    void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListCallback pDragFunction, PanelObjectListCallbackDropTarget pDropFunction);
-    void SetLabelEditFunction(wxTreeItemId id, PanelObjectListLabelEditCallback pLabelEditFunction);
+    void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListObjectCallback pDragFunction, PanelObjectListObjectCallbackDropTarget pDropFunction);
+    void SetLabelEditFunction(wxTreeItemId id, PanelObjectListObjectCallbackLabelEdit pLabelEditFunction);
     void SetCustomObjectForCallback_LeftClick(wxTreeItemId id, void* pObject);
     void SetCustomObjectForCallback_RightClick(wxTreeItemId id, void* pObject);
     void SetCustomObjectForCallback_Drag(wxTreeItemId id, void* pObject);
