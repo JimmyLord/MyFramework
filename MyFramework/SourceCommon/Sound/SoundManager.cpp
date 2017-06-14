@@ -124,8 +124,7 @@ void SoundCue::SetName(const char* name)
 #if MYFW_USING_WX
 void SoundCue::OnDrag()
 {
-    g_DragAndDropStruct.m_Type = DragAndDropType_SoundCuePointer;
-    g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.Add( DragAndDropType_SoundCuePointer, this );
 }
 
 void SoundCue::SaveSoundCue(const char* relativefolder)

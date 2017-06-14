@@ -16,6 +16,42 @@
 
 DragAndDropStruct g_DragAndDropStruct;
 
+void DragAndDropItem::Reset()
+{
+    m_Type = DragAndDropType_NotSet;
+    m_Value = 0;
+}
+
+void DragAndDropItem::Set(DragAndDropTypes type, void* value)
+{
+    m_Type = type;
+    m_Value = value;
+}
+
+void DragAndDropStruct::Clear()
+{
+    m_Items.clear();
+    m_ControlID = -1;
+}
+
+void DragAndDropStruct::Add(DragAndDropTypes type, void* value)
+{
+    DragAndDropItem newitem;
+    newitem.Set( type, value );
+
+    m_Items.push_back( newitem );
+}
+
+unsigned int DragAndDropStruct::GetItemCount()
+{
+    return m_Items.size();
+}
+
+DragAndDropItem* DragAndDropStruct::GetItem(int index)
+{
+    return &m_Items[index];
+}
+
 DragAndDropTreeMarker::DragAndDropTreeMarker(wxWindow* pParent)
 : wxPanel( pParent, wxID_ANY, wxDefaultPosition, wxSize(80, 2) )
 {

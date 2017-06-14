@@ -63,8 +63,7 @@ TextureDefinition::~TextureDefinition()
 #if MYFW_USING_WX
 void TextureDefinition::OnDrag()
 {
-    g_DragAndDropStruct.m_Type = DragAndDropType_TextureDefinitionPointer;
-    g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.Add( DragAndDropType_TextureDefinitionPointer, this );
 }
 #endif //MYFW_USING_WX
 

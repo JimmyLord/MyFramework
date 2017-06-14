@@ -132,8 +132,7 @@ ShaderGroup::~ShaderGroup()
 #if MYFW_USING_WX
 void ShaderGroup::OnDrag()
 {
-    g_DragAndDropStruct.m_Type = DragAndDropType_ShaderGroupPointer;
-    g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.Add( DragAndDropType_ShaderGroupPointer, this );
 }
 #endif //MYFW_USING_WX
 

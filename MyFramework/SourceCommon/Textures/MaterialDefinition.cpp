@@ -398,8 +398,7 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
 
 void MaterialDefinition::OnDrag()
 {
-    g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
-    g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.Add( DragAndDropType_MaterialDefinitionPointer, this );
 }
 
 void MaterialDefinition::OnLabelEdit(wxString newlabel)
@@ -531,9 +530,11 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
 void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
 {
-    if( g_DragAndDropStruct.m_Type == DragAndDropType_ShaderGroupPointer )
+    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
+
+    if( pDropItem->m_Type == DragAndDropType_ShaderGroupPointer )
     {
-        ShaderGroup* pShaderGroup = (ShaderGroup*)g_DragAndDropStruct.m_Value;
+        ShaderGroup* pShaderGroup = (ShaderGroup*)pDropItem->m_Value;
         MyAssert( pShaderGroup );
         //MyAssert( m_pMesh );
 
@@ -551,15 +552,17 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
         }
 
         // update the panel so new Shader name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
     }
 }
 
 void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
 {
-    if( g_DragAndDropStruct.m_Type == DragAndDropType_FileObjectPointer )
+    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
+
+    if( pDropItem->m_Type == DragAndDropType_FileObjectPointer )
     {
-        MyFileObject* pFile = (MyFileObject*)g_DragAndDropStruct.m_Value;
+        MyFileObject* pFile = (MyFileObject*)pDropItem->m_Value;
         MyAssert( pFile );
         //MyAssert( m_pMesh );
 
@@ -573,15 +576,15 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
         }
 
         // update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = m_pTextureColor->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->m_Filename;
     }
 
-    if( g_DragAndDropStruct.m_Type == DragAndDropType_TextureDefinitionPointer )
+    if( pDropItem->m_Type == DragAndDropType_TextureDefinitionPointer )
     {
-        SetTextureColor( (TextureDefinition*)g_DragAndDropStruct.m_Value );
+        SetTextureColor( (TextureDefinition*)pDropItem->m_Value );
 
         // update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = m_pTextureColor->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->m_Filename;
     }
 }
 #endif //MYFW_USING_WX

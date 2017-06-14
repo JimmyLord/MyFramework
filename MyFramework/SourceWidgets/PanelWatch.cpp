@@ -1132,7 +1132,7 @@ wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def
     // figure out which object the stuff was dropped on and let it know.
     MyAssert( m_pCallbackObj && m_pCallbackFunc );
 
-    g_DragAndDropStruct.m_ID = m_ControlIndex;
+    g_DragAndDropStruct.SetControlID( m_ControlIndex );
     m_pCallbackFunc( m_pCallbackObj, m_ControlIndex, x, y );
 
     return wxDragNone;

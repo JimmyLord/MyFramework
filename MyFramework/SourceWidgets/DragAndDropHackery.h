@@ -26,18 +26,30 @@ enum DragAndDropTypes
     DragAndDropType_UserDefinedTypes,
 };
 
-struct DragAndDropStruct
+struct DragAndDropItem
 {
     DragAndDropTypes m_Type;
     void* m_Value;
-    int m_ID;
 
-    void Reset()
-    {
-        m_Type = DragAndDropType_NotSet;
-        m_Value = 0;
-        m_ID = -1;
-    }
+    void Reset();
+    void Set(DragAndDropTypes type, void* value);
+};
+
+struct DragAndDropStruct
+{
+protected:
+    std::vector<DragAndDropItem> m_Items;
+    int m_ControlID;
+
+public:
+    void Clear();
+
+    void SetControlID(int id) { m_ControlID = id; }
+    int GetControlID() { return m_ControlID; }
+
+    void Add(DragAndDropTypes type, void* value);
+    unsigned int GetItemCount();
+    DragAndDropItem* GetItem(int index);
 };
 
 extern DragAndDropStruct g_DragAndDropStruct;

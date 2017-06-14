@@ -196,6 +196,9 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
         m_pTree_Objects->SelectItem( m_ItemSelectedBeforeDrag );
     }
 
+    // Clear out the hacked up Drag and Drag structure, so the m_pDragFunction callback can fill it up.
+    g_DragAndDropStruct.Clear();
+
     wxTreeItemId id = event.GetItem();
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
     if( pData && pData->m_pDragFunction )

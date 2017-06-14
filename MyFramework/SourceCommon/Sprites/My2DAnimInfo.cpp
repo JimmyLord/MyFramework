@@ -241,9 +241,11 @@ void My2DAnimInfo::OnSaveAnimationsPressed(int buttonid)
 
 void My2DAnimInfo::OnDropMaterial(int controlid, wxCoord x, wxCoord y)
 {
-    if( g_DragAndDropStruct.m_Type == DragAndDropType_MaterialDefinitionPointer )
+    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
+
+    if( pDropItem->m_Type == DragAndDropType_MaterialDefinitionPointer )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)g_DragAndDropStruct.m_Value;
+        MaterialDefinition* pMaterial = (MaterialDefinition*)pDropItem->m_Value;
         MyAssert( pMaterial );
 
         for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
@@ -263,7 +265,7 @@ void My2DAnimInfo::OnDropMaterial(int controlid, wxCoord x, wxCoord y)
                     const char* desc = "no material";
                     if( pFrame->m_pMaterial != 0 )
                         desc = pFrame->m_pMaterial->GetName();
-                    g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.m_ID )->m_Description = desc;
+                    g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = desc;
                 }
             }
         }

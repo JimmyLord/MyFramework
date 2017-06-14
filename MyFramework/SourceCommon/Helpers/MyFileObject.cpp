@@ -532,8 +532,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
 
 void MyFileObject::OnDrag()
 {
-    g_DragAndDropStruct.m_Type = DragAndDropType_FileObjectPointer;
-    g_DragAndDropStruct.m_Value = this;
+    g_DragAndDropStruct.Add( DragAndDropType_FileObjectPointer, this );
 }
 
 void MyFileObject::SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object)

@@ -735,6 +735,9 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     // get the pointer to the tree affected.
     wxTreeCtrl* pTree = (wxTreeCtrl*)event.GetEventObject();
 
+    // Clear out the hacked up Drag and Drag structure, so the m_pDragFunction callback can fill it up.
+    g_DragAndDropStruct.Clear();
+
     wxTreeItemId id = event.GetItem();
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
     if( pData && pData->m_pDragFunction )
