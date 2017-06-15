@@ -60,16 +60,9 @@ PanelObjectList::~PanelObjectList()
 
 void PanelObjectList::OnTreeItemLeftDown(wxMouseEvent& event)
 {
-    // store the first selected item, for cases when the new selected item is dragged.
+    // store the selected items, for cases when an unselected item is dragged, which selects that item.
     // TODO: DRAGOBJECTLISTITEM: find a better way to deal with this.
-    wxArrayTreeItemIds selecteditems;
-    unsigned int numselected = (unsigned int)g_pPanelObjectList->m_pTree_Objects->GetSelections( selecteditems );
-    
-    if( numselected > 0 )
-    {
-        g_pPanelObjectList->m_ItemSelectedBeforeDrag = selecteditems[0].GetID();
-        //LOGInfo( LOGTag, "PanelObjectList::OnTreeItemLeftDown\n" );
-    }
+    g_pPanelObjectList->m_pTree_Objects->GetSelections( g_pPanelObjectList->m_ItemsSelectedBeforeDrag );
 
     event.Skip();
 }
@@ -186,28 +179,45 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     // This only works within this app, not between apps.
 
     // get the pointer to the tree affected.
-    wxTreeCtrl* pTree = m_pTree_Objects;
-
-    // reselect the item that was selected before dragging
-    // TODO: DRAGOBJECTLISTITEM: find a better way to deal with this.
-    if( m_ItemSelectedBeforeDrag.IsOk() )
-    {
-        m_pTree_Objects->UnselectAll();
-        m_pTree_Objects->SelectItem( m_ItemSelectedBeforeDrag );
-    }
+    wxTreeCtrl* pTree = g_pPanelObjectList->m_pTree_Objects;
 
     // Clear out the hacked up Drag and Drag structure, so the m_pDragFunction callback can fill it up.
     g_DragAndDropStruct.Clear();
 
-    wxTreeItemId id = event.GetItem();
-    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
-    if( pData && pData->m_pDragFunction )
+    wxArrayTreeItemIds selecteditems;
+    unsigned int numselected = (unsigned int)pTree->GetSelections( selecteditems );
+
+    for( unsigned int i=0; i<numselected; i++ )
     {
-        pData->m_pDragFunction( pData->m_pObject_Drag ? pData->m_pObject_Drag : pData->m_pObject );
+        wxTreeItemId id = selecteditems[i].GetID();
+        if( id.IsOk() )
+        {
+            TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)pTree->GetItemData( id );
+            if( pData && pData->m_pDragFunction )
+            {
+                pData->m_pDragFunction( pData->m_pObject_Drag ? pData->m_pObject_Drag : pData->m_pObject );
+            }
+            else
+            {
+                break;
+            }
+        }
     }
-    else
+
+    // Reselect the items that were selected before dragging. ATM dragging selects the dragged item.
+    // TODO: DRAGOBJECTLISTITEM: find a better way to deal with this.
+    pTree->UnselectAll();
+    for( unsigned int i=0; i<g_pPanelObjectList->m_ItemsSelectedBeforeDrag.Count(); i++ )
     {
-        return; // cancel drag and drop.
+        pTree->SelectItem( g_pPanelObjectList->m_ItemsSelectedBeforeDrag[i] );
+    }
+
+    //LOGInfo( LOGTag, "%d items were dragged\n", g_DragAndDropStruct.GetItemCount() );
+
+    // If no items added themselves to the g_DragAndDropStruct, cancel drag and drop.
+    if( g_DragAndDropStruct.GetItemCount() == 0 )
+    {
+        return;
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.

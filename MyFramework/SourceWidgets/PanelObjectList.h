@@ -97,7 +97,8 @@ public:
     //void UpdatePanelWatchWithSelectedItems();
     static void StaticUpdatePanelWatchWithSelectedItems(void* pObjectPtr) { UpdatePanelWatchWithSelectedItems(); }
 
-    wxTreeItemId m_ItemSelectedBeforeDrag;
+    //std::vector<wxTreeItemId> m_ItemsSelectedBeforeDrag;
+    wxArrayTreeItemIds m_ItemsSelectedBeforeDrag;
 
     DragAndDropTreeMarker* m_pDragAndDropTreeMarker;
 
