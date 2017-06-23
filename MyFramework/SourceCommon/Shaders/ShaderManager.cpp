@@ -437,7 +437,7 @@ void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
     }
 }
 
-void ShaderManager::InvalidateAllShadersUsingIncludeFile(MyFileObjectShader* pIncludeFile)
+void ShaderManager::InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFind)
 {
     // Loop through all loaded shaders.
     for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
@@ -446,11 +446,16 @@ void ShaderManager::InvalidateAllShadersUsingIncludeFile(MyFileObjectShader* pIn
 
         MyFileObjectShader* pFile = pShader->m_pFile;
 
+        if( pFile == pFileToFind )
+        {
+            pShader->Invalidate( true );
+        }
+
         // Loop through all of their includes.
         for( int i=0; i<pFile->m_NumIncludes; i++ )
         {
             // If it matches ours, invalidate the shader.
-            if( pFile->m_pIncludes[i].m_pIncludedFile == pIncludeFile )
+            if( pFile->m_pIncludes[i].m_pIncludedFile == pFileToFind )
             {
                 pShader->Invalidate( true );
             }

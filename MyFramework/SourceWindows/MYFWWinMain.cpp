@@ -93,7 +93,7 @@ void SetWindowSize(int width, int height)
     int windowwidth = WindowRect.right - WindowRect.left;
     int windowheight = WindowRect.bottom - WindowRect.top;
     
-    SetWindowPos( hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE ) ;
+    SetWindowPos( hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
     
     ResizeGLScene( width, height );
 }
@@ -449,28 +449,28 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
         0, 0, 0                         // Layer Masks Ignored
     };
 
-    if( !( hDeviceContext = GetDC(hWnd) ) ) // Did We Get A Device Context?
+    if( !( hDeviceContext = GetDC( hWnd ) ) ) // Did We Get A Device Context?
     {
         KillGLWindow();
         MessageBox( 0, L"Can't Create A GL Device Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
         return 0;
     }
 
-    if( !( PixelFormat = ChoosePixelFormat(hDeviceContext, &pfd) ) ) // Did Windows Find A Matching Pixel Format?
+    if( !( PixelFormat = ChoosePixelFormat( hDeviceContext, &pfd ) ) ) // Did Windows Find A Matching Pixel Format?
     {
         KillGLWindow();
         MessageBox( 0, L"Can't Find A Suitable PixelFormat.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
         return 0;
     }
 
-    if( !SetPixelFormat( hDeviceContext, PixelFormat, &pfd) ) // Are We Able To Set The Pixel Format?
+    if( !SetPixelFormat( hDeviceContext, PixelFormat, &pfd ) ) // Are We Able To Set The Pixel Format?
     {
         KillGLWindow();
         MessageBox( 0, L"Can't Set The PixelFormat.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
         return 0;
     }
 
-    if( !( hRenderingContext = wglCreateContext(hDeviceContext) ) ) // Are We Able To Get A Rendering Context?
+    if( !( hRenderingContext = wglCreateContext( hDeviceContext ) ) ) // Are We Able To Get A Rendering Context?
     {
         KillGLWindow();
         MessageBox( 0, L"Can't Create A GL Rendering Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
@@ -523,7 +523,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
         {
-            PostQuitMessage(0);
+            PostQuitMessage( 0 );
         }
         return 0;
 
@@ -665,7 +665,7 @@ int MYFWWinMain(int width, int height)
 
     // Initialize sockets
     WSAData wsaData;
-    int code = WSAStartup(MAKEWORD(1, 1), &wsaData);
+    int code = WSAStartup( MAKEWORD(1, 1), &wsaData );
     if( code != 0 )
     {
         LOGError( LOGTag, "WSAStartup error:%d\n",code );

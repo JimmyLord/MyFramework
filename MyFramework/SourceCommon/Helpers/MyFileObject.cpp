@@ -360,6 +360,9 @@ void MyFileObject::Tick()
 
 bool MyFileObject::IsNewVersionAvailable()
 {
+    if( m_FileLoadStatus == FileLoadStatus_Loading )
+        return false;
+
     bool updated = false;
 
     // If the file load status was an error.

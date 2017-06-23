@@ -80,7 +80,7 @@ public:
 
     void AddShader(BaseShader* pShader);
     void InvalidateAllShaders(bool cleanglallocs);
-    void InvalidateAllShadersUsingIncludeFile(MyFileObjectShader* pIncludeFile);
+    void InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFind);
 };
 
 #endif //__ShaderManager_H__

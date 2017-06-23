@@ -28,10 +28,7 @@ void MyFileObjectShader::UnloadContents()
 {
     MyFileObject::UnloadContents();
 
-    if( m_IsAnIncludeFile )
-    {
-        g_pShaderManager->InvalidateAllShadersUsingIncludeFile( this );
-    }
+    g_pShaderManager->InvalidateAllShadersUsingFile( this );
 
     ClearIncludedFiles();
 }
