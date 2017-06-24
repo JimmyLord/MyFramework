@@ -165,7 +165,7 @@ public:
     void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(const char* buffer);
 
-    void RegisterSetupCustomsUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
+    void RegisterSetupCustomUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
 
 #if MYFW_USING_WX
     int m_ControlID_AnimationName[MAX_ANIMATIONS];

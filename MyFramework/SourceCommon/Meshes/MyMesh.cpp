@@ -2231,7 +2231,7 @@ void MyMesh::RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnima
     }
 }
 
-void MyMesh::RegisterSetupCustomsUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback)
+void MyMesh::RegisterSetupCustomUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback)
 {
     m_pSetupCustomUniformsCallback = pCallback;
     m_pSetupCustomUniformsObjectPtr = pObjectPtr;
