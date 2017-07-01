@@ -11,6 +11,32 @@
 
 ShaderManager* g_pShaderManager = 0;
 
+const char* g_pBrokenShaderString =
+"                                                                                       \n\
+#ifndef WIN32                                                                           \n\
+precision mediump float;                                                                \n\
+#endif                                                                                  \n\
+                                                                                        \n\
+uniform float u_Time;                                                                   \n\
+                                                                                        \n\
+#ifdef VertexShader                                                                     \n\
+    attribute vec4 a_Position;                                                          \n\
+    uniform mat4 u_WorldViewProj;                                                       \n\
+    void main()                                                                         \n\
+    {                                                                                   \n\
+        gl_Position = u_WorldViewProj * a_Position;                                     \n\
+    }                                                                                   \n\
+#endif                                                                                  \n\
+                                                                                        \n\
+#ifdef FragmentShader                                                                   \n\
+    void main()                                                                         \n\
+    {                                                                                   \n\
+    	vec2 offset = floor( (gl_FragCoord.xy + u_Time*5) / vec2(10, 10) );             \n\
+        gl_FragColor = vec4( mod( offset.x + offset.y, 2.0 ) * vec3( 1, 0.5, 0 ), 1 );  \n\
+    }                                                                                   \n\
+#endif                                                                                  \n\
+";
+
 BaseShader::BaseShader()
 {
     Init_BaseShader();
@@ -201,7 +227,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 {
     MyAssert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
 
-    // if we already failed to compile, don't try again.
+    // If we already failed to compile, don't try again.
     if( m_ShaderFailedToCompile )
     {
         //LOGError( LOGTag, "BaseShader::LoadAndCompile - m_ShaderFailedToCompile\n" );
@@ -214,20 +240,21 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         return false;
     }
 
-    if( m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
-    {
-        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->GetFullPath() );
-        return false;
-    }
-
-    // if the file isn't loaded, come back next frame and check again.
+    // If the file isn't loaded, come back next frame and check again.
     if( m_pFile->GetFileLoadStatus() != FileLoadStatus_Success ||
         (m_pFilePixelShader != 0 && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
     {
         return false;
     }
 
-    // scan file for #includes and add them to the list
+    // If there was an error loading the file.
+    if( m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
+    {
+        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->GetFullPath() );
+        return false;
+    }
+
+    // Scan file for #includes and add them to the list
     if( m_pFile->m_ScannedForIncludes == false )
         m_pFile->CheckFileForIncludesAndAddToList();
 
@@ -236,7 +263,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     const char* buffer = m_pFile->GetBuffer();
     for( unsigned int i=0; i<m_pFile->GetFileLength(); i++ )
     {
-        // TODO: actually parse shader files properly, looking for some setting like these.
+        // TODO: Actually parse shader files properly, looking for some setting like these.
         if( (i == 0 || buffer[i-1] != '/') &&
             buffer[i] == '#' )
         {
@@ -256,60 +283,62 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         }
     }
 
-    // are all #includes loaded? if not drop out and check again next frame.
+    // Are all #includes loaded? if not drop out and check again next frame.
     bool loadcomplete = m_pFile->AreAllIncludesLoaded();
     if( loadcomplete == false )
         return false;
 
-    // check how many shader chunks exist between this file and all others included.
-    int numchunks = m_pFile->GetShaderChunkCount();
-
-    // allocate buffers for all chunks + 2 more for the shader pass defines and the prevertex/prefrag strings
-    numchunks += 2;
-    const char** pStrings = MyNew const char*[numchunks];
-    int* pLengths = MyNew int[numchunks];
-
-    m_pFile->GetShaderChunks( &pStrings[2], &pLengths[2] );
-
-    // stick our shader pass defines in the first slot.
-    pStrings[0] = g_ShaderPassDefines[m_PassType];
-    pLengths[0] = (int)strlen( g_ShaderPassDefines[m_PassType] );
-
-    // predefines will be stuck into slot 1 by createProgram()
-    //    it'll be different for vertex and fragment shader.
-    const char* pVSPre = VERTEXPREDEFINES;
-    if( m_pVSPredefinitions )
-        pVSPre = m_pVSPredefinitions;
-    int VSPreLen = (int)strlen( pVSPre );
-
-    const char* pGSPre = GEOMETRYPREDEFINES;
-    if( m_pGSPredefinitions )
-        pGSPre = m_pGSPredefinitions;
-    int GSPreLen = (int)strlen( pGSPre );
-
-    const char* pFSPre = FRAGMENTPREDEFINES;
-    if( m_pFSPredefinitions )
-        pFSPre = m_pFSPredefinitions;
-    int FSPreLen = (int)strlen( pFSPre );
-
-    // actually create and compile the shader objects.
-    if( creategeometryshader )
     {
-        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
-                                         VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
-                                         numchunks, pStrings, pLengths, premadeprogramhandle );
-    }
-    else
-    {
-        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
-                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                         numchunks, pStrings, pLengths, premadeprogramhandle );
+        // Check how many shader chunks exist between this file and all others included.
+        int numchunks = m_pFile->GetShaderChunkCount();
+
+        // Allocate buffers for all chunks + 2 more for the shader pass defines and the prevertex/prefrag strings.
+        numchunks += 2;
+        const char** pStrings = MyNew const char*[numchunks];
+        int* pLengths = MyNew int[numchunks];
+
+        m_pFile->GetShaderChunks( &pStrings[2], &pLengths[2] );
+
+        // Stick our shader pass defines in the first slot.
+        pStrings[0] = g_ShaderPassDefines[m_PassType];
+        pLengths[0] = (int)strlen( g_ShaderPassDefines[m_PassType] );
+
+        // Predefines will be stuck into slot 1 by createProgram().
+        //    It'll be different for vertex and fragment shader.
+        const char* pVSPre = VERTEXPREDEFINES;
+        if( m_pVSPredefinitions )
+            pVSPre = m_pVSPredefinitions;
+        int VSPreLen = (int)strlen( pVSPre );
+
+        const char* pGSPre = GEOMETRYPREDEFINES;
+        if( m_pGSPredefinitions )
+            pGSPre = m_pGSPredefinitions;
+        int GSPreLen = (int)strlen( pGSPre );
+
+        const char* pFSPre = FRAGMENTPREDEFINES;
+        if( m_pFSPredefinitions )
+            pFSPre = m_pFSPredefinitions;
+        int FSPreLen = (int)strlen( pFSPre );
+
+        // Actually create and compile the shader objects.
+        if( creategeometryshader )
+        {
+            m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
+                                             VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
+                                             numchunks, pStrings, pLengths, premadeprogramhandle );
+        }
+        else
+        {
+            m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
+                                             VSPreLen, pVSPre, FSPreLen, pFSPre,
+                                             numchunks, pStrings, pLengths, premadeprogramhandle );
+        }
+
+        delete[] pStrings;
+        delete[] pLengths;
     }
 
-    delete[] pStrings;
-    delete[] pLengths;
-
-    // TODO: fix support for separate vert/frag files (rather than glsl files).
+    // TODO: Fix support for separate vert/frag files (rather than glsl files).
 //    if( m_pFilePixelShader == 0 )
 //    {
 //#if MYFW_WP8
@@ -350,7 +379,28 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
         //LOGError( LOGTag, "Could not create program.\n");
         m_ShaderFailedToCompile = true;
-        return false;
+
+        int brokenShaderStringLen = (int)strlen( g_pBrokenShaderString );
+
+        // This is hideous code, createProgram() places the predefine strings in array entry [1] of these 2 arrays. 
+        int numchunks = 3;
+
+        const char* pStrings[3];
+        int pLengths[3];
+
+        pStrings[0] = g_ShaderPassDefines[m_PassType];
+        pLengths[0] = (int)strlen( g_ShaderPassDefines[m_PassType] );
+
+        pStrings[2] = g_pBrokenShaderString;
+        pLengths[2] = brokenShaderStringLen;
+
+        // Compiling failed, so fallback on a default "broken" shader effect.
+        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
+                                         (int)strlen( VERTEXPREDEFINES ), VERTEXPREDEFINES, (int)strlen( FRAGMENTPREDEFINES ), FRAGMENTPREDEFINES,
+                                         //1, &pBrokenShaderString, &brokenShaderStringLen, premadeprogramhandle );
+                                         numchunks, pStrings, pLengths, premadeprogramhandle );
+
+        //return false;
     }
     else
     {
