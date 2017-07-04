@@ -11,6 +11,8 @@
 #include "../SourceWidgets/CommandStack.h"
 #include "../SourceWidgets/EditorCommands.h"
 
+#define DEBUG_EDITOR_COMMANDS 0
+
 CommandStack::CommandStack()
 {
     m_CurrentFrame = 0;
@@ -28,6 +30,10 @@ void CommandStack::IncrementFrameCount()
 
 void CommandStack::ClearStacks()
 {
+#if DEBUG_EDITOR_COMMANDS
+    LOGInfo( "EditorCommands", "ClearStacks\n" );
+#endif
+
     while( m_UndoStack.empty() == false )
     {
         delete m_UndoStack.back();
@@ -43,6 +49,10 @@ void CommandStack::ClearStacks()
 
 void CommandStack::ClearUndoStack(unsigned int numtoleave)
 {
+#if DEBUG_EDITOR_COMMANDS
+    LOGInfo( "EditorCommands", "ClearUndoStack\n" );
+#endif
+
     while( m_UndoStack.size() > numtoleave )
     {
         delete m_UndoStack.back();
@@ -52,6 +62,10 @@ void CommandStack::ClearUndoStack(unsigned int numtoleave)
 
 void CommandStack::Undo(unsigned int levels)
 {
+#if DEBUG_EDITOR_COMMANDS
+    LOGInfo( "EditorCommands", "Undo\n" );
+#endif
+
     MyAssert( m_UndoStack.size() >= levels );
 
     bool previouswaslinked = false;
@@ -63,6 +77,10 @@ void CommandStack::Undo(unsigned int levels)
 
         EditorCommand* pCommand = m_UndoStack.back(); m_UndoStack.pop_back();
         pCommand->Undo();
+
+#if DEBUG_EDITOR_COMMANDS
+        LOGInfo( "EditorCommands", "Undo: (%d)%s\n", pCommand->m_FrameExecuted, pCommand->m_Name );
+#endif
 
         if( previouswaslinked )
             pCommand->m_LinkedToNextCommandOnRedoStack = true; // mark this command as being linked to the next one on the redo stack.
@@ -79,6 +97,10 @@ void CommandStack::Undo(unsigned int levels)
 
 void CommandStack::Redo(unsigned int levels)
 {
+#if DEBUG_EDITOR_COMMANDS
+    LOGInfo( "EditorCommands", "Redo\n" );
+#endif
+
     MyAssert( m_RedoStack.size() >= levels );
 
     for( unsigned int i=0; i<levels; i++ )
@@ -88,6 +110,10 @@ void CommandStack::Redo(unsigned int levels)
 
         EditorCommand* pCommand = m_RedoStack.back(); m_RedoStack.pop_back();
         pCommand->Do();
+
+#if DEBUG_EDITOR_COMMANDS
+        LOGInfo( "EditorCommands", "Do: (%d)%s\n", pCommand->m_FrameExecuted, pCommand->m_Name );
+#endif
 
         if( pCommand->m_LinkedToNextCommandOnRedoStack )
             levels++;
@@ -127,6 +153,10 @@ void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autoli
         {
             pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
         }
+
+#if DEBUG_EDITOR_COMMANDS
+        LOGInfo( "EditorCommands", "Add: (%d)%s\n", pCommand->m_FrameExecuted, pCommand->m_Name );
+#endif
     }
 
     // Add to undo stack

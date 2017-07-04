@@ -27,6 +27,8 @@ protected:
 
     unsigned int m_FrameExecuted;
 
+    const char* m_Name; // Used for debug output.
+
 public:
     EditorCommand()
     {

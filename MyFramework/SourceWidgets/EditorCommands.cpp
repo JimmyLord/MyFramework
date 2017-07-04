@@ -17,6 +17,8 @@
 
 EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
+    m_Name = "EditorCommand_PanelWatchNumberValueChanged";
+
     m_Difference = difference;
     m_Type = type;
     m_Pointer = pointer;
@@ -177,6 +179,8 @@ EditorCommand* EditorCommand_PanelWatchNumberValueChanged::Repeat()
 
 EditorCommand_PanelWatchColorChanged::EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
+    m_Name = "EditorCommand_PanelWatchColorChanged";
+
     MyAssert( type == PanelWatchType_ColorFloat || type == PanelWatchType_ColorByte );
 
     m_NewColor = newcolor;
@@ -261,6 +265,8 @@ EditorCommand* EditorCommand_PanelWatchColorChanged::Repeat()
 
 EditorCommand_PanelWatchPointerChanged::EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
+    m_Name = "EditorCommand_PanelWatchPointerChanged";
+
     MyAssert( type == PanelWatchType_PointerWithDesc );
 
     m_NewValue = newvalue;
@@ -321,6 +327,8 @@ EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()
 
 EditorCommand_UnloadSoundCues::EditorCommand_UnloadSoundCues(const std::vector<SoundCue*>& selectedsoundcues)
 {
+    m_Name = "EditorCommand_UnloadSoundCues";
+
     MyAssert( selectedsoundcues.size() > 0 );
 
     for( unsigned int i=0; i<selectedsoundcues.size(); i++ )
