@@ -19,6 +19,11 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
+ShaderGroup::ShaderGroup()
+{
+    Create( 0, 0 );
+}
+
 ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
     Create( pFile, 0 );
@@ -31,7 +36,7 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
 
 void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
 {
-    if( pFile->IsA( "MyFileShader" ) == false )
+    if( pFile && pFile->IsA( "MyFileShader" ) == false )
     {
         MyAssert( false );
         return;
@@ -40,7 +45,8 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
 
     m_pFile = pShaderFile;
-    m_pFile->AddRef();
+    if( m_pFile )
+        m_pFile->AddRef();
 
     m_pShaderAllocationFunction = pFunc;
 
@@ -50,7 +56,7 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
     g_pShaderGroupManager->AddShaderGroup( this );
 
 #if MYFW_USING_WX
-    if( pShaderFile->m_IsAnIncludeFile == false )
+    if( pShaderFile && pShaderFile->m_IsAnIncludeFile == false )
     {
         MyAssert( m_pFile->GetFilenameWithoutExtension() != 0 );
         g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->GetFilenameWithoutExtension(), StaticOnDrag );
@@ -171,6 +177,9 @@ BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numb
 
 void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
+    if( pFile == 0 )
+        return;
+
     if( pFile->IsA( "MyFileShader" ) == false )
     {
         MyAssert( false );

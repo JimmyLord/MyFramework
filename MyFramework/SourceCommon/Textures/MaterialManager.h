@@ -40,6 +40,10 @@ protected:
 
     MyList<MaterialCreatedCallbackStruct> m_pMaterialCreatedCallbackList;
 
+#if MYFW_USING_WX
+    MaterialDefinition* m_pDefaultEditorMaterial;
+#endif //MYFW_USING_WX
+
 public:
     MaterialManager();
     virtual ~MaterialManager();
@@ -53,6 +57,8 @@ public:
 
 #if MYFW_USING_WX
     void SaveAllMaterials(bool saveunchanged = false);
+
+    MaterialDefinition* GetDefaultEditorMaterial();
 #endif
 
     MaterialDefinition* CreateMaterial(MyFileObject* pFile);

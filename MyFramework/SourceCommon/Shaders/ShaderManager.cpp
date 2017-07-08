@@ -236,146 +236,156 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     if( m_pFile == 0 )
     {
-        LoadFromFile();
-        return false;
-    }
-
-    // If the file isn't loaded, come back next frame and check again.
-    if( m_pFile->GetFileLoadStatus() != FileLoadStatus_Success ||
-        (m_pFilePixelShader != 0 && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
-    {
-        return false;
-    }
-
-    // If there was an error loading the file.
-    if( m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
-    {
-        LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->GetFullPath() );
-        return false;
-    }
-
-    // Scan file for #includes and add them to the list
-    if( m_pFile->m_ScannedForIncludes == false )
-        m_pFile->CheckFileForIncludesAndAddToList();
-
-    bool creategeometryshader = false;
-
-    const char* buffer = m_pFile->GetBuffer();
-    for( unsigned int i=0; i<m_pFile->GetFileLength(); i++ )
-    {
-        // TODO: Actually parse shader files properly, looking for some setting like these.
-        if( (i == 0 || buffer[i-1] != '/') &&
-            buffer[i] == '#' )
+        if( m_pFilename )
         {
-            char blendstr[] = "#define BLENDING On";
-            if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
-                strncmp( &buffer[i], blendstr, strlen( blendstr ) ) == 0 )
+            LoadFromFile();
+            return false;
+        }
+    }
+
+    // If there's a file, then try to compile, otherwise use the default "broken" shader.
+    if( m_pFile )
+    {
+        // If the file isn't loaded, come back next frame and check again.
+        if( m_pFile->GetFileLoadStatus() != FileLoadStatus_Success ||
+            (m_pFilePixelShader != 0 && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
+        {
+            return false;
+        }
+
+        // If there was an error loading the file.
+        if( m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
+        {
+            LOGInfo( LOGTag, "Shader failed to load - %s\n", m_pFile->GetFullPath() );
+            return false;
+        }
+
+        // Scan file for #includes and add them to the list
+        if( m_pFile->m_ScannedForIncludes == false )
+            m_pFile->CheckFileForIncludesAndAddToList();
+
+        bool creategeometryshader = false;
+
+        const char* buffer = m_pFile->GetBuffer();
+        for( unsigned int i=0; i<m_pFile->GetFileLength(); i++ )
+        {
+            // TODO: Actually parse shader files properly, looking for some setting like these.
+            if( (i == 0 || buffer[i-1] != '/') &&
+                buffer[i] == '#' )
             {
-                m_BlendType = MaterialBlendType_On; 
+                char blendstr[] = "#define BLENDING On";
+                if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
+                    strncmp( &buffer[i], blendstr, strlen( blendstr ) ) == 0 )
+                {
+                    m_BlendType = MaterialBlendType_On; 
+                }
+
+                char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";
+                if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
+                    strncmp( &buffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
+                {
+                    creategeometryshader = true; 
+                }
+            }
+        }
+
+        // Are all #includes loaded? if not drop out and check again next frame.
+        bool loadcomplete = m_pFile->AreAllIncludesLoaded();
+        if( loadcomplete == false )
+            return false;
+
+        {
+            // Check how many shader chunks exist between this file and all others included.
+            int numchunks = m_pFile->GetShaderChunkCount();
+
+            // Allocate buffers for all chunks + 2 more for the shader pass defines and the prevertex/prefrag strings.
+            numchunks += 2;
+            const char** pStrings = MyNew const char*[numchunks];
+            int* pLengths = MyNew int[numchunks];
+
+            m_pFile->GetShaderChunks( &pStrings[2], &pLengths[2] );
+
+            // Stick our shader pass defines in the first slot.
+            pStrings[0] = g_ShaderPassDefines[m_PassType];
+            pLengths[0] = (int)strlen( g_ShaderPassDefines[m_PassType] );
+
+            // Predefines will be stuck into slot 1 by createProgram().
+            //    It'll be different for vertex and fragment shader.
+            const char* pVSPre = VERTEXPREDEFINES;
+            if( m_pVSPredefinitions )
+                pVSPre = m_pVSPredefinitions;
+            int VSPreLen = (int)strlen( pVSPre );
+
+            const char* pGSPre = GEOMETRYPREDEFINES;
+            if( m_pGSPredefinitions )
+                pGSPre = m_pGSPredefinitions;
+            int GSPreLen = (int)strlen( pGSPre );
+
+            const char* pFSPre = FRAGMENTPREDEFINES;
+            if( m_pFSPredefinitions )
+                pFSPre = m_pFSPredefinitions;
+            int FSPreLen = (int)strlen( pFSPre );
+
+            // Actually create and compile the shader objects.
+            if( creategeometryshader )
+            {
+                m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
+                                                 VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
+                                                 numchunks, pStrings, pLengths, premadeprogramhandle );
+            }
+            else
+            {
+                m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
+                                                 VSPreLen, pVSPre, FSPreLen, pFSPre,
+                                                 numchunks, pStrings, pLengths, premadeprogramhandle );
             }
 
-            char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";
-            if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
-                strncmp( &buffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
-            {
-                creategeometryshader = true; 
-            }
+            delete[] pStrings;
+            delete[] pLengths;
         }
+
+        // TODO: Fix support for separate vert/frag files (rather than glsl files).
+    //    if( m_pFilePixelShader == 0 )
+    //    {
+    //#if MYFW_WP8
+    //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
+    //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
+    //                                         0, premadeprogramhandle );
+    //#else
+    //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
+    //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
+    //                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
+    //#endif
+    //    }
+    //    else
+    //    {
+    //#if MYFW_WP8
+    //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
+    //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
+    //                                         0, 0, 0, 0,
+    //                                         0, premadeprogramhandle );
+    //#else
+    //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
+    //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
+    //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
+    //                                         0, 0, 0, 0,
+    //                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
+    //#endif
+    //    }
     }
-
-    // Are all #includes loaded? if not drop out and check again next frame.
-    bool loadcomplete = m_pFile->AreAllIncludesLoaded();
-    if( loadcomplete == false )
-        return false;
-
-    {
-        // Check how many shader chunks exist between this file and all others included.
-        int numchunks = m_pFile->GetShaderChunkCount();
-
-        // Allocate buffers for all chunks + 2 more for the shader pass defines and the prevertex/prefrag strings.
-        numchunks += 2;
-        const char** pStrings = MyNew const char*[numchunks];
-        int* pLengths = MyNew int[numchunks];
-
-        m_pFile->GetShaderChunks( &pStrings[2], &pLengths[2] );
-
-        // Stick our shader pass defines in the first slot.
-        pStrings[0] = g_ShaderPassDefines[m_PassType];
-        pLengths[0] = (int)strlen( g_ShaderPassDefines[m_PassType] );
-
-        // Predefines will be stuck into slot 1 by createProgram().
-        //    It'll be different for vertex and fragment shader.
-        const char* pVSPre = VERTEXPREDEFINES;
-        if( m_pVSPredefinitions )
-            pVSPre = m_pVSPredefinitions;
-        int VSPreLen = (int)strlen( pVSPre );
-
-        const char* pGSPre = GEOMETRYPREDEFINES;
-        if( m_pGSPredefinitions )
-            pGSPre = m_pGSPredefinitions;
-        int GSPreLen = (int)strlen( pGSPre );
-
-        const char* pFSPre = FRAGMENTPREDEFINES;
-        if( m_pFSPredefinitions )
-            pFSPre = m_pFSPredefinitions;
-        int FSPreLen = (int)strlen( pFSPre );
-
-        // Actually create and compile the shader objects.
-        if( creategeometryshader )
-        {
-            m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
-                                             VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
-                                             numchunks, pStrings, pLengths, premadeprogramhandle );
-        }
-        else
-        {
-            m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
-                                             VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                             numchunks, pStrings, pLengths, premadeprogramhandle );
-        }
-
-        delete[] pStrings;
-        delete[] pLengths;
-    }
-
-    // TODO: Fix support for separate vert/frag files (rather than glsl files).
-//    if( m_pFilePixelShader == 0 )
-//    {
-//#if MYFW_WP8
-//        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
-//                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-//                                         0, premadeprogramhandle );
-//#else
-//        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
-//                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-//                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
-//#endif
-//    }
-//    else
-//    {
-//#if MYFW_WP8
-//        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
-//                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
-//                                         0, 0, 0, 0,
-//                                         0, premadeprogramhandle );
-//#else
-//        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
-//                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
-//                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
-//                                         0, 0, 0, 0,
-//                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
-//#endif
-//    }
 
     if( m_ProgramHandle == 0 )
     {
-        LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->GetFullPath() );
-        LOGError( LOGTag, "\n" );
+        if( m_pFile )
+        {
+            LOGError( LOGTag, "Failed to create program from %s\n", m_pFile->GetFullPath() );
+            LOGError( LOGTag, "\n" );
+        }
 
         //LOGError( LOGTag, "Could not create program.\n");
         m_ShaderFailedToCompile = true;

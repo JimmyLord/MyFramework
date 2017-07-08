@@ -315,7 +315,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
         MyAssert( pObject->m_pSubmesh );
         //MyAssert( pObject->m_pMaterial );
 
-        if( pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
+        if( pObject->m_pSubmesh == 0 ) //|| pObject->m_pMaterial == 0 )
             continue;
 
         if( pObject->m_Visible == false )

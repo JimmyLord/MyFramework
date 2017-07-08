@@ -45,6 +45,7 @@ protected:
     void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
+    ShaderGroup();
     ShaderGroup(MyFileObject* pFile);
     ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);
     void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);

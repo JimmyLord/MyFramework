@@ -65,8 +65,15 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
     int PrimitiveType = m_PrimitiveType;
     int PointSize = m_PointSize;        
 
+#if MYFW_USING_WX
+    if( pMaterial == 0 )
+    {
+        pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+    }
+#else
     if( pMaterial == 0 )
         return;
+#endif //MYFW_USING_WX
 
     if( pIndexBuffer )
     {
@@ -162,6 +169,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
     }
     else
     {
+        if( pMaterial == 0 )
+            return;
+
         if( pMaterial->GetShader() == 0 )
             return;
 

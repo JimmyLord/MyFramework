@@ -20,6 +20,8 @@ MaterialManager::MaterialManager()
 #if MYFW_USING_WX
     wxTreeItemId idroot = g_pPanelMemory->m_pTree_Materials->GetRootItem();
     g_pPanelMemory->SetMaterialPanelCallbacks( idroot, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
+
+    m_pDefaultEditorMaterial = 0;
 #endif
 
     m_pMaterialCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
@@ -27,6 +29,8 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
+    SAFE_RELEASE( m_pDefaultEditorMaterial );
+
     FreeAllMaterials();
     m_pMaterialCreatedCallbackList.FreeAllInList();
 }
@@ -122,6 +126,19 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
             pMaterial->SaveMaterial( 0 );
         }
     }
+}
+
+MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
+{
+    if( m_pDefaultEditorMaterial == 0 )
+    {
+        m_pDefaultEditorMaterial = CreateMaterial( "Placeholder Material" );
+        ShaderGroup* pShader = MyNew ShaderGroup();
+        m_pDefaultEditorMaterial->SetShader( pShader );
+        pShader->Release();
+    }
+
+    return m_pDefaultEditorMaterial;
 }
 #endif
 
