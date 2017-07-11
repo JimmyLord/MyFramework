@@ -132,7 +132,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 {
     if( m_pDefaultEditorMaterial == 0 )
     {
-        m_pDefaultEditorMaterial = CreateMaterial( "Placeholder Material" );
+        m_pDefaultEditorMaterial = CreateMaterial();
         ShaderGroup* pShader = MyNew ShaderGroup();
         m_pDefaultEditorMaterial->SetShader( pShader );
         pShader->Release();
