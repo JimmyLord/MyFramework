@@ -362,35 +362,7 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
     {
     case RightClick_ViewInWatchWindow:
         {
-            g_pPanelWatch->ClearAllVariables();
-
-            g_pPanelWatch->AddSpace( pMaterial->m_Name );
-
-            g_pPanelWatch->AddEnum( "Blend", (int*)&pMaterial->m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
-
-            g_pPanelWatch->AddVector2( "UVScale", &pMaterial->m_UVScale, 0, 1 );
-            g_pPanelWatch->AddVector2( "UVOffset", &pMaterial->m_UVOffset, 0, 1 );
-
-            const char* desc = "no shader";
-            if( pMaterial->m_pShaderGroup && pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
-                desc = pMaterial->m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-            pMaterial->m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
-
-            desc = "no shader";
-            if( pMaterial->m_pShaderGroupInstanced && pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
-                desc = pMaterial->m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-            pMaterial->m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, pMaterial, MaterialDefinition::StaticOnDropShader );
-
-            desc = "no color texture";
-            if( pMaterial->m_pTextureColor )
-                desc = pMaterial->m_pTextureColor->m_Filename;
-            g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, pMaterial, MaterialDefinition::StaticOnDropTexture );
-
-            g_pPanelWatch->AddColorByte( "Color-Ambient", &pMaterial->m_ColorAmbient, 0, 255 );
-            g_pPanelWatch->AddColorByte( "Color-Diffuse", &pMaterial->m_ColorDiffuse, 0, 255 );
-            g_pPanelWatch->AddColorByte( "Color-Specular", &pMaterial->m_ColorSpecular, 0, 255 );
-
-            g_pPanelWatch->AddFloat( "Shininess", &pMaterial->m_Shininess, 1, 300 );
+            pMaterial->AddToWatchPanel( true );
         }
         break;
     }
@@ -586,5 +558,49 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
         // update the panel so new texture name shows up.
         g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->m_Filename;
     }
+}
+
+void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel)
+{
+    int oldpaddingleft = g_pPanelWatch->m_PaddingLeft;
+
+    if( clearwatchpanel )
+    {
+        g_pPanelWatch->ClearAllVariables();
+
+        g_pPanelWatch->AddSpace( m_Name );
+    }
+    else
+    {
+        g_pPanelWatch->m_PaddingLeft = 20;
+    }
+
+    g_pPanelWatch->AddEnum( "Blend", (int*)&m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
+
+    g_pPanelWatch->AddVector2( "UVScale", &m_UVScale, 0, 1 );
+    g_pPanelWatch->AddVector2( "UVOffset", &m_UVOffset, 0, 1 );
+
+    const char* desc = "no shader";
+    if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
+        desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
+    m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+
+    desc = "no shader";
+    if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
+        desc = m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
+    m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+
+    desc = "no color texture";
+    if( m_pTextureColor )
+        desc = m_pTextureColor->m_Filename;
+    g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
+
+    g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
+    g_pPanelWatch->AddColorByte( "Color-Diffuse", &m_ColorDiffuse, 0, 255 );
+    g_pPanelWatch->AddColorByte( "Color-Specular", &m_ColorSpecular, 0, 255 );
+
+    g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
+
+    g_pPanelWatch->m_PaddingLeft = oldpaddingleft;
 }
 #endif //MYFW_USING_WX

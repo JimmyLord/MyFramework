@@ -118,6 +118,7 @@ public:
     void OnDropTexture(int controlid, wxCoord x, wxCoord y);
 
     void SaveMaterial(const char* relativepath);
+    void AddToWatchPanel(bool clearwatchpanel);
 #endif //MYFW_USING_WX
 };
 

@@ -211,6 +211,9 @@ PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
     Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(PanelWatch::OnTextCtrlEnter) );
     Connect( wxEVT_COLOURPICKER_CHANGED, wxColourPickerEventHandler(PanelWatch::OnColourPickerChanged) );    
     Connect( wxEVT_TIMER, wxTimerEventHandler(PanelWatch::OnTimer) );
+
+    // Visual layout modifiers
+    m_PaddingLeft = 2;
 }
 
 PanelWatch::~PanelWatch()
@@ -814,7 +817,7 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
 {
     int PaddingTop = 3;
     int PaddingBottom = 3;
-    int PaddingLeft = 2;
+    int PaddingLeft = m_PaddingLeft; //2;
 
     int ControlPaddingTop = 3;
     int ControlPaddingBottom = 0;

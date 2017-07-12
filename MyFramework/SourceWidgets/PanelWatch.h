@@ -167,6 +167,10 @@ protected:
     void AddControlsForVariable(const char* name, int variablenum, int component, const char* componentname, Vector2Int offset = Vector2Int(0,0), Vector2Int size = Vector2Int(-1,-1));
 
 public:
+    // Visual layout modifiers
+    int m_PaddingLeft;
+
+public:
     void UpdatePanel(int controltoupdate = -1);
 
     void OnButtonPressed(wxCommandEvent& event);
