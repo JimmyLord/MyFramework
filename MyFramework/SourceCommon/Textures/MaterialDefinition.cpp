@@ -575,31 +575,33 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel)
         g_pPanelWatch->m_PaddingLeft = 20;
     }
 
-    g_pPanelWatch->AddEnum( "Blend", (int*)&m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
+    {
+        g_pPanelWatch->AddEnum( "Blend", (int*)&m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
 
-    g_pPanelWatch->AddVector2( "UVScale", &m_UVScale, 0, 1 );
-    g_pPanelWatch->AddVector2( "UVOffset", &m_UVOffset, 0, 1 );
+        g_pPanelWatch->AddVector2( "UVScale", &m_UVScale, 0, 1 );
+        g_pPanelWatch->AddVector2( "UVOffset", &m_UVOffset, 0, 1 );
 
-    const char* desc = "no shader";
-    if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
-        desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-    m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+        const char* desc = "no shader";
+        if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
+            desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
+        m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
 
-    desc = "no shader";
-    if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
-        desc = m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-    m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+        desc = "no shader";
+        if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
+            desc = m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
+        m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader );
 
-    desc = "no color texture";
-    if( m_pTextureColor )
-        desc = m_pTextureColor->m_Filename;
-    g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
+        desc = "no color texture";
+        if( m_pTextureColor )
+            desc = m_pTextureColor->m_Filename;
+        g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
 
-    g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
-    g_pPanelWatch->AddColorByte( "Color-Diffuse", &m_ColorDiffuse, 0, 255 );
-    g_pPanelWatch->AddColorByte( "Color-Specular", &m_ColorSpecular, 0, 255 );
+        g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
+        g_pPanelWatch->AddColorByte( "Color-Diffuse", &m_ColorDiffuse, 0, 255 );
+        g_pPanelWatch->AddColorByte( "Color-Specular", &m_ColorSpecular, 0, 255 );
 
-    g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
+        g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
+    }
 
     g_pPanelWatch->m_PaddingLeft = oldpaddingleft;
 }

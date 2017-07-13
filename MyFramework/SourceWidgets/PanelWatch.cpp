@@ -1471,11 +1471,15 @@ void PanelWatch::Tick(double TimePassed)
         int y = this->GetScrollPos( wxVERTICAL );
         int x = this->GetScrollPos( wxHORIZONTAL );
 
+        Freeze();
+
         if( m_RefreshCallbackFunc )
             m_RefreshCallbackFunc( m_RefreshCallbackObject );
         m_NeedsRefresh = false;
 
         this->Scroll( x, y );
+
+        Thaw();
     }
 }
 
