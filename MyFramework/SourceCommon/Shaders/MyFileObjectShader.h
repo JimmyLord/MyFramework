@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -26,17 +26,45 @@ struct IncludeFileInfo
     }
 };
 
+enum ExposedUniformType
+{
+    ExposedUniformType_Float,
+    ExposedUniformType_Vec2,
+    ExposedUniformType_Vec3,
+    ExposedUniformType_Vec4,
+    ExposedUniformType_Vec4Color,
+    ExposedUniformType_Sampler2D,
+    ExposedUniformType_NotSet,
+};
+
+struct ExposedUniformInfo
+{
+    ExposedUniformType m_Type;
+    char m_Name[32];
+
+    ExposedUniformInfo()
+    {
+        m_Type = ExposedUniformType_NotSet;
+        m_Name[0] = 0;
+    }
+};
+
 class MyFileObjectShader : public MyFileObject
 {
     static const int MAX_INCLUDES = 50;
+    static const int MAX_EXPOSED_UNIFORMS = 50;
 
 public:
     bool m_IsAnIncludeFile;
 
     bool m_ScannedForIncludes;
+    bool m_ScannedForExposedUniforms;
 
-    int m_NumIncludes;
+    unsigned int m_NumIncludes;
     IncludeFileInfo m_pIncludes[MAX_INCLUDES];
+
+    unsigned int m_NumExposedUniforms;
+    ExposedUniformInfo m_pExposedUniforms[MAX_EXPOSED_UNIFORMS];
 
 public:
     MyFileObjectShader();
@@ -48,6 +76,8 @@ public:
     void ClearIncludedFiles();
     void CheckFileForIncludesAndAddToList();
     bool AreAllIncludesLoaded();
+
+    void ParseAndCleanupExposedUniforms();
 
     int GetShaderChunkCount();
     int GetShaderChunks(const char** pStrings, int* pLengths);

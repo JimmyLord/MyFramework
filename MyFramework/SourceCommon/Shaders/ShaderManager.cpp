@@ -264,6 +264,9 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         if( m_pFile->m_ScannedForIncludes == false )
             m_pFile->CheckFileForIncludesAndAddToList();
 
+        // Scan file for 'exposed' uniforms
+        m_pFile->ParseAndCleanupExposedUniforms();
+
         bool creategeometryshader = false;
 
         const char* buffer = m_pFile->GetBuffer();
@@ -512,7 +515,7 @@ void ShaderManager::InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFin
         }
 
         // Loop through all of their includes.
-        for( int i=0; i<pFile->m_NumIncludes; i++ )
+        for( unsigned int i=0; i<pFile->m_NumIncludes; i++ )
         {
             // If it matches ours, invalidate the shader.
             if( pFile->m_pIncludes[i].m_pIncludedFile == pFileToFind )

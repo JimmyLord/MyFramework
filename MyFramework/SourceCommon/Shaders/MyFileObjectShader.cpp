@@ -16,7 +16,9 @@ MyFileObjectShader::MyFileObjectShader()
     m_IsAnIncludeFile = false;
 
     m_ScannedForIncludes = false;
+    m_ScannedForExposedUniforms = false;
     m_NumIncludes = 0;
+    m_NumExposedUniforms = 0;
 }
 
 MyFileObjectShader::~MyFileObjectShader()
@@ -35,7 +37,7 @@ void MyFileObjectShader::UnloadContents()
 
 void MyFileObjectShader::ClearIncludedFiles()
 {
-    for( int i=0; i<m_NumIncludes; i++ )
+    for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
         MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
@@ -43,6 +45,7 @@ void MyFileObjectShader::ClearIncludedFiles()
     }
 
     m_ScannedForIncludes = false;
+    m_ScannedForExposedUniforms = false;
     m_NumIncludes = 0;
 }
 
@@ -135,7 +138,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
 bool MyFileObjectShader::AreAllIncludesLoaded()
 {
-    for( int i=0; i<m_NumIncludes; i++ )
+    for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
         MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
 
@@ -154,11 +157,70 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
     return true;
 }
 
+void MyFileObjectShader::ParseAndCleanupExposedUniforms()
+{
+    // Uniforms can be exposed to the interface with the 'exposed' keyword
+    // This method will find which uniforms are exposed and remove the 'exposed' keyword so the compile won't fail.
+    // e.g. expose uniform vec4 u_TextureTintColor;
+
+    if( m_ScannedForExposedUniforms == true )
+        return;
+
+    m_ScannedForExposedUniforms = true;
+
+    MyAssert( m_FileLoadStatus == FileLoadStatus_Success );
+
+    char* keyword = "exposed";
+    unsigned int keywordlen = strlen( keyword );
+
+    for( unsigned int i=0; i<m_FileLength; i++ )
+    {
+        if( (i == 0 || m_pBuffer[i-1] != '/') &&
+            strncmp( &m_pBuffer[i], keyword, keywordlen ) == 0 )
+        {
+#pragma warning( push )
+#pragma warning( disable : 4996 )
+            char uniformtype[32];
+            char uniformname[32];
+
+            int result = sscanf( &m_pBuffer[i+keywordlen+1], "uniform %s %[^;]", uniformtype, uniformname );
+
+            for( unsigned int j=0; j<keywordlen; j++ )
+                m_pBuffer[i+j] = ' ';
+
+            MyAssert( m_NumExposedUniforms < MAX_EXPOSED_UNIFORMS );
+
+            // Convert the type string to an enum
+            ExposedUniformType type;
+            if( strcmp( uniformtype, "float" ) == 0 )       type = ExposedUniformType_Float;
+            if( strcmp( uniformtype, "vec2" ) == 0 )        type = ExposedUniformType_Vec2;
+            if( strcmp( uniformtype, "vec3" ) == 0 )        type = ExposedUniformType_Vec3;
+            if( strcmp( uniformtype, "vec4" ) == 0 )        type = ExposedUniformType_Vec4;
+            if( strcmp( uniformtype, "sampler2D" ) == 0 )   type = ExposedUniformType_Sampler2D;
+
+            // Special hacked case, if a vec4 uniform name contains "Color" or "Colour" consider it a color.
+            if( type == ExposedUniformType_Vec4 )
+            {
+                if( strstr( uniformname, "Color" ) != 0 || strstr( uniformname, "Colour" ) != 0 )
+                {
+                    type = ExposedUniformType_Vec4Color;
+                }
+            }
+
+            m_pExposedUniforms[m_NumExposedUniforms].m_Type = ExposedUniformType_Vec4Color;
+            strcpy( m_pExposedUniforms[m_NumExposedUniforms].m_Name, uniformname );
+
+            m_NumExposedUniforms++;
+#pragma warning( pop )
+        }
+    }
+}
+
 int MyFileObjectShader::GetShaderChunkCount()
 {
     int numchunks = 1;
 
-    for( int i=0; i<m_NumIncludes; i++ )
+    for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
         numchunks += m_pIncludes[i].m_pIncludedFile->GetShaderChunkCount();
         numchunks += 1; // for every include file we have a pre-include and post-include chunk.
@@ -175,7 +237,7 @@ int MyFileObjectShader::GetShaderChunks(const char** pStrings, int* pLengths)
 
     int count = 0;
 
-    for( int i=0; i<m_NumIncludes; i++ )
+    for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
         pLengths[count] = m_pIncludes[i].m_Include_StartIndex - currentoffset;
         currentoffset = m_pIncludes[i].m_Include_EndIndex;
