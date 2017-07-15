@@ -51,6 +51,7 @@ struct ExposedUniformInfo
 
 class MyFileObjectShader : public MyFileObject
 {
+public:
     static const int MAX_INCLUDES = 50;
     static const int MAX_EXPOSED_UNIFORMS = 50;
 
@@ -61,10 +62,10 @@ public:
     bool m_ScannedForExposedUniforms;
 
     unsigned int m_NumIncludes;
-    IncludeFileInfo m_pIncludes[MAX_INCLUDES];
+    IncludeFileInfo m_Includes[MAX_INCLUDES];
 
     unsigned int m_NumExposedUniforms;
-    ExposedUniformInfo m_pExposedUniforms[MAX_EXPOSED_UNIFORMS];
+    ExposedUniformInfo m_ExposedUniforms[MAX_EXPOSED_UNIFORMS];
 
 public:
     MyFileObjectShader();

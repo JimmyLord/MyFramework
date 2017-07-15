@@ -286,6 +286,41 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
         pShader->AddRef();
     SAFE_RELEASE( m_pShaderGroup );
     m_pShaderGroup = pShader;
+
+    if( pShader )
+    {
+        MyFileObjectShader* pShaderFile = pShader->GetFile();
+        for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+        {
+            switch( pShaderFile->m_ExposedUniforms[i].m_Type )
+            {
+            case ExposedUniformType_Float:
+                m_UniformValues[i].m_Float = 0;
+                break;
+
+            case ExposedUniformType_Vec2:
+                ((Vector2*)&m_UniformValues[i].m_Vec2)->Set( 0, 0 );
+                break;
+
+            case ExposedUniformType_Vec3:
+                ((Vector3*)&m_UniformValues[i].m_Vec3)->Set( 0, 0, 0 );
+                break;
+
+            case ExposedUniformType_Vec4:
+            case ExposedUniformType_Vec4Color:
+                ((Vector4*)&m_UniformValues[i].m_Vec4)->Set( 0, 0, 0, 1 );
+                break;
+
+            case ExposedUniformType_Sampler2D:
+                break;
+
+            case ExposedUniformType_NotSet:
+            default:
+                MyAssert( false );
+                break;
+            }            
+        }
+    }
 }
 
 void MaterialDefinition::SetShaderInstanced(ShaderGroup* pShader)

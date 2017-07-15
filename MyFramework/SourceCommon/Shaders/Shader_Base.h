@@ -12,6 +12,7 @@
 
 class MyLight;
 class MaterialDefinition;
+class ExposedUniformValue;
 
 class Shader_Base : public BaseShader
 {
@@ -68,6 +69,8 @@ public:
     GLint m_uHandle_LightColor[MAX_LIGHTS];
     GLint m_uHandle_LightAttenuation[MAX_LIGHTS];
 
+    GLint m_uHandle_ExposedUniforms[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
+
 protected:
     //void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo);
@@ -101,6 +104,7 @@ public:
     void ProgramDepthmap(TextureDefinition* pTexture);
     void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
     void ProgramFramebufferSize(float width, float height);
+    void ProgramExposedUniforms(ExposedUniformValue* valuearray);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };

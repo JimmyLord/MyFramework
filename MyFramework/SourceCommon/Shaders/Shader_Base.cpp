@@ -156,6 +156,11 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
         m_uHandle_LightAttenuation[i] = GetUniformLocation( m_ProgramHandle, "u_LightAttenuation[%d]", i );
     }
 
+    for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
+    {
+        m_uHandle_ExposedUniforms[i] = GetUniformLocation( m_ProgramHandle, m_pFile->m_ExposedUniforms[i].m_Name );
+    }
+
     m_Initialized = true;
 
     return true;
@@ -474,6 +479,8 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
         pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
 
     ProgramUVScaleAndOffset( pMaterial->m_UVScale, pMaterial->m_UVOffset );
+
+    ProgramExposedUniforms( pMaterial->m_UniformValues );
 
     return true;
 }
@@ -835,4 +842,38 @@ void Shader_Base::ProgramFramebufferSize(float width, float height)
 {
     if( m_uHandle_FramebufferSize != -1 )
         glUniform2f( m_uHandle_FramebufferSize, width, height );    
+}
+
+void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
+{
+    for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
+    {
+        switch( m_pFile->m_ExposedUniforms[i].m_Type )
+        {
+        case ExposedUniformType_Float:
+            glUniform1f( m_uHandle_ExposedUniforms[i], valuearray[i].m_Float );
+            break;
+
+        case ExposedUniformType_Vec2:
+            glUniform2f( m_uHandle_ExposedUniforms[i], valuearray[i].m_Vec2[0], valuearray[i].m_Vec2[1] );
+            break;
+
+        case ExposedUniformType_Vec3:
+            glUniform3f( m_uHandle_ExposedUniforms[i], valuearray[i].m_Vec3[0], valuearray[i].m_Vec3[1], valuearray[i].m_Vec3[2] );
+            break;
+
+        case ExposedUniformType_Vec4:
+        case ExposedUniformType_Vec4Color:
+            glUniform4f( m_uHandle_ExposedUniforms[i], valuearray[i].m_Vec4[0], valuearray[i].m_Vec4[1], valuearray[i].m_Vec4[2], valuearray[i].m_Vec4[3] );
+            break;
+
+        case ExposedUniformType_Sampler2D:
+            break;
+
+        case ExposedUniformType_NotSet:
+        default:
+            MyAssert( false );
+            break;
+        }
+    }
 }

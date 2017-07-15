@@ -518,7 +518,7 @@ void ShaderManager::InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFin
         for( unsigned int i=0; i<pFile->m_NumIncludes; i++ )
         {
             // If it matches ours, invalidate the shader.
-            if( pFile->m_pIncludes[i].m_pIncludedFile == pFileToFind )
+            if( pFile->m_Includes[i].m_pIncludedFile == pFileToFind )
             {
                 pShader->Invalidate( true );
             }

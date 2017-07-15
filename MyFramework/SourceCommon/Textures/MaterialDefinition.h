@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,6 +11,19 @@
 #define __MaterialDefinition_H__
 
 class MaterialManager;
+
+class ExposedUniformValue
+{
+public:
+    union
+    {
+        float m_Float;
+        float m_Vec2[2];
+        float m_Vec3[3];
+        float m_Vec4[4];
+        uint32 m_TextureID;
+    };
+};
 
 extern const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes];
 
@@ -32,6 +45,9 @@ protected:
     TextureDefinition* m_pTextureColor;
 
     MaterialBlendType m_BlendType;
+
+public:
+    ExposedUniformValue m_UniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
 public:
     ColorByte m_ColorAmbient;

@@ -39,9 +39,9 @@ void MyFileObjectShader::ClearIncludedFiles()
 {
     for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
-        MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
+        MyAssert( m_Includes[i].m_pIncludedFile != 0 );
 
-        g_pFileManager->FreeFile( m_pIncludes[i].m_pIncludedFile );
+        g_pFileManager->FreeFile( m_Includes[i].m_pIncludedFile );
     }
 
     m_ScannedForIncludes = false;
@@ -98,9 +98,9 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
                 pShaderFile->m_IsAnIncludeFile = true;
 
                 MyAssert( m_NumIncludes < MAX_INCLUDES );
-                m_pIncludes[m_NumIncludes].m_pIncludedFile = (MyFileObjectShader*)pIncludeFile;
-                m_pIncludes[m_NumIncludes].m_Include_StartIndex = i;
-                m_pIncludes[m_NumIncludes].m_Include_EndIndex = i + charsread;
+                m_Includes[m_NumIncludes].m_pIncludedFile = (MyFileObjectShader*)pIncludeFile;
+                m_Includes[m_NumIncludes].m_Include_StartIndex = i;
+                m_Includes[m_NumIncludes].m_Include_EndIndex = i + charsread;
                 m_NumIncludes++;
             }
         }
@@ -140,17 +140,17 @@ bool MyFileObjectShader::AreAllIncludesLoaded()
 {
     for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
-        MyAssert( m_pIncludes[i].m_pIncludedFile != 0 );
+        MyAssert( m_Includes[i].m_pIncludedFile != 0 );
 
-        if( m_pIncludes[i].m_pIncludedFile->GetFileLoadStatus() != FileLoadStatus_Success )
+        if( m_Includes[i].m_pIncludedFile->GetFileLoadStatus() != FileLoadStatus_Success )
         {
             return false;
         }
         else
         {
             // scan file for #includes and add them to the list
-            if( m_pIncludes[i].m_pIncludedFile->m_ScannedForIncludes == false )
-                m_pIncludes[i].m_pIncludedFile->CheckFileForIncludesAndAddToList();
+            if( m_Includes[i].m_pIncludedFile->m_ScannedForIncludes == false )
+                m_Includes[i].m_pIncludedFile->CheckFileForIncludesAndAddToList();
         }
     }
 
@@ -161,7 +161,7 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
 {
     // Uniforms can be exposed to the interface with the 'exposed' keyword
     // This method will find which uniforms are exposed and remove the 'exposed' keyword so the compile won't fail.
-    // e.g. expose uniform vec4 u_TextureTintColor;
+    // e.g. exposed uniform vec4 u_TextureTintColor;
 
     if( m_ScannedForExposedUniforms == true )
         return;
@@ -178,12 +178,13 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
         if( (i == 0 || m_pBuffer[i-1] != '/') &&
             strncmp( &m_pBuffer[i], keyword, keywordlen ) == 0 )
         {
-#pragma warning( push )
-#pragma warning( disable : 4996 )
             char uniformtype[32];
             char uniformname[32];
 
+#pragma warning( push )
+#pragma warning( disable : 4996 )
             int result = sscanf( &m_pBuffer[i+keywordlen+1], "uniform %s %[^;]", uniformtype, uniformname );
+#pragma warning( pop )
 
             for( unsigned int j=0; j<keywordlen; j++ )
                 m_pBuffer[i+j] = ' ';
@@ -207,11 +208,10 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
                 }
             }
 
-            m_pExposedUniforms[m_NumExposedUniforms].m_Type = ExposedUniformType_Vec4Color;
-            strcpy( m_pExposedUniforms[m_NumExposedUniforms].m_Name, uniformname );
+            m_ExposedUniforms[m_NumExposedUniforms].m_Type = ExposedUniformType_Vec4Color;
+            strcpy_s( m_ExposedUniforms[m_NumExposedUniforms].m_Name, 32, uniformname );
 
             m_NumExposedUniforms++;
-#pragma warning( pop )
         }
     }
 }
@@ -222,7 +222,7 @@ int MyFileObjectShader::GetShaderChunkCount()
 
     for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
-        numchunks += m_pIncludes[i].m_pIncludedFile->GetShaderChunkCount();
+        numchunks += m_Includes[i].m_pIncludedFile->GetShaderChunkCount();
         numchunks += 1; // for every include file we have a pre-include and post-include chunk.
     }
 
@@ -239,10 +239,10 @@ int MyFileObjectShader::GetShaderChunks(const char** pStrings, int* pLengths)
 
     for( unsigned int i=0; i<m_NumIncludes; i++ )
     {
-        pLengths[count] = m_pIncludes[i].m_Include_StartIndex - currentoffset;
-        currentoffset = m_pIncludes[i].m_Include_EndIndex;
+        pLengths[count] = m_Includes[i].m_Include_StartIndex - currentoffset;
+        currentoffset = m_Includes[i].m_Include_EndIndex;
 
-        count += m_pIncludes[i].m_pIncludedFile->GetShaderChunks( &pStrings[count+1], &pLengths[count+1] );
+        count += m_Includes[i].m_pIncludedFile->GetShaderChunks( &pStrings[count+1], &pLengths[count+1] );
 
         count++;
 
