@@ -204,11 +204,11 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
             {
                 if( strstr( uniformname, "Color" ) != 0 || strstr( uniformname, "Colour" ) != 0 )
                 {
-                    type = ExposedUniformType_Vec4Color;
+                    type = ExposedUniformType_ColorByte;
                 }
             }
 
-            m_ExposedUniforms[m_NumExposedUniforms].m_Type = ExposedUniformType_Vec4Color;
+            m_ExposedUniforms[m_NumExposedUniforms].m_Type = type;
             strcpy_s( m_ExposedUniforms[m_NumExposedUniforms].m_Name, 32, uniformname );
 
             m_NumExposedUniforms++;

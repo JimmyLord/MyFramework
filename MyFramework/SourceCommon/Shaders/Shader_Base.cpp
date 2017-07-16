@@ -863,8 +863,11 @@ void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
             break;
 
         case ExposedUniformType_Vec4:
-        case ExposedUniformType_Vec4Color:
             glUniform4f( m_uHandle_ExposedUniforms[i], valuearray[i].m_Vec4[0], valuearray[i].m_Vec4[1], valuearray[i].m_Vec4[2], valuearray[i].m_Vec4[3] );
+            break;
+
+        case ExposedUniformType_ColorByte:
+            glUniform4f( m_uHandle_ExposedUniforms[i], valuearray[i].m_ColorByte[0]/255.0f, valuearray[i].m_ColorByte[1]/255.0f, valuearray[i].m_ColorByte[2]/255.0f, valuearray[i].m_ColorByte[3]/255.0f );
             break;
 
         case ExposedUniformType_Sampler2D:

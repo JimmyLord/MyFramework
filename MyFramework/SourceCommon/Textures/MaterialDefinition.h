@@ -21,7 +21,8 @@ public:
         float m_Vec2[2];
         float m_Vec3[3];
         float m_Vec4[4];
-        uint32 m_TextureID;
+        unsigned char m_ColorByte[4];
+        GLuint m_TextureID;
     };
 };
 
@@ -134,7 +135,7 @@ public:
     void OnDropTexture(int controlid, wxCoord x, wxCoord y);
 
     void SaveMaterial(const char* relativepath);
-    void AddToWatchPanel(bool clearwatchpanel);
+    void AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms);
 #endif //MYFW_USING_WX
 };
 

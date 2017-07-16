@@ -32,7 +32,7 @@ enum ExposedUniformType
     ExposedUniformType_Vec2,
     ExposedUniformType_Vec3,
     ExposedUniformType_Vec4,
-    ExposedUniformType_Vec4Color,
+    ExposedUniformType_ColorByte,
     ExposedUniformType_Sampler2D,
     ExposedUniformType_NotSet,
 };

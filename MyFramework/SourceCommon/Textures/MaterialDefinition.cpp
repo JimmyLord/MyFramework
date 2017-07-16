@@ -290,35 +290,43 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
     if( pShader )
     {
         MyFileObjectShader* pShaderFile = pShader->GetFile();
-        for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+
+        if( pShaderFile )
         {
-            switch( pShaderFile->m_ExposedUniforms[i].m_Type )
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
             {
-            case ExposedUniformType_Float:
-                m_UniformValues[i].m_Float = 0;
-                break;
+                switch( pShaderFile->m_ExposedUniforms[i].m_Type )
+                {
+                case ExposedUniformType_Float:
+                    m_UniformValues[i].m_Float = 0;
+                    break;
 
-            case ExposedUniformType_Vec2:
-                ((Vector2*)&m_UniformValues[i].m_Vec2)->Set( 0, 0 );
-                break;
+                case ExposedUniformType_Vec2:
+                    ((Vector2*)&m_UniformValues[i].m_Vec2)->Set( 0, 0 );
+                    break;
 
-            case ExposedUniformType_Vec3:
-                ((Vector3*)&m_UniformValues[i].m_Vec3)->Set( 0, 0, 0 );
-                break;
+                case ExposedUniformType_Vec3:
+                    ((Vector3*)&m_UniformValues[i].m_Vec3)->Set( 0, 0, 0 );
+                    break;
 
-            case ExposedUniformType_Vec4:
-            case ExposedUniformType_Vec4Color:
-                ((Vector4*)&m_UniformValues[i].m_Vec4)->Set( 0, 0, 0, 1 );
-                break;
+                case ExposedUniformType_Vec4:
+                    ((Vector4*)&m_UniformValues[i].m_Vec4)->Set( 0, 0, 0, 1 );
+                    break;
 
-            case ExposedUniformType_Sampler2D:
-                break;
+                case ExposedUniformType_ColorByte:
+                    ((ColorByte*)&m_UniformValues[i].m_ColorByte)->Set( 0, 0, 0, 255 );
+                    break;
 
-            case ExposedUniformType_NotSet:
-            default:
-                MyAssert( false );
-                break;
-            }            
+                case ExposedUniformType_Sampler2D:
+                    // TODO
+                    break;
+
+                case ExposedUniformType_NotSet:
+                default:
+                    MyAssert( false );
+                    break;
+                }            
+            }
         }
     }
 }
@@ -397,7 +405,7 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
     {
     case RightClick_ViewInWatchWindow:
         {
-            pMaterial->AddToWatchPanel( true );
+            pMaterial->AddToWatchPanel( true, true, true );
         }
         break;
     }
@@ -595,7 +603,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
     }
 }
 
-void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel)
+void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms)
 {
     int oldpaddingleft = g_pPanelWatch->m_PaddingLeft;
 
@@ -610,6 +618,7 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel)
         g_pPanelWatch->m_PaddingLeft = 20;
     }
 
+    if( showbuiltinuniforms )
     {
         g_pPanelWatch->AddEnum( "Blend", (int*)&m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
 
@@ -636,6 +645,56 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel)
         g_pPanelWatch->AddColorByte( "Color-Specular", &m_ColorSpecular, 0, 255 );
 
         g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
+    }
+
+    if( showexposeduniforms && m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+        if( pShaderFile )
+        {
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+            {
+                char tempname[32];
+
+                // Hardcoding to remove the 'u_' I like to stick at the start of my uniform names.
+                if( pShaderFile->m_ExposedUniforms[i].m_Name[1] == '_' )
+                    strcpy_s( tempname, 32, &pShaderFile->m_ExposedUniforms[i].m_Name[2] );
+                else
+                    strcpy_s( tempname, 32, pShaderFile->m_ExposedUniforms[i].m_Name );
+
+                switch( pShaderFile->m_ExposedUniforms[i].m_Type )
+                {
+                case ExposedUniformType_Float:
+                    g_pPanelWatch->AddFloat( tempname, &m_UniformValues[i].m_Float, 0, 1 );
+                    break;
+
+                case ExposedUniformType_Vec2:
+                    g_pPanelWatch->AddVector2( tempname, (Vector2*)&m_UniformValues[i].m_Vec2, 0, 1 );
+                    break;
+
+                case ExposedUniformType_Vec3:
+                    g_pPanelWatch->AddVector3( tempname, (Vector3*)&m_UniformValues[i].m_Vec3, 0, 1 );
+                    break;
+
+                case ExposedUniformType_Vec4:
+                    g_pPanelWatch->AddVector4( tempname, (Vector4*)&m_UniformValues[i].m_Vec4, 0, 1 );
+                    break;
+
+                case ExposedUniformType_ColorByte:
+                    g_pPanelWatch->AddColorByte( tempname, (ColorByte*)&m_UniformValues[i].m_ColorByte, 0, 255 );
+                    break;
+
+                case ExposedUniformType_Sampler2D:
+                    // TODO
+                    break;
+
+                case ExposedUniformType_NotSet:
+                default:
+                    MyAssert( false );
+                    break;
+                }            
+            }
+        }
     }
 
     g_pPanelWatch->m_PaddingLeft = oldpaddingleft;
