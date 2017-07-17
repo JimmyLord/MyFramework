@@ -262,10 +262,15 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
         // Scan file for #includes and add them to the list
         if( m_pFile->m_ScannedForIncludes == false )
+        {
             m_pFile->CheckFileForIncludesAndAddToList();
+        }
 
         // Scan file for 'exposed' uniforms
-        m_pFile->ParseAndCleanupExposedUniforms();
+        if( m_pFile->m_ScannedForExposedUniforms == false )
+        {
+            m_pFile->ParseAndCleanupExposedUniforms();
+        }
 
         bool creategeometryshader = false;
 

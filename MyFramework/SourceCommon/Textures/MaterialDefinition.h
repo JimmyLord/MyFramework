@@ -82,6 +82,12 @@ public:
     const char* GetMaterialDescription();
     const char* GetMaterialShortDescription();
 
+    // Callbacks for when shader file finishes loading.
+    static void StaticOnFileFinishedLoading(void* pObjectPtr, MyFileObject* pFile) { ((MaterialDefinition*)pObjectPtr)->OnFileFinishedLoading( pFile ); }
+    void OnFileFinishedLoading(MyFileObject* pFile);
+
+    void InitializeExposedUniformValues();
+
     void SetShader(ShaderGroup* pShader);
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
 

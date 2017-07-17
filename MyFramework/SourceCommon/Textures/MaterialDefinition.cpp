@@ -29,18 +29,14 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader)
 {
     Init();
 
-    m_pShaderGroup = pShader;
-    if( m_pShaderGroup )
-        m_pShaderGroup->AddRef();
+    SetShader( pShader );
 }
 
 MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse)
 {
     Init();
 
-    m_pShaderGroup = pShader;
-    if( m_pShaderGroup )
-        m_pShaderGroup->AddRef();
+    SetShader( pShader );
 
     m_ColorDiffuse = colordiffuse;
 }
@@ -86,8 +82,8 @@ MaterialDefinition::~MaterialDefinition()
 
     SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureColor );
-    SAFE_RELEASE( m_pShaderGroup );
-    SAFE_RELEASE( m_pShaderGroupInstanced );
+    SetShader( 0 );
+    SetShaderInstanced( 0 );
 }
 
 MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& other)
@@ -284,12 +280,45 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
 {
     if( pShader )
         pShader->AddRef();
+    
+    // Free the current shader and unregister it's file's "finished loading" callback if one was set.
+    if( m_pShaderGroup && m_pShaderGroup->GetFile() )
+        m_pShaderGroup->GetFile()->UnregisterFileFinishedLoadingCallback( this );
     SAFE_RELEASE( m_pShaderGroup );
+
     m_pShaderGroup = pShader;
 
-    if( pShader )
+    if( m_pShaderGroup && m_pShaderGroup->GetFile() )
     {
-        MyFileObjectShader* pShaderFile = pShader->GetFile();
+        if( m_pShaderGroup->GetFile()->IsFinishedLoading() == false )
+        {
+            m_pShaderGroup->GetFile()->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoading );
+        }
+        else
+        {
+            InitializeExposedUniformValues();
+        }
+    }
+}
+
+void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnFileFinishedLoading
+{
+    // Unregister this callback.
+    pFile->UnregisterFileFinishedLoadingCallback( this );
+
+    InitializeExposedUniformValues();
+}
+
+void MaterialDefinition::InitializeExposedUniformValues()
+{
+    if( m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+
+        if( pShaderFile->m_ScannedForExposedUniforms == false )
+        {
+            pShaderFile->ParseAndCleanupExposedUniforms();
+        }
 
         if( pShaderFile )
         {
