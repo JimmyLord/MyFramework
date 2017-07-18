@@ -214,6 +214,11 @@ void MaterialDefinition::ImportFromFile()
         cJSONExt_GetFloatArray( jMaterial, "UVScale", &m_UVScale.x, 2 );
         cJSONExt_GetFloatArray( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
 
+        if( m_pShaderGroup && m_pShaderGroup->GetFile() && m_pShaderGroup->GetFile()->IsFinishedLoading() )
+        {
+            ImportExposedUniformValues( jMaterial );
+        }
+
         m_FullyLoaded = true;
     }
 
@@ -258,7 +263,6 @@ void MaterialDefinition::SetName(const char* name)
     }
 #endif //MYFW_USING_WX
 }
-
 
 const char* MaterialDefinition::GetMaterialDescription()
 {
@@ -306,7 +310,14 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
     // Unregister this callback.
     pFile->UnregisterFileFinishedLoadingCallback( this );
 
+    // Shader file finished loading, so set all exposed uniforms to 0 and reimport our material (if loaded),
+    //     which will reimport saved exposed uniform values.
     InitializeExposedUniformValues();
+    
+    if( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
+    {
+        ImportFromFile();
+    }
 }
 
 void MaterialDefinition::InitializeExposedUniformValues()
@@ -354,7 +365,111 @@ void MaterialDefinition::InitializeExposedUniformValues()
                 default:
                     MyAssert( false );
                     break;
+                }
+            }
+        }
+    }
+}
+
+void MaterialDefinition::ImportExposedUniformValues(cJSON* jMaterial)
+{
+    if( m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+
+        if( pShaderFile->m_ScannedForExposedUniforms == false )
+        {
+            pShaderFile->ParseAndCleanupExposedUniforms();
+        }
+
+        if( pShaderFile )
+        {
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+            {
+                ExposedUniformInfo* pInfo = &pShaderFile->m_ExposedUniforms[i];
+                switch( pInfo->m_Type )
+                {
+                case ExposedUniformType_Float:
+                    cJSONExt_GetFloat( jMaterial, pInfo->m_Name, &m_UniformValues[i].m_Float );
+                    break;
+
+                case ExposedUniformType_Vec2:
+                    cJSONExt_GetFloatArray( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec2, 2 );
+                    break;
+
+                case ExposedUniformType_Vec3:
+                    cJSONExt_GetFloatArray( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec3, 3 );
+                    break;
+
+                case ExposedUniformType_Vec4:
+                    cJSONExt_GetFloatArray( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec4, 4 );
+                    break;
+
+                case ExposedUniformType_ColorByte:
+                    cJSONExt_GetUnsignedCharArray( jMaterial, pInfo->m_Name, m_UniformValues[i].m_ColorByte, 4 );
+                    break;
+
+                case ExposedUniformType_Sampler2D:
+                    cJSONExt_GetUnsignedInt( jMaterial, pInfo->m_Name, &m_UniformValues[i].m_TextureID );
+                    break;
+
+                case ExposedUniformType_NotSet:
+                default:
+                    MyAssert( false );
+                    break;
                 }            
+            }
+        }
+    }
+}
+
+void MaterialDefinition::ExportExposedUniformValues(cJSON* jMaterial)
+{
+    if( m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+
+        if( pShaderFile->m_ScannedForExposedUniforms == false )
+        {
+            pShaderFile->ParseAndCleanupExposedUniforms();
+        }
+
+        if( pShaderFile )
+        {
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+            {
+                ExposedUniformInfo* pInfo = &pShaderFile->m_ExposedUniforms[i];
+                switch( pInfo->m_Type )
+                {
+                case ExposedUniformType_Float:
+                    cJSON_AddNumberToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Float );
+                    break;
+
+                case ExposedUniformType_Vec2:
+                    cJSONExt_AddFloatArrayToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec2, 2 );
+                    break;
+
+                case ExposedUniformType_Vec3:
+                    cJSONExt_AddFloatArrayToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec3, 3 );
+                    break;
+
+                case ExposedUniformType_Vec4:
+                    cJSONExt_AddFloatArrayToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_Vec4, 4 );
+                    break;
+
+                case ExposedUniformType_ColorByte:
+                    cJSONExt_AddUnsignedCharArrayToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_ColorByte, 4 );
+                    break;
+
+                case ExposedUniformType_Sampler2D:
+                    cJSON_AddNumberToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_TextureID );
+                    break;
+
+                case ExposedUniformType_NotSet:
+                default:
+                    MyAssert( false );
+                    break;
+                }
             }
         }
     }
@@ -535,6 +650,8 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
         cJSONExt_AddFloatArrayToObject( jMaterial, "UVScale", &m_UVScale.x, 2 );
         cJSONExt_AddFloatArrayToObject( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
+
+        ExportExposedUniformValues( jMaterial );
 
         // dump material json structure to disk
         jsonstr = cJSON_Print( jRoot );

@@ -87,6 +87,8 @@ public:
     void OnFileFinishedLoading(MyFileObject* pFile);
 
     void InitializeExposedUniformValues();
+    void ImportExposedUniformValues(cJSON* jMaterial);
+    void ExportExposedUniformValues(cJSON* jMaterial);
 
     void SetShader(ShaderGroup* pShader);
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
