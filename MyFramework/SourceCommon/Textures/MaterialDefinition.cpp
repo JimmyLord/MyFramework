@@ -282,6 +282,9 @@ const char* MaterialDefinition::GetMaterialShortDescription()
 
 void MaterialDefinition::SetShader(ShaderGroup* pShader)
 {
+    if( pShader == m_pShaderGroup )
+        return;
+
     if( pShader )
         pShader->AddRef();
     
@@ -300,6 +303,11 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
         }
         else
         {
+            // In editor builds, always register finished loading callback to know if the file was reloaded due to changes.
+#if MYFW_USING_WX
+            m_pShaderGroup->GetFile()->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoading );
+#endif
+
             InitializeExposedUniformValues();
         }
     }
@@ -307,8 +315,12 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
 
 void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnFileFinishedLoading
 {
+    // In editor builds, keep the finished loading callback registered,
+    //     so we can reset exposed uniforms if shader file is reloaded due to changes.
+#if !MYFW_USING_WX
     // Unregister this callback.
     pFile->UnregisterFileFinishedLoadingCallback( this );
+#endif
 
     // Shader file finished loading, so set all exposed uniforms to 0 and reimport our material (if loaded),
     //     which will reimport saved exposed uniform values.

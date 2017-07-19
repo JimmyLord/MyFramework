@@ -234,6 +234,13 @@ PanelWatch::~PanelWatch()
     SAFE_DELETE( m_pTimer );
 }
 
+VariableProperties* PanelWatch::GetVariableProperties(unsigned int index)
+{
+    MyAssert( index < (unsigned int)m_NumVariables );
+
+    return &m_pVariables[index];
+}
+
 void PanelWatch::SetNeedsRefresh()
 {
     m_NeedsRefresh = true;

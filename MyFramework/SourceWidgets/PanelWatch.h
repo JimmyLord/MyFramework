@@ -206,7 +206,7 @@ public:
     void* GetObjectBeingWatched() { return m_pObjectBeingWatched; }
     void SetObjectBeingWatched(void* obj) { m_pObjectBeingWatched = obj; }
 
-    VariableProperties* GetVariableProperties(unsigned int index) { return &m_pVariables[index]; }
+    VariableProperties* GetVariableProperties(unsigned int index);
 
     void SetNeedsRefresh();
     void SetRefreshCallback(void* pCallbackObj, PanelWatchCallback pCallbackFunc);
