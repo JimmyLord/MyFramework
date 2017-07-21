@@ -308,7 +308,12 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
             m_pShaderGroup->GetFile()->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoading );
 #endif
 
-            InitializeExposedUniformValues();
+            InitializeExposedUniformValues( false );
+
+            if( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
+            {
+                ImportFromFile();
+            }
         }
     }
 }
@@ -324,16 +329,28 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
 
     // Shader file finished loading, so set all exposed uniforms to 0 and reimport our material (if loaded),
     //     which will reimport saved exposed uniform values.
-    InitializeExposedUniformValues();
+    InitializeExposedUniformValues( true );
     
     if( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
     {
         ImportFromFile();
     }
+
+    g_pPanelWatch->SetNeedsRefresh();
 }
 
-void MaterialDefinition::InitializeExposedUniformValues()
+void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingvalues)
 {
+#if MYFW_USING_WX
+    static ExposedUniformValue g_PreviousUniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
+
+    // Backup the old values, then restore them below.
+    for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
+    {
+        g_PreviousUniformValues[i] = m_UniformValues[i];
+    }
+#endif
+
     if( m_pShaderGroup )
     {
         MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
@@ -379,6 +396,29 @@ void MaterialDefinition::InitializeExposedUniformValues()
                     break;
                 }
             }
+
+#if MYFW_USING_WX
+            for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
+            {
+                if( i < pShaderFile->m_NumExposedUniforms )
+                    m_UniformValues[i].m_Name = pShaderFile->m_ExposedUniforms[i].m_Name;
+                else
+                    m_UniformValues[i].m_Name = "";
+            }
+
+            // Restore uniform values backed up above.
+            for( unsigned int j=0; j<pShaderFile->m_NumExposedUniforms; j++ )
+            {
+                for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
+                {
+                    if( m_UniformValues[j].m_Name == g_PreviousUniformValues[i].m_Name )
+                    {
+                        m_UniformValues[j] = g_PreviousUniformValues[i];
+                        break;
+                    }
+                }
+            }
+#endif
         }
     }
 }
@@ -429,7 +469,7 @@ void MaterialDefinition::ImportExposedUniformValues(cJSON* jMaterial)
                 default:
                     MyAssert( false );
                     break;
-                }            
+                }
             }
         }
     }
@@ -850,7 +890,7 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
                 default:
                     MyAssert( false );
                     break;
-                }            
+                }
             }
         }
     }

@@ -15,6 +15,10 @@ class MaterialManager;
 class ExposedUniformValue
 {
 public:
+#if MYFW_USING_WX
+    std::string m_Name;
+#endif
+
     union
     {
         float m_Float;
@@ -86,7 +90,7 @@ public:
     static void StaticOnFileFinishedLoading(void* pObjectPtr, MyFileObject* pFile) { ((MaterialDefinition*)pObjectPtr)->OnFileFinishedLoading( pFile ); }
     void OnFileFinishedLoading(MyFileObject* pFile);
 
-    void InitializeExposedUniformValues();
+    void InitializeExposedUniformValues(bool maintainexistingvalues);
     void ImportExposedUniformValues(cJSON* jMaterial);
     void ExportExposedUniformValues(cJSON* jMaterial);
 
