@@ -20,6 +20,41 @@ const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes] =
     "On",
 };
 
+void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
+{
+    switch( type )
+    {
+    case ExposedUniformType_Float:
+        m_Float = 0;
+        break;
+
+    case ExposedUniformType_Vec2:
+        ((Vector2*)&m_Vec2)->Set( 0, 0 );
+        break;
+
+    case ExposedUniformType_Vec3:
+        ((Vector3*)&m_Vec3)->Set( 0, 0, 0 );
+        break;
+
+    case ExposedUniformType_Vec4:
+        ((Vector4*)&m_Vec4)->Set( 0, 0, 0, 1 );
+        break;
+
+    case ExposedUniformType_ColorByte:
+        ((ColorByte*)&m_ColorByte)->Set( 0, 0, 0, 255 );
+        break;
+
+    case ExposedUniformType_Sampler2D:
+        // TODO
+        break;
+
+    case ExposedUniformType_NotSet:
+    default:
+        MyAssert( false );
+        break;
+    }
+}
+
 MaterialDefinition::MaterialDefinition()
 {
     Init();
@@ -364,40 +399,12 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
         {
             for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
             {
-                switch( pShaderFile->m_ExposedUniforms[i].m_Type )
-                {
-                case ExposedUniformType_Float:
-                    m_UniformValues[i].m_Float = 0;
-                    break;
-
-                case ExposedUniformType_Vec2:
-                    ((Vector2*)&m_UniformValues[i].m_Vec2)->Set( 0, 0 );
-                    break;
-
-                case ExposedUniformType_Vec3:
-                    ((Vector3*)&m_UniformValues[i].m_Vec3)->Set( 0, 0, 0 );
-                    break;
-
-                case ExposedUniformType_Vec4:
-                    ((Vector4*)&m_UniformValues[i].m_Vec4)->Set( 0, 0, 0, 1 );
-                    break;
-
-                case ExposedUniformType_ColorByte:
-                    ((ColorByte*)&m_UniformValues[i].m_ColorByte)->Set( 0, 0, 0, 255 );
-                    break;
-
-                case ExposedUniformType_Sampler2D:
-                    // TODO
-                    break;
-
-                case ExposedUniformType_NotSet:
-                default:
-                    MyAssert( false );
-                    break;
-                }
+                // Set the uniforms to it's initial value (generally zero)
+                m_UniformValues[i].SetToInitialValue( pShaderFile->m_ExposedUniforms[i].m_Type );
             }
 
 #if MYFW_USING_WX
+            // Copy the names of all the uniforms first, will be used to search for values.
             for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
             {
                 if( i < pShaderFile->m_NumExposedUniforms )
@@ -409,13 +416,23 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
             // Restore uniform values backed up above.
             for( unsigned int j=0; j<pShaderFile->m_NumExposedUniforms; j++ )
             {
-                for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
+                // Search for uniform in the old list, if found, grab it's value.
+                unsigned int i;
+                for( i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
                 {
+                    MyAssert( m_UniformValues[j].m_Name != "" );
+
                     if( m_UniformValues[j].m_Name == g_PreviousUniformValues[i].m_Name )
                     {
                         m_UniformValues[j] = g_PreviousUniformValues[i];
                         break;
                     }
+                }
+
+                // If the uniform wasn't found in the old list, zero out the entry.
+                if( i == MyFileObjectShader::MAX_EXPOSED_UNIFORMS )
+                {
+                    m_UniformValues[j].SetToInitialValue( pShaderFile->m_ExposedUniforms[j].m_Type );
                 }
             }
 #endif

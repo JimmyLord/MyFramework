@@ -28,6 +28,8 @@ public:
         unsigned char m_ColorByte[4];
         GLuint m_TextureID;
     };
+
+    void SetToInitialValue(ExposedUniformType type);
 };
 
 extern const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes];
