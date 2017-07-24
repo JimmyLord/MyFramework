@@ -297,6 +297,7 @@ MyMesh::MyMesh()
     m_pAnimationControlFile = 0;
 
     m_pSetupCustomUniformsCallback = 0;
+    m_pSetupCustomUniformsObjectPtr = 0;
 }
 
 MyMesh::~MyMesh()
