@@ -1406,7 +1406,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
 
             pVerts[index].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
             pVerts[index].y = topleftpos.y;
-            pVerts[index].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            pVerts[index].z = topleftpos.z - size.y / (vertcount.y - 1) * y;
 
             pVerts[index].u = uvstart.x + x * uvrange.x / (vertcount.x - 1);
             pVerts[index].v = uvstart.y + y * uvrange.y / (vertcount.y - 1);
@@ -1426,12 +1426,12 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
                 unsigned short vertexindex = (unsigned short)(y * vertcount.x + x);
 
                 pIndices[ elementindex + 0 ] = vertexindex + 0;
-                pIndices[ elementindex + 1 ] = vertexindex + (unsigned short)vertcount.x;
-                pIndices[ elementindex + 2 ] = vertexindex + 1;
+                pIndices[ elementindex + 1 ] = vertexindex + 1;
+                pIndices[ elementindex + 2 ] = vertexindex + (unsigned short)vertcount.x;
 
                 pIndices[ elementindex + 3 ] = vertexindex + 1;
-                pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertcount.x;
-                pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertcount.x + 1;
+                pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertcount.x + 1;
+                pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertcount.x;
             }
         }
     }
@@ -1529,34 +1529,34 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topleftpos, Vector2 size, Vector2In
             // 4 verts and 6 indices per quad
             pVerts[vertex+0].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
             pVerts[vertex+0].y = topleftpos.y;
-            pVerts[vertex+0].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            pVerts[vertex+0].z = topleftpos.z - size.y / (vertcount.y - 1) * y;
             pVerts[vertex+0].u = uvstart.x;
             pVerts[vertex+0].v = uvstart.y;
 
             pVerts[vertex+1].x = topleftpos.x + size.x / (vertcount.x - 1) * (x+1);
             pVerts[vertex+1].y = topleftpos.y;
-            pVerts[vertex+1].z = topleftpos.z + size.y / (vertcount.y - 1) * y;
+            pVerts[vertex+1].z = topleftpos.z - size.y / (vertcount.y - 1) * y;
             pVerts[vertex+1].u = uvstart.x + uvrange.x;
             pVerts[vertex+1].v = uvstart.y;
 
             pVerts[vertex+2].x = topleftpos.x + size.x / (vertcount.x - 1) * x;
             pVerts[vertex+2].y = topleftpos.y;
-            pVerts[vertex+2].z = topleftpos.z + size.y / (vertcount.y - 1) * (y+1);
+            pVerts[vertex+2].z = topleftpos.z - size.y / (vertcount.y - 1) * (y+1);
             pVerts[vertex+2].u = uvstart.x;
             pVerts[vertex+2].v = uvstart.y + uvrange.y;
 
             pVerts[vertex+3].x = topleftpos.x + size.x / (vertcount.x - 1) * (x+1);
             pVerts[vertex+3].y = topleftpos.y;
-            pVerts[vertex+3].z = topleftpos.z + size.y / (vertcount.y - 1) * (y+1);
+            pVerts[vertex+3].z = topleftpos.z - size.y / (vertcount.y - 1) * (y+1);
             pVerts[vertex+3].u = uvstart.x + uvrange.x;
             pVerts[vertex+3].v = uvstart.y + uvrange.y;
 
             pIndices[index+0] = vertex+0;
-            pIndices[index+1] = vertex+2;
-            pIndices[index+2] = vertex+1;
+            pIndices[index+1] = vertex+1;
+            pIndices[index+2] = vertex+2;
             pIndices[index+3] = vertex+1;
-            pIndices[index+4] = vertex+2;
-            pIndices[index+5] = vertex+3;
+            pIndices[index+4] = vertex+3;
+            pIndices[index+5] = vertex+2;
 
             vertex += 4;
             index += 6;
