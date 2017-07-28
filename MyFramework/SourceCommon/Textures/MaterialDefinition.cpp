@@ -45,7 +45,7 @@ void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
         break;
 
     case ExposedUniformType_Sampler2D:
-        // TODO
+        m_TextureID = 0;
         break;
 
     case ExposedUniformType_NotSet:
@@ -900,7 +900,7 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    // TODO
+                    g_pPanelWatch->AddUnsignedInt( tempname, &m_UniformValues[i].m_TextureID, 0, 1000 );
                     break;
 
                 case ExposedUniformType_NotSet:

@@ -886,6 +886,8 @@ void Shader_Base::ProgramFramebufferSize(float width, float height)
 
 void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
 {
+    int numtexturesset = 0;
+
     for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
     {
         switch( m_pFile->m_ExposedUniforms[i].m_Type )
@@ -911,6 +913,10 @@ void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
             break;
 
         case ExposedUniformType_Sampler2D:
+            MyActiveTexture( GL_TEXTURE0 + 4 + numtexturesset );
+            glBindTexture( GL_TEXTURE_2D, valuearray[i].m_TextureID );
+            glUniform1i( m_uHandle_ExposedUniforms[i], 4 + numtexturesset );
+            numtexturesset++;
             break;
 
         case ExposedUniformType_NotSet:
