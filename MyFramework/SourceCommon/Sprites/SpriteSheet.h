@@ -52,7 +52,10 @@ public:
     //virtual void Create(MaterialDefinition* pMaterial, bool createsprites, bool creatematerials);
     virtual void Tick(double TimePassed);
 
+    int GetNumSprites() { return m_NumSprites; }
+
     int GetSpriteIndexByName(const char* name, ...);
+    MySprite* GetSpriteByIndex(int index);
     MySprite* GetSpriteByName(const char* name, ...);
 
     void CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float sx, float ex, float sy, float ey);

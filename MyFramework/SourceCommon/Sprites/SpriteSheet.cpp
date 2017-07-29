@@ -449,6 +449,13 @@ int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
     return -1;
 }
 
+MySprite* SpriteSheet::GetSpriteByIndex(int index)
+{
+    MyAssert( index >= 0 && index < m_NumSprites );
+
+    return m_pSprites[index];
+}
+
 MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
 {
     MyAssert( m_pSprites != 0 );

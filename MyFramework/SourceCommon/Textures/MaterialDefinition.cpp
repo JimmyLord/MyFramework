@@ -371,7 +371,9 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
         ImportFromFile();
     }
 
+#if MYFW_USING_WX
     g_pPanelWatch->SetNeedsRefresh();
+#endif
 }
 
 void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingvalues)

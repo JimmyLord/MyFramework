@@ -29,7 +29,9 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
+#if MYFW_USING_WX
     SAFE_RELEASE( m_pDefaultEditorMaterial );
+#endif
 
     FreeAllMaterials();
     m_pMaterialCreatedCallbackList.FreeAllInList();
