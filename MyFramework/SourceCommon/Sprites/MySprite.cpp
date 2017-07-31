@@ -54,9 +54,11 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 {
     MyAssert( pSprite != 0 );
 
-    MyAssert( false );
-
     *this = *pSprite;
+
+    // Reduce the refcount to 1, TODO: change refcount operator= to not copy anything? wouldn't be quite as clear.
+    while( this->GetRefCount() > 1 )
+        this->Release();
 
     m_pMaterial = 0;
     SetMaterial( pSprite->GetMaterial() );
