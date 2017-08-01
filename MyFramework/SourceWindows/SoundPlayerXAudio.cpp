@@ -197,7 +197,10 @@ void SoundPlayer::StopMusic()
 SoundObject* SoundPlayer::LoadSound(const char* fullpath)
 {
     MyFileObject* pFile = g_pFileManager->RequestFile( fullpath );
-    return LoadSound( pFile );
+    SoundObject* pSoundObject = LoadSound( pFile );
+    pFile->Release();
+
+    return pSoundObject;
 }
 
 SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
@@ -221,6 +224,7 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
     //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
 
     pSound->m_pFile = pFile;
+    pFile->AddRef();
     pSound->m_WaveDesc.valid = false;
 
     if( pFile->IsFinishedLoading() )
