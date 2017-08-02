@@ -115,10 +115,12 @@ MaterialDefinition::~MaterialDefinition()
     g_pPanelMemory->RemoveMaterial( this );
 #endif
 
-    SAFE_RELEASE( m_pFile );
-    SAFE_RELEASE( m_pTextureColor );
     SetShader( 0 );
     SetShaderInstanced( 0 );
+
+    // Release the file after setting shader to 0, so SetShader() can unregister the finished loading callback.
+    SAFE_RELEASE( m_pFile );
+    SAFE_RELEASE( m_pTextureColor );
 }
 
 MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& other)

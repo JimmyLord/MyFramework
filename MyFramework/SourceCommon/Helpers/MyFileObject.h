@@ -51,7 +51,7 @@ class MyFileObject : public CPPListNode, public RefCount
 {
     friend class FileManager;
 
-    static const int CALLBACK_POOL_SIZE = 100;
+    static const int CALLBACK_POOL_SIZE = 1000;
 
 protected:
     CPPListHead m_FileFinishedLoadingCallbackList;
