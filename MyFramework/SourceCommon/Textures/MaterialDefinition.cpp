@@ -45,7 +45,7 @@ void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
         break;
 
     case ExposedUniformType_Sampler2D:
-        m_TextureID = 0;
+        m_pTexture = 0;
         break;
 
     case ExposedUniformType_NotSet:
@@ -483,7 +483,19 @@ void MaterialDefinition::ImportExposedUniformValues(cJSON* jMaterial)
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    cJSONExt_GetUnsignedInt( jMaterial, pInfo->m_Name, &m_UniformValues[i].m_TextureID );
+                    {
+                        cJSON* obj = cJSON_GetObjectItem( jMaterial, pInfo->m_Name );
+                        if( obj )
+                        {
+                            char* filename = obj->valuestring;
+
+                            if( filename != 0 )
+                            {
+                                m_UniformValues[i].m_pTexture = g_pTextureManager->FindTexture( filename );
+                                m_UniformValues[i].m_pTexture->AddRef();
+                            }
+                        }
+                    }
                     break;
 
                 case ExposedUniformType_NotSet:
@@ -535,7 +547,7 @@ void MaterialDefinition::ExportExposedUniformValues(cJSON* jMaterial)
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    cJSON_AddNumberToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_TextureID );
+                    cJSON_AddStringToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_pTexture->m_Filename );
                     break;
 
                 case ExposedUniformType_NotSet:
@@ -904,7 +916,9 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    g_pPanelWatch->AddUnsignedInt( tempname, &m_UniformValues[i].m_TextureID, 0, 1000 );
+                    g_pPanelWatch->AddPointerWithDescription( tempname, m_UniformValues[i].m_pTexture,
+                        m_UniformValues[i].m_pTexture ? m_UniformValues[i].m_pTexture->m_Filename : "Texture Not Set",
+                        0, 0, 0, 0 );
                     break;
 
                 case ExposedUniformType_NotSet:

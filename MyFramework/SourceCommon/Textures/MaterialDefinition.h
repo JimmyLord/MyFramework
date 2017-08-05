@@ -26,7 +26,7 @@ public:
         float m_Vec3[3];
         float m_Vec4[4];
         unsigned char m_ColorByte[4];
-        GLuint m_TextureID;
+        TextureDefinition* m_pTexture;
     };
 
     void SetToInitialValue(ExposedUniformType type);
