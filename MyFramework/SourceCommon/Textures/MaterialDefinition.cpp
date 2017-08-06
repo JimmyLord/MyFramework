@@ -22,6 +22,10 @@ const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes] =
 
 void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
 {
+#if MYFW_USING_WX
+    m_ControlID = -1;
+#endif
+
     switch( type )
     {
     case ExposedUniformType_Float:
@@ -100,6 +104,14 @@ void MaterialDefinition::Init()
     m_UVOffset.Set( 0, 0 );
 
 #if MYFW_USING_WX
+    for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
+    {
+        m_UniformValues[i].m_Name = "";
+        m_UniformValues[i].m_ControlID = -1;
+    }
+#endif
+
+#if MYFW_USING_WX
     m_ControlID_Shader = -1;
     m_ControlID_ShaderInstanced = -1;
 #endif
@@ -114,6 +126,20 @@ MaterialDefinition::~MaterialDefinition()
 #if MYFW_USING_WX
     g_pPanelMemory->RemoveMaterial( this );
 #endif
+
+    // Release the exposed uniform texturedef pointers.
+    if( m_pShaderGroup && m_pShaderGroup->GetFile() )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+
+        for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+        {
+            if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
+            {
+                SAFE_RELEASE( m_UniformValues[i].m_pTexture );
+            }
+        }
+    }
 
     SetShader( 0 );
     SetShaderInstanced( 0 );
@@ -147,6 +173,8 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
 
     // fully loaded flag isn't copied.
     //m_FullyLoaded
+
+    // TODO: Copy the exposed uniform values.
 
     return *this;
 }
@@ -436,6 +464,12 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
                 // If the uniform wasn't found in the old list, zero out the entry.
                 if( i == MyFileObjectShader::MAX_EXPOSED_UNIFORMS )
                 {
+                    // TODO: Release the texture.
+                    //if( )
+                    //{
+                    //    SAFE_RELEASE( g_PreviousUniformValues[i].m_pTexture );
+                    //}
+
                     m_UniformValues[j].SetToInitialValue( pShaderFile->m_ExposedUniforms[j].m_Type );
                 }
             }
@@ -802,7 +836,7 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
     }
 }
 
-void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
+void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // StaticOnDropTexture
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
 
@@ -827,10 +861,37 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y)
 
     if( pDropItem->m_Type == DragAndDropType_TextureDefinitionPointer )
     {
-        SetTextureColor( (TextureDefinition*)pDropItem->m_Value );
+        TextureDefinition* pNewTexture = (TextureDefinition*)pDropItem->m_Value;
+        MyAssert( pNewTexture );
 
-        // update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->m_Filename;
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+        if( pShaderFile )
+        {
+            unsigned int i;
+            for( i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+            {
+                if( m_UniformValues[i].m_ControlID == controlid )
+                {
+                    if( pNewTexture )
+                        pNewTexture->AddRef();
+                    SAFE_RELEASE( m_UniformValues[i].m_pTexture );
+                    m_UniformValues[i].m_pTexture = pNewTexture;
+                    break;
+                }
+            }
+
+            if( i == pShaderFile->m_NumExposedUniforms )
+            {
+                SetTextureColor( pNewTexture );
+            }
+        }
+        else
+        {
+            SetTextureColor( pNewTexture );
+        }
+
+        // Update the panel so new texture name shows up.
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pNewTexture->m_Filename;
     }
 }
 
@@ -916,9 +977,10 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    g_pPanelWatch->AddPointerWithDescription( tempname, m_UniformValues[i].m_pTexture,
+                    m_UniformValues[i].m_ControlID = g_pPanelWatch->AddPointerWithDescription(
+                        tempname, m_UniformValues[i].m_pTexture,
                         m_UniformValues[i].m_pTexture ? m_UniformValues[i].m_pTexture->m_Filename : "Texture Not Set",
-                        0, 0, 0, 0 );
+                        this, MaterialDefinition::StaticOnDropTexture, 0, 0 );                    
                     break;
 
                 case ExposedUniformType_NotSet:

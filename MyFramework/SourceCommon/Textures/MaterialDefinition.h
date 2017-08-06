@@ -17,6 +17,7 @@ class ExposedUniformValue
 public:
 #if MYFW_USING_WX
     std::string m_Name;
+    int m_ControlID;
 #endif
 
     union
