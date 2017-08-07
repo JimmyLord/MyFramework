@@ -108,6 +108,7 @@ void MaterialDefinition::Init()
     {
         m_UniformValues[i].m_Name = "";
         m_UniformValues[i].m_ControlID = -1;
+        m_UniformValues[i].m_Type = ExposedUniformType_NotSet;
     }
 #endif
 
@@ -446,32 +447,42 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
             }
 
             // Restore uniform values backed up above.
-            for( unsigned int j=0; j<pShaderFile->m_NumExposedUniforms; j++ )
+            for( unsigned int j=0; j<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; j++ )
             {
-                // Search for uniform in the old list, if found, grab it's value.
-                unsigned int i;
-                for( i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
-                {
-                    MyAssert( m_UniformValues[j].m_Name != "" );
+                unsigned int i = MyFileObjectShader::MAX_EXPOSED_UNIFORMS;
 
-                    if( m_UniformValues[j].m_Name == g_PreviousUniformValues[i].m_Name )
+                // Search for uniform in the old list, if found, grab it's old value.
+                if( j < pShaderFile->m_NumExposedUniforms )
+                {
+                    for( i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
                     {
-                        m_UniformValues[j] = g_PreviousUniformValues[i];
-                        break;
+                        MyAssert( m_UniformValues[j].m_Name != "" );
+
+                        if( m_UniformValues[j].m_Name == g_PreviousUniformValues[i].m_Name )
+                        {
+                            m_UniformValues[j] = g_PreviousUniformValues[i];
+                            break;
+                        }
                     }
                 }
 
                 // If the uniform wasn't found in the old list, zero out the entry.
                 if( i == MyFileObjectShader::MAX_EXPOSED_UNIFORMS )
                 {
-                    // TODO: Release the texture.
-                    //if( )
-                    //{
-                    //    SAFE_RELEASE( g_PreviousUniformValues[i].m_pTexture );
-                    //}
+                    // If the type we have stored is a sampler, release the texture.
+                    if( m_UniformValues[j].m_Type == ExposedUniformType_Sampler2D )
+                    {
+                        SAFE_RELEASE( g_PreviousUniformValues[j].m_pTexture );
+                    }
 
-                    m_UniformValues[j].SetToInitialValue( pShaderFile->m_ExposedUniforms[j].m_Type );
+                    if( j < pShaderFile->m_NumExposedUniforms )
+                    {
+                        m_UniformValues[j].SetToInitialValue( pShaderFile->m_ExposedUniforms[j].m_Type );
+                    }
                 }
+
+                // Copy the new type into our array for the next time the file is reloaded
+                m_UniformValues[j].m_Type = pShaderFile->m_ExposedUniforms[j].m_Type;
             }
 #endif
         }

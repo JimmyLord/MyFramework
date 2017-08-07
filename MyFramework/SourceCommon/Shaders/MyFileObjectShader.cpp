@@ -33,6 +33,11 @@ void MyFileObjectShader::UnloadContents()
     g_pShaderManager->InvalidateAllShadersUsingFile( this );
 
     m_NumExposedUniforms = 0;
+    for( int i=0; i<MAX_EXPOSED_UNIFORMS; i++ )
+    {
+        m_ExposedUniforms[i].m_Name[0] = 0;
+        m_ExposedUniforms[i].m_Type = ExposedUniformType_NotSet;
+    }
 
     ClearIncludedFiles();
 }

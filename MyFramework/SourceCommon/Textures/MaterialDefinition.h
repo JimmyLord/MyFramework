@@ -18,6 +18,7 @@ public:
 #if MYFW_USING_WX
     std::string m_Name;
     int m_ControlID;
+    ExposedUniformType m_Type; // used when reloading shader, needed to release ref on texture.
 #endif
 
     union
