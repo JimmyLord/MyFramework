@@ -36,6 +36,11 @@ FileManager::FileManager()
         m_pFileThisFileIOThreadIsLoading[threadid] = 0;
     }
 #endif //USE_PTHREAD && !MYFW_NACL
+
+#if MYFW_USING_WX
+    m_pFileUnloadedCallbackObj = 0;
+    m_pFileUnloadedCallbackFunc = 0;
+#endif
 }
 
 FileManager::~FileManager()
@@ -456,6 +461,20 @@ MyFileObject* FileManager::LoadFileNow(const char* fullpath)
     }
 
     return pFile;
+}
+
+void FileManager::RegisterFileUnloadedCallbackFunc(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc)
+{
+    m_pFileUnloadedCallbackObj = pObject;
+    m_pFileUnloadedCallbackFunc = pFunc;
+}
+
+void FileManager::Editor_UnloadFile(MyFileObject* pFile)
+{
+    if( m_pFileUnloadedCallbackFunc )
+    {
+        m_pFileUnloadedCallbackFunc( m_pFileUnloadedCallbackObj, pFile );
+    }
 }
 #endif
 

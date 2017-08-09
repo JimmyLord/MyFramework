@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -24,6 +24,7 @@ MyFileObject* RequestFile(const char* filename);
 GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
 
 typedef void (*FileManager_OnFileUpdated_CallbackFunction)(MyFileObject* pFile);
+typedef void (*FileManager_Editor_OnFileUnloaded_CallbackFunction)(void* pObject, MyFileObject* pFile);
 
 class FileManager
 {
@@ -42,6 +43,11 @@ protected:
 
     static void* Thread_FileIO(void* obj);
 #endif //USE_PTHREAD
+
+#if MYFW_USING_WX
+    void* m_pFileUnloadedCallbackObj;
+    FileManager_Editor_OnFileUnloaded_CallbackFunction m_pFileUnloadedCallbackFunc;
+#endif
 
 public:
     FileManager();
@@ -69,6 +75,9 @@ public:
 #if MYFW_USING_WX
     bool DoesFileExist(const char* fullpath);
     MyFileObject* LoadFileNow(const char* fullpath);
+
+    void RegisterFileUnloadedCallbackFunc(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
+    void Editor_UnloadFile(MyFileObject* pFile);
 #endif
 };
 

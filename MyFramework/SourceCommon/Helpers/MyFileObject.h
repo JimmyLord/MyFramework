@@ -121,6 +121,7 @@ public:
         RightClick_ViewInWatchWindow = 1000,
         RightClick_OpenFile,
         RightClick_OpenContainingFolder,
+        RightClick_UnloadFile,
     };
 
     void OSLaunchFile(bool createfileifdoesntexist);

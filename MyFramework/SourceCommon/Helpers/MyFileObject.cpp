@@ -440,6 +440,13 @@ void MyFileObject::OnRightClick()
     menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
  	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
 
+    // TODO: Shows the ref count for now, fix this.
+#if _DEBUG
+    std::string tempstr = "RefCount: " + std::to_string( (long long)this->GetRefCount() );
+    menu.Append( RightClick_UnloadFile, tempstr );
+ 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+#endif
+
     // blocking call.
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
 }
@@ -521,13 +528,12 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
 
                 pMesh->FillPropertiesWindow( false );
             }
+        }
+        break;
 
-            //// TODO: not sure what this was for and yet still caused occasional crashes, removed for now.
-            ////       also, left click callback on right click event?!?
-            //if( m_CustomLeftClickCallback )
-            //{
-            //    m_CustomLeftClickCallback( m_CustomLeftClickObject );
-            //}
+    case RightClick_UnloadFile:
+        {
+            g_pFileManager->Editor_UnloadFile( this );
         }
         break;
     }
