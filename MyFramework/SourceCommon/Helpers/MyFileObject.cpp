@@ -533,7 +533,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
 
     case RightClick_UnloadFile:
         {
-            g_pFileManager->Editor_UnloadFile( this );
+            g_pFileManager->Editor_UnloadFile( pFileObject );
         }
         break;
     }

@@ -463,7 +463,7 @@ MyFileObject* FileManager::LoadFileNow(const char* fullpath)
     return pFile;
 }
 
-void FileManager::RegisterFileUnloadedCallbackFunc(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc)
+void FileManager::RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc)
 {
     m_pFileUnloadedCallbackObj = pObject;
     m_pFileUnloadedCallbackFunc = pFunc;

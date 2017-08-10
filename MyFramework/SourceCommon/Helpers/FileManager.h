@@ -76,7 +76,7 @@ public:
     bool DoesFileExist(const char* fullpath);
     MyFileObject* LoadFileNow(const char* fullpath);
 
-    void RegisterFileUnloadedCallbackFunc(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
+    void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
     void Editor_UnloadFile(MyFileObject* pFile);
 #endif
 };
