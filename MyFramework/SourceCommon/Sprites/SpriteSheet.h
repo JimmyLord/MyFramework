@@ -45,6 +45,8 @@ protected:
 public:
     SpriteSheet();
     virtual ~SpriteSheet();
+
+    MyFileObject* GetJSONFile() { return m_pJSONFile; }
     
     void SetScale(float scale) { m_SpriteScale = scale; }
     virtual void Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
