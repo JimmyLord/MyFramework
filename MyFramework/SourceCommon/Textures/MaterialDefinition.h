@@ -129,6 +129,8 @@ public:
     int m_ControlID_Shader;
     int m_ControlID_ShaderInstanced;
 
+    bool IsReferencingFile(MyFileObject* pFile);
+
     // Memory panel callbacks
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);

@@ -654,11 +654,36 @@ bool MaterialDefinition::IsTransparent()
 }
 
 #if MYFW_USING_WX
-void MaterialDefinition::OnLeftClick(unsigned int count)
+bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
+{
+    if( GetTextureColor() && GetTextureColor()->m_pFile == pFile )
+    {
+        return true;
+    }
+
+    if( m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+        for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+        {
+            if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
+            {
+                if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->m_pFile == pFile )
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+    
+void MaterialDefinition::OnLeftClick(unsigned int count) // StaticOnLeftClick
 {
 }
 
-void MaterialDefinition::OnRightClick()
+void MaterialDefinition::OnRightClick() // StaticOnRightClick
 {
  	wxMenu menu;
     menu.SetClientData( this );
@@ -685,12 +710,12 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
     }
 }
 
-void MaterialDefinition::OnDrag()
+void MaterialDefinition::OnDrag() // StaticOnDrag
 {
     g_DragAndDropStruct.Add( DragAndDropType_MaterialDefinitionPointer, this );
 }
 
-void MaterialDefinition::OnLabelEdit(wxString newlabel)
+void MaterialDefinition::OnLabelEdit(wxString newlabel) // StaticOnLabelEdit
 {
     size_t len = newlabel.length();
     if( len > 0 )
@@ -819,7 +844,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
     }
 }
 
-void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y)
+void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y) // StaticOnDropShader
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
 
