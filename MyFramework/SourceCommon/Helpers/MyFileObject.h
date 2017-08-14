@@ -122,6 +122,7 @@ public:
         RightClick_OpenFile,
         RightClick_OpenContainingFolder,
         RightClick_UnloadFile,
+        RightClick_FindAllReferences,
     };
 
     void OSLaunchFile(bool createfileifdoesntexist);

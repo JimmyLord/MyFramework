@@ -25,6 +25,7 @@ GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
 
 typedef void (*FileManager_OnFileUpdated_CallbackFunction)(MyFileObject* pFile);
 typedef void (*FileManager_Editor_OnFileUnloaded_CallbackFunction)(void* pObject, MyFileObject* pFile);
+typedef void (*FileManager_Editor_OnFindAllReferences_CallbackFunction)(void* pObject, MyFileObject* pFile);
 
 class FileManager
 {
@@ -47,6 +48,9 @@ protected:
 #if MYFW_USING_WX
     void* m_pFileUnloadedCallbackObj;
     FileManager_Editor_OnFileUnloaded_CallbackFunction m_pFileUnloadedCallbackFunc;
+
+    void* m_pFindAllReferencesCallbackObj;
+    FileManager_Editor_OnFindAllReferences_CallbackFunction m_pFindAllReferencesCallbackFunc;    
 #endif
 
 public:
@@ -78,6 +82,9 @@ public:
 
     void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
     void Editor_UnloadFile(MyFileObject* pFile);
+
+    void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc);
+    void Editor_FindAllReferences(MyFileObject* pFile);
 #endif
 };
 

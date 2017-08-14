@@ -432,20 +432,13 @@ void MyFileObject::OnRightClick()
     menu.SetClientData( this );
     
     menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
-
     menu.Append( RightClick_OpenFile, "Open file" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
-
     menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+    menu.Append( RightClick_UnloadFile, "Unload File" );
+    menu.Append( RightClick_FindAllReferences, "Find References (" + std::to_string( (long long)this->GetRefCount() ) + ")" );
 
-    // TODO: Shows the ref count for now, fix this.
-#if _DEBUG
-    std::string tempstr = "RefCount: " + std::to_string( (long long)this->GetRefCount() );
-    menu.Append( RightClick_UnloadFile, tempstr );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
-#endif
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+    
 
     // blocking call.
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
@@ -534,6 +527,12 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
     case RightClick_UnloadFile:
         {
             g_pFileManager->Editor_UnloadFile( pFileObject );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            g_pFileManager->Editor_FindAllReferences( pFileObject );
         }
         break;
     }

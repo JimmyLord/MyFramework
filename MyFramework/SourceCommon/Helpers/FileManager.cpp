@@ -40,6 +40,9 @@ FileManager::FileManager()
 #if MYFW_USING_WX
     m_pFileUnloadedCallbackObj = 0;
     m_pFileUnloadedCallbackFunc = 0;
+
+    m_pFindAllReferencesCallbackObj = 0;
+    m_pFindAllReferencesCallbackFunc = 0;    
 #endif
 }
 
@@ -474,6 +477,20 @@ void FileManager::Editor_UnloadFile(MyFileObject* pFile)
     if( m_pFileUnloadedCallbackFunc )
     {
         m_pFileUnloadedCallbackFunc( m_pFileUnloadedCallbackObj, pFile );
+    }
+}
+
+void FileManager::RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc)
+{
+    m_pFindAllReferencesCallbackObj = pObject;
+    m_pFindAllReferencesCallbackFunc = pFunc;
+}
+
+void FileManager::Editor_FindAllReferences(MyFileObject* pFile)
+{
+    if( m_pFindAllReferencesCallbackFunc )
+    {
+        m_pFindAllReferencesCallbackFunc( m_pFindAllReferencesCallbackObj, pFile );
     }
 }
 #endif
