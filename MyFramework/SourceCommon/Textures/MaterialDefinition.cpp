@@ -664,13 +664,17 @@ bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
     if( m_pShaderGroup )
     {
         MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
-        for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+
+        if( pShaderFile )
         {
-            if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
             {
-                if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->m_pFile == pFile )
+                if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
                 {
-                    return true;
+                    if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->m_pFile == pFile )
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -689,7 +693,15 @@ void MaterialDefinition::OnRightClick() // StaticOnRightClick
     menu.SetClientData( this );
     
     menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialDefinition::OnPopupClick );
+
+    MyFileObject* pMaterialFile = this->GetFile();
+    if( pMaterialFile )
+    {
+        menu.Append( RightClick_UnloadFile, "Unload File" );
+        menu.Append( RightClick_FindAllReferences, "Find References (" + std::to_string( (long long)this->GetRefCount() ) + ")" );
+    }
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialDefinition::OnPopupClick );
 
     // blocking call.
     g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
@@ -698,6 +710,7 @@ void MaterialDefinition::OnRightClick() // StaticOnRightClick
 void MaterialDefinition::OnPopupClick(wxEvent &evt)
 {
     MaterialDefinition* pMaterial = (MaterialDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+    MyFileObject* pMaterialFile = pMaterial->GetFile();
 
     int id = evt.GetId();
     switch( id )
@@ -705,6 +718,20 @@ void MaterialDefinition::OnPopupClick(wxEvent &evt)
     case RightClick_ViewInWatchWindow:
         {
             pMaterial->AddToWatchPanel( true, true, true );
+        }
+        break;
+
+    case RightClick_UnloadFile:
+        {
+            if( pMaterialFile )
+                g_pFileManager->Editor_UnloadFile( pMaterialFile );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            if( pMaterialFile )
+                g_pFileManager->Editor_FindAllReferences( pMaterialFile );
         }
         break;
     }

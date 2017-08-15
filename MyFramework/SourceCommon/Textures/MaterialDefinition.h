@@ -124,6 +124,8 @@ public:
     enum RightClickOptions
     {
         RightClick_ViewInWatchWindow = 1000,
+        RightClick_UnloadFile,
+        RightClick_FindAllReferences,
     };
 
     int m_ControlID_Shader;

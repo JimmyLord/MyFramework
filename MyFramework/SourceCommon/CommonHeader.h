@@ -510,6 +510,7 @@ typedef int socklen_t;
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"
 
+#include "Textures/TextureDefinition.h"
 #include "Textures/TextureManager.h"
 #include "Textures/MaterialDefinition.h"
 #include "Textures/MaterialManager.h"

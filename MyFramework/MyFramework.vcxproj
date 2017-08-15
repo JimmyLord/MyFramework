@@ -1579,6 +1579,7 @@
     <ClCompile Include="SourceCommon\Textures\FBODefinition.cpp" />
     <ClCompile Include="SourceCommon\Textures\MaterialDefinition.cpp" />
     <ClCompile Include="SourceCommon\Textures\MaterialManager.cpp" />
+    <ClCompile Include="SourceCommon\Textures\TextureDefinition.cpp" />
     <ClCompile Include="SourceCommon\Textures\TextureManager.cpp" />
     <ClCompile Include="SourceEmscripten\GLExtensions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
@@ -2720,6 +2721,7 @@
     <ClInclude Include="SourceCommon\Textures\FBODefinition.h" />
     <ClInclude Include="SourceCommon\Textures\MaterialDefinition.h" />
     <ClInclude Include="SourceCommon\Textures\MaterialManager.h" />
+    <ClInclude Include="SourceCommon\Textures\TextureDefinition.h" />
     <ClInclude Include="SourceCommon\Textures\TextureManager.h" />
     <ClInclude Include="SourceEmscripten\GLExtensions.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>

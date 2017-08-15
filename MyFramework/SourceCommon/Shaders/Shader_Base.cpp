@@ -156,9 +156,12 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
         m_uHandle_LightAttenuation[i] = GetUniformLocation( m_ProgramHandle, "u_LightAttenuation[%d]", i );
     }
 
-    for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
+    if( m_pFile )
     {
-        m_uHandle_ExposedUniforms[i] = GetUniformLocation( m_ProgramHandle, m_pFile->m_ExposedUniforms[i].m_Name );
+        for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
+        {
+            m_uHandle_ExposedUniforms[i] = GetUniformLocation( m_ProgramHandle, m_pFile->m_ExposedUniforms[i].m_Name );
+        }
     }
 
     m_Initialized = true;
@@ -887,6 +890,9 @@ void Shader_Base::ProgramFramebufferSize(float width, float height)
 void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
 {
     int numtexturesset = 0;
+
+    if( m_pFile == 0 )
+        return;
 
     for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
     {

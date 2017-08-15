@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,52 +10,12 @@
 #ifndef __TextureManager_H__
 #define __TextureManager_H__
 
+class TextureDefinition;
 class TextureManager;
 class RefCount;
 class FBODefinition;
 
 extern TextureManager* g_pTextureManager;
-
-class TextureDefinition : public CPPListNode, public RefCount
-{
-    friend class TextureManager;
-
-protected:
-    bool m_FreeFileFromRamWhenTextureCreated;
-    bool m_ManagedByTextureManager;
-
-public:
-    bool m_FullyLoaded;
-
-    char m_Filename[MAX_PATH];
-    MyFileObject* m_pFile;
-    GLuint m_TextureID;
-
-    unsigned int m_MemoryUsed;
-
-    int m_Width;
-    int m_Height;
-
-    int m_MinFilter;
-    int m_MagFilter;
-
-    int m_WrapS;
-    int m_WrapT;
-
-public:
-    TextureDefinition(bool freeonceloaded = false);
-    virtual ~TextureDefinition();
-
-    bool QueryFreeWhenCreated() { return m_FreeFileFromRamWhenTextureCreated; }
-    
-    void Invalidate(bool cleanglallocs);
-
-public:
-#if MYFW_USING_WX
-    static void StaticOnDrag(void* pObjectPtr) { ((TextureDefinition*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-#endif //MYFW_USING_WX
-};
 
 class TextureManager
 {

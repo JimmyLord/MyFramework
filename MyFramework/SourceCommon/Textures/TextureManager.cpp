@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,73 +9,11 @@
 
 #include "CommonHeader.h"
 
+#include "TextureDefinition.h"
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
 TextureManager* g_pTextureManager = 0;
-
-TextureDefinition::TextureDefinition(bool freeonceloaded)
-: m_FreeFileFromRamWhenTextureCreated(freeonceloaded)
-{
-    m_ManagedByTextureManager = false;
-
-    m_FullyLoaded = false;
-
-    m_Filename[0] = 0;
-    m_pFile = 0;
-    m_TextureID = 0;
-
-    m_MemoryUsed = 0;
-
-    m_Width = 0;
-    m_Height = 0;
-
-    m_MinFilter = GL_LINEAR;
-    m_MagFilter = GL_LINEAR;
-
-    m_WrapS = GL_CLAMP_TO_EDGE;
-    m_WrapT = GL_CLAMP_TO_EDGE;
-}
-
-TextureDefinition::~TextureDefinition()
-{
-    if( m_ManagedByTextureManager )
-    {
-        this->Remove();
-    }
-
-    if( m_pFile )
-    {
-        g_pFileManager->FreeFile( m_pFile );
-    }
-
-    Invalidate( true );
-
-#if MYFW_USING_WX
-    if( m_ManagedByTextureManager )
-    {
-        if( g_pPanelMemory )
-            g_pPanelMemory->RemoveTexture( this );
-    }
-#endif
-}
-
-#if MYFW_USING_WX
-void TextureDefinition::OnDrag()
-{
-    g_DragAndDropStruct.Add( DragAndDropType_TextureDefinitionPointer, this );
-}
-#endif //MYFW_USING_WX
-
-void TextureDefinition::Invalidate(bool cleanglallocs)
-{
-    if( cleanglallocs && m_TextureID != 0 )
-    {
-        glDeleteTextures( 1, &m_TextureID );
-    }
-
-    m_TextureID = 0;
-}
 
 TextureManager::TextureManager()
 {
@@ -313,7 +251,7 @@ void TextureManager::Tick()
             pTextureDef->m_FullyLoaded = true;
 
 #if MYFW_USING_WX
-            g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnDrag );
+            g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnRightClick, TextureDefinition::StaticOnDrag );
 #endif
 
             LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );

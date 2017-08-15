@@ -510,6 +510,9 @@
     <ClCompile Include="SourceWindows\SoundPlayerSDL.cpp">
       <Filter>Source-Platform\Source - Windows</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Textures\TextureDefinition.cpp">
+      <Filter>Source\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -952,6 +955,9 @@
     </ClInclude>
     <ClInclude Include="SourceWindows\SoundPlayerSDL.h">
       <Filter>Source-Platform\Source - Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Textures\TextureDefinition.h">
+      <Filter>Source\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
