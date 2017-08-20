@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -64,6 +64,21 @@ public:
 
 public:
 #if MYFW_USING_WX
+    enum RightClickOptions
+    {
+        RightClick_OpenFile = 1000,
+        RightClick_UnloadFile,
+        RightClick_FindAllReferences,
+    };
+
+    // Memory panel callbacks
+    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((ShaderGroup*)pObjectPtr)->OnLeftClick( count ); }
+    void OnLeftClick(unsigned int count);
+
+    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((ShaderGroup*)pObjectPtr)->OnRightClick(); }
+    void OnRightClick();
+    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
+
     static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 #endif //MYFW_USING_WX

@@ -774,7 +774,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
     m_pNotebook->SetPageText( PanelMemoryPage_DrawCalls, tempstr );
 }
 
-void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
 {
     MyAssert( pShaderGroup != 0 );
 
@@ -812,6 +812,7 @@ void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pShaderGroup;
         pData->m_pDragFunction = pDragFunction;
+        pData->m_pRightClickFunction = pRightClickFunction;
 
         m_pTree_ShaderGroups->AppendItem( idcategory, tempstr, -1, -1, pData );
 

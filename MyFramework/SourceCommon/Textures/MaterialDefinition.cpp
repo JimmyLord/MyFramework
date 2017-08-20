@@ -665,6 +665,9 @@ bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
     {
         MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
 
+        if( pShaderFile == pFile )
+            return true;
+
         if( pShaderFile )
         {
             for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )

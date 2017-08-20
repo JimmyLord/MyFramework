@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -59,7 +59,7 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
     if( pShaderFile && pShaderFile->m_IsAnIncludeFile == false )
     {
         MyAssert( m_pFile->GetFilenameWithoutExtension() != 0 );
-        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->GetFilenameWithoutExtension(), StaticOnDrag );
+        g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->GetFilenameWithoutExtension(), StaticOnRightClick, StaticOnDrag );
     }
 #endif
 }
@@ -136,7 +136,59 @@ ShaderGroup::~ShaderGroup()
 }
 
 #if MYFW_USING_WX
-void ShaderGroup::OnDrag()
+void ShaderGroup::OnLeftClick(unsigned int count) // StaticOnLeftClick
+{
+}
+
+void ShaderGroup::OnRightClick() // StaticOnRightClick
+{
+ 	wxMenu menu;
+    menu.SetClientData( this );
+    
+    if( GetFile() )
+    {
+        menu.Append( RightClick_OpenFile, "Open File" );
+        menu.Append( RightClick_UnloadFile, "Unload File" );
+        menu.Append( RightClick_FindAllReferences, "Find References (" + std::to_string( (long long)this->GetRefCount() ) + ")" );
+    }
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ShaderGroup::OnPopupClick );
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void ShaderGroup::OnPopupClick(wxEvent &evt)
+{
+    ShaderGroup* pShaderGroup = (ShaderGroup*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+    MyFileObject* pFileObject = pShaderGroup->GetFile();
+
+    int id = evt.GetId();
+    switch( id )
+    {
+    case RightClick_OpenFile:
+        {
+            pFileObject->OSLaunchFile( true );
+        }
+        break;
+
+    case RightClick_UnloadFile:
+        {
+            if( pFileObject )
+                g_pFileManager->Editor_UnloadFile( pFileObject );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            if( pFileObject )
+                g_pFileManager->Editor_FindAllReferences( pFileObject );
+        }
+        break;
+    }
+}
+
+void ShaderGroup::OnDrag() // StaticOnDrag
 {
     g_DragAndDropStruct.Add( DragAndDropType_ShaderGroupPointer, this );
 }

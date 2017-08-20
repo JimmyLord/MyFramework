@@ -72,7 +72,7 @@ public:
     void AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
     void RemoveTexture(TextureDefinition* pTextureDef);
 
-    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction);
+    void AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction);
     void RemoveShaderGroup(ShaderGroup* pShaderGroup);
 
     wxTreeItemId FindSoundCue(SoundCue* pSoundCue);
