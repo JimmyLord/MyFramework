@@ -902,6 +902,22 @@ void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y) // St
     }
 }
 
+void MaterialDefinition::OnRightClickShader(int controlid) // StaticOnRightClickShader
+{
+    if( controlid == m_ControlID_Shader )
+    {
+        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
+
+        SetShader( 0 );
+    }
+    else if( controlid == m_ControlID_ShaderInstanced )
+    {
+        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
+
+        SetShaderInstanced( 0 );
+    }
+}
+
 void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // StaticOnDropTexture
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
@@ -961,6 +977,39 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // S
     }
 }
 
+void MaterialDefinition::OnRightClickTexture(int controlid) // StaticOnRightClickTexture
+{
+    MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+    if( pShaderFile )
+    {
+        unsigned int i;
+        for( i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+        {
+            if( m_UniformValues[i].m_ControlID == controlid )
+            {
+                g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
+
+                SAFE_RELEASE( m_UniformValues[i].m_pTexture );
+                m_UniformValues[i].m_pTexture = 0;
+                break;
+            }
+        }
+
+        if( i == pShaderFile->m_NumExposedUniforms )
+        {
+            g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
+
+            SetTextureColor( 0 );
+        }
+    }
+    else
+    {
+        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
+
+        SetTextureColor( 0 );
+    }
+}
+
 void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms)
 {
     int oldpaddingleft = g_pPanelWatch->m_PaddingLeft;
@@ -986,17 +1035,17 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
         const char* desc = "no shader";
         if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
             desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-        m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+        m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader, 0, MaterialDefinition::StaticOnRightClickShader );
 
         desc = "no shader";
         if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
             desc = m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-        m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader );
+        m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader, 0, MaterialDefinition::StaticOnRightClickShader );
 
         desc = "no color texture";
         if( m_pTextureColor )
             desc = m_pTextureColor->m_Filename;
-        g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture );
+        g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture, 0, MaterialDefinition::StaticOnRightClickTexture );
 
         g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
         g_pPanelWatch->AddColorByte( "Color-Diffuse", &m_ColorDiffuse, 0, 255 );
