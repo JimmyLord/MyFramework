@@ -4,17 +4,27 @@ A cross-platform C++/OpenGL framework for games
 
 Currently supports the following platforms:
 - Windows
+- Linux (WIP)
 - Android 2.2+
 - iOS 5+
 - BlackBerry 10/Playbook
 - Native Client (NaCl)
 - Emscripten
-- Windows phone 8 (not well maintained)
+- Windows phone 8 (not maintained for years)
 
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:
 
 Windows
 - Visual Studio 2010+
+
+Linux
+- Debian
+    - build-essential
+    - cmake
+    - libboost-all-dev (for SpriteTool)
+    - mesa-common-dev
+    - libopenal-dev
+    - libgl1-mesa-dev
     
 Android
 - vs-android (http://code.google.com/p/vs-android/) to compile c++ code in Visual Studio 2010

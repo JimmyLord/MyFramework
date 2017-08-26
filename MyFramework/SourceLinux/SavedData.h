@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,41 +7,9 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __MYTYPES_H__
-#define __MYTYPES_H__
+#ifndef __SavedData_H__
+#define __SavedData_H__
 
-#if MYFW_WINDOWS
+FILE* OpenSavedDataFile(const char* subpath, const char* filename, const char* filemode);
 
-typedef __int32 int32;
-typedef unsigned __int32 uint32;
-typedef __int64 int64;
-typedef unsigned __int64 uint64;
-
-#elif MYFW_NACL || MYFW_LINUX
-
-typedef __int32_t int32;
-typedef __uint32_t uint32;
-typedef __int64_t int64;
-typedef __uint64_t uint64;
-
-#elif MYFW_BLACKBERRY10 || MYFW_EMSCRIPTEN
-
-#include <stdint.h>
-
-typedef int32_t int32;
-typedef uint32_t uint32;
-typedef int64_t int64;
-typedef uint64_t uint64;
-
-#else
-
-typedef int32_t int32;
-typedef uint32_t uint32;
-typedef int64_t int64;
-typedef uint64_t uint64;
-
-#endif
-
-void TestMyTypeSizes();
-
-#endif //__MYTYPES_H__
+#endif //__SavedData_H__

@@ -622,7 +622,7 @@ void MySaveFileObject_FILE::Tick()
     }
 }
 
-#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX
+#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
 MyFileObject* RequestFile(const char* filename)
 {
     MyAssert( filename != 0 );

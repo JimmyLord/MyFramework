@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -25,16 +25,22 @@ void* MyJSONMalloc(size_t sz)
 void MyJSONFree(void* ptr)
 {
     // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-incomplete"
     delete[] ptr;
+#pragma GCC diagnostic pop
 }
 
 void cJSONExt_free(void* ptr)
 {
     // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-incomplete"
     if( OverrodeJSONMemoryAllocation )
         delete[] ptr;
     else
         free( ptr );
+#pragma GCC diagnostic pop
 }
 
 void OverrideJSONMallocFree()

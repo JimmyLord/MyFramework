@@ -18,7 +18,7 @@ class TextureDefinition;
 extern FileManager* g_pFileManager;
 MySaveFileObject* CreatePlatformSpecificSaveFile();
 
-#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX
+#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
 MyFileObject* RequestFile(const char* filename);
 #endif
 GLuint LoadTextureFromMemory(TextureDefinition* texturedef);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -38,6 +38,8 @@ static int WSAGetLastError() { return errno; }
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (NACL)\r\n\r\n"
 #elif MYFW_WINDOWS
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (WIN32)\r\n\r\n"
+#elif MYFW_LINUX
+#define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (LINUX)\r\n\r\n"
 #elif MYFW_ANDROID
 #define HTTPInfo "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (ANDROID)\r\n\r\n"
 #define HTTPInfoCustom "HTTP/1.0\r\nHost: www.flatheadgames.com\r\nUser-Agent: WordGameWebRequest/1.0 (ANDROID %s)\r\n\r\n"
@@ -277,9 +279,7 @@ void WebRequestObject::CreateSocket()
 #if MYFW_WINDOWS || MYFW_WP8
     unsigned long i=1;
     int nonblockerr = ioctlsocket( m_Sock, FIONBIO, &i ); // set non-blocking
-#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
-    int nonblockerr = fcntl( m_Sock, F_SETFL, O_NONBLOCK );
-#elif SYSTEM_LINUX
+#elif MYFW_ANDROID || MYFW_BLACKBERRY || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN || MYFW_LINUX
     int nonblockerr = fcntl( m_Sock, F_SETFL, O_NONBLOCK );
 #elif SYSTEM_NDS
     int i=1;

@@ -136,6 +136,10 @@
 #define MAX_PATH 260
 #endif
 
+//============================================================================================================
+// Basic data types
+//============================================================================================================
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -197,6 +201,40 @@ typedef unsigned char byte;
 #define snprintf _snprintf
 #define snprintf_s _snprintf_s
 #endif
+
+//============================================================================================================
+// Base networking includes
+//============================================================================================================
+
+#if !MYFW_WINDOWS && !MYFW_WP8 && !MYFW_NACL
+//#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h> // for gethostbyname()
+#include <errno.h>
+#include <fcntl.h>
+#include <cstdio> // for "close" on IOS... at least.
+#include <unistd.h> // for "close" on OSX... at least.
+#define WSAEISCONN EISCONN
+#define WSAEINPROGRESS EINPROGRESS
+#define WSAEWOULDBLOCK EWOULDBLOCK
+#define WSAEALREADY EALREADY
+#define WSAEINVAL EINVAL
+#define WSAEISCONN EISCONN
+	#if MYFW_EMSCRIPTEN
+	//#define INADDR_NONE -1
+	#include <unistd.h>
+	#endif
+#else
+#define close closesocket
+typedef int socklen_t;
+//#include <errno.h> // for EISCONN, EINPROGRESS, EWOULDBLOCK, EALREADY, EINVAL, EISCONN, etc...
+#endif
+
+//============================================================================================================
+// Platform specific includes
+//============================================================================================================
 
 #if MYFW_USING_WX
 #pragma warning( push )
@@ -412,31 +450,20 @@ typedef unsigned long   u_long;
 #include "Networking/WebRequest.h"
 #endif
 
-#if !MYFW_WINDOWS && !MYFW_WP8 && !MYFW_NACL
-//#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h> // for gethostbyname()
-#include <errno.h>
-#include <fcntl.h>
-#include <cstdio> // for "close" on IOS... at least.
-#include <unistd.h> // for "close" on OSX... at least.
-#define WSAEISCONN EISCONN
-#define WSAEINPROGRESS EINPROGRESS
-#define WSAEWOULDBLOCK EWOULDBLOCK
-#define WSAEALREADY EALREADY
-#define WSAEINVAL EINVAL
-#define WSAEISCONN EISCONN
-	#if MYFW_EMSCRIPTEN
-	//#define INADDR_NONE -1
-	#include <unistd.h>
-	#endif
-#else
-#define close closesocket
-typedef int socklen_t;
-//#include <errno.h> // for EISCONN, EINPROGRESS, EWOULDBLOCK, EALREADY, EINVAL, EISCONN, etc...
+#if MYFW_LINUX
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include "../SourceLinux/GLExtensions.h"
+#define USE_OPENAL 1
+#include "Sound/SoundPlayerOpenAL.h"
+#include "../SourceLinux/SavedData.h"
+#include "Networking/WebRequest.h"
+#include <pthread.h>
 #endif
+
+//============================================================================================================
+// Common framework includes
+//============================================================================================================
 
 #if MYFW_WINDOWS
 #define MYFW_USEINSTANCEDPARTICLES  1
