@@ -29,7 +29,7 @@ GLint GetUniformLocation(GLuint programhandle, const char* name, ...);
 #define VERTEXPREDEFINES "#define VertexShader 1\n#define MY_SHITTY_LAPTOP 1\n"
 #define GEOMETRYPREDEFINES "#define GeometryShader 1\n#define MY_SHITTY_LAPTOP 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n#define MY_SHITTY_LAPTOP 1\n"
-#elif MYFW_WINDOWS || MYFW_OSX
+#elif MYFW_WINDOWS || MYFW_OSX || MYFW_LINUX
 #define VERTEXPREDEFINES "#define VertexShader 1\n#define WIN32 1\n"
 #define GEOMETRYPREDEFINES "#define GeometryShader 1\n#define WIN32 1\n"
 #define FRAGMENTPREDEFINES "#define FragmentShader 1\n#define WIN32 1\n"

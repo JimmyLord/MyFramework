@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.7 )
 
-#set( CMAKE_BUILD_TYPE Debug )
+set( CMAKE_BUILD_TYPE Debug )
 
 project( MyFramework_Project VERSION 0.1 LANGUAGES CXX )
 
@@ -24,4 +24,4 @@ target_include_directories( MyFramework PUBLIC
     "Libraries/LodePNG"
 )
 
-target_compile_definitions( MyFramework PRIVATE MYFW_LINUX=1 )
+target_compile_definitions( MyFramework PRIVATE _DEBUG=1 MYFW_LINUX=1 )

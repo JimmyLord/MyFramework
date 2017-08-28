@@ -501,6 +501,8 @@ MySaveFileObject* CreatePlatformSpecificSaveFile()
 
 #if MYFW_WINDOWS
     pSaveFile = MyNew MySaveFileObject_FILE();
+#elif MYFW_LINUX
+    pSaveFile = MyNew MySaveFileObject_FILE();
 #elif MYFW_WP8
     pSaveFile = MyNew MySaveFileObject_FILE();
 #elif MYFW_ANDROID

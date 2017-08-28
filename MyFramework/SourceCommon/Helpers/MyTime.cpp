@@ -9,6 +9,10 @@
 
 #include "CommonHeader.h"
 
+#if MYFW_LINUX
+#include <sys/time.h>
+#endif
+
 double MyTime_GetSystemTime(bool realtime)
 {
 #if MYFW_IOS || MYFW_OSX
@@ -21,7 +25,7 @@ double MyTime_GetSystemTime(bool realtime)
         clock_gettime( CLOCK_MONOTONIC, &time );
     //LOGInfo( LOGTag, "time: sec(%d), nsec(%d)\n", time.tv_sec, time.tv_nsec );
     return time.tv_sec + ((double)time.tv_nsec / 1000000000);
-#elif (MYFW_NACL && !MYFW_PPAPI) || MYFW_EMSCRIPTEN
+#elif (MYFW_NACL && !MYFW_PPAPI) || MYFW_EMSCRIPTEN || MYFW_LINUX
     struct timeval time;
     gettimeofday( &time, 0 );
     //LOGInfo( LOGTag, "time: sec(%d), usec(%d)\n", time.tv_sec, time.tv_usec );

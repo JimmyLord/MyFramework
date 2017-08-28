@@ -59,7 +59,7 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
         filecontents = MyNew char[size+1];
 
         // This allocation must land on 4-byte boundary.
-        MyAssert( ((int)filecontents)%4 == 0 );
+        MyAssert( ((long)filecontents)%4 == 0 );
 
         fread( filecontents, size, 1, filehandle );
         filecontents[size] = 0;

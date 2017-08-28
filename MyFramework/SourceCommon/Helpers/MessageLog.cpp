@@ -67,7 +67,7 @@ void LOGDebug(const char* tag, const char* message, ...)
     }
 }
 
-#elif MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN
+#elif MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN || MYFW_LINUX
 
 #if MYFW_NACL
 #include "../../SourceNaCL/MainInstance.h"
@@ -87,7 +87,7 @@ void LOGInfo(const char* tag, const char* message, ...)
     va_end(arg);
 
     szBuff[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
-#if MYFW_EMSCRIPTEN
+#if MYFW_EMSCRIPTEN || MYFW_LINUX
     printf( "%s", szBuff );
 #elif MYFW_NACL && !MYFW_PPAPI
     fprintf( stdout, "%s", szBuff );
@@ -115,7 +115,7 @@ void LOGError(const char* tag, const char* message, ...)
     va_end(arg);
 
     szBuff[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
-#if MYFW_EMSCRIPTEN
+#if MYFW_EMSCRIPTEN || MYFW_LINUX
     printf( "%s", szBuff );
 #elif MYFW_NACL && !MYFW_PPAPI
     fprintf( stderr, "%s", szBuff );
@@ -141,7 +141,7 @@ void LOGDebug(const char* tag, const char* message, ...)
     va_end(arg);
 
     szBuff[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
-#if MYFW_EMSCRIPTEN
+#if MYFW_EMSCRIPTEN || MYFW_LINUX
     printf( "%s", szBuff );
 #elif MYFW_NACL && !MYFW_PPAPI
     fprintf( stdout, "%s", szBuff );

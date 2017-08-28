@@ -7,769 +7,518 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
+// Adapted from: https://www.opengl.org/discussion_boards/showthread.php/177999-GCC-OpenGL-without-glut?p=1239444&viewfull=1#post1239444
+// and https://www.khronos.org/opengl/wiki/Tutorial:_OpenGL_3.0_Context_Creation_(GLX)
+
 #include "CommonHeader.h"
-// #include "Screenshot.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <GL/glx.h>
 
-// // Initialize opengl window on windows, huge chunks taken from nehe
-// //    http://nehe.gamedev.net/tutorial/creating_an_opengl_window_%28win32%29/13001/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/time.h>
 
-// bool g_EscapeButtonWillQuit;
-// bool g_CloseProgramRequested;
+bool g_EscapeButtonWillQuit;
+bool g_CloseProgramRequested;
 
-// int g_RequestedWidth;
-// int g_RequestedHeight;
+struct MyWin
+{
+    Display*    pDisplay;
+    Window      win;
+    bool        displayed;
+    int         width;
+    int         height;
+    GLXContext  context;
+    Colormap    colormap;
+};
 
-// int g_InitialWidth;
-// int g_InitialHeight;
+MyWin g_Window;
 
-// HGLRC hRenderingContext = 0;
-// HDC hDeviceContext = 0;
-// HWND hWnd = 0;
-// HINSTANCE hInstance;
+const int WIN_XPOS    = 0;
+const int WIN_YPOS    = 0;
 
-// int g_WindowWidth = 0;
-// int g_WindowHeight = 0;
-// bool g_KeyStates[256];
-// bool g_MouseButtonStates[3];
-// bool g_WindowIsActive = true;
-// bool g_FullscreenMode = true;
+void HandleKeyboardEvents(KeySym sym, unsigned char key, int x, int y, bool &setting_change)
+{
+    switch( tolower( key ) )
+    {
+    case MYKEYCODE_ESC:
+        if( g_EscapeButtonWillQuit )
+            g_CloseProgramRequested = true;
+        break;
 
-// static bool g_GameWantsLockedMouse = false;
-// static bool g_SystemMouseIsLocked = false;
+    case 'k':
+        printf( "You hit the 'k' key\n" );
+        break;
 
-// static int g_MouseXPositionWhenLocked = 300;
-// static int g_MouseYPositionWhenLocked = 300;
+    case 0:
+        switch( sym )
+        {
+        case XK_Left:
+            printf( "You hit the Left Arrow key\n" );
+            break;
 
-// LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+        case XK_Right:
+            printf( "You hit the Right Arrow key\n" );
+            break;
+        }
+        break;
+    }
+}
 
-// static bool h_moviemode = false;
-// static bool h_takescreenshot = false;
+void ResizeGLScene(int width, int height)
+{
+    if( height <= 0 ) height = 1;
+    if( width <= 0 ) width = 1;
 
-// bool MYFW_GetKey(int value)
-// {
-//     MyAssert( value >= 0 && value < 256 );
-//     return g_KeyStates[value];
-// }
-
-// GLvoid ResizeGLScene(GLsizei width, GLsizei height)
-// {
-//     if( height <= 0 ) height = 1;
-//     if( width <= 0 ) width = 1;
-
-//     g_WindowWidth = width;
-//     g_WindowHeight = height;
+    g_Window.width = width;
+    g_Window.height = height;
  
-//     if( g_pGameCore )
-//         g_pGameCore->OnSurfaceChanged( 0, 0, width, height );
-// }
+    if( g_pGameCore )
+        g_pGameCore->OnSurfaceChanged( 0, 0, width, height );
+}
 
-// void SetWindowSize(int width, int height)
-// {
-//     int maxwidth = GetSystemMetrics( SM_CXFULLSCREEN );
-//     int maxheight = GetSystemMetrics( SM_CYFULLSCREEN );
+// Try to find a framebuffer config that matches the specified pixel requirements.
+GLXFBConfig chooseFBConfig(Display *display, int screen)
+{
+    // Get a matching framebuffer config.
+    static const int Visual_attribs[] =
+    {
+        GLX_X_RENDERABLE    , True,
+        GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+        GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+        GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+        GLX_RED_SIZE        , 8,
+        GLX_GREEN_SIZE      , 8,
+        GLX_BLUE_SIZE       , 8,
+        GLX_ALPHA_SIZE      , 8,
+        GLX_DEPTH_SIZE      , 24,
+        GLX_STENCIL_SIZE    , 8,
+        GLX_DOUBLEBUFFER    , True,
+        //GLX_SAMPLE_BUFFERS  , 1,
+        //GLX_SAMPLES         , 4,
+        None
+    };
 
-//     float aspect = (float)width / height;
-
-//     if( width > maxwidth )
-//     {
-//         width = maxwidth;
-//         height = (int)(maxwidth / aspect);
-//     }
-
-//     if( height > maxheight )
-//     {
-//         width = (int)(maxheight * aspect);
-//         height = maxheight;
-//     }
-
-//     DWORD dwStyle = GetWindowLongPtr( hWnd, GWL_STYLE ) ;
-//     DWORD dwExStyle = GetWindowLongPtr( hWnd, GWL_EXSTYLE ) ;
-//     HMENU menu = GetMenu( hWnd ) ;
-
-//     // calculate the full size of the window needed to match our client area of width/height
-//     RECT WindowRect = { 0, 0, width, height } ;
-//     AdjustWindowRectEx( &WindowRect, dwStyle, menu ? TRUE : FALSE, dwExStyle );
-
-//     int windowwidth = WindowRect.right - WindowRect.left;
-//     int windowheight = WindowRect.bottom - WindowRect.top;
+    // FBConfigs were added in GLX version 1.3, check the version.
+    int glx_major, glx_minor;
+    if( glXQueryVersion( display, &glx_major, &glx_minor ) == false )
+        return 0;
     
-//     SetWindowPos( hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
-    
-//     ResizeGLScene( width, height );
-// }
+    if( ( ( glx_major == 1 ) && ( glx_minor < 3 ) ) || ( glx_major < 1 ) )
+        return 0;
 
-// void GenerateKeyboardEvents(GameCore* pGameCore)
-// {
-//     static unsigned int keys[256];
-//     static unsigned int keysold[256];
+    int fbcount;
+    GLXFBConfig* pFBConfigs = glXChooseFBConfig( display, screen, Visual_attribs, &fbcount );
+    if( pFBConfigs )
+    {
+        // Pick the FB config/visual with the most samples per pixel. Default to fbc 0.
+        LOGInfo( LOGTag, "Getting XVisualInfos\n" );
+        int best_fbc = 0, best_num_samp = -1;
 
-//     for( int i=0; i<256; i++ )
-//     {
-//         keysold[i] = keys[i];
-//         keys[i] = MYFW_GetKey( i );
+        for( int i=0; i<fbcount; i++ )
+        {
+            XVisualInfo* vi = glXGetVisualFromFBConfig( display, pFBConfigs[i] );
+            if( vi )
+            {
+                int samp_buf, samples;
+                glXGetFBConfigAttrib( display, pFBConfigs[i], GLX_SAMPLE_BUFFERS, &samp_buf );
+                glXGetFBConfigAttrib( display, pFBConfigs[i], GLX_SAMPLES       , &samples  );
 
-//         if( keys[i] == 1 && keysold[i] == 0 )
-//         {
-//             // If the game is set to quit on escape, then quit.
-//             if( i == MYKEYCODE_ESC )
-//             {
-//                 if( g_SystemMouseIsLocked == true )
-//                 {
-//                     g_SystemMouseIsLocked = false;
-//                     ShowCursor( true );
-//                 }
-//                 else
-//                 {
-//                     if( g_EscapeButtonWillQuit )
-//                         g_CloseProgramRequested = true;
-//                 }
-//             }
-            
-//             //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-//             //    pGameCore->OnKeyDown( i+32, i+32 );
-//             //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
-//                 pGameCore->OnKeyDown( i, i );
+                LOGInfo( LOGTag, "  Matching fbconfig %d, visual ID 0x%2x: SAMPLE_BUFFERS = %d, SAMPLES = %d\n", 
+                         i, vi -> visualid, samp_buf, samples );
 
-//             //LOGInfo( LOGTag, "Calling pGameCore->OnKeyDown( %d, %d )\n", i, i );
-//         }
+                if( samp_buf && samples > best_num_samp )
+                {
+                    best_fbc = i;
+                    best_num_samp = samples;
+                }
+            }
 
-//         if( keys[i] == 0 && keysold[i] == 1 )
-//         {
-//             //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-//             //    pGameCore->OnKeyUp( i+32, i+32 );
-//             //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
-//                 pGameCore->OnKeyUp( i, i );
-//         }
-//     }
+            XFree( vi );
+        }
 
-//     if( keys[MYKEYCODE_LCTRL] && keys['M'] == 1 && keysold['M'] == 0 ) // new press
-//         h_moviemode = !h_moviemode;
-//     if( keys[MYKEYCODE_LCTRL] && keys['S'] == 1 && keysold['S'] == 0 ) // new press
-//         h_takescreenshot = true;
-
-//     if( keys[MYKEYCODE_LCTRL] && keys['I'] == 1 && keysold['I'] == 0 ) // new press
-//     {
-//         if( g_pShaderManager )
-//             g_pShaderManager->InvalidateAllShaders( true );
-//         if( g_pTextureManager )
-//             g_pTextureManager->InvalidateAllTextures( true );
-//         if( g_pBufferManager )
-//             g_pBufferManager->InvalidateAllBuffers( true );
-//     }
-
-//     if( keys['1'] == 1 && keysold['1'] == 0 )
-//     {
-//         SetWindowSize( g_RequestedWidth, g_RequestedHeight );
-//     }
-//     if( keys['2'] == 1 && keysold['2'] == 0 )
-//     {
-//         SetWindowSize( g_InitialWidth, (int)(g_InitialWidth*1.5f) );
-//     }
-//     if( keys['3'] == 1 && keysold['3'] == 0 )
-//     {
-//         SetWindowSize( g_InitialHeight, g_InitialHeight );
-//     }
-//     if( keys['4'] == 1 && keysold['4'] == 0 )
-//     {
-//         SetWindowSize( (int)(g_InitialWidth*1.5f), g_InitialWidth );
-//     }
-// }
-
-// void GetMouseCoordinates(int* mx, int* my)
-// {
-//     extern HWND hWnd;
-
-//     POINT p;
-//     if( GetCursorPos( &p ) )
-//     {
-//         if( ScreenToClient( hWnd, &p ) )
-//         {
-//             *mx = p.x;
-//             *my = p.y;
-//         }
-//     }
-// }
-
-// void SetMouseLock(bool lock)
-// {
-//     if( lock )
-//     {
-//         LOGInfo( LOGTag, "SetMouseLock( true );\n" );
-
-//         g_GameWantsLockedMouse = true;
-//     }
-//     else
-//     {
-//         LOGInfo( LOGTag, "SetMouseLock( false );\n" );
-
-//         g_GameWantsLockedMouse = false;
-//     }
-// }
-
-// bool IsMouseLocked()
-// {
-//     return g_SystemMouseIsLocked;
-// }
-
-// void GenerateMouseEvents(GameCore* pGameCore)
-// {
-//     static unsigned int buttons[3];
-//     static unsigned int buttonsold[3];
-
-//     for( int i=0; i<3; i++ )
-//     {
-//         buttonsold[i] = buttons[i];
-//         buttons[i] = g_MouseButtonStates[i];
-//     }
-
-//     int mousex;
-//     int mousey;
-//     GetMouseCoordinates( &mousex, &mousey );
-
-//     // buttons/fingers
-//     for( int i=0; i<3; i++ )
-//     {
-//         if( buttons[i] == 1 && buttonsold[i] == 0 )
-//         {
-//             if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
-//             {
-//                 g_SystemMouseIsLocked = true;
-//                 ShowCursor( false );
-                
-//                 g_MouseXPositionWhenLocked = g_WindowWidth/2; //mousex;
-//                 g_MouseYPositionWhenLocked = g_WindowHeight/2; //mousey;
-
-//                 mousex = g_WindowWidth/2;
-//                 mousey = g_WindowHeight/2;
-//             }
-
-//             pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
-//         }
-
-//         if( buttons[i] == 0 && buttonsold[i] == 1 )
-//             pGameCore->OnTouch( GCBA_Up, i, (float)mousex, (float)mousey, 0, 0 ); // new release
-//     }
-
-//     int buttonstates = 0;
-//     for( int i=0; i<3; i++ )
-//     {
-//         if( buttons[i] == 1 && buttonsold[i] == 1 )
-//             buttonstates |= (1 << i);
-//     }
-
-//     // Game window wants mouse locked.
-//     if( g_GameWantsLockedMouse )
-//     {
-//         // Only send mouse movement messages (position diffs) if the system mouse is locked
-//         if( g_SystemMouseIsLocked )
-//         {
-//             // Set the mouse back to it's screen space position
-//             POINT p;
-//             p.x = g_MouseXPositionWhenLocked;
-//             p.y = g_MouseYPositionWhenLocked;
-//             ClientToScreen( hWnd, &p );
-//             SetCursorPos( p.x, p.y );
-
-//             float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
-//             float ydiff = (float)mousey - g_MouseYPositionWhenLocked;
-
-//             if( xdiff != 0 || ydiff != 0 )
-//             {
-//                 pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
-//             }
-//         }
-//         else
-//         {
-//             pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
-//         }
-//     }
-//     else
-//     {
-//         // Only send mouse positions if system mouse isn't locked
-//         if( g_SystemMouseIsLocked == false )
-//         {
-//             pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
-//         }
-//     }
-// }
-
-// GLvoid KillGLWindow()
-// {
-//     if( g_FullscreenMode )
-//     {
-//         ChangeDisplaySettings( 0, 0 );
-//         ShowCursor( true );
-//     }
-
-//     if( hRenderingContext )
-//     {
-//         if( !wglMakeCurrent( 0, 0 ) )
-//         {
-//             MessageBox( 0, L"Release Of Device Context And Rendering Context Failed.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-//         }
-
-//         if( !wglDeleteContext( hRenderingContext ) )
-//         {
-//             MessageBox( 0, L"Release Rendering Context Failed.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-//         }
+        GLXFBConfig bestFbc = pFBConfigs[best_fbc];
         
-//         hRenderingContext = 0;
-//     }
+        XFree( pFBConfigs );
 
-//     if( hDeviceContext && !ReleaseDC( hWnd, hDeviceContext ) )
-//     {
-//         MessageBox( 0, L"Release Device Context Failed.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-//         hDeviceContext = 0;
-//     }
+        return bestFbc;
+    }
 
-//     if( hWnd && !DestroyWindow( hWnd ) )
-//     {
-//         MessageBox( 0, L"Could Not Release hWnd.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-//         hWnd = 0;
-//     }
+    return 0;
+}
+ 
+#define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
+typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+static bool ctxErrorOccurred = false;
+static int ctxErrorHandler( Display *dpy, XErrorEvent *ev )
+{
+    ctxErrorOccurred = true;
+    return 0;
+}
 
-//     if( !UnregisterClass( L"OpenGL", hInstance ) )
-//     {
-//         MessageBox( 0, L"Could Not Unregister Class.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-//         hInstance = 0;
-//     }
-// }
+// Helper to check for extension string presence.  Adapted from:
+//   http://www.opengl.org/resources/features/OGLextensions/
+static bool isExtensionSupported(const char *extList, const char *extension)
+{
+    const char* start;
+    const char* where;
+    const char* terminator;
+    
+    // Extension names should not have spaces.
+    where = strchr( extension, ' ' );
+    if( where || *extension == '\0' )
+        return false;
 
-// bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char zbits, char stencilbits, bool fullscreenflag)
-// {
-//     GLuint PixelFormat;
+    // It takes a bit of care to be fool-proof about parsing the
+    //   OpenGL extensions string. Don't be fooled by sub-strings, etc.
+    for( start=extList; ; )
+    {
+        where = strstr( start, extension );
 
-//     WNDCLASS wc;
-//     DWORD dwExStyle;
-//     DWORD dwStyle;
+        if( !where )
+            break;
 
-//     RECT WindowRect;
-//     WindowRect.left = (long)0;
-//     WindowRect.right = (long)width;
-//     WindowRect.top = (long)0;
-//     WindowRect.bottom = (long)height;
+        terminator = where + strlen(extension);
 
-//     g_FullscreenMode = fullscreenflag;
+        if( where == start || *(where - 1) == ' ' )
+        {
+            if( *terminator == ' ' || *terminator == '\0' )
+                return true;
+        }
 
-//     hInstance = GetModuleHandle( 0 );               // Grab An Instance For Our Window
-//     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;  // Redraw On Move, And Own DC For Window
-//     wc.lpfnWndProc = (WNDPROC)WndProc;              // WndProc Handles Messages
-//     wc.cbClsExtra = 0;                              // No Extra Window Data
-//     wc.cbWndExtra = 0;                              // No Extra Window Data
-//     wc.hInstance = hInstance;                       // Set The Instance
-//     wc.hIcon = LoadIcon( 0, IDI_WINLOGO );          // Load The Default Icon
-//     wc.hCursor = LoadCursor( 0, IDC_ARROW );        // Load The Arrow Pointer
-//     wc.hbrBackground = 0;                           // No Background Required For GL
-//     wc.lpszMenuName = 0;                            // We Don't Want A Menu
-//     wc.lpszClassName = L"OpenGL";                   // Set The Class Name
+        start = terminator;
+    }
 
-//     if( !RegisterClass( &wc ) )                     // Attempt To Register The Window Class
-//     {
-//         MessageBox( 0, L"Failed To Register The Window Class.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return false;
-//     }
+    return false;
+}
 
-//     if( g_FullscreenMode )
-//     {
-//         DEVMODE dmScreenSettings;                                   // Device Mode
-//         memset( &dmScreenSettings, 0, sizeof( dmScreenSettings ) ); // Makes Sure Memory's Cleared
-//         dmScreenSettings.dmSize = sizeof( dmScreenSettings );       // Size Of The Devmode Structure
-//         dmScreenSettings.dmPelsWidth  = width;                      // Selected Screen Width
-//         dmScreenSettings.dmPelsHeight = height;                     // Selected Screen Height
-//         dmScreenSettings.dmBitsPerPel = colorbits;                  // Selected Bits Per Pixel
-//         dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+GLXContext createContext(Display* pDisplay, int screen,
+                         GLXFBConfig fbconfig, XVisualInfo* visinfo,
+                         Window window)
+{
+    // Get the default screen's GLX extension list.
+    const char* glxExts = glXQueryExtensionsString( pDisplay, DefaultScreen( pDisplay ) );
 
-//         // Try To Set Selected Mode And Get Results.  NOTE: CDS_FULLSCREEN Gets Rid Of Start Bar.
-//         if( ChangeDisplaySettings( &dmScreenSettings, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
-//         {
-//             // If The Mode Fails, Offer Two Options.  Quit Or Run In A Window.
-//             if( MessageBox( 0, L"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?", L"", MB_YESNO|MB_ICONEXCLAMATION ) == IDYES )
-//             {
-//                 g_FullscreenMode = false;
-//             }
-//             else
-//             {
-//                 MessageBox( 0, L"Program Will Now Close.", L"ERROR", MB_OK|MB_ICONSTOP );
-//                 return false;
-//             }
-//         }
-//     }
+    // NOTE: It is not necessary to create or make current to a context before
+    //       calling glXGetProcAddressARB.
+    glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
+    glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
+            glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
 
-//     if( g_FullscreenMode )
-//     {
-//         dwExStyle = WS_EX_APPWINDOW;
-//         dwStyle = WS_POPUP;
-//         ShowCursor( false );
-//     }
-//     else
-//     {
-//         dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-//         dwStyle = WS_OVERLAPPEDWINDOW;
-//     }
+    GLXContext ctx = 0;
 
-//     AdjustWindowRectEx( &WindowRect, dwStyle, false, dwExStyle );   // Adjust Window To True Requested Size
+    // Install an X error handler so the application won't exit if GL 3.0
+    //   context allocation fails.
+    //
+    // Note this error handler is global.  All display connections in all threads
+    //   of a process use the same error handler, so be sure to guard against other
+    //   threads issuing X commands while this code is running.
+    ctxErrorOccurred = false;
+    int (*oldHandler)(Display*, XErrorEvent*) = XSetErrorHandler(&ctxErrorHandler);
 
-//     if( !( hWnd = CreateWindowEx( dwExStyle,                            // Extended Style For The Window
-//                                   L"OpenGL",                            // Class Name
-//                                   title,                                // Window Title
-//                                   WS_CLIPSIBLINGS | WS_CLIPCHILDREN |   // Required Window Style
-//                                     dwStyle,                            // Selected Window Style
-//                                   0, 0,                                 // Window Position
-//                                   WindowRect.right-WindowRect.left,     // Calculate Adjusted Window Width
-//                                   WindowRect.bottom-WindowRect.top,     // Calculate Adjusted Window Height
-//                                   0,                                    // No Parent Window
-//                                   0,                                    // No Menu
-//                                   hInstance,                            // Instance
-//                                   0)))                                  // Don't Pass Anything To WM_CREATE
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Window Creation Error.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return false;
-//     }
+    // Check for the GLX_ARB_create_context extension string and the function.
+    // If either is not present, use GLX 1.3 context creation method.
+    if( !isExtensionSupported( glxExts, "GLX_ARB_create_context" ) || !glXCreateContextAttribsARB )
+    {
+        LOGInfo( LOGTag, "glXCreateContextAttribsARB() not found ... using old-style GLX context\n" );
+        ctx = glXCreateNewContext( pDisplay, fbconfig, GLX_RGBA_TYPE, 0, True );
+    }
+    else // If it does, try to get a GL 3.0 context!
+    {
+        int context_attribs[] =
+        {
+            GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+            GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+            //GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+            None
+        };
 
-//     PIXELFORMATDESCRIPTOR pfd =  // pfd Tells Windows How We Want Things To Be
-//     {
-//         sizeof(PIXELFORMATDESCRIPTOR),  // Size Of This Pixel Format Descriptor
-//         1,                              // Version Number
-//         PFD_DRAW_TO_WINDOW |            // Format Must Support Window
-//           PFD_SUPPORT_OPENGL |          // Format Must Support OpenGL
-//           PFD_DOUBLEBUFFER,             // Must Support Double Buffering
-//         PFD_TYPE_RGBA,                  // Request An RGBA Format
-//         colorbits,                      // Select Our Color Depth
-//         0, 0, 0, 0, 0, 0,               // Color Bits Ignored
-//         0,                              // No Alpha Buffer
-//         0,                              // Shift Bit Ignored
-//         0,                              // No Accumulation Buffer
-//         0, 0, 0, 0,                     // Accumulation Bits Ignored
-//         zbits,                          // Bits for Z-Buffer (Depth Buffer)
-//         stencilbits,                    // Stencil bits
-//         0,                              // No Auxiliary Buffer
-//         PFD_MAIN_PLANE,                 // Main Drawing Layer
-//         0,                              // Reserved
-//         0, 0, 0                         // Layer Masks Ignored
-//     };
+        LOGInfo( LOGTag, "Creating context\n" );
+        ctx = glXCreateContextAttribsARB( pDisplay, fbconfig, 0, True, context_attribs );
 
-//     if( !( hDeviceContext = GetDC( hWnd ) ) ) // Did We Get A Device Context?
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Can't Create A GL Device Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return 0;
-//     }
+        // Sync to ensure any errors generated are processed.
+        XSync( pDisplay, False );
+        if( !ctxErrorOccurred && ctx )
+        {
+            LOGInfo( LOGTag, "Created GL 3.0 context\n" );
+        }
+        else
+        {
+            // Couldn't create GL 3.0 context.  Fall back to old-style 2.x context.
+            // When a context version below 3.0 is requested, implementations will
+            //   return the newest context version compatible with OpenGL versions less
+            //   than version 3.0.
+            // GLX_CONTEXT_MAJOR_VERSION_ARB = 1
+            context_attribs[1] = 1;
+            // GLX_CONTEXT_MINOR_VERSION_ARB = 0
+            context_attribs[3] = 0;
 
-//     if( !( PixelFormat = ChoosePixelFormat( hDeviceContext, &pfd ) ) ) // Did Windows Find A Matching Pixel Format?
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Can't Find A Suitable PixelFormat.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return 0;
-//     }
+            ctxErrorOccurred = false;
 
-//     if( !SetPixelFormat( hDeviceContext, PixelFormat, &pfd ) ) // Are We Able To Set The Pixel Format?
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Can't Set The PixelFormat.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return 0;
-//     }
+            LOGInfo( LOGTag, "Failed to create GL 3.0 context ... using old-style GLX context\n" );
+            ctx = glXCreateContextAttribsARB( pDisplay, fbconfig, 0, True, context_attribs );
+        }
+    }
 
-//     if( !( hRenderingContext = wglCreateContext( hDeviceContext ) ) ) // Are We Able To Get A Rendering Context?
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Can't Create A GL Rendering Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return 0;
-//     }
+    // Sync to ensure any errors generated are processed.
+    XSync( pDisplay, False );
 
-//     if( !wglMakeCurrent( hDeviceContext, hRenderingContext ) ) // Try To Activate The Rendering Context
-//     {
-//         KillGLWindow();
-//         MessageBox( 0, L"Can't Activate The GL Rendering Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
-//         return 0;
-//     }
+    // Restore the original error handler
+    XSetErrorHandler( oldHandler );
 
-//     ShowWindow( hWnd, SW_SHOW );     // Show The Window
-//     SetForegroundWindow( hWnd );     // Slightly Higher Priority
-//     SetFocus( hWnd );                // Sets Keyboard Focus To The Window
-//     ResizeGLScene( width, height );  // Set Up Our Perspective GL Screen
+    if( ctxErrorOccurred || !ctx )
+    {
+        LOGError( LOGTag, "Failed to create an OpenGL context\n" );
+        return 0;
+    }
 
-//     return true;
-// }
+    // Verifying that context is a direct context
+    if( glXIsDirect( pDisplay, ctx ) == false )
+    {
+        LOGInfo( LOGTag, "Indirect GLX rendering context obtained\n" );
+    }
+    else
+    {
+        LOGInfo( LOGTag, "Direct GLX rendering context obtained\n" );
+    }
 
-// LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-// {
-//     switch( uMsg )
-//     {
-//     case WM_ACTIVATE:
-//         {
-//             if( !HIWORD(wParam) )
-//             {
-//                 g_WindowIsActive = true;
-//             }
-//             else
-//             {
-//                 g_WindowIsActive = false;
-//             } 
-//         }
-//         return 0;
+    LOGInfo( LOGTag, "Making context current\n" );
+    glXMakeCurrent( pDisplay, g_Window.win, ctx );
 
-//     case WM_SYSCOMMAND:
-//         {
-//             switch( wParam )
-//             {
-//                 // don't let screensaver or monitor power save mode kick in.
-//                 case SC_SCREENSAVE:
-//                 case SC_MONITORPOWER:
-//                     return 0;
-//             }
-//         }
-//         break;
+    return ctx;
+}
 
-//     case WM_CLOSE:
-//         {
-//             PostQuitMessage( 0 );
-//         }
-//         return 0;
+//----------------------------------------------------------------------------
+ 
+bool createWindow()
+{
+    // Init X and GLX.
+    g_Window.displayed = false;
+    Display* pDisplay = g_Window.pDisplay = XOpenDisplay( ":0.0" );
+    if( pDisplay == 0 )
+    {
+        LOGError( LOGTag, "Cannot open X display\n" );
+        return false;
+    }
 
-//     case WM_SETFOCUS:
-//         {
-//             g_pGameCore->OnFocusGained();
-//         }
-//         break;
+    int    screen   = DefaultScreen( pDisplay );
+    Window root_win = RootWindow( pDisplay, screen );
 
-//     case WM_KILLFOCUS:
-//         {
-//             if( g_pGameCore )
-//                 g_pGameCore->OnFocusLost();
+    if( !glXQueryExtension( pDisplay, 0, 0 ) )
+    {
+        LOGError( LOGTag, "X Server doesn't support GLX extension\n" );
+        return false;
+    }
 
-//             for( int i=0; i<256; i++ )
-//                 g_KeyStates[i] = false;
+    // Pick an FBconfig and visual.
+    GLXFBConfig fbconfig = chooseFBConfig( pDisplay, screen );
+    if( fbconfig == 0 )
+    {
+        LOGError( LOGTag, "Failed to get GLXFBConfig\n" );
+        return false;
+    }
 
-//             for( int i=0; i<3; i++ )
-//                 g_MouseButtonStates[i] = 0;
+    XVisualInfo* pVisInfo = glXGetVisualFromFBConfig( pDisplay, fbconfig );
+    if( pVisInfo == 0 )
+    {
+        LOGError( LOGTag, "Failed to get XVisualInfo\n" );
+        return false;
+    }
+    LOGInfo( LOGTag, "X Visual ID = 0x%.2x\n", int( pVisInfo->visualid ) );
 
-//             if( g_GameWantsLockedMouse )
-//             {
-//                 g_SystemMouseIsLocked = false;
-//                 ShowCursor( true );
-//             }
-//         }
-//         break;
+    // Create the X window.
+    XSetWindowAttributes winAttr;
+    
+    winAttr.event_mask = StructureNotifyMask | KeyPressMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask;
+    winAttr.background_pixmap = None;
+    winAttr.background_pixel  = 0;
+    winAttr.border_pixel      = 0;
 
-//     case WM_CHAR:
-//         {
-//             g_pGameCore->OnChar( wParam );
-//         }
-//         return 0;
+    g_Window.colormap = XCreateColormap( pDisplay, root_win, pVisInfo->visual, AllocNone );
+    winAttr.colormap = g_Window.colormap;
 
-//     case WM_KEYDOWN:
-//         {
-//             if( wParam == VK_OEM_COMMA )
-//                 g_KeyStates[','] = true;
-//             else if( wParam == VK_OEM_PERIOD )
-//                 g_KeyStates['.'] = true;
-//             else if( wParam == VK_OEM_4 )
-//                 g_KeyStates['['] = true;
-//             else if( wParam == VK_OEM_6 )
-//                 g_KeyStates[']'] = true;
-//             else
-//                 g_KeyStates[wParam] = true;
-//         }
-//         return 0;
+    unsigned int mask = CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask;
 
-//     case WM_KEYUP:
-//         {
-//             if( wParam == VK_OEM_COMMA )
-//                 g_KeyStates[','] = false;
-//             else if( wParam == VK_OEM_PERIOD )
-//                 g_KeyStates['.'] = false;
-//             else if( wParam == VK_OEM_4 )
-//                 g_KeyStates['['] = false;
-//             else if( wParam == VK_OEM_6 )
-//                 g_KeyStates[']'] = false;
-//             else
-//                 g_KeyStates[wParam] = false;
-//         }
-//         return 0;
+    Window win = g_Window.win = XCreateWindow( pDisplay, root_win,
+                                               WIN_XPOS, WIN_YPOS,
+                                               g_Window.width, g_Window.height, 0,
+                                               pVisInfo->depth, InputOutput,
+                                               pVisInfo->visual, mask, &winAttr );
 
-//     case WM_LBUTTONDOWN:
-//         {
-//             g_MouseButtonStates[0] = true;
-//         }
-//         return 0;
+    XStoreName( g_Window.pDisplay, win, "My GLX Window");
 
-//     case WM_LBUTTONUP:
-//         {
-//             g_MouseButtonStates[0] = false;
-//         }
-//         return 0;
+    // Create an OpenGL context and attach it to our X window.
+    g_Window.context = createContext( pDisplay, screen, fbconfig, pVisInfo, win );
 
-//     case WM_RBUTTONDOWN:
-//         {
-//             g_MouseButtonStates[1] = true;
-//         }
-//         return 0;
+    // Display the window
+    XMapWindow( pDisplay, win );
 
-//     case WM_RBUTTONUP:
-//         {
-//             g_MouseButtonStates[1] = false;
-//         }
-//         return 0;
+    if( !glXMakeCurrent( pDisplay, win, g_Window.context ) )
+    {
+        LOGError( LOGTag, "glXMakeCurrent failed.\n" );
+        return false;
+    }
 
-//     case WM_MBUTTONDOWN:
-//         {
-//             g_MouseButtonStates[2] = true;
-//         }
-//         return 0;
+    checkGlError( "createWindow()" );
 
-//     case WM_MBUTTONUP:
-//         {
-//             g_MouseButtonStates[2] = false;
-//         }
-//         return 0;
+    LOGInfo( LOGTag, "Window Size    = %d x %d\n", g_Window.width, g_Window.height );
 
-//     case WM_SIZE:
-//         {
-//             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
-//         }
-//         return 0;
-//     }
+    return true;
+}
 
-//     // Pass all unhandled messages to DefWindowProc
-//     return DefWindowProc( hWnd, uMsg, wParam, lParam );
-// }
+//----------------------------------------------------------------------------
+
+void processXEvents( Atom wm_protocols, Atom wm_delete_window )
+{
+    bool setting_change = false;
+
+    while( XEventsQueued( g_Window.pDisplay, QueuedAfterFlush ) )
+    {
+        XEvent event;
+
+        XNextEvent( g_Window.pDisplay, &event );
+
+        if( event.xany.window != g_Window.win )
+            continue;
+
+        switch( event.type )
+        {
+        case MapNotify:
+            {
+                g_Window.displayed = true;
+            }
+            break;
+
+        case ConfigureNotify:
+            {
+                XConfigureEvent &cevent = event.xconfigure;
+                ResizeGLScene( cevent.width, cevent.height );
+            }
+            break;
+
+        case KeyPress:
+            {
+                char      chr;
+                KeySym    symbol;
+                XComposeStatus status;
+
+                XLookupString( &event.xkey, &chr, 1, &symbol, &status );
+
+                HandleKeyboardEvents( symbol, chr, event.xkey.x, event.xkey.y, setting_change );
+            }
+            break;
+
+        case MotionNotify:
+            {
+                int buttonstates = 0;
+                g_pGameCore->OnTouch( GCBA_Held, 0,
+                    (float)event.xmotion.x, (float)event.xmotion.y, 0, 0 );
+            }
+            break;
+
+        case ButtonPress:
+            printf( "Button pressed  : %d\n", event.xbutton.button );
+            break;
+
+        case ButtonRelease:
+            printf( "Button released : %d\n", event.xbutton.button );
+            break;            
+
+        case ClientMessage:
+            {
+                if( event.xclient.message_type      == wm_protocols &&
+                    Atom( event.xclient.data.l[0] ) == wm_delete_window )
+                {
+                    //printf( "Received WM_DELETE_WINDOW\n" );
+                    exit( 0 );
+                }
+            }
+            break;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+
+void mainLoop()
+{
+    // Register to receive window close events (the "X" window manager button)
+    Atom wm_protocols     = XInternAtom( g_Window.pDisplay, "WM_PROTOCOLS"    , False);
+    Atom wm_delete_window = XInternAtom( g_Window.pDisplay, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols( g_Window.pDisplay, g_Window.win, &wm_delete_window, True );
+
+    double lasttime = MyTime_GetSystemTime();
+
+    g_EscapeButtonWillQuit = true;
+    g_CloseProgramRequested = false;
+
+    while( true ) 
+    {
+        // Process OS events.
+        processXEvents( wm_protocols, wm_delete_window );
+
+        // Calculate elapsed time.
+        double currtime = MyTime_GetSystemTime();
+        double timepassed = currtime - lasttime;
+        lasttime = currtime;
+        
+        // Redraw window (after it's mapped).
+        if( g_Window.displayed )
+        {
+            // Tick and draw the game.
+            g_pGameCore->OnDrawFrameStart( 0 );
+            g_UnpausedTime += g_pGameCore->Tick( timepassed );
+            g_pGameCore->OnDrawFrame( 0 );
+            g_pGameCore->OnDrawFrameDone();
+
+            glXSwapBuffers( g_Window.pDisplay, g_Window.win );
+
+            checkGlError( "glXSwapBuffers" );
+        }
+
+        if( g_CloseProgramRequested )
+            break;
+    }
+}
+
+//----------------------------------------------------------------------------
 
 int MYFWLinuxMain(int width, int height)
 {
-#if _DEBUG
-    OverrideJSONMallocFree();
-#endif
+    // Init globals.
+    g_Window.width = width, g_Window.height = height;
 
-    // g_EscapeButtonWillQuit = false;
-    // g_CloseProgramRequested = false;
+    // Create context and window.
+    if( createWindow() == false )
+    {
+        exit( 0 );
+    }
 
-    // g_RequestedWidth = width;
-    // g_RequestedHeight = height;
+    // Locate GL functions.
+    OpenGL_InitExtensions();
 
-    // g_InitialWidth = width;
-    // g_InitialHeight = height;
+    // Create and initialize our Game object.
+    g_pGameCore->OnSurfaceCreated();
+    g_pGameCore->OnSurfaceChanged( 0, 0, width, height );
+    g_pGameCore->OneTimeInit();
 
-    // if( g_InitialWidth > g_InitialHeight )
-    // {
-    //     g_InitialWidth = height;
-    //     g_InitialHeight = width;
-    // }
+    // Go.
+    mainLoop();
 
-    // MSG msg;
-    // bool done = false;
+    // Shutdown.
+    delete( g_pGameCore );
+    g_pGameCore = 0;
 
-    // // Horrid key handling
-    // for( int i=0; i<256; i++ )
-    //     g_KeyStates[i] = false;
+    glXMakeCurrent( g_Window.pDisplay, 0, 0 );
+    glXDestroyContext( g_Window.pDisplay, g_Window.context );
 
-    // Initialize sockets
-    // WSAData wsaData;
-    // int code = WSAStartup( MAKEWORD(1, 1), &wsaData );
-    // if( code != 0 )
-    // {
-    //     LOGError( LOGTag, "WSAStartup error:%d\n",code );
-    //     return 0;
-    // }
+    XDestroyWindow( g_Window.pDisplay, g_Window.win );
+    XFreeColormap( g_Window.pDisplay, g_Window.colormap );
+    XCloseDisplay( g_Window.pDisplay );
 
-    // // Create Our OpenGL Window
-    // if( !CreateGLWindow( L"OpenGL Window", width, height, 32, 31, 1, false ) )
-    // {
-    //     return 0;
-    // }
-
-    // // Initialize OpenGL Extensions, must be done after OpenGL Context is created
-    // OpenGL_InitExtensions();
-    // WGL_InitExtensions();
-
-    // // Create and initialize our Game object.
-    // g_pGameCore->OnSurfaceCreated();
-    // g_pGameCore->OnSurfaceChanged( 0, 0, width, height );
-    // g_pGameCore->OneTimeInit();
-
-    // double lasttime = MyTime_GetSystemTime();
-
-    // // Main loop
-    // while( !done )
-    // {
-    //     if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
-    //     {
-    //         if( msg.message == WM_QUIT )
-    //         {
-    //             done = true;
-    //         }
-    //         else
-    //         {
-    //             TranslateMessage( &msg );
-    //             DispatchMessage( &msg );
-    //         }
-    //     }
-    //     else
-    //     {
-    //         double currtime = MyTime_GetSystemTime();
-    //         double timepassed = currtime - lasttime;
-    //         lasttime = currtime;
-
-    //         if( g_WindowIsActive )
-    //         {
-    //             if( g_CloseProgramRequested )
-    //             {
-    //                 done = true;
-    //             }
-    //             else
-    //             {
-    //                 GenerateKeyboardEvents( g_pGameCore );
-    //                 GenerateMouseEvents( g_pGameCore );
-
-    //                 g_pGameCore->OnDrawFrameStart( 0 );
-    //                 g_UnpausedTime += g_pGameCore->Tick( timepassed );
-    //                 g_pGameCore->OnDrawFrame( 0 );
-    //                 g_pGameCore->OnDrawFrameDone();
-
-    //                 {
-    //                     char tempname[MAX_PATH];
-    //                     if( h_takescreenshot || h_moviemode )
-    //                     {
-    //                         h_takescreenshot = false;
-
-    //                         double timebefore = MyTime_GetSystemTime();
-
-    //                         CreateDirectory( L"!Screenshots", 0 );
-    //                         sprintf_s( tempname, MAX_PATH, "!Screenshots/Screenshot_%f", MyTime_GetSystemTime() );
-    //                         SaveScreenshot( g_WindowWidth, g_WindowHeight, tempname );
-
-    //                         double timeafter = MyTime_GetSystemTime();
-    //                         lasttime += timeafter - timebefore;
-    //                     }
-    //                 }
-
-    //                 SwapBuffers( hDeviceContext );
-
-    //                 // limit framerate;
-    //                 if( 0 )
-    //                 {
-    //                     int targetframerate = 30;
-    //                     double rendertime = MyTime_GetSystemTime() - lasttime;
-    //                     if( rendertime*1000 < 1000.0f/targetframerate )
-    //                     {
-    //                         DWORD delay = (DWORD)( 1000.0f/targetframerate - rendertime*1000 );
-    //                         if( delay > 1000.0f/targetframerate )
-    //                             delay = 0;
-    //                         //LOGInfo( LOGTag, "Sleep( %d ) - rendertime %0.2f\n", (int)delay, rendertime*1000 );
-    //                         Sleep( delay );
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    // delete( g_pGameCore );
-    // g_pGameCore = 0;
-
-    // KillGLWindow();
-
-    // WSACleanup();
-
-    // return msg.wParam;
+    return 0;
 }

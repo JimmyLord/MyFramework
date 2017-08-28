@@ -25,6 +25,12 @@ Linux
     - mesa-common-dev
     - libopenal-dev
     - libgl1-mesa-dev
+    - libgtk-3-dev (for wxWidgets)
+    - libglu1-mesa-dev (for wxWidgets)
+    - gdb
+- IDE
+    - vscode
+    - xterm (for VSCode debugging)
     
 Android
 - vs-android (http://code.google.com/p/vs-android/) to compile c++ code in Visual Studio 2010
