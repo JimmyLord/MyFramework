@@ -18,7 +18,7 @@
 #endif
 
 #if MYFW_USING_WX
-#include "../../SourceWindows/MYFWWinMainWx.h"
+#include "../../SourceWidgets/MYFWMainWx.h"
 #endif
 
 #if MYFW_WINDOWS && !MYFW_USING_WX

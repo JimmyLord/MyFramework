@@ -8,7 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "MYFWWinMainWx.h"
+#include "MYFWMainWx.h"
 #include "Screenshot.h"
 
 #include "../SourceWidgets/EditorCommands.h"
@@ -465,8 +465,9 @@ bool MainApp::OnInit()
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
     m_pMainFrame->m_pGLCanvas->MakeContextCurrent();
 
-#if MYFW_WINDOWS
     OpenGL_InitExtensions();
+
+#if MYFW_WINDOWS
     WGL_InitExtensions();
 #endif
 

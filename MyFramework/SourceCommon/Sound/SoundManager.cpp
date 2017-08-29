@@ -172,7 +172,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
             {
                 count++;
 
-                sprintf_s( newname, "%s(%d)", m_Name, count );
+                sprintf_s( newname, MAX_SOUND_CUE_NAME_LEN, "%s(%d)", m_Name, count );
                 sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativefolder, newname );
             }
             strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newname );

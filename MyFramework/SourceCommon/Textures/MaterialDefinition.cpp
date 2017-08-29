@@ -795,7 +795,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
             {
                 count++;
 
-                sprintf_s( newname, "%s(%d)", m_Name, count );
+                sprintf_s( newname, MAX_MATERIAL_NAME_LEN, "%s(%d)", m_Name, count );
                 sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, newname );
             }
             strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );

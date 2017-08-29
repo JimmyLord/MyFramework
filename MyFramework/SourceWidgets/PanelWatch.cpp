@@ -21,7 +21,6 @@ class wxCheckListComboPopup
 , public wxComboPopup
 {
 public:
-
     // Initialize member variables
     virtual void Init()
     {
@@ -68,7 +67,8 @@ public:
         else
             wxCheckListBox::Check( value, true );
 
-        this->SendEvent( value );
+        // TODONOW: commented this out to make wxDebug build on linux.
+        //this->SendEvent( value );
 
         event.Skip();
     }

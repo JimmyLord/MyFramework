@@ -556,7 +556,7 @@ typedef unsigned long   u_long;
 #include "GameCore.h"
 
 #if MYFW_USING_WX
-#include "../SourceWindows/MYFWWinMainWx.h"
+#include "../SourceWidgets/MYFWMainWx.h"
 #include "../SourceWidgets/PanelObjectList.h"
 #include "../SourceWidgets/PanelMemory.h"
 #include "../SourceWidgets/PanelWatch.h"
