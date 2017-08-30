@@ -4,3 +4,6 @@
 [submodule "Libraries/wxWidgets"]
 	path = Libraries/wxWidgets
 	url = https://github.com/wxWidgets/wxWidgets.git
+[submodule "Libraries/Cotire"]
+	path = Libraries/Cotire
+	url = https://github.com/sakra/cotire.git
