@@ -217,7 +217,8 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     //g_pD3DContext->PSSetSamplers( 0, 1, g_pD3DSampleStateLinearWrap.GetAddressOf() );
 #else
 
-#if MYFW_IOS || MYFW_OSX || MYFW_NACL
+#if __GNUC__
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
 
@@ -449,8 +450,8 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertformat, VertexForm
     }
     // ADDING_NEW_VertexFormat
 
-#if MYFW_IOS || MYFW_OSX
-#pragma GCC diagnostic default "-Winvalid-offsetof"
+#if __GNUC__
+#pragma GCC diagnostic pop
 #endif
 
 #endif //USE_D3D

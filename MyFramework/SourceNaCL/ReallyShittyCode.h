@@ -13,7 +13,7 @@
 #if !MYFW_PPAPI
 #define strcpy_s(a,b,c)             strcpy(a,c)
 #define sprintf_s                   snprintf
-#define snprintf_s                  snprintf
+#define snprintf_s(a,b,c,d,e)       snprintf(a,c,d,e)
 #define strcat_s(a,b,c)             strcat(a,c)
 #define strncpy_s(a,b,c,d)          strncpy(a,c,d)
 #define sscanf_s                    sscanf
