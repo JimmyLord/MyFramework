@@ -2017,7 +2017,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 
         case PanelWatchType_String:
             {
-                snprintf_s( tempstring, MAX_STRING_LENGTH, "%s", m_pVariables[i].m_Pointer );
+                sprintf_s( tempstring, MAX_STRING_LENGTH, "%s", m_pVariables[i].m_Pointer );
             }
             break;
 
