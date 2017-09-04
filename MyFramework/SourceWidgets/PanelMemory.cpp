@@ -13,47 +13,49 @@
 PanelMemory* g_pPanelMemory = 0;
 
 PanelMemory::PanelMemory(wxFrame* parentframe)
-: wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
+: wxPanel( parentframe, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxNO_BORDER, "Memory" )
 {
     wxTreeItemId idroot;
 
-    // create a notebook with 6 pages(buffers/textures/files)
-    m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxSize(2000,2000) );
+    // Create a notebook with 7 pages(materials/textures/shaders/sound cues/files/buffers/draws).
+    m_pNotebook = MyNew wxNotebook( this, wxID_ANY, wxPoint(0,0), wxDefaultSize );
 
-    m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
+    m_pTree_Materials = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
         wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS );// | wxTR_MULTIPLE );
     idroot = m_pTree_Materials->AddRoot( "Materials" );
-    m_pNotebook->AddPage( m_pTree_Materials, "Mat" );    
-
-    m_pTree_Textures = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pNotebook->AddPage( m_pTree_Materials, "Mat" );
+    
+    m_pTree_Textures = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize );
     idroot = m_pTree_Textures->AddRoot( "Textures" );
     m_pNotebook->AddPage( m_pTree_Textures, "Tex" );
 
-    m_pTree_ShaderGroups = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_ShaderGroups = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize );
     idroot = m_pTree_ShaderGroups->AddRoot( "Shaders" );
     m_pNotebook->AddPage( m_pTree_ShaderGroups, "Shaders" );
 
-    m_pTree_SoundCues = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000),
+    m_pTree_SoundCues = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
         wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_EDIT_LABELS | wxTR_MULTIPLE );
     idroot = m_pTree_SoundCues->AddRoot( "Sound Cues" );
     m_pNotebook->AddPage( m_pTree_SoundCues, "Cues" );
 
-    m_pTree_Files = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_Files = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize );
     idroot = m_pTree_Files->AddRoot( "Files" );
     m_pNotebook->AddPage( m_pTree_Files, "Files" );
 
-    m_pTree_Buffers = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_Buffers = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize );
     idroot = m_pTree_Buffers->AddRoot( "Buffers" );
     m_pNotebook->AddPage( m_pTree_Buffers, "Buffers" );
 
-    m_pTree_DrawCalls = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxSize(2000,2000) );
+    m_pTree_DrawCalls = MyNew wxTreeCtrl( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize );
     idroot = m_pTree_DrawCalls->AddRoot( "Draws" );
     m_pNotebook->AddPage( m_pTree_DrawCalls, "Draws" );
 
-    // setup a sizer to resize the notebook
-    wxBoxSizer* sizer = MyNew wxBoxSizer( wxHORIZONTAL );
-    sizer->Add( m_pNotebook, 0, wxGROW|wxALL, 2 );
-    SetSizer( sizer );
+    // Setup sizers to resize the notebook in both directions.
+    wxBoxSizer* verticalsizer = MyNew wxBoxSizer( wxVERTICAL );
+    wxBoxSizer* horizontalsizer = MyNew wxBoxSizer( wxHORIZONTAL );
+    horizontalsizer->Add( m_pNotebook, 1, wxGROW|wxALL, 2 );
+    verticalsizer->Add( horizontalsizer, 1, wxGROW|wxALL, 2 );
+    SetSizerAndFit( verticalsizer );
 
     Update();
 
