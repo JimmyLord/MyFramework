@@ -34,7 +34,7 @@ if [[ $BuildConfiguration == wxDebug ]]; then
             echo "$(tput setaf 5)==> Building wxWidgets Debug... this could take a while$(tput sgr0)"
             mkdir gtk-build-debug
             cd gtk-build-debug
-            ../configure --enable-debug --with-opengl --disable-shared --prefix=$(pwd) -with-gtk=3
+            ../configure --enable-debug --with-opengl --disable-shared --prefix=$(pwd)
             make
         popd > /dev/null
     fi
@@ -46,7 +46,7 @@ if [[ $BuildConfiguration == wxRelease ]]; then
             echo "$(tput setaf 5)==> Building wxWidgets Release... this could take a while$(tput sgr0)"
             mkdir gtk-build-release
             cd gtk-build-release
-            ../configure --with-opengl --disable-shared --prefix=$(pwd) -with-gtk=3
+            ../configure --with-opengl --disable-shared --prefix=$(pwd)
             make
         popd > /dev/null
     fi

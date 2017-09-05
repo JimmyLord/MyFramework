@@ -37,34 +37,200 @@ struct MyWin
 
 MyWin g_Window;
 
-const int WIN_XPOS    = 0;
-const int WIN_YPOS    = 0;
+const int WIN_XPOS = 0;
+const int WIN_YPOS = 0;
 
-void HandleKeyboardEvents(KeySym sym, unsigned char key, int x, int y, bool &setting_change)
+int g_InitialWidth;
+int g_InitialHeight;
+
+bool g_KeyStates[256];
+
+int g_MouseX;
+int g_MouseY;
+bool g_MouseButtonStates[3];
+
+static bool g_GameWantsLockedMouse = false;
+static bool g_SystemMouseIsLocked = false;
+
+static int g_MouseXPositionWhenLocked = 300;
+static int g_MouseYPositionWhenLocked = 300;
+
+bool MYFW_GetKey(int value)
+{
+    MyAssert( value >= 0 && value < 256 );
+    return g_KeyStates[value];
+}
+
+void HandleKeyboardEvents(KeySym sym, unsigned char key, int x, int y, bool pressed)
 {
     switch( tolower( key ) )
     {
-    case MYKEYCODE_ESC:
-        if( g_EscapeButtonWillQuit )
-            g_CloseProgramRequested = true;
-        break;
-
-    case 'k':
-        printf( "You hit the 'k' key\n" );
-        break;
-
     case 0:
         switch( sym )
         {
-        case XK_Left:
-            printf( "You hit the Left Arrow key\n" );
-            break;
-
-        case XK_Right:
-            printf( "You hit the Right Arrow key\n" );
-            break;
+        case XK_Left:    key = MYKEYCODE_LEFT;    break;
+        case XK_Up:      key = MYKEYCODE_UP;      break;
+        case XK_Right:   key = MYKEYCODE_RIGHT;   break;
+        case XK_Down:    key = MYKEYCODE_DOWN;    break;
         }
         break;
+    }
+
+    // if( pressed )
+    //     LOGInfo( LOGTag, "Key down: %d\n", key );
+    // else
+    //     LOGInfo( LOGTag, "Key up: %d\n", key );
+    
+    g_KeyStates[key] = pressed;
+}
+
+void GenerateKeyboardEvents(GameCore* pGameCore)
+{
+    static unsigned int keys[256];
+    static unsigned int keysold[256];
+
+    for( int i=0; i<256; i++ )
+    {
+        keysold[i] = keys[i];
+        keys[i] = MYFW_GetKey( i );
+
+        if( keys[i] == 1 && keysold[i] == 0 )
+        {
+            // If the game is set to quit on escape, then quit.
+            if( i == MYKEYCODE_ESC )
+            {
+                if( g_SystemMouseIsLocked == true )
+                {
+                    g_SystemMouseIsLocked = false;
+                    //ShowCursor( true ); // TODO: Hide cursor
+                }
+                else
+                {
+                    if( g_EscapeButtonWillQuit )
+                        g_CloseProgramRequested = true;
+                }
+            }
+            
+            pGameCore->OnKeyDown( i, i );
+        }
+
+        if( keys[i] == 0 && keysold[i] == 1 )
+        {
+            pGameCore->OnKeyUp( i, i );
+        }
+    }
+
+    // if( keys[MYKEYCODE_LCTRL] && keys['M'] == 1 && keysold['M'] == 0 ) // new press
+    //     h_moviemode = !h_moviemode;
+    // if( keys[MYKEYCODE_LCTRL] && keys['S'] == 1 && keysold['S'] == 0 ) // new press
+    //     h_takescreenshot = true;
+
+    // if( keys[MYKEYCODE_LCTRL] && keys['I'] == 1 && keysold['I'] == 0 ) // new press
+    // {
+    //     if( g_pShaderManager )
+    //         g_pShaderManager->InvalidateAllShaders( true );
+    //     if( g_pTextureManager )
+    //         g_pTextureManager->InvalidateAllTextures( true );
+    //     if( g_pBufferManager )
+    //         g_pBufferManager->InvalidateAllBuffers( true );
+    // }
+
+    if( keys['1'] == 1 && keysold['1'] == 0 )
+    {
+        XResizeWindow( g_Window.pDisplay, g_Window.win, g_InitialWidth, g_InitialHeight );
+    }
+    if( keys['2'] == 1 && keysold['2'] == 0 )
+    {
+        XResizeWindow( g_Window.pDisplay, g_Window.win, g_InitialWidth, (int)(g_InitialWidth*1.5f) );
+    }
+    if( keys['3'] == 1 && keysold['3'] == 0 )
+    {
+        XResizeWindow( g_Window.pDisplay, g_Window.win, g_InitialHeight, g_InitialHeight );
+    }
+    if( keys['4'] == 1 && keysold['4'] == 0 )
+    {
+        XResizeWindow( g_Window.pDisplay, g_Window.win, (int)(g_InitialWidth*1.5f), g_InitialWidth );
+    }
+}
+
+void GenerateMouseEvents(GameCore* pGameCore)
+{
+    static unsigned int buttons[3];
+    static unsigned int buttonsold[3];
+
+    for( int i=0; i<3; i++ )
+    {
+        buttonsold[i] = buttons[i];
+        buttons[i] = g_MouseButtonStates[i];
+    }
+
+    int mousex = g_MouseX;
+    int mousey = g_MouseY;
+
+    // buttons/fingers
+    for( int i=0; i<3; i++ )
+    {
+        if( buttons[i] == 1 && buttonsold[i] == 0 )
+        {
+            if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
+            {
+                g_SystemMouseIsLocked = true;
+                // ShowCursor( false );
+                
+                g_MouseXPositionWhenLocked = g_Window.width/2;
+                g_MouseYPositionWhenLocked = g_Window.height/2;
+
+                mousex = g_Window.width/2;
+                mousey = g_Window.height/2;
+            }
+
+            pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
+        }
+
+        if( buttons[i] == 0 && buttonsold[i] == 1 )
+            pGameCore->OnTouch( GCBA_Up, i, (float)mousex, (float)mousey, 0, 0 ); // new release
+    }
+
+    int buttonstates = 0;
+    for( int i=0; i<3; i++ )
+    {
+        if( buttons[i] == 1 && buttonsold[i] == 1 )
+            buttonstates |= (1 << i);
+    }
+
+    // Game window wants mouse locked.
+    if( g_GameWantsLockedMouse )
+    {
+        // Only send mouse movement messages (position diffs) if the system mouse is locked
+        if( g_SystemMouseIsLocked )
+        {
+            // Set the mouse back to it's screen space position
+            // POINT p;
+            // p.x = g_MouseXPositionWhenLocked;
+            // p.y = g_MouseYPositionWhenLocked;
+            // ClientToScreen( hWnd, &p );
+            // SetCursorPos( p.x, p.y );
+
+            float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
+            float ydiff = (float)mousey - g_MouseYPositionWhenLocked;
+
+            if( xdiff != 0 || ydiff != 0 )
+            {
+                pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
+            }
+        }
+        else
+        {
+            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
+        }
+    }
+    else
+    {
+        // Only send mouse positions if system mouse isn't locked
+        if( g_SystemMouseIsLocked == false )
+        {
+            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
+        }
     }
 }
 
@@ -333,7 +499,8 @@ bool createWindow()
     // Create the X window.
     XSetWindowAttributes winAttr;
     
-    winAttr.event_mask = StructureNotifyMask | KeyPressMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask;
+    winAttr.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask | 
+                             PointerMotionMask | ButtonPressMask | ButtonReleaseMask;
     winAttr.background_pixmap = None;
     winAttr.background_pixel  = 0;
     winAttr.border_pixel      = 0;
@@ -374,8 +541,6 @@ bool createWindow()
 
 void processXEvents( Atom wm_protocols, Atom wm_delete_window )
 {
-    bool setting_change = false;
-
     while( XEventsQueued( g_Window.pDisplay, QueuedAfterFlush ) )
     {
         XEvent event;
@@ -408,24 +573,37 @@ void processXEvents( Atom wm_protocols, Atom wm_delete_window )
 
                 XLookupString( &event.xkey, &chr, 1, &symbol, &status );
 
-                HandleKeyboardEvents( symbol, chr, event.xkey.x, event.xkey.y, setting_change );
+                HandleKeyboardEvents( symbol, chr, event.xkey.x, event.xkey.y, true );
+            }
+            break;
+
+        case KeyRelease:
+            {
+                char      chr;
+                KeySym    symbol;
+                XComposeStatus status;
+
+                XLookupString( &event.xkey, &chr, 1, &symbol, &status );
+
+                HandleKeyboardEvents( symbol, chr, event.xkey.x, event.xkey.y, false );
             }
             break;
 
         case MotionNotify:
             {
-                int buttonstates = 0;
-                g_pGameCore->OnTouch( GCBA_Held, 0,
-                    (float)event.xmotion.x, (float)event.xmotion.y, 0, 0 );
+                g_MouseX = event.xmotion.x;
+                g_MouseY = event.xmotion.y;
             }
             break;
 
         case ButtonPress:
-            printf( "Button pressed  : %d\n", event.xbutton.button );
+            g_MouseButtonStates[event.xbutton.button - 1] = true;
+            //LOGInfo( LOGTag, "Button pressed  : %d\n", event.xbutton.button );
             break;
 
         case ButtonRelease:
-            printf( "Button released : %d\n", event.xbutton.button );
+            g_MouseButtonStates[event.xbutton.button - 1] = false;
+            //LOGInfo( LOGTag, "Button released : %d\n", event.xbutton.button );
             break;            
 
         case ClientMessage:
@@ -433,7 +611,7 @@ void processXEvents( Atom wm_protocols, Atom wm_delete_window )
                 if( event.xclient.message_type      == wm_protocols &&
                     Atom( event.xclient.data.l[0] ) == wm_delete_window )
                 {
-                    //printf( "Received WM_DELETE_WINDOW\n" );
+                    //LOGInfo( LOGTag, "Received WM_DELETE_WINDOW\n" );
                     exit( 0 );
                 }
             }
@@ -469,6 +647,9 @@ void mainLoop()
         // Redraw window (after it's mapped).
         if( g_Window.displayed )
         {
+            GenerateKeyboardEvents( g_pGameCore );
+            GenerateMouseEvents( g_pGameCore );
+    
             // Tick and draw the game.
             g_pGameCore->OnDrawFrameStart( 0 );
             g_UnpausedTime += g_pGameCore->Tick( timepassed );
@@ -491,6 +672,9 @@ int MYFWLinuxMain(int width, int height)
 {
     // Init globals.
     g_Window.width = width, g_Window.height = height;
+
+    g_InitialWidth = width;
+    g_InitialHeight = height;
 
     // Create context and window.
     if( createWindow() == false )

@@ -455,7 +455,7 @@ bool MainApp::OnInit()
 
     g_pMainApp = this;
 
-    m_pMainFrame = WinMain_CreateMainFrame(); //MyNew MainFrame( 0 );
+    m_pMainFrame = WinMain_CreateMainFrame();
     m_pMainFrame->InitFrame();
     m_pMainFrame->AddPanes();
     m_pMainFrame->UpdateAUIManagerAndLoadPerspective();

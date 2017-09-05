@@ -73,6 +73,11 @@ PanelMemory::PanelMemory(wxFrame* parentframe)
 
 PanelMemory::~PanelMemory()
 {
+    // Remove all pages before deleting them.
+    while( m_pNotebook->GetPageCount() )
+        m_pNotebook->RemovePage( 0 );
+
+    // Delete all pages/trees.
     SAFE_DELETE( m_pTree_Materials )
     SAFE_DELETE( m_pTree_Textures );
     SAFE_DELETE( m_pTree_ShaderGroups );
