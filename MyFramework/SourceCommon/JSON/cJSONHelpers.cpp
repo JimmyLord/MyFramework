@@ -29,7 +29,9 @@ void MyJSONFree(void* ptr)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdelete-incomplete"
 #endif
+
     delete[] ptr;
+
 #if __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -38,13 +40,19 @@ void MyJSONFree(void* ptr)
 void cJSONExt_free(void* ptr)
 {
     // TODO: change to use malloc and free, deleting void* is a bad idea even though we don't need to call destructor.
+#if __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdelete-incomplete"
+#endif
+
     if( OverrodeJSONMemoryAllocation )
         delete[] ptr;
     else
         free( ptr );
+
+#if __GNUC__
 #pragma GCC diagnostic pop
+#endif
 }
 
 void OverrideJSONMallocFree()

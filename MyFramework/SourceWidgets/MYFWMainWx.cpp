@@ -9,7 +9,6 @@
 
 #include "CommonHeader.h"
 #include "MYFWMainWx.h"
-#include "Screenshot.h"
 
 #include "../SourceWidgets/EditorCommands.h"
 #include "../SourceWidgets/CommandStack.h"

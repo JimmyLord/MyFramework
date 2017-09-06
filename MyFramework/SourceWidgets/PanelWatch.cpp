@@ -67,9 +67,6 @@ public:
         else
             wxCheckListBox::Check( value, true );
 
-        // TODONOW: commented this out to make wxDebug build on linux.
-        //this->SendEvent( value );
-
         event.Skip();
     }
 

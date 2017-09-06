@@ -330,9 +330,6 @@
     <ClCompile Include="SourceWindows\MYFWWinMain.cpp">
       <Filter>Source-Platform\Source - Windows</Filter>
     </ClCompile>
-    <ClCompile Include="SourceWindows\MYFWWinMainWx.cpp">
-      <Filter>Source-Platform\Source - Windows</Filter>
-    </ClCompile>
     <ClCompile Include="SourceAndroid\GLExtensions.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClCompile>
@@ -512,6 +509,9 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Textures\TextureDefinition.cpp">
       <Filter>Source\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceWidgets\MYFWMainWx.cpp">
+      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -761,9 +761,6 @@
     <ClInclude Include="SourceWindows\MYFWWinMain.h">
       <Filter>Source-Platform\Source - Windows</Filter>
     </ClInclude>
-    <ClInclude Include="SourceWindows\MYFWWinMainWx.h">
-      <Filter>Source-Platform\Source - Windows</Filter>
-    </ClInclude>
     <ClInclude Include="SourceAndroid\GLExtensions.h">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClInclude>
@@ -958,6 +955,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Textures\TextureDefinition.h">
       <Filter>Source\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceWidgets\MYFWMainWx.h">
+      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

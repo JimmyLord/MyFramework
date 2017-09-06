@@ -227,7 +227,6 @@ typedef unsigned char byte;
 	#include <unistd.h>
 	#endif
 #else
-#define close closesocket
 typedef int socklen_t;
 //#include <errno.h> // for EISCONN, EINPROGRESS, EWOULDBLOCK, EALREADY, EINVAL, EISCONN, etc...
 #endif
