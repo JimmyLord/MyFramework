@@ -121,6 +121,9 @@
     <Filter Include="Source\Multithreading">
       <UniqueIdentifier>{2cabcba5-766d-4d7a-856e-4cd0607e9f65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libraries\b2Settings">
+      <UniqueIdentifier>{ce25fdbb-cd45-42d8-9295-858af7007717}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -958,6 +961,9 @@
     </ClInclude>
     <ClInclude Include="SourceWidgets\MYFWMainWx.h">
       <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\b2Settings\Box2D\Common\b2Settings.h">
+      <Filter>Libraries\b2Settings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
