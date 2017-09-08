@@ -233,7 +233,16 @@ void TextureManager::Tick()
             if( pTextureDef->m_pFile->GetFileLoadStatus() > FileLoadStatus_Success )
             {
                 LOGError( LOGTag, "File load failed %s\n", pTextureDef->m_Filename );
-                SAFE_RELEASE( pTextureDef );
+
+                // By default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
+                if( pTextureDef->QueryFreeWhenCreated() )
+                    g_pFileManager->FreeFile( pTextureDef->m_pFile );
+
+                // The texture failed to load, but add it to the loaded texture list anyway.
+                m_LoadedTextures.MoveTail( pTextureDef );
+#if MYFW_USING_WX
+                g_pPanelMemory->AddTexture( pTextureDef, "Failed to load", pTextureDef->m_Filename, TextureDefinition::StaticOnRightClick, TextureDefinition::StaticOnDrag );
+#endif
             }
         }
 #endif
@@ -242,7 +251,7 @@ void TextureManager::Tick()
         {
             LOGInfo( LOGTag, "textureloaded %s\n", pTextureDef->m_Filename );
 
-            // by default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
+            // By default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
             if( pTextureDef->QueryFreeWhenCreated() )
                 g_pFileManager->FreeFile( pTextureDef->m_pFile );
 
