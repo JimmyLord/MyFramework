@@ -185,9 +185,24 @@ public:
     int m_CurrentGLViewWidth;
     int m_CurrentGLViewHeight;
 
+    // Vars for mouse lock.
+    bool m_RawMouseInputInitialized;
+
+    bool m_GameWantsLockedMouse;
+    bool m_SystemMouseIsLocked;
+
+    int m_MouseXPositionWhenLocked;
+    int m_MouseYPositionWhenLocked;
+
 public:
     MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool tickgamecore);
     virtual ~MainGLCanvas();
+
+#if MYFW_WINDOWS
+    void RequestRawMouseAccess();
+    // Override from wxWindowMSW class to handle WM_INPUT messages (higher res mouse)
+    virtual bool MSWHandleMessage(WXLRESULT* result, WXUINT message, WXWPARAM wParam, WXLPARAM lParam);
+#endif
 
     void MakeContextCurrent();
  
@@ -200,6 +215,10 @@ public:
     void ProcessInputEventQueue();
 
     void Draw();
+
+    // Mouse Lock Methods
+    void SetMouseLock(bool lock);
+    bool IsMouseLocked();
 
     // events
     DECLARE_EVENT_TABLE()

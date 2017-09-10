@@ -21,12 +21,6 @@ bool g_CloseProgramRequested;
 unsigned int g_GLCanvasIDActive = 0;
 wxDataFormat* g_pMyDataFormat = 0;
 
-static bool g_GameWantsLockedMouse = 0;
-static bool g_SystemMouseIsLocked = 0;
-
-static int g_MouseXPositionWhenLocked = 300;
-static int g_MouseYPositionWhenLocked = 300;
-
 GLViewTypes g_CurrentGLViewType;
 
 const char* g_DefaultEditorWindowTypeMenuLabels[EditorWindow_NumTypes] =
@@ -39,28 +33,12 @@ const char* g_DefaultEditorWindowTypeMenuLabels[EditorWindow_NumTypes] =
 
 void SetMouseLock(bool lock)
 {
-    if( lock )
-    {
-        LOGInfo( LOGTag, "SetMouseLock( true );\n" );
-
-        g_GameWantsLockedMouse = true;
-        
-        g_MouseXPositionWhenLocked = g_pMainApp->m_pMainFrame->m_pGLCanvas->m_CurrentGLViewWidth/2;
-        g_MouseYPositionWhenLocked = g_pMainApp->m_pMainFrame->m_pGLCanvas->m_CurrentGLViewHeight/2;
-
-        g_pMainApp->m_pMainFrame->m_pGLCanvas->WarpPointer( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
-    }
-    else
-    {
-        LOGInfo( LOGTag, "SetMouseLock( false );\n" );
-
-        g_GameWantsLockedMouse = false;
-    }
+    g_pMainApp->m_pMainFrame->m_pGLCanvas->SetMouseLock( lock );
 }
 
 bool IsMouseLocked()
 {
-    return g_SystemMouseIsLocked;
+    return g_pMainApp->m_pMainFrame->m_pGLCanvas->IsMouseLocked();
 }
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -189,6 +167,7 @@ void MainFrame::AddPanes()
     // create the opengl canvas
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
     m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args, 0, true );
+    m_pGLCanvas->RequestRawMouseAccess();
     m_pGLCanvas->SetSize( 600, 600 );
 
     // Create the undo/redo command stack
@@ -580,6 +559,15 @@ MainGLCanvas::MainGLCanvas(wxWindow* parent, int* args, unsigned int ID, bool ti
     }
     m_MouseCaptured_ButtonsHeld = 0;
     m_MouseButtonStates = 0;
+
+    // Vars for mouse lock.
+    m_RawMouseInputInitialized = false;
+
+    m_GameWantsLockedMouse = false;
+    m_SystemMouseIsLocked = false;
+
+    m_MouseXPositionWhenLocked = -1;
+    m_MouseYPositionWhenLocked = -1;
 }
 
 MainGLCanvas::~MainGLCanvas()
@@ -590,6 +578,79 @@ MainGLCanvas::~MainGLCanvas()
     if( g_GLContextRefCount == 0 )
         delete g_pGLContext;
 }
+
+//WXLRESULT MainGLCanvas::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+//{
+//    int bp = 1;
+//
+//    return wx
+//}
+
+#if MYFW_WINDOWS
+void MainGLCanvas::RequestRawMouseAccess()
+{
+    // Only attempt this once.
+    if( m_RawMouseInputInitialized == false )
+    {
+        // Request raw mouse access on Windows.
+        RAWINPUTDEVICE device;
+
+        device.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+        device.usUsage = 0x02; // HID_USAGE_GENERIC_MOUSE
+        device.dwFlags = 0;
+        device.hwndTarget = 0; // All windows in this app?
+
+        BOOL ret = RegisterRawInputDevices( &device, 1, sizeof(RAWINPUTDEVICE) );
+        if( ret == false )
+        {
+            // Registration failed. Call GetLastError for the cause of the error
+            LOGError( LOGTag, "Failed to grab raw mouse device: %d\n", GetLastError() );
+        }
+        else
+        {
+            m_RawMouseInputInitialized = true;
+        }
+    }
+}
+
+bool MainGLCanvas::MSWHandleMessage(WXLRESULT* result, WXUINT message, WXWPARAM wParam, WXLPARAM lParam)
+{
+    if( message == WM_INPUT )
+    {
+        //LOGInfo( LOGTag, "WM_INPUT\n" );
+
+        UINT dwSize = 40;
+        static BYTE lpb[40];
+
+        GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER) );
+
+        RAWINPUT* raw = (RAWINPUT*)lpb;
+
+        // Pass mouse position diffs to event queue.
+        if( raw->header.dwType == RIM_TYPEMOUSE )
+        {
+            // Only send mouse movement messages (position diffs) if the system mouse is locked
+            if( m_GameWantsLockedMouse && m_SystemMouseIsLocked )
+            {
+                //LOGInfo( "RawMouse", "%f (%d, %d)\n", MyTime_GetSystemTime(), raw->data.mouse.lLastX, raw->data.mouse.lLastY );
+
+                float xdiff = (float)raw->data.mouse.lLastX;
+                float ydiff = (float)raw->data.mouse.lLastY;
+                WarpPointer( m_MouseXPositionWhenLocked, m_MouseYPositionWhenLocked );
+
+                if( xdiff != 0 || ydiff != 0 )
+                {
+                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, xdiff, ydiff, m_MousePosition.z ) );
+                }
+            }
+        }
+
+        return true;
+    }
+
+    return wxWindowMSW::MSWHandleMessage( result, message, wParam, lParam );
+}
+#endif
 
 void MainGLCanvas::MakeContextCurrent()
 {
@@ -604,37 +665,32 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 
     m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
 
-    if( this == g_pMainApp->m_pMainFrame->m_pGLCanvas )
+    // Game window wants mouse locked.
+    if( m_GameWantsLockedMouse )
     {
-        // Game window wants mouse locked.
-        if( g_GameWantsLockedMouse )
-        {
-            // Only send mouse movement messages (position diffs) if the system mouse is locked
-            if( g_SystemMouseIsLocked )
-            {
-                float xdiff = (float)event.m_x - g_MouseXPositionWhenLocked;
-                float ydiff = (float)event.m_y - g_MouseYPositionWhenLocked;
-                g_pMainApp->m_pMainFrame->m_pGLCanvas->WarpPointer( g_MouseXPositionWhenLocked, g_MouseYPositionWhenLocked );
+        // This case should be handled by WM_INPUT nearby.
+        // This is fallback if raw mouse input fails to initialize and for non-windows builds.
 
-                if( xdiff != 0 || ydiff != 0 )
-                {
-                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, xdiff, ydiff, (float)event.m_wheelRotation ) );
-                }
-            }
-        }
-        else
+        // Only send mouse movement messages (position diffs) if the system mouse is locked.
+        if( m_RawMouseInputInitialized == false && m_SystemMouseIsLocked )
         {
-            // Only send mouse positions if system mouse isn't locked
-            if( g_SystemMouseIsLocked == false )
+            float xdiff = (float)event.m_x - m_MouseXPositionWhenLocked;
+            float ydiff = (float)event.m_y - m_MouseYPositionWhenLocked;
+            WarpPointer( m_MouseXPositionWhenLocked, m_MouseYPositionWhenLocked );
+
+            if( xdiff != 0 || ydiff != 0 )
             {
-                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, xdiff, ydiff, (float)event.m_wheelRotation ) );
             }
         }
     }
     else
     {
-        // Editor window handles mouse normally.
-        m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+        // Send mouse positions if this window's mouse cursor isn't locked
+        if( m_SystemMouseIsLocked == false )
+        {
+            m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+        }
     }
 }
 
@@ -648,7 +704,24 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
 
     g_GLCanvasIDActive = m_GLCanvasID;
 
-    if( g_GLCanvasIDActive != 0 || this->HasFocus() == true && (g_GameWantsLockedMouse == false || g_SystemMouseIsLocked == true) )
+    if( m_GameWantsLockedMouse && m_SystemMouseIsLocked == false )
+    {
+        m_MouseXPositionWhenLocked = m_CurrentGLViewWidth/2;
+        m_MouseYPositionWhenLocked = m_CurrentGLViewHeight/2;
+        WarpPointer( m_MouseXPositionWhenLocked, m_MouseYPositionWhenLocked );
+        event.m_x = m_MouseXPositionWhenLocked;
+        event.m_y = m_MouseYPositionWhenLocked;
+
+        m_SystemMouseIsLocked = true;
+
+#if MYFW_WINDOWS
+        ShowCursor( false );
+#else
+        SetCursor( wxCURSOR_BLANK );
+#endif
+    }
+
+    if( g_GLCanvasIDActive != 0 || this->HasFocus() == true && (m_GameWantsLockedMouse == false || m_SystemMouseIsLocked == true) )
     {
         m_MouseButtonStates |= (1 << 0);
         m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );
@@ -656,8 +729,6 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
     }
 
     this->SetFocus();
-    if( g_GameWantsLockedMouse )
-        g_SystemMouseIsLocked = true;
 }
 
 void MainGLCanvas::MouseLeftDoubleClick(wxMouseEvent& event)
@@ -958,7 +1029,13 @@ void MainGLCanvas::ProcessInputEventQueue()
             {
                 if( ev->keychar == MYKEYCODE_ESC )
                 {
-                    g_SystemMouseIsLocked = false;
+                    m_SystemMouseIsLocked = false;
+#if MYFW_WINDOWS
+                    ShowCursor( true );
+#else
+                    SetCursor( *wxSTANDARD_CURSOR );
+                    //SetCursor( wxCURSOR_DEFAULT );
+#endif
                 }
             }
         }
@@ -1007,7 +1084,7 @@ void MainGLCanvas::ProcessInputEventQueue()
             if( m_MousePosition.z != 0 )
                 m_MousePosition.z = m_MousePosition.z/fabs(m_MousePosition.z);
 
-            if( g_GameWantsLockedMouse )
+            if( m_GameWantsLockedMouse )
             {
                 //g_pGameCore->OnTouch( GCBA_Held, m_MouseButtonStates, 0, 0, 0, 0 );
             }
@@ -1125,6 +1202,37 @@ void MainGLCanvas::Draw()
     }
 
     SwapBuffers();
+}
+
+void MainGLCanvas::SetMouseLock(bool lock)
+{
+    if( lock )
+    {
+        if( m_GameWantsLockedMouse == false )
+        {
+            LOGInfo( LOGTag, "SetMouseLock( true );\n" );
+            m_GameWantsLockedMouse = true;
+        }
+    }
+    else
+    {
+        LOGInfo( LOGTag, "SetMouseLock( false );\n" );
+
+        m_GameWantsLockedMouse = false;
+        m_SystemMouseIsLocked = false;
+
+#if MYFW_WINDOWS
+        ShowCursor( true );
+#else
+        SetCursor( *wxSTANDARD_CURSOR );
+        //SetCursor( wxCURSOR_DEFAULT );
+#endif
+    }
+}
+
+bool MainGLCanvas::IsMouseLocked()
+{
+    return m_SystemMouseIsLocked;
 }
 
 #if TESTING_FRAGCOORDISSUE
