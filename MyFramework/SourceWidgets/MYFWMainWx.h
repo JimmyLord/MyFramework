@@ -217,7 +217,9 @@ public:
     void Draw();
 
     // Mouse Lock Methods
-    void SetMouseLock(bool lock);
+    void LockMouse(bool lock);
+    void RequestMouseLock();
+    void ReleaseMouseLock();
     bool IsMouseLocked();
 
     // events
