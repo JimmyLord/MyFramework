@@ -534,6 +534,7 @@ BEGIN_EVENT_TABLE(MainGLCanvas, wxGLCanvas)
     EVT_MIDDLE_UP(MainGLCanvas::MouseMiddleUp)
     EVT_MIDDLE_DCLICK(MainGLCanvas::MouseMiddleDoubleClick)
     EVT_LEAVE_WINDOW(MainGLCanvas::MouseLeftWindow)
+    EVT_MOUSE_CAPTURE_LOST(MainGLCanvas::MouseCaptureLost)
     EVT_SIZE(MainGLCanvas::Resized)
     EVT_KEY_DOWN(MainGLCanvas::KeyPressed)
     EVT_KEY_UP(MainGLCanvas::KeyReleased)
@@ -757,6 +758,15 @@ void MainGLCanvas::MouseLeftWindow(wxMouseEvent& event)
     g_GLCanvasIDActive = m_GLCanvasID;
 
     LockMouse( false );
+}
+
+void MainGLCanvas::MouseCaptureLost(wxMouseCaptureLostEvent& event)
+{
+    g_GLCanvasIDActive = m_GLCanvasID;
+
+    LockMouse( false );
+    m_MouseCaptured_ButtonsHeld = 0;
+    m_MouseButtonStates = 0;
 }
 
 void MainGLCanvas::MouseRightDown(wxMouseEvent& event)

@@ -236,6 +236,7 @@ public:
     void MouseMiddleUp(wxMouseEvent& event);
     void MouseMiddleDoubleClick(wxMouseEvent& event);
     void MouseLeftWindow(wxMouseEvent& event);
+    void MouseCaptureLost(wxMouseCaptureLostEvent& event);
     void KeyPressed(wxKeyEvent& event);
     void KeyReleased(wxKeyEvent& event);
     void KeyChar(wxKeyEvent& event);
