@@ -275,12 +275,12 @@ void GenerateMouseEvents(GameCore* pGameCore)
 
             if( xdiff != 0 || ydiff != 0 )
             {
-                pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
+                pGameCore->OnTouch( GCBA_RelativeMovement, buttonstates, xdiff, ydiff, 0, 0 );
             }
         }
         else
         {
-            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
+            //pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
         }
     }
     else
