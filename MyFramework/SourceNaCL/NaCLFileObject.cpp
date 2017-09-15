@@ -44,7 +44,7 @@ void NaCLFileObject::OnOpen(int32 result)
     if( result != PP_OK )
     {
         LOGError( LOGTag, "NaCLFileObject::OnOpen failed: %s\n", m_pFile->GetFullPath() );
-        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_FileNotFound;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
 
@@ -57,7 +57,7 @@ void NaCLFileObject::OnOpen(int32 result)
     if( status != 200 )
     {
         LOGError( LOGTag, "NaCLFileObject::OnOpen failed %s: status %d\n", m_pFile->GetFullPath(), status );
-        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_FileNotFound;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_FileNotFound;
         return;
     }
     else
@@ -104,7 +104,7 @@ void NaCLFileObject::OnRead(int32 result)
 
         // Streaming the file is complete... null terminate the string stored in the file
         m_pFile->m_pBuffer[m_pFile->m_FileLength] = 0;
-        m_pFile->GetFileLoadStatus() = FileLoadStatus_Success;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Success;
     }
     else if( result > 0 )
     {
@@ -117,7 +117,7 @@ void NaCLFileObject::OnRead(int32 result)
     {
         // A read error occurred.
         LOGError( LOGTag, "NaCLFileObject::OnRead failed %s: result %d\n", m_pFile->GetFullPath(), result );
-        m_pFile->GetFileLoadStatus() = FileLoadStatus_Error_Other;
+        m_pFile->m_FileLoadStatus = FileLoadStatus_Error_Other;
     }
 }
 
@@ -160,7 +160,7 @@ void NaCLFileObject::ReadBody()
         // that case, whether the error is synchronous or asynchronous. If the
         // result code *is* COMPLETIONPENDING, our callback will be called
         // asynchronously.
-        cc.Run(result);
+        cc.Run( result );
     }
     else
     {

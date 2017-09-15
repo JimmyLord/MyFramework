@@ -51,6 +51,10 @@ class MyFileObject : public CPPListNode, public RefCount
 {
     friend class FileManager;
 
+#if MYFW_NACL
+    friend class NaCLFileObject;
+#endif
+
     static const int CALLBACK_POOL_SIZE = 1000;
 
 protected:
@@ -90,6 +94,11 @@ public:
     FileLoadStatus GetFileLoadStatus() { return m_FileLoadStatus; }
     unsigned int GetFileLength() { return m_FileLength; }
     const char* GetBuffer() { return m_pBuffer; }
+
+#if MYFW_NACL
+    void SetNaClFileObject(NaCLFileObject* pNaClFile) { m_pNaClFileObject = pNaClFile; }
+    NaCLFileObject* GetNaClFileObject() { return m_pNaClFileObject; }
+#endif
 
 #if MYFW_WINDOWS
     FILETIME GetFileLastWriteTime() { return m_FileLastWriteTime; }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -118,7 +118,7 @@ void WebRequestObject::RequestEnd()
     NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
 
     m_pFileObject = MyNew MyFileObject();
-    m_pFileObject->m_pNaClFileObject = naclfile;
+    m_pFileObject->SetNaClFileObject( naclfile );
     naclfile->m_pFile = m_pFileObject;
 
     naclfile->GetURL( m_PageWanted );
@@ -144,7 +144,7 @@ void WebRequestObject::RequestWebPage(const char* page, ...)
     NaCLFileObject* naclfile = MyNew NaCLFileObject( g_pInstance );
 
     m_pFileObject = MyNew MyFileObject();
-    m_pFileObject->m_pNaClFileObject = naclfile;
+    m_pFileObject->SetNaClFileObject( naclfile );
     naclfile->m_pFile = m_pFileObject;
 
     naclfile->GetURL( m_PageWanted );
@@ -158,7 +158,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
 
 bool WebRequestObject::IsBusy()
 {
-    if( m_pFileObject && m_pFileObject->m_FileLoadStatus != FileLoadStatus_Success )
+    if( m_pFileObject && m_pFileObject->GetFileLoadStatus() != FileLoadStatus_Success )
         return true;
 
     return false;
@@ -171,12 +171,12 @@ void WebRequestObject::ClearResult()
     SAFE_DELETE( m_pFileObject );
 }
 
-char* WebRequestObject::GetResult()
+const char* WebRequestObject::GetResult()
 {
     //LOGInfo( LOGTag, "WebRequestObject::GetResult\n" );
 
-    if( m_pFileObject && m_pFileObject->m_FileLoadStatus == FileLoadStatus_Success )
-        return m_pFileObject->m_pBuffer;
+    if( m_pFileObject && m_pFileObject->GetFileLoadStatus() == FileLoadStatus_Success )
+        return m_pFileObject->GetBuffer();
 
     return 0;
 }
