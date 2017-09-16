@@ -135,7 +135,7 @@ void NaCLFileObject::ReadBody()
     // the callback we created since the loader won't do anything with it.
     pp::CompletionCallback cc = m_CCFactory.NewOptionalCallback( &NaCLFileObject::OnRead );
     
-    int32 result = -1;
+    int32 result = 1; // Any number bigger than 0 to enter loop below.
     while( result > 0 )
     {
         result = m_URLLoader.ReadResponseBody( m_TempReadBuffer, sizeof(m_TempReadBuffer), cc );

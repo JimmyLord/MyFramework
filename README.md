@@ -56,6 +56,6 @@ Emscripten
     - https://github.com/kripken/emscripten
     
 NaCl
-- tested with pepper_46 and vs_addin
+- tested with pepper_49 and vs_addin
     - https://developer.chrome.com/native-client/sdk/download
-- setx NACL_SDK_ROOT E:\Apps\nacl_sdk\pepper_46
+- setx NACL_SDK_ROOT E:\Apps\nacl_sdk\pepper_49
