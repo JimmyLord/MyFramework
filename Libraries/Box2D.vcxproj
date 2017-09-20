@@ -72,7 +72,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -98,7 +97,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -148,9 +146,9 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|PNaCl'">lib$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">$(ProjectName)</TargetName>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bin\x64\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">obj\x64\Debug\Box2D\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Box2D</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName)_$(Configuration)</TargetName>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
@@ -163,9 +161,9 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">lib$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Android'">$(ProjectName)</TargetName>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bin\x64\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj\x64\Release\Box2D\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Box2D</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Output\$(PlatformName)\$(TargetName)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Output\Intermediate\$(PlatformName)\$(TargetName)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectName)_$(Configuration)</TargetName>
     <NaClAddInVersion Condition="'$(Configuration)|$(Platform)'=='Debug|PNaCl'">1</NaClAddInVersion>
     <NaClAddInVersion Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">1</NaClAddInVersion>
     <NaClAddInVersion Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">1</NaClAddInVersion>

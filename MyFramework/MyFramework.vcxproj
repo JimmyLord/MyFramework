@@ -1559,13 +1559,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|PNaCl'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|PNaCl'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="SourceCommon\Sound\WaveLoader.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="SourceCommon\Sound\WaveLoader.cpp" />
     <ClCompile Include="SourceCommon\Sprites\AnimatedSprite.cpp" />
     <ClCompile Include="SourceCommon\Sprites\AnimationKeys.cpp" />
     <ClCompile Include="SourceCommon\Sprites\My2DAnimInfo.cpp" />
@@ -2693,13 +2687,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|PNaCl'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|PNaCl'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="SourceCommon\Sound\WaveLoader.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxDebug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="SourceCommon\Sound\WaveLoader.h" />
     <ClInclude Include="SourceCommon\Sprites\AnimatedSprite.h" />
     <ClInclude Include="SourceCommon\Sprites\AnimationKeys.h" />
     <ClInclude Include="SourceCommon\Sprites\My2DAnimInfo.h" />
