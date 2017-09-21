@@ -64,9 +64,6 @@
     <Filter Include="Source-Platform\Source - WP8">
       <UniqueIdentifier>{eeaedc74-0a54-4f05-a378-aecb28033585}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source-Platform\Source - Windows\winpthreads">
-      <UniqueIdentifier>{23eda786-ad26-4797-ae5c-28e66f3a5204}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\GraphicsWrappers">
       <UniqueIdentifier>{afb726f6-1e25-440d-b168-b8b387910532}</UniqueIdentifier>
     </Filter>
@@ -123,6 +120,9 @@
     </Filter>
     <Filter Include="Libraries\b2Settings">
       <UniqueIdentifier>{ce25fdbb-cd45-42d8-9295-858af7007717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\pthreads-w32">
+      <UniqueIdentifier>{d7b3a536-229b-402a-bdfd-732b432d3c52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -964,6 +964,15 @@
     </ClInclude>
     <ClInclude Include="..\Libraries\b2Settings\Box2D\Common\b2Settings.h">
       <Filter>Libraries\b2Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\pthreads-w32\include\pthread.h">
+      <Filter>Libraries\pthreads-w32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\pthreads-w32\include\sched.h">
+      <Filter>Libraries\pthreads-w32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\pthreads-w32\include\semaphore.h">
+      <Filter>Libraries\pthreads-w32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

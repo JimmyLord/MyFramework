@@ -83,7 +83,7 @@ void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocat
 #endif
 }
 
-unsigned int MyMemory_GetNumberOfBytesAllocated()
+size_t MyMemory_GetNumberOfBytesAllocated()
 {
     if( g_pAllocationList == 0 )
         return 0;
@@ -93,7 +93,7 @@ unsigned int MyMemory_GetNumberOfBytesAllocated()
     pthread_mutex_lock( &g_AllocationMutex );
 
     // since the list itself isn't in the list, start with it's size.
-    unsigned int count = sizeof( AllocationList );
+    size_t count = sizeof( AllocationList );
 
     CPPListNode* pNode;
     for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )

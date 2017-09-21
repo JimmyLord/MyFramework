@@ -100,7 +100,7 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, con
     {
         int vslen = (int)strlen( VSpredef );
         if( alsousedefaults )
-            vslen += strlen( VERTEXPREDEFINES );
+            vslen += (int)strlen( VERTEXPREDEFINES );
         vslen += 1;
         char* newvsstr = MyNew char[vslen];
         strcpy_s( newvsstr, vslen, VSpredef );
@@ -113,7 +113,7 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, con
     {
         int gslen = (int)strlen( GSpredef );
         if( alsousedefaults )
-            gslen += strlen( GEOMETRYPREDEFINES );
+            gslen += (int)strlen( GEOMETRYPREDEFINES );
         gslen += 1;
         char* newgsstr = MyNew char[gslen];
         strcpy_s( newgsstr, gslen, GSpredef );
@@ -126,7 +126,7 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, con
     {
         int fslen = (int)strlen( FSpredef );
         if( alsousedefaults )
-            fslen += strlen( FRAGMENTPREDEFINES );
+            fslen += (int)strlen( FRAGMENTPREDEFINES );
         fslen += 1;
         char* newfsstr = MyNew char[fslen];
         strcpy_s( newfsstr, fslen, FSpredef );

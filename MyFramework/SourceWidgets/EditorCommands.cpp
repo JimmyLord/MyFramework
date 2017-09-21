@@ -218,9 +218,8 @@ void EditorCommand_PanelWatchColorChanged::Do()
     {
         // store the old color in a local var.
         // send the pointer to that var via callback in the double.
-        // TODO: make 64-bit friendly, along with potentially a lot of other things.
         ColorByte oldcolor = *(ColorByte*)m_Pointer;
-        *(long*)&oldvalue = (long)&oldcolor;
+        *(uintptr_t*)&oldvalue = (uintptr_t)&oldcolor;
 
         // Update the ColorByte stored at the pointer.
         *(ColorByte*)m_Pointer = m_NewColor.AsColorByte();

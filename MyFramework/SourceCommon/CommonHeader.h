@@ -63,7 +63,7 @@
 #pragma warning( 3 : 4355 ) // 'this' : used in base member initializer list
 //vcincludes #pragma warning( 3 : 4365 ) // 'action': conversion from 'type_1' to 'type_2', signed/unsigned mismatch
 #pragma warning( 3 : 4370 ) // layout of class has changed from a previous version of the compiler due to better packing
-#pragma warning( 3 : 4371 ) // layout of class may have changed from a previous version of the compiler due to better packing of member 'member'
+//#pragma warning( 3 : 4371 ) // layout of class may have changed from a previous version of the compiler due to better packing of member 'member'
 #pragma warning( 3 : 4388 ) // signed/unsigned mismatch
 #pragma warning( 3 : 4389 ) // signed/unsigned mismatch
 #pragma warning( 3 : 4412 ) // 'function': function signature contains type 'type'; C++ objects are unsafe to pass between pure code and mixed or native
@@ -143,6 +143,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <stdint.h> // For uintptr_t
 #include <stddef.h>
 #include <math.h>
 #include <string.h>
@@ -445,7 +446,7 @@ typedef unsigned long   u_long;
 #endif
 #include "../SourceWindows/SavedData.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"
-#include "../SourceWindows/pthreads-w32-2-9-1/include/pthread.h"
+#include "../../Libraries/pthreads-w32/include/pthread.h"
 #include "Networking/WebRequest.h"
 #endif
 

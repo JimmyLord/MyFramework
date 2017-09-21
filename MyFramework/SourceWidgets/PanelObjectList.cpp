@@ -449,7 +449,7 @@ void PanelObjectList::UpdateRootNodeObjectCount()
         wxTreeItemId idchild = m_pTree_Objects->GetFirstChild( idroot, cookie );
         while( idchild.IsOk() )
         {
-            childcount += m_pTree_Objects->GetChildrenCount( idchild, false );
+            childcount += (int)m_pTree_Objects->GetChildrenCount( idchild, false );
             idchild = m_pTree_Objects->GetNextChild( idroot, cookie );
         }
 

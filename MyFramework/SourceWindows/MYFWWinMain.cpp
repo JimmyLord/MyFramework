@@ -82,12 +82,13 @@ void SetWindowSize(int width, int height)
         height = maxheight;
     }
 
-    DWORD dwStyle = GetWindowLongPtr( hWnd, GWL_STYLE ) ;
-    DWORD dwExStyle = GetWindowLongPtr( hWnd, GWL_EXSTYLE ) ;
-    HMENU menu = GetMenu( hWnd ) ;
+    // Typecast from LONG_PTR to DWORD should be ok when querying GWL_STYLE and GWL_EXSTYLE    
+    DWORD dwStyle = (DWORD)GetWindowLongPtr( hWnd, GWL_STYLE );
+    DWORD dwExStyle = (DWORD)GetWindowLongPtr( hWnd, GWL_EXSTYLE );
+    HMENU menu = GetMenu( hWnd );
 
-    // calculate the full size of the window needed to match our client area of width/height
-    RECT WindowRect = { 0, 0, width, height } ;
+    // Calculate the full size of the window needed to match our client area of width/height
+    RECT WindowRect = { 0, 0, width, height };
     AdjustWindowRectEx( &WindowRect, dwStyle, menu ? TRUE : FALSE, dwExStyle );
 
     int windowwidth = WindowRect.right - WindowRect.left;
@@ -554,7 +555,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_CHAR:
         {
-            g_pGameCore->OnChar( wParam );
+            g_pGameCore->OnChar( (unsigned int)wParam );
         }
         return 0;
 
@@ -771,5 +772,5 @@ int MYFWWinMain(int width, int height)
 
     WSACleanup();
 
-    return msg.wParam;
+    return (int)msg.wParam;
 }

@@ -44,7 +44,7 @@ void DragAndDropStruct::Add(DragAndDropTypes type, void* value)
 
 unsigned int DragAndDropStruct::GetItemCount()
 {
-    return m_Items.size();
+    return (unsigned int)m_Items.size();
 }
 
 DragAndDropItem* DragAndDropStruct::GetItem(int index)

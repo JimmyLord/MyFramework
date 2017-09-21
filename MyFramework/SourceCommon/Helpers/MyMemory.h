@@ -48,7 +48,7 @@ public:
 class AllocationList;
 
 void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation);
-unsigned int MyMemory_GetNumberOfBytesAllocated();
+size_t MyMemory_GetNumberOfBytesAllocated();
 unsigned int MyMemory_GetNumberOfMemoryAllocations();
 void MyMemory_MarkAllExistingAllocationsAsStatic();
 

@@ -26,8 +26,8 @@ public:
 
     void IncrementFrameCount();
 
-    unsigned int GetUndoStackSize() { return m_UndoStack.size(); }
-    unsigned int GetRedoStackSize() { return m_RedoStack.size(); }
+    unsigned int GetUndoStackSize() { return (unsigned int)m_UndoStack.size(); }
+    unsigned int GetRedoStackSize() { return (unsigned int)m_RedoStack.size(); }
     EditorCommand* GetUndoCommandAtIndex(unsigned int index) { return m_UndoStack[index]; }
 
     void ClearStacks();

@@ -705,8 +705,9 @@ void PanelMemory::OnTreeSelectionChanged(wxTreeEvent& event)
         TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_DrawCalls->GetItemData( id );
         if( pData )
         {
-            // TODO: fix this, issues with storing ints in 64 bit void pointers.
-            m_DrawCallIndexToDraw = (int)(long)pData->m_pObject;
+            // pData->m_pObject is a pointer that stores an int,
+            //    it should never be larger than a few thousand let alone 2 billion, so typecast is ugly but will work.
+            m_DrawCallIndexToDraw = (int)(uintptr_t)pData->m_pObject;
         }
     }
 

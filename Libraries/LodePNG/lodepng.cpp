@@ -1,5 +1,6 @@
 #if MYFW_WINDOWS
 #pragma warning(disable:4996)
+#pragma warning(disable:4267)
 #endif
 
 /*

@@ -24,7 +24,7 @@ class UDPSocket
 {
 public:
     unsigned short m_Port;
-    int m_SocketHandle;
+    SOCKET m_SocketHandle;
 
     sockaddr_in m_KeepAliveServerAddress; // some server that we'll send a ping to every now and then to keep the socket open.
     double m_KeepAliveTime;

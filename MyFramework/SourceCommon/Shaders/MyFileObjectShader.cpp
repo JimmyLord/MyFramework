@@ -178,7 +178,7 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
     MyAssert( m_FileLoadStatus == FileLoadStatus_Success );
 
     const char* keyword = "exposed";
-    unsigned int keywordlen = strlen( keyword );
+    unsigned int keywordlen = (unsigned int)strlen( keyword );
 
     for( unsigned int i=0; i<m_FileLength; i++ )
     {
