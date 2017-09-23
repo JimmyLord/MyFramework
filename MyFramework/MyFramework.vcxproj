@@ -709,6 +709,8 @@
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -733,6 +735,8 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -755,6 +759,8 @@
       <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -779,6 +785,8 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
