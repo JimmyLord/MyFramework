@@ -628,23 +628,27 @@ bool MainGLCanvas::MSWHandleMessage(WXLRESULT* result, WXUINT message, WXWPARAM 
     {
         //LOGInfo( LOGTag, "WM_INPUT\n" );
 
-        UINT dwSize = 40;
-        static BYTE lpb[40];
+        unsigned int size = sizeof( RAWINPUT );
+        RAWINPUT rawinput;
 
-        GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER) );
+#if _DEBUG
+        unsigned int sizewanted;
+        GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, 0, &sizewanted, sizeof(RAWINPUTHEADER) );
+        MyAssert( size == sizewanted );
+#endif
 
-        RAWINPUT* raw = (RAWINPUT*)lpb;
+        GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, &rawinput, &size, sizeof(RAWINPUTHEADER) );
 
         // Pass mouse position diffs to event queue.
-        if( raw->header.dwType == RIM_TYPEMOUSE )
+        if( rawinput.header.dwType == RIM_TYPEMOUSE )
         {
             // Only send mouse movement messages (position diffs) if the system mouse is locked
             if( m_SystemMouseIsLocked )
             {
-                //LOGInfo( "RawMouse", "%f (%d, %d)\n", MyTime_GetSystemTime(), raw->data.mouse.lLastX, raw->data.mouse.lLastY );
+                //LOGInfo( "RawMouse", "%f (%d, %d)\n", MyTime_GetSystemTime(), rawinput.data.mouse.lLastX, rawinput.data.mouse.lLastY );
 
-                float xdiff = (float)raw->data.mouse.lLastX;
-                float ydiff = (float)raw->data.mouse.lLastY;
+                float xdiff = (float)rawinput.data.mouse.lLastX;
+                float ydiff = (float)rawinput.data.mouse.lLastY;
                 WarpPointer( m_MouseXPositionWhenLocked, m_MouseYPositionWhenLocked );
 
                 if( xdiff != 0 || ydiff != 0 )
@@ -683,6 +687,10 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
         // Only send mouse movement messages (position diffs) if the system mouse is locked.
         if( m_RawMouseInputInitialized == false && m_SystemMouseIsLocked )
         {
+#if MYFW_WINDOWS
+            MyAssert( false ); // Windows builds should use raw mouse input.
+#endif
+
             float xdiff = (float)event.m_x - m_MouseXPositionWhenLocked;
             float ydiff = (float)event.m_y - m_MouseYPositionWhenLocked;
             WarpPointer( m_MouseXPositionWhenLocked, m_MouseYPositionWhenLocked );
