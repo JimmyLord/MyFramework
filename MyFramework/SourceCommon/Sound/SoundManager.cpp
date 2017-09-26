@@ -17,6 +17,7 @@
 SoundCue::SoundCue()
 {
     m_FullyLoaded = false;
+    m_UnsavedChanges = false;
 
     m_Name[0] = 0;
     m_pFile = 0;
@@ -37,6 +38,7 @@ void SoundCue::Release()
         m_pSourcePool->ReturnObjectToPool( this );
 
         m_FullyLoaded = false;
+        m_UnsavedChanges = false;
         m_Name[0] = 0;
         SAFE_RELEASE( m_pFile );
         m_pSourcePool = 0;
@@ -92,6 +94,7 @@ void SoundCue::ImportFromFile()
         }
 
         m_FullyLoaded = true;
+        m_UnsavedChanges = false;
     }
 
     cJSON_Delete( jRoot );
@@ -133,6 +136,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         return;
 
     m_FullyLoaded = true;
+    m_UnsavedChanges = false;
 
     char filename[MAX_PATH];
 
@@ -373,7 +377,7 @@ void SoundManager::Tick()
 #endif
         }
 
-        if( pCue->m_FullyLoaded )
+        if( pCue->IsFullyLoaded() )
         {
             m_Cues.MoveTail( pCue );
         }
@@ -503,6 +507,8 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 #else
         pCue->m_pSoundObjects.Add( pSoundObject );
 #endif //MYFW_USING_WX
+
+        pCue->m_UnsavedChanges = true;
     }
 }
 
@@ -529,6 +535,8 @@ void SoundManager::RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject)
 #else
     pCue->m_pSoundObjects.Remove_MaintainOrder( pSoundObject );
 #endif
+
+    pCue->m_UnsavedChanges = true;
 }
 
 SoundCue* SoundManager::FindCueByName(const char* name)
@@ -635,7 +643,7 @@ void SoundManager::SaveAllCues(bool saveunchanged)
     {
         SoundCue* pCue = (SoundCue*)pNode;
 
-        //if( pCue->m_UnsavedChanges || saveunchanged )
+        if( pCue->m_UnsavedChanges || saveunchanged )
         {
             pCue->SaveSoundCue( 0 );
         }
