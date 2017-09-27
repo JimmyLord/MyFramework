@@ -139,6 +139,7 @@ public:
     void SetCustomObjectForCallback_Drop(wxTreeItemId id, void* pObject);
     void SetCustomObjectForCallback_LabelEdit(wxTreeItemId id, void* pObject);
     
+    void RemoveAllObjects();
     void RemoveObject(void* pObject);
     void* GetObject(wxTreeItemId id);
 

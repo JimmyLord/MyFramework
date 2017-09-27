@@ -370,6 +370,7 @@ void PanelObjectList::SelectObject(void* pObject)
     if( pObject == 0 )
     {
         m_pTree_Objects->UnselectAll();
+        m_pTree_Objects->ClearFocusedItem();
         return;
     }
 
@@ -629,6 +630,13 @@ void PanelObjectList::SetCustomObjectForCallback_LabelEdit(wxTreeItemId id, void
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
     if( pData )
         pData->m_pObject_LabelEdit = pObject;
+}
+
+void PanelObjectList::RemoveAllObjects()
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    m_pTree_Objects->DeleteChildren( idroot );
 }
 
 void PanelObjectList::RemoveObject(void* pObject)
