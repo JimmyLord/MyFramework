@@ -232,6 +232,42 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
     }
 }
 
+void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
+{
+    // Loop through the 8 child nodes.
+    for( int i=0; i<8; i++ )
+    {
+        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        {
+            // Move all SceneGraphObjects from each child node onto the tail of the root node.
+            CPPListHead* ChildObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
+            if( ChildObjectList->GetHead() )
+            {
+                m_pRootNode->m_Renderables.BulkMoveTail( ChildObjectList->GetHead(), ChildObjectList->GetTail() );
+            }
+
+            // Recurse through children.
+            CollapseChildNodes( pOctreeNode->m_pChildNodes[i] );
+
+            // Return this child to the node pool
+            m_NodePool.ReturnObjectToPool( pOctreeNode->m_pChildNodes[i] );
+            pOctreeNode->m_pChildNodes[i] = 0;
+        }
+    }
+}
+
+void SceneGraph_Octree::Resize(float minx, float miny, float minz, float maxx, float maxy, float maxz)
+{
+    CollapseChildNodes( m_pRootNode );
+
+    Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
+    Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
+
+    m_pRootNode->m_Bounds.Set( center, halfsize );
+
+    UpdateTree( m_pRootNode );
+}
+
 SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
