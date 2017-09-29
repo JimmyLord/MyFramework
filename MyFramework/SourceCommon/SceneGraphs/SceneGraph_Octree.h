@@ -41,7 +41,7 @@ class SceneGraph_Octree : public SceneGraph_Base
 protected:
     unsigned int m_MaxDepth;
 
-    MySimplePool<OctreeNode> m_NodePool; 
+    MySimplePool<OctreeNode> m_OctreeNodePool; 
 
     OctreeNode* m_pRootNode;
 

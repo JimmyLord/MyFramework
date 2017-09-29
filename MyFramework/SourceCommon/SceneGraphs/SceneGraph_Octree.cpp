@@ -45,7 +45,7 @@ void OctreeNode::Cleanup()
         }
     }
 
-    m_pSceneGraph->m_NodePool.ReturnObjectToPool( this );
+    m_pSceneGraph->m_OctreeNodePool.ReturnObjectToPool( this );
     m_pSceneGraph = 0;
     m_pParentNode = 0;
 }
@@ -64,9 +64,9 @@ SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float m
 
     m_Dirty = false;
 
-    m_NodePool.AllocateObjects( maxnodes );
+    m_OctreeNodePool.AllocateObjects( maxnodes );
 
-    m_pRootNode = m_NodePool.GetObjectFromPool();
+    m_pRootNode = m_OctreeNodePool.GetObjectFromPool();
 
     Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
     Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
@@ -210,7 +210,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
             {
                 if( pOctreeNode->m_pChildNodes[i] == 0 )
                 {
-                    pOctreeNode->m_pChildNodes[i] = m_NodePool.GetObjectFromPool();
+                    pOctreeNode->m_pChildNodes[i] = m_OctreeNodePool.GetObjectFromPool();
                     pOctreeNode->m_pChildNodes[i]->m_Bounds = childbounds;
                     pOctreeNode->m_pChildNodes[i]->m_pParentNode = pOctreeNode;
                     pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = this;
@@ -250,7 +250,9 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
             CollapseChildNodes( pOctreeNode->m_pChildNodes[i] );
 
             // Return this child to the node pool
-            m_NodePool.ReturnObjectToPool( pOctreeNode->m_pChildNodes[i] );
+            m_OctreeNodePool.ReturnObjectToPool( pOctreeNode->m_pChildNodes[i] );
+            pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = 0;
+            pOctreeNode->m_pChildNodes[i]->m_pParentNode = 0;
             pOctreeNode->m_pChildNodes[i] = 0;
         }
     }
@@ -258,14 +260,22 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
 
 void SceneGraph_Octree::Resize(float minx, float miny, float minz, float maxx, float maxy, float maxz)
 {
-    CollapseChildNodes( m_pRootNode );
-
+    MyAABounds newbounds;
     Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
     Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
+    newbounds.Set( center, halfsize );
 
-    m_pRootNode->m_Bounds.Set( center, halfsize );
+    // Only resize if the bounds changed.
+    if( newbounds != m_pRootNode->m_Bounds )
+    {
+        //LOGInfo( LOGTag, "Recentering octree (%0.2f, %0.2f, %0.2f)\n", center.x, center.y, center.z );
 
-    UpdateTree( m_pRootNode );
+        CollapseChildNodes( m_pRootNode );
+
+        m_pRootNode->m_Bounds.Set( center, halfsize );
+
+        UpdateTree( m_pRootNode );
+    }
 }
 
 SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
