@@ -101,7 +101,7 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
     checkGlError( "BufferDefinition::Rebuild" );
 
     //MyAssert( g_pGameCore->m_GLSurfaceIsValid );
-    if( g_pGameCore->m_GLSurfaceIsValid == false )
+    if( g_pGameCore->IsGLSurfaceIsValid() == false )
         return;
 
     if( m_Dirty == false && forcerebuild == false )

@@ -84,30 +84,30 @@ void SetMusicVolume(float volume)
     IOSSetMusicVolume( volume );
 #elif MYFW_WINDOWS
 #elif MYFW_BLACKBERRY
-    if( g_pGameCore->m_pMediaPlayer == 0 )
+    if( g_pGameCore->GetMediaPlayer() == 0 )
         return;
 
     if( volume == 0 )
     {
-        g_pGameCore->m_pMediaPlayer->Pause();
+        g_pGameCore->GetMediaPlayer()->Pause();
     }
     else
     {
-        g_pGameCore->m_pMediaPlayer->Play();
-        g_pGameCore->m_pMediaPlayer->SetVolume( volume );
+        g_pGameCore->GetMediaPlayer()->Play();
+        g_pGameCore->GetMediaPlayer()->SetVolume( volume );
     }
 #elif MYFW_WP8
-    if( g_pGameCore->m_pSoundPlayer == 0 )
+    if( g_pGameCore->GetSoundPlayer() == 0 )
         return;
 
     if( volume == 0 )
     {
-        g_pGameCore->m_pSoundPlayer->PauseMusic();
+        g_pGameCore->GetSoundPlayer()->PauseMusic();
     }
     else
     {
-        //g_pGameCore->m_pSoundPlayer->PlayMusic(0);
-        g_pGameCore->m_pSoundPlayer->UnpauseMusic();
+        //g_pGameCore->GetSoundPlayer()->PlayMusic(0);
+        g_pGameCore->GetSoundPlayer()->UnpauseMusic();
     }
 #endif
 }

@@ -87,7 +87,7 @@ void SoundCue::ImportFromFile()
                     MyAssert( jPath->valuestring[0] != 0 );
                     if( jPath )
                     {
-                        g_pGameCore->m_pSoundManager->AddSoundToCue( this, jPath->valuestring );
+                        g_pGameCore->GetSoundManager()->AddSoundToCue( this, jPath->valuestring );
                     }
                 }
             }
@@ -254,7 +254,7 @@ void SoundCue::OnRightClick(wxTreeItemId treeid)
     m_TreeIDRightClicked = treeid;
 
     menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
-    if( m_RefCount == g_pGameCore->m_pSoundManager->m_NumRefsPlacedOnSoundCueBySystem )
+    if( m_RefCount == g_pGameCore->GetSoundManager()->m_NumRefsPlacedOnSoundCueBySystem )
     {
         menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
     }
@@ -289,7 +289,7 @@ void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
 
     case RightClick_Unload:
         {
-            SoundManager* pSoundManager = g_pGameCore->m_pSoundManager;
+            SoundManager* pSoundManager = g_pGameCore->GetSoundManager();
 
             MyAssert( pSoundCue && pSoundCue->GetRefCount() == pSoundManager->m_NumRefsPlacedOnSoundCueBySystem );
 
@@ -491,7 +491,7 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
     // TODO: fix
     SoundObject* pSoundObject = 0;
 #else
-    SoundObject* pSoundObject = g_pGameCore->m_pSoundPlayer->LoadSound( fullpath );
+    SoundObject* pSoundObject = g_pGameCore->GetSoundPlayer()->LoadSound( fullpath );
 #endif
 
     if( pSoundObject )
@@ -609,7 +609,7 @@ int SoundManager::PlayCue(SoundCue* pCue)
     int randindex = rand()%pCue->m_pSoundObjects.size();
 
     SoundObject* pSoundObject = (SoundObject*)pCue->m_pSoundObjects[randindex];
-    return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
+    return g_pGameCore->GetSoundPlayer()->PlaySound( pSoundObject );
 }
 
 void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback)
@@ -775,7 +775,7 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
                 }
 
                 // Add each wav.
-                g_pGameCore->m_pSoundManager->AddSoundToCue( pNewCue, relativepath );
+                g_pGameCore->GetSoundManager()->AddSoundToCue( pNewCue, relativepath );
             }
 
             if( strcmp( extension, ".mycue" ) == 0 )

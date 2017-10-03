@@ -135,7 +135,7 @@
     LOGInfo( LOGTag, "called g_pGameCore->OnPrepareToDie\n" );
 
     //[m_avAudioPlayer stop];
-    //g_pGameCore->m_pSoundPlayer->DeactivateSoundContext();
+    //g_pGameCore->GetSoundPlayer()->DeactivateSoundContext();
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -170,7 +170,7 @@
             [m_avAudioPlayer stop];
     }
 
-    //g_pGameCore->m_pSoundPlayer->ActivateSoundContext();
+    //g_pGameCore->GetSoundPlayer()->ActivateSoundContext();
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

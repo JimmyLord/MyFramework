@@ -358,7 +358,7 @@ void EditorCommand_UnloadSoundCues::Do()
     {
         SoundCue* pSoundCue = m_SoundCues[i];
 
-        g_pGameCore->m_pSoundManager->UnloadCue( m_SoundCues[i] );
+        g_pGameCore->GetSoundManager()->UnloadCue( m_SoundCues[i] );
     }
 
     m_ReleaseSoundCuesWhenDestroyed = true;
@@ -370,7 +370,7 @@ void EditorCommand_UnloadSoundCues::Undo()
     {
         SoundCue* pSoundCue = m_SoundCues[i];
 
-        g_pGameCore->m_pSoundManager->LoadExistingCue( m_SoundCues[i] );
+        g_pGameCore->GetSoundManager()->LoadExistingCue( m_SoundCues[i] );
     }
 
     m_ReleaseSoundCuesWhenDestroyed = false;
