@@ -606,18 +606,18 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
     if( m_uHandle_TextureColor != -1 && pTexture != 0 )
     {
         MyActiveTexture( GL_TEXTURE0 + 0 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureColor, 0 );
 
         if( m_uHandle_TextureColorWidth != -1 )
         {
-            glUniform1f( m_uHandle_TextureColorWidth, (float)pTexture->m_Width );
+            glUniform1f( m_uHandle_TextureColorWidth, (float)pTexture->GetWidth() );
         }
 
         if( m_uHandle_TextureColorHeight != -1 )
         {
-            glUniform1f( m_uHandle_TextureColorHeight, (float)pTexture->m_Height );
+            glUniform1f( m_uHandle_TextureColorHeight, (float)pTexture->GetHeight() );
         }
     }
 
@@ -844,7 +844,7 @@ void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pSh
     if( m_uHandle_ShadowTexture != -1 )
     {
         MyActiveTexture( GL_TEXTURE0 + 1 );
-        glBindTexture( GL_TEXTURE_2D, pShadowTex->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, pShadowTex->GetTextureID() );
 
         glUniform1i( m_uHandle_ShadowTexture, 1 );
     }
@@ -855,7 +855,7 @@ void Shader_Base::ProgramLightmap(TextureDefinition* pTexture)
     if( m_uHandle_TextureLightmap != -1 )
     {
         MyActiveTexture( GL_TEXTURE0 + 2 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureLightmap, 2 );
     }
@@ -866,7 +866,7 @@ void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
     if( m_uHandle_TextureDepth != -1 && pTexture != 0 )
     {
         MyActiveTexture( GL_TEXTURE0 + 3 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureDepth, 3 );
     }
@@ -923,7 +923,7 @@ void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
             if( valuearray[i].m_pTexture )
             {
                 MyActiveTexture( GL_TEXTURE0 + 4 + numtexturesset );
-                glBindTexture( GL_TEXTURE_2D, valuearray[i].m_pTexture->m_TextureID );
+                glBindTexture( GL_TEXTURE_2D, valuearray[i].m_pTexture->GetTextureID() );
                 glUniform1i( m_uHandle_ExposedUniforms[i], 4 + numtexturesset );
                 numtexturesset++;
             }

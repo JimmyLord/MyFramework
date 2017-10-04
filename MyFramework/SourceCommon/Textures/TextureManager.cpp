@@ -220,8 +220,8 @@ void TextureManager::Tick()
             if( pTextureDef->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
             {
                 //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile->m_FileReady\n" );
-                pTextureDef->m_TextureID = CreateTextureFromBuffer( pTextureDef );
-                //LOGInfo( LOGTag, "Loading Texture: CreateTextureFromBuffer\n" );
+                pTextureDef->FinishLoadingFileAndGenerateTexture();
+                //LOGInfo( LOGTag, "Loading Texture: FinishLoadingFileAndGenerateTexture\n" );
 
                 if( pTextureDef->m_TextureID != 0 )
                 {
@@ -266,15 +266,6 @@ void TextureManager::Tick()
             LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
         }
     }
-}
-
-GLuint TextureManager::CreateTextureFromBuffer(TextureDefinition* texturedef)
-{
-#if 0 //MYFW_ANDROID
-    return 0;
-#else
-    return LoadTextureFromMemory( texturedef );
-#endif
 }
 
 TextureDefinition* TextureManager::FindTexture(const char* texturefilename)

@@ -295,7 +295,7 @@ void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* categor
 
     // insert the Texture into it's category
     {
-        sprintf_s( tempstr, 100, "%s %d - size(%d) - fileinmemory(%d)", desc, categorycount, pTextureDef->m_MemoryUsed, pTextureDef->m_pFile?1:0 );
+        sprintf_s( tempstr, 100, "%s %d - size(%d) - fileinmemory(%d)", desc, categorycount, pTextureDef->GetMemoryUsed(), pTextureDef->GetFile()?1:0 );
         TreeItemDataGenericObjectInfo* pData = MyNew TreeItemDataGenericObjectInfo();
         pData->m_pObject = pTextureDef;
         pData->m_pRightClickFunction = pRightClickFunction;

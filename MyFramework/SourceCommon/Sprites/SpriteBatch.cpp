@@ -94,7 +94,7 @@ void SpriteBatch::AddSprite(MyMatrix* matworld, MySprite* pSprite)
 
 void SpriteBatch::Draw(MyMatrix* matviewproj)
 {
-    if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->m_TextureID == 0 ||
+    if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->GetTextureID() == 0 ||
         m_pMaterial->GetShader() == 0 || m_NumSprites == 0 )
         return;
 

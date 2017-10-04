@@ -246,38 +246,38 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
     return pBuffer;
 }
 
-GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef)
-{
-    LOGInfo( LOGTag, "Android_LoadTextureFromMemory texturedef(%d)\n", texturedef );
-    if( texturedef == 0 )
-        return 0;
-
-    checkGlError( "Android_LoadTextureFromMemory" );
-
-    GLuint tex_id = 0;
-
-    glGenTextures( 1, &tex_id );
-    checkGlError( "glGenTextures" );
-
-    LOGInfo( LOGTag, "Android_LoadTextureFromMemory file(%d)", texturedef->m_pFile );
-
-    const char* buffer = texturedef->m_pFile->GetBuffer();
-    int width = texturedef->m_Width;
-    int height = texturedef->m_Height;
-    int minfilter = texturedef->m_MinFilter;
-    int magfilter = texturedef->m_MagFilter;
-
-    LOGInfo( LOGTag, "Android_LoadTextureFromMemory - tex_id %d, size: %dx%d", tex_id, width, height );
-
-    if( tex_id != 0 )
-    {
-        glBindTexture( GL_TEXTURE_2D, tex_id );
-        checkGlError( "glBindTexture" );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter ); //LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter ); //GL_LINEAR );
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
-        checkGlError( "glTexImage2D" );
-    }
-
-    return tex_id;
-}
+//GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef)
+//{
+//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory texturedef(%d)\n", texturedef );
+//    if( texturedef == 0 )
+//        return 0;
+//
+//    checkGlError( "Android_LoadTextureFromMemory" );
+//
+//    GLuint tex_id = 0;
+//
+//    glGenTextures( 1, &tex_id );
+//    checkGlError( "glGenTextures" );
+//
+//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory file(%d)", texturedef->m_pFile );
+//
+//    const char* buffer = texturedef->m_pFile->GetBuffer();
+//    int width = texturedef->m_Width;
+//    int height = texturedef->m_Height;
+//    int minfilter = texturedef->m_MinFilter;
+//    int magfilter = texturedef->m_MagFilter;
+//
+//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory - tex_id %d, size: %dx%d", tex_id, width, height );
+//
+//    if( tex_id != 0 )
+//    {
+//        glBindTexture( GL_TEXTURE_2D, tex_id );
+//        checkGlError( "glBindTexture" );
+//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter ); //LINEAR );
+//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter ); //GL_LINEAR );
+//        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
+//        checkGlError( "glTexImage2D" );
+//    }
+//
+//    return tex_id;
+//}

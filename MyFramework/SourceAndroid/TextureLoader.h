@@ -18,7 +18,7 @@ MyFileObject* RequestFile(const char* filename);
 
 char* LoadFile(const char* filepath, int* length = 0);
 char* LoadTexture(const char* filepath, int* width, int* height);
-GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef);
+//GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef);
 
 #endif //__TEXTURELOADER_H__
 

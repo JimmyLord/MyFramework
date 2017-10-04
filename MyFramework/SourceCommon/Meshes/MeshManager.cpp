@@ -22,7 +22,7 @@ MyMesh* MeshManager::FindMeshBySourceFile(MyFileObject* pFile)
     {
         MyMesh* pMesh = (MyMesh*)pNode;
 
-        if( pMesh->m_pSourceFile == pFile )
+        if( pMesh->GetFile() == pFile )
             return pMesh;
     }
 

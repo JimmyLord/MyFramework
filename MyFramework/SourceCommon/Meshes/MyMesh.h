@@ -81,13 +81,12 @@ protected:
     MyList<MyAnimationTimeline*> m_pAnimationTimelines;
     MyList<MyAnimation*> m_pAnimations;
 
-    MyFileObject* m_pAnimationControlFile; // a .myaniminfo file that hold control info for the animation data.
+    MyFileObject* m_pAnimationControlFile; // .myaniminfo file that holds control info for the animation data.
 
     // Custom uniform setup before final draw is called. TODO: replace this with custom uniform array in material.
     SetupCustomUniformsCallbackFunc m_pSetupCustomUniformsCallback;
     void* m_pSetupCustomUniformsObjectPtr;
 
-public:
     MyList<MySubmesh*> m_SubmeshList;
 
     MyFileObject* m_pSourceFile;
@@ -116,6 +115,14 @@ public:
     MyMesh();
     virtual ~MyMesh();
 
+    // MyMesh Getters
+    unsigned int GetSubmeshListCount() { return m_SubmeshList.Count(); }
+    MySubmesh* GetSubmesh(unsigned int index) { return m_SubmeshList[index]; }
+
+    MyFileObject* GetFile() { return m_pSourceFile; }
+    bool IsReady() { return m_MeshReady; }
+
+    // MyMesh Methods
     void Clear();
 
 #if MYFW_WINDOWS
