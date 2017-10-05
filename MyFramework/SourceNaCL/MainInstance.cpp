@@ -76,7 +76,8 @@ bool MainInstance::HandleInputEvent(const pp::InputEvent& event)
 
             if( m_GameWantsLockedMouse == true && m_SystemMouseIsLocked == false )
             {
-                SetMouseLock( true );
+                // Lock the mouse the next time the window is clicked.
+                LockMouse( m_CallbackFactory.NewCallback( &MainInstance::SetMouseLocked ) );
             }
 
             if( m_GameWantsLockedMouse == false || m_SystemMouseIsLocked == true )
@@ -316,8 +317,8 @@ void MainInstance::DidChangeView(const pp::View& view)
         g_pGameCore->OnSurfaceCreated();
         g_pGameCore->OnSurfaceChanged( 0, 0, currwidth, currheight );
 
-        // now the opengl is initialized, let's call OneTimeInit() if it hasn't been.
-        if( g_pGameCore->m_OneTimeInitWasCalled == false )
+        // Now that opengl is initialized, let's call OneTimeInit() if it hasn't been.
+        if( g_pGameCore->HasOneTimeInitBeenCalled() == false )
             g_pGameCore->OneTimeInit();
     }
 
@@ -364,8 +365,9 @@ void MainInstance::SetMouseLock(bool lock)
     {
         LOGInfo( LOGTag, "SetMouseLock( true );\n" );
 
+        // Set that we want the mouse locked,
+        // actually lock the mouse the next time the window is clicked (PP_INPUTEVENT_TYPE_MOUSEDOWN).
         m_GameWantsLockedMouse = true;
-        LockMouse( m_CallbackFactory.NewCallback( &MainInstance::MouseLocked ) );
     }
     else
     {
@@ -381,7 +383,7 @@ bool MainInstance::IsMouseLocked()
     return m_SystemMouseIsLocked;
 }
 
-void MainInstance::MouseLocked(int32_t somevaluethecallbackfactorywants)
+void MainInstance::SetMouseLocked(int32_t somevaluethecallbackfactorywants)
 {
     LOGInfo( LOGTag, "Mouse locked\n" );
 

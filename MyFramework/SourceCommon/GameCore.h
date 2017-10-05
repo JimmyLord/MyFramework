@@ -64,7 +64,7 @@ enum IAPErrorCodes
 class GameCore
 {
 protected:
-    bool m_OneTimeInitWasCalled; // HACK: in android, onetimeinit *was* called in tick, this probably isn't needed anymore, but why not.
+    bool m_OneTimeInitWasCalled; // HACK: NaCl and Android builds call OneTimeInit too often, so this will ensure it doesn't get called multiple times.
 
     bool m_GLSurfaceIsValid;
 
@@ -104,6 +104,7 @@ public:
     virtual ~GameCore();
 
     // GameCore Getters
+    bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
     bool IsGLSurfaceIsValid() { return m_GLSurfaceIsValid; }
 
     float GetWindowWidth() { return m_WindowWidth; }
