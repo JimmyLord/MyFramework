@@ -180,8 +180,15 @@ void LaunchApplication(const char* appname, const char* arguments)
     wchar_t exewide[512];
     mbstowcs_s( 0, exewide, appname, 512 );
     wchar_t argswide[512];
-    mbstowcs_s( 0, argswide, arguments, 512 );
-    ShellExecute( NULL, L"open", exewide, argswide, NULL, SW_SHOWNORMAL );
+    if( arguments != 0 )
+    {
+        mbstowcs_s( 0, argswide, arguments, 512 );
+        ShellExecute( NULL, L"open", exewide, argswide, 0, SW_SHOWNORMAL );
+    }
+    else
+    {
+        ShellExecute( NULL, L"open", exewide, 0, 0, SW_SHOWNORMAL );
+    }
 #endif
 }
 
