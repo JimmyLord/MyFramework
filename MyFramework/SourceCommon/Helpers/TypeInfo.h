@@ -46,17 +46,17 @@ void RegisterClassname(const char* name);
 
 #define SetClassnameBase(name) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : false ); }
+ virtual bool IsA(const char* classname) { return( strncmp( classname, name, 8 ) == 0 ? true : false ); }
  //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : false ); }
 
 #define SetClassnameWithParent(name,parent) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : parent::IsA(classname) ); }
+ virtual bool IsA(const char* classname) { return( strncmp( classname, name, 8 ) == 0 ? true : parent::IsA(classname) ); }
  //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : parent::IsA(classname) ); }
 
 #define SetClassnameWith2Parents(name,parent1,parent2) \
  virtual const char* GetClassname() { return name; } \
- virtual bool IsA(const char* classname) { return( strcmp( classname, name ) == 0 ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
+ virtual bool IsA(const char* classname) { return( strncmp( classname, name, 8 ) == 0 ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
  //virtual bool IsA(const char* classname) { return( *(uint64_t*)classname == *(uint64_t*)name ? true : (parent1::IsA(classname) || parent2::IsA(classname)) ); }
 
 #endif
