@@ -94,7 +94,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Do()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue, false );
         m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
     }
 }
@@ -160,7 +160,7 @@ void EditorCommand_PanelWatchNumberValueChanged::Undo()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, oldvalue );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, oldvalue, false );
     }
 }
 
@@ -230,7 +230,7 @@ void EditorCommand_PanelWatchColorChanged::Do()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, oldvalue, false );
         m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
     }
 }
@@ -249,7 +249,7 @@ void EditorCommand_PanelWatchColorChanged::Undo()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0, false );
     }
 }
 
@@ -295,7 +295,7 @@ void EditorCommand_PanelWatchPointerChanged::Do()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, 0 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, m_DirectlyChanged, true, 0, false );
         m_DirectlyChanged = false; // always pass false if this isn't the first time 'Do' is called
     }
 }
@@ -311,7 +311,7 @@ void EditorCommand_PanelWatchPointerChanged::Undo()
     // this could likely be dangerous, the object might not be in focus anymore and how it handles callbacks could cause issues.
     if( m_pCallbackObj && m_pOnValueChangedCallBackFunc )
     {
-        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0 );
+        m_pOnValueChangedCallBackFunc( m_pCallbackObj, m_ControlID, false, true, 0, false );
     }
 }
 

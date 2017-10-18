@@ -164,7 +164,7 @@ void VariableProperties::Reset()
     m_pEnumStrings = 0;
     m_Type = PanelWatchType_Unknown;
     m_pCallbackObj = 0;
-    m_ValueOnLeftMouseDown = 0;
+    m_ValueOnRightMouseDown = 0;
     m_ValueChangedSinceMouseWasPressed = false;
     m_CapturedMouse = 0;
     m_StartMousePosition = wxPoint(0,0);
@@ -1289,7 +1289,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         MyAssert( false ); // if a slider is used, I'll need to retest all slider code.
         //pVar->m_CapturedMouse = true;
 
-        pVar->m_ValueOnLeftMouseDown = value;
+        pVar->m_ValueOnRightMouseDown = value;
         pVar->m_ValueChangedSinceMouseWasPressed = false;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
@@ -1301,7 +1301,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         //bool isblank =
         GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        pVar->m_ValueOnLeftMouseDown = newvalue;
+        pVar->m_ValueOnRightMouseDown = newvalue;
         pVar->m_ValueChangedSinceMouseWasPressed = false;
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
@@ -1331,10 +1331,9 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
         double newvalue, oldvalue;
         bool isblank = GetTextCtrlValueAsDouble( controlid, &newvalue, &oldvalue );
 
-        if( isblank == false && newvalue != pVar->m_ValueOnLeftMouseDown )
+        if( isblank == false && newvalue != pVar->m_ValueOnRightMouseDown )
         {
-            SetControlValueFromDouble( controlid, newvalue, pVar->m_ValueOnLeftMouseDown, true );
-            //showrightclickmenu = false;
+            SetControlValueFromDouble( controlid, newvalue, pVar->m_ValueOnRightMouseDown, true, true );
         }
 
         // if the value changed, then don't show the right click menu.
@@ -1395,7 +1394,7 @@ void PanelWatch::OnMouseMove(wxMouseEvent& event)
 
                 if( newvalue != oldvalue )
                 {
-                    SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+                    SetControlValueFromDouble( controlid, newvalue, oldvalue, false, true );
                 }
             }
         }
@@ -1434,7 +1433,7 @@ void PanelWatch::OnMouseLeftControl(wxMouseEvent& event)
                 newvalue += direction;
                 pVar->m_ValueChangedSinceMouseWasPressed = true;
 
-                SetControlValueFromDouble( controlid, newvalue, oldvalue, false );
+                SetControlValueFromDouble( controlid, newvalue, oldvalue, false, true );
             }
 
             pVar->GetTextCtrl()->WarpPointer( pVar->m_StartMousePosition.x, pVar->m_StartMousePosition.y );
@@ -1454,7 +1453,7 @@ void PanelWatch::OnClickStaticText(wxMouseEvent& event)
     VariableProperties* pVar = &m_pVariables[controlid];
 
     if( pVar->m_pOnValueChangedCallbackFunc )
-        pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
+        pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0, false );
 }
 
 void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
@@ -1612,7 +1611,7 @@ bool PanelWatch::GetTextCtrlValueAsDouble(int controlid, double* valuenew, doubl
     return false;//isblank;
 }
 
-void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging)
+void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging, bool valuewaschangedbydragging)
 {
     VariableProperties* pVar = &m_pVariables[controlid];
 
@@ -1683,14 +1682,14 @@ void PanelWatch::SetControlValueFromDouble(int controlid, double valuenew, doubl
     
                 // call the parent object to say it's value changed... finished changing.
                 if( pVar->m_pOnValueChangedCallbackFunc )
-                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, valueold );
+                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, valueold, valuewaschangedbydragging );
             }
         }
         else
         {
             // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
             if( pVar->m_pCallbackObj && pVar->m_pOnValueChangedCallbackFunc )
-                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, valueold );
+                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, valueold, valuewaschangedbydragging );
         }
     }
 
@@ -1745,7 +1744,7 @@ void PanelWatch::OnTextCtrlChanged(int controlid)
         {
             // TODO: if typed into a pointer box, deal with it... along with undo/redo.
             if( pVar->m_pOnValueChangedCallbackFunc )
-                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
+                pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0, false );
         }
         else
         {
@@ -1835,12 +1834,12 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     {
         // call the parent object to say it's value changed... slider is still held, so value isn't finished changing.
         if( pVar->m_pCallbackObj && pVar->m_pOnValueChangedCallbackFunc )
-            pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, 0 );
+            pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, false, 0, true );
 
         if( addundocommand )
         {
             double valuenew = value;
-            double valueold = pVar->m_ValueOnLeftMouseDown;
+            double valueold = pVar->m_ValueOnRightMouseDown;
 
             if( pVar->m_Type == PanelWatchType_Float ||
                 pVar->m_Type == PanelWatchType_Double ) //||
@@ -1860,7 +1859,7 @@ void PanelWatch::OnSliderChanged(int controlid, int value, bool addundocommand)
     
                 // call the parent object to say it's value changed... finished changing.
                 if( pVar->m_pOnValueChangedCallbackFunc )
-                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0 );
+                    pVar->m_pOnValueChangedCallbackFunc( pVar->m_pCallbackObj, controlid, true, true, 0, true );
             }
         }
     }

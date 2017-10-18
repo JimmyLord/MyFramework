@@ -80,7 +80,7 @@ extern PanelWatch* g_pPanelWatch;
 
 typedef void (*PanelWatchCallback)(void*);
 typedef void (*PanelWatchCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
-typedef void (*PanelWatchCallbackValueChanged)(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue);
+typedef void (*PanelWatchCallbackValueChanged)(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue, bool valuewaschangedbydragging);
 typedef void (*PanelWatchCallbackRightClick)(void* pObjectPtr, int controlid);
 typedef void (*PanelWatchCallbackButtonPressed)(void* pObjectPtr, int buttonid);
 
@@ -123,7 +123,7 @@ struct VariableProperties
     Vector4Int m_Rect_XYWH;
 
     // using with right mouse now, used by text controls to change numbers.
-    double m_ValueOnLeftMouseDown;
+    double m_ValueOnRightMouseDown;
     bool m_ValueChangedSinceMouseWasPressed;
     wxPoint m_StartMousePosition;
     wxPoint m_LastMousePosition;
@@ -213,7 +213,7 @@ public:
     void ClearAllVariables();
 
     bool GetTextCtrlValueAsDouble(int controlid, double* valuenew, double* valueold); // returns true if blank
-    void SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging);
+    void SetControlValueFromDouble(int controlid, double valuenew, double valueold, bool finishedchanging, bool valuewaschangedbydragging);
 
     int AddVariableOfTypeRange(PanelWatch_Types type, const char* name, void* pVar, float min, float max, void* pCallbackObj, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc, bool addcontrols);
     int AddVariableOfTypeDesc(PanelWatch_Types type, const char* name, void* pVar, const char* pDescription, void* pCallbackObj, PanelWatchCallbackDropTarget pOnDropCallBackFunc, PanelWatchCallbackValueChanged pOnValueChangedCallBackFunc, PanelWatchCallbackButtonPressed pOnButtonPressedCallbackFunc, PanelWatchCallbackRightClick pRightClickCallbackFunc);
