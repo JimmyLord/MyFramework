@@ -16,37 +16,37 @@
 
 PanelWatch* g_pPanelWatch = 0;
 
-class wxCheckListComboPopup
+class MywxCheckListComboPopup
 : public wxCheckListBox
 , public wxComboPopup
 {
 public:
-    // Initialize member variables
+    // Initialize member variables.
     virtual void Init()
     {
     }
 
-    // Create popup control
+    // Create popup control.
     virtual bool Create(wxWindow* parent)
     {
         return wxCheckListBox::Create( parent, wxID_ANY, wxPoint(0,0), wxDefaultSize );
     }
 
-    // Return pointer to the created control
+    // Return pointer to the created control.
     virtual wxWindow *GetControl() { return this; }
 
-    // Translate string into a list selection
+    // Translate string into a list selection.
     virtual void SetStringValue(const wxString& s)
     {
     }
 
-    // Get list selection as a string
+    // Get list selection as a string.
     virtual wxString GetStringValue() const
     {
         return wxEmptyString;
     }
 
-    // Do mouse hot-tracking (which is typical in list popups)
+    // Do mouse hot-tracking (which is typical in list popups).
     void OnMouseMove(wxMouseEvent& event)
     {
         // Move selection to cursor
@@ -57,15 +57,18 @@ public:
         event.Skip();
     }
 
-    // On mouse left up, set the value and close the popup
+    // On mouse left up, set the value and send an event.
     void OnMouseClick(wxMouseEvent& event)
     {
-        int value = HitTest( event.GetPosition() );
+        int itemselected = HitTest( event.GetPosition() );
 
-        if( wxCheckListBox::IsChecked( value ) )
-            wxCheckListBox::Check( value, false );
+        if( wxCheckListBox::IsChecked( itemselected ) )
+            wxCheckListBox::Check( itemselected, false );
         else
-            wxCheckListBox::Check( value, true );
+            wxCheckListBox::Check( itemselected, true );
+
+        // Wasn't needed in older versions of wxWidgets, but manually send an event that the checkboxes have changed.
+        SendEvent( itemselected );
 
         event.Skip();
     }
@@ -74,9 +77,9 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-BEGIN_EVENT_TABLE(wxCheckListComboPopup, wxListBox)
-    EVT_MOTION(wxCheckListComboPopup::OnMouseMove)
-    EVT_LEFT_UP(wxCheckListComboPopup::OnMouseClick)
+BEGIN_EVENT_TABLE(MywxCheckListComboPopup, wxListBox)
+    EVT_MOTION(MywxCheckListComboPopup::OnMouseMove)
+    EVT_LEFT_UP(MywxCheckListComboPopup::OnMouseClick)
 END_EVENT_TABLE()
 
 PanelWatchControlInfo g_PanelWatchControlInfo[PanelWatchType_NumTypes] = // ADDING_NEW_WatchVariableType
@@ -179,6 +182,7 @@ void VariableProperties::Reset()
 PanelWatch::PanelWatch(wxFrame* parentframe, CommandStack* pCommandStack)
 : wxScrolledWindow( parentframe, wxID_ANY, wxDefaultPosition, wxSize(300, 600), wxTAB_TRAVERSAL | wxNO_BORDER, "Watch" )
 {
+    m_MouseIsCaptured = false;
     m_NeedsRefresh = false;
     m_RefreshCallbackObject = 0;
     m_RefreshCallbackFunc = 0;
@@ -757,11 +761,13 @@ wxControl* PanelWatch::GetControlOfType(PanelWatchControlTypes type)
         {
             pControlHandle = MyNew wxComboCtrl( this, wxID_ANY, wxEmptyString );
 
-            wxCheckListComboPopup* pCheckListComboPopup = new wxCheckListComboPopup();
+            MywxCheckListComboPopup* pCheckListComboPopup = new MywxCheckListComboPopup();
             ((wxComboCtrl*)pControlHandle)->SetPopupControl( pCheckListComboPopup );
-    
-            // if control gets focus, stop updates.
+
+            // Handle changes to checkboxes
             pControlHandle->Connect( wxEVT_CHECKLISTBOX, wxCommandEventHandler(PanelWatch::OnComboCtrlChanged), 0, this );
+
+            // If control gets focus, stop updates.
             pControlHandle->Connect( wxEVT_SET_FOCUS, wxFocusEventHandler(PanelWatch::OnSetFocus), 0, this );
             pControlHandle->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler(PanelWatch::OnKillFocus), 0, this );
 
@@ -1023,8 +1029,8 @@ void PanelWatch::AddControlsForVariable(const char* name, int variablenum, int c
         pComboCtrl->SetInitialSize( wxSize(g_PanelWatchControlInfo[type].comboctrlwidth, TextCtrlHeight) );
         pComboCtrl->SetWindowStyle( wxTE_PROCESS_ENTER );
 
-        wxCheckListComboPopup* pCheckListComboPopup = (wxCheckListComboPopup*)pComboCtrl->GetPopupControl();
-        MyAssert( dynamic_cast<wxCheckListComboPopup*>( pCheckListComboPopup ) != 0 );
+        MywxCheckListComboPopup* pCheckListComboPopup = (MywxCheckListComboPopup*)pComboCtrl->GetPopupControl();
+        MyAssert( dynamic_cast<MywxCheckListComboPopup*>( pCheckListComboPopup ) != 0 );
 
         pCheckListComboPopup->SetId( variablenum );
         pCheckListComboPopup->Set( m_pVariables[variablenum].m_NumEnumTypes, m_pVariables[variablenum].m_pEnumStrings );
@@ -1308,6 +1314,7 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
 
         pVar->GetTextCtrl()->CaptureMouse();
         pVar->m_CapturedMouse = true;
+        m_MouseIsCaptured = true;
     }
 }
 
@@ -1326,6 +1333,7 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
         {
             pVar->GetTextCtrl()->ReleaseMouse();
             pVar->m_CapturedMouse = false;
+            m_MouseIsCaptured = false;
         }
 
         double newvalue, oldvalue;
@@ -1469,7 +1477,8 @@ void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
 
 void PanelWatch::Tick(double TimePassed)
 {
-    if( m_NeedsRefresh )
+    // Don't allow refresh if mouse if captured by any given control.
+    if( m_NeedsRefresh && m_MouseIsCaptured == false )
     {
         int y = this->GetScrollPos( wxVERTICAL );
         int x = this->GetScrollPos( wxHORIZONTAL );
@@ -2044,7 +2053,7 @@ void PanelWatch::UpdatePanel(int controltoupdate)
 wxString PanelWatch::GetFlagsAsString(int variablenum)
 {
     wxComboCtrl* pComboCtrl = m_pVariables[variablenum].GetComboCtrl();
-    wxCheckListComboPopup* pCheckListComboPopup = (wxCheckListComboPopup*)pComboCtrl->GetPopupControl();
+    MywxCheckListComboPopup* pCheckListComboPopup = (MywxCheckListComboPopup*)pComboCtrl->GetPopupControl();
 
     wxString string;
 

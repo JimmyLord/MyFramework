@@ -147,6 +147,7 @@ protected:
 
     wxTimer* m_pTimer;
 
+    bool m_MouseIsCaptured;
     bool m_NeedsRefresh; // needed to avoid corruption if deleting controls while in that control's callback.
     void* m_RefreshCallbackObject;
     PanelWatchCallback m_RefreshCallbackFunc;
