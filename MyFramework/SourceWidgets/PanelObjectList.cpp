@@ -666,6 +666,20 @@ void* PanelObjectList::GetObject(wxTreeItemId id)
     return pData->m_pObject;
 }
 
+void* PanelObjectList::GetUserData(wxTreeItemId id)
+{
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    return pData->m_pUserData;
+}
+
+void PanelObjectList::SetUserData(wxTreeItemId id, void* pUserData)
+{
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    pData->m_pUserData = pUserData;
+}
+
 void* PanelObjectList::Tree_GetParentObject(void* pObject)
 {
     wxTreeItemId id = FindObject( pObject );

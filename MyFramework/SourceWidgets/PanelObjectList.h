@@ -38,6 +38,7 @@ public:
     TreeItemDataGenericObjectInfo()
     {
         m_pObject = 0;
+        m_pUserData = 0;
 
         m_pLeftClickFunction = 0;
         m_pRightClickFunction = 0;
@@ -53,6 +54,8 @@ public:
     }
 
     void* m_pObject;
+    void* m_pUserData;
+
     PanelObjectListObjectCallbackLeftClick m_pLeftClickFunction;
     PanelObjectListObjectCallbackRightClick m_pRightClickFunction;
     PanelObjectListObjectCallback m_pDragFunction;
@@ -142,6 +145,10 @@ public:
     void RemoveAllObjects();
     void RemoveObject(void* pObject);
     void* GetObject(wxTreeItemId id);
+
+    // Get and Set user data on a tree node.
+    void* GetUserData(wxTreeItemId id);
+    void SetUserData(wxTreeItemId id, void* pUserData);
 
     void* Tree_GetParentObject(void* pObject);
     wxTreeItemId Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemId idprevious, bool makechildofprevious);
