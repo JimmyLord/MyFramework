@@ -174,7 +174,7 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
     if( !g_AppAlive )
         return;
 
-    if( g_pGameCore->m_OneTimeInitWasCalled == false )
+    if( g_pGameCore->HasOneTimeInitBeenCalled() == false )
         g_pGameCore->OneTimeInit();
 
     static long lastmills = currenttimemilliseconds;

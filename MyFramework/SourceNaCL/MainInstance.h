@@ -59,7 +59,7 @@ public:
     // MouseLock functions
     void SetMouseLock(bool lock);
     bool IsMouseLocked();
-    void MouseLocked(int32_t somevaluethecallbackfactorywants);
+    void SetMouseLocked(int32_t somevaluethecallbackfactorywants);
     virtual void MouseLockLost();
 
 private:

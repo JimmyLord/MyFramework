@@ -22,6 +22,6 @@ MyFileObject* RequestFile(const char* filename);
 
 char* LoadFile(const char* filename, int* length = 0);
 GLuint LoadTexture(const char* filename);
-GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
+//GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
 
 #endif //__TEXTURELOADER_H__

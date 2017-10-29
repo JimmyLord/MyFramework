@@ -218,6 +218,8 @@ public:
     inline Vector2Int operator -() const { return Vector2Int(-this->x, -this->y); }
     inline Vector2Int operator +(const Vector2Int& o) const { return Vector2Int(this->x + o.x, this->y + o.y); }
     inline Vector2Int operator -(const Vector2Int& o) const { return Vector2Int(this->x - o.x, this->y - o.y); }
+
+    int& operator[] (int i) { MyAssert(i>=0 && i<2); return *(&x + i); }
 };
 
 inline Vector2Int operator *(int scalar, const Vector2Int& vector) { return Vector2Int(scalar * vector.x, scalar * vector.y); }
@@ -316,6 +318,8 @@ public:
     inline Vector4Int operator -() const { return Vector4Int(-this->x, -this->y, -this->z, -this->w); }
     inline Vector4Int operator +(const Vector4Int& o) const { return Vector4Int(this->x + o.x, this->y + o.y, this->z + o.z, this->w + o.w); }
     inline Vector4Int operator -(const Vector4Int& o) const { return Vector4Int(this->x - o.x, this->y - o.y, this->z - o.z, this->w - o.w); }
+
+    int& operator[] (int i) { MyAssert(i>=0 && i<4); return *(&x + i); }
 };
 
 inline Vector4Int operator *(int scalar, const Vector4Int& vector) { return Vector4Int(scalar * vector.x, scalar * vector.y, scalar * vector.z, scalar * vector.w); }

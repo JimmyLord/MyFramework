@@ -63,8 +63,8 @@ enum IAPErrorCodes
 
 class GameCore
 {
-public:
-    bool m_OneTimeInitWasCalled; // HACK: in android, onetimeinit *was* called in tick, this probably isn't needed anymore, but why not.
+protected:
+    bool m_OneTimeInitWasCalled; // HACK: NaCl and Android builds call OneTimeInit too often, so this will ensure it doesn't get called multiple times.
 
     bool m_GLSurfaceIsValid;
 
@@ -91,10 +91,8 @@ public:
     float m_TimeSinceGameStarted;
     float m_TimePassedUnpausedLastFrame;
 
-protected:
     MyJobManager* m_pMyJobManager;
 
-public:
     SoundPlayer* m_pSoundPlayer;
     SoundManager* m_pSoundManager;
 #if MYFW_BLACKBERRY
@@ -105,6 +103,30 @@ public:
     GameCore();
     virtual ~GameCore();
 
+    // GameCore Getters
+    bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
+    bool IsGLSurfaceIsValid() { return m_GLSurfaceIsValid; }
+
+    float GetWindowWidth() { return m_WindowWidth; }
+    float GetWindowHeight() { return m_WindowHeight; }
+    bool HasFocus() { return m_HasFocus; }
+    bool IsSettled() { return m_Settled; }
+    void SetIsNotSettled() { m_Settled = false; }
+
+    void RequestKeyboardOpen() { m_KeyboardOpenRequested = true; }
+    void RequestKeyboardClose() { m_KeyboardCloseRequested = true; }
+
+    int GetLastInputMethodUsed() { return m_LastInputMethodUsed; }
+
+    float GetTimePassedUnpausedLastFrame() { return m_TimePassedUnpausedLastFrame; }
+
+    SoundPlayer* GetSoundPlayer() { return m_pSoundPlayer; }
+    SoundManager* GetSoundManager() { return m_pSoundManager; }
+#if MYFW_BLACKBERRY
+    MediaPlayer* GetMediaPlayer() { return m_pMediaPlayer; }
+#endif
+
+    // GameCore Methods
     virtual void InitializeManagers();
 
     virtual void OneTimeInit();

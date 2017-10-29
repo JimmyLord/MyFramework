@@ -38,7 +38,6 @@ public:
 
     TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
     TextureDefinition* CreateTexture(MyFileObject* pFile, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
-    GLuint CreateTextureFromBuffer(TextureDefinition* texturedef);
     TextureDefinition* FindTexture(const char* texturefilename); // Does not add to the TextureDefinition ref count.
     TextureDefinition* FindTexture(const MyFileObject* pFile); // Does not add to the TextureDefinition ref count.
 

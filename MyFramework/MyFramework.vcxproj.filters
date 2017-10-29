@@ -76,9 +76,6 @@
     <Filter Include="Source-Platform\Source - Widgets">
       <UniqueIdentifier>{cc0454a4-e98f-4d9d-94f0-46cf01b59ad5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\LodePNG">
-      <UniqueIdentifier>{f92fa0be-7d0b-40eb-a5e6-fd592fc96666}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source-Platform\Source - Android\Java">
       <UniqueIdentifier>{376a5dee-0e32-4b6c-a198-072fa12798cb}</UniqueIdentifier>
     </Filter>
@@ -1012,5 +1009,6 @@
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\IAPManager.java">
       <Filter>Source-Platform\Source - Android\Java</Filter>
     </None>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

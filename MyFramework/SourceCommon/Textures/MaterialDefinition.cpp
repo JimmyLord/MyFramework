@@ -302,7 +302,7 @@ void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
         g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroupInstanced->GetFile() );
 
     if( m_pTextureColor )
-        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->m_pFile );
+        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->GetFile() );
 }
 
 void MaterialDefinition::SetName(const char* name)
@@ -592,7 +592,7 @@ void MaterialDefinition::ExportExposedUniformValues(cJSON* jMaterial)
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    cJSON_AddStringToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_pTexture->m_Filename );
+                    cJSON_AddStringToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_pTexture->GetFilename() );
                     break;
 
                 case ExposedUniformType_NotSet:
@@ -656,7 +656,7 @@ bool MaterialDefinition::IsTransparent()
 #if MYFW_USING_WX
 bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
 {
-    if( GetTextureColor() && GetTextureColor()->m_pFile == pFile )
+    if( GetTextureColor() && GetTextureColor()->GetFile() == pFile )
     {
         return true;
     }
@@ -674,7 +674,7 @@ bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
             {
                 if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
                 {
-                    if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->m_pFile == pFile )
+                    if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->GetFile() == pFile )
                     {
                         return true;
                     }
@@ -816,7 +816,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         if( m_pShaderGroupInstanced )
             cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->GetFullPath() );
         if( m_pTextureColor )
-            cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->m_Filename );
+            cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->GetFilename() );
 
         ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
         cJSONExt_AddFloatArrayToObject( jMaterial, "ColorAmbient", &tempcolor.r, 4 );
@@ -938,7 +938,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // S
         }
 
         // update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->GetFilename();
     }
 
     if( pDropItem->m_Type == DragAndDropType_TextureDefinitionPointer )
@@ -973,7 +973,7 @@ void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // S
         }
 
         // Update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pNewTexture->m_Filename;
+        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pNewTexture->GetFilename();
     }
 }
 
@@ -1044,7 +1044,7 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
 
         desc = "no color texture";
         if( m_pTextureColor )
-            desc = m_pTextureColor->m_Filename;
+            desc = m_pTextureColor->GetFilename();
         g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture, 0, MaterialDefinition::StaticOnRightClickTexture );
 
         g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
@@ -1094,7 +1094,7 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
                 case ExposedUniformType_Sampler2D:
                     m_UniformValues[i].m_ControlID = g_pPanelWatch->AddPointerWithDescription(
                         tempname, m_UniformValues[i].m_pTexture,
-                        m_UniformValues[i].m_pTexture ? m_UniformValues[i].m_pTexture->m_Filename : "Texture Not Set",
+                        m_UniformValues[i].m_pTexture ? m_UniformValues[i].m_pTexture->GetFilename() : "Texture Not Set",
                         this, MaterialDefinition::StaticOnDropTexture, 0, 0 );                    
                     break;
 

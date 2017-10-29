@@ -33,6 +33,30 @@ public:
         else
             m_Radius = m_HalfSize.y > m_HalfSize.z ? m_HalfSize.y : m_HalfSize.z;
     }
+
+    bool operator ==(const MyAABounds o)
+    {
+        if( m_Center != o.m_Center )
+            return false;
+        if( m_HalfSize != o.m_HalfSize )
+            return false;
+        if( fequal( m_Radius, o.m_Radius ) )
+            return false;
+
+        return true;
+    }
+
+    bool operator !=(const MyAABounds o)
+    {
+        if( m_Center != o.m_Center )
+            return true;
+        if( m_HalfSize != o.m_HalfSize )
+            return true;
+        if( fequal( m_Radius, o.m_Radius ) == false )
+            return true;
+
+        return false;
+    }
 };
 
 #endif //__MyAABounds_H__

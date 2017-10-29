@@ -130,7 +130,7 @@ void SpriteSheet::Tick(double TimePassed)
         return;
 
     // parse json and create array of sprites.
-    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->m_FullyLoaded )
+    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->IsFullyLoaded() )
     {
         cJSON* root = cJSON_Parse( m_pJSONFile->GetBuffer() );
 

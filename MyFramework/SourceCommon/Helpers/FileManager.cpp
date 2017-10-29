@@ -13,11 +13,6 @@
 #include "../../SourceNaCL/MainInstance.h"
 #endif //MYFW_NACL
 
-#pragma warning( push )
-#pragma warning( disable : 4996 )
-#include "../../Libraries/LodePNG/lodepng.h"
-#pragma warning( pop )
-
 FileManager* g_pFileManager = 0;
 
 FileManager::FileManager()
@@ -637,42 +632,3 @@ MyFileObject* RequestFile(const char* filename)
     return g_pFileManager->RequestFile( filename );
 }
 #endif
-
-GLuint LoadTextureFromMemory(TextureDefinition* texturedef)
-{
-    //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef(%d)", texturedef );
-    //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef->m_pFile(%d)", texturedef->m_pFile );
-    //LOGInfo( LOGTag, "LoadTextureFromMemory texturedef->m_pFile->GetBuffer()(%d)", texturedef->m_pFile->m_pBuffer );
-
-    unsigned char* buffer = (unsigned char*)texturedef->m_pFile->GetBuffer();
-    int length = texturedef->m_pFile->GetFileLength();
-
-    unsigned char* pngbuffer;
-    unsigned int width, height;
-
-    unsigned int error = lodepng_decode32( &pngbuffer, &width, &height, buffer, length );
-    MyAssert( error == 0 );
-
-    GLuint texhandle = 0;
-    glGenTextures( 1, &texhandle );
-    MyAssert( texhandle != 0 );
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, texhandle );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pngbuffer );
-    checkGlError( "glTexImage2D" );
-    free( pngbuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter ); //LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter ); //GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texturedef->m_WrapS );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texturedef->m_WrapT );
-
-    texturedef->m_Width = width;
-    texturedef->m_Height = height;
-
-    return texhandle;
-}

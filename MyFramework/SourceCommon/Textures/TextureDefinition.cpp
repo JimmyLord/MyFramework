@@ -13,6 +13,11 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
+#pragma warning( push )
+#pragma warning( disable : 4996 )
+#include "../../Libraries/LodePNG/lodepng.h"
+#pragma warning( pop )
+
 TextureDefinition::TextureDefinition(bool freeonceloaded)
 : m_FreeFileFromRamWhenTextureCreated(freeonceloaded)
 {
@@ -116,4 +121,49 @@ void TextureDefinition::Invalidate(bool cleanglallocs)
     }
 
     m_TextureID = 0;
+}
+
+void TextureDefinition::FinishLoadingFileAndGenerateTexture()
+{
+    //LOGInfo( LOGTag, "FinishLoadingFileAndGenerateTexture texturedef(%d)", this );
+    //LOGInfo( LOGTag, "FinishLoadingFileAndGenerateTexture texturedef->m_pFile(%d)", this->m_pFile );
+    //LOGInfo( LOGTag, "FinishLoadingFileAndGenerateTexture texturedef->m_pFile->GetBuffer()(%d)", this->m_pFile->m_pBuffer );
+
+    MyFileObject* pFile = GetFile();
+
+    MyAssert( pFile );
+    MyAssert( pFile->IsFinishedLoading() == true );
+    MyAssert( pFile->GetBuffer() != 0 );
+
+    unsigned char* buffer = (unsigned char*)pFile->GetBuffer();
+    int length = pFile->GetFileLength();
+
+    unsigned char* pngbuffer;
+    unsigned int width, height;
+
+    unsigned int error = lodepng_decode32( &pngbuffer, &width, &height, buffer, length );
+    MyAssert( error == 0 );
+
+    GLuint texhandle = 0;
+    glGenTextures( 1, &texhandle );
+    MyAssert( texhandle != 0 );
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, texhandle );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pngbuffer );
+    checkGlError( "glTexImage2D" );
+    free( pngbuffer );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MinFilter ); //LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MagFilter ); //GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_WrapS );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_WrapT );
+
+    m_Width = width;
+    m_Height = height;
+
+    m_TextureID = texhandle;
 }

@@ -141,6 +141,8 @@ public:
     MainFrame(wxWindow* parent);
     ~MainFrame();
 
+    MainGLCanvas* GetGLCanvas() { return m_pGLCanvas; }
+
     virtual void InitFrame();
     virtual void AddPanes();
     virtual bool UpdateAUIManagerAndLoadPerspective(); // returns true if valid window layout was set.

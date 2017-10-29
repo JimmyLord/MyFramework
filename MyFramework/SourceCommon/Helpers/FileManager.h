@@ -21,7 +21,6 @@ MySaveFileObject* CreatePlatformSpecificSaveFile();
 #if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
 MyFileObject* RequestFile(const char* filename);
 #endif
-GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
 
 typedef void (*FileManager_OnFileUpdated_CallbackFunction)(MyFileObject* pFile);
 typedef void (*FileManager_Editor_OnFileUnloaded_CallbackFunction)(void* pObject, MyFileObject* pFile);

@@ -49,8 +49,11 @@ public:
 
 class SoundCue : public CPPListNode, public RefCount
 {
-public:
+    friend class SoundManager;
+
+protected:
     bool m_FullyLoaded;
+    bool m_UnsavedChanges;
 
     char m_Name[MAX_SOUND_CUE_NAME_LEN]; // if [0] == 0, cue won't save to disk.
     MyFileObject* m_pFile;
@@ -70,7 +73,12 @@ public:
 
     void ImportFromFile();
 
+    MyFileObject* GetFile() { return m_pFile; }
+
     void SetName(const char* name);
+    const char* GetName() { return m_Name; }
+
+    bool IsFullyLoaded() { return m_FullyLoaded; }
 
 public:
 #if MYFW_USING_WX

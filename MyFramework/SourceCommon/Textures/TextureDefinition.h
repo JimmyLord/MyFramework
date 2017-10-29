@@ -17,12 +17,13 @@ class FBODefinition;
 class TextureDefinition : public CPPListNode, public RefCount
 {
     friend class TextureManager;
+    friend class FBODefinition;
 
 protected:
     bool m_FreeFileFromRamWhenTextureCreated;
     bool m_ManagedByTextureManager;
 
-public:
+protected:
     bool m_FullyLoaded;
 
     char m_Filename[MAX_PATH];
@@ -44,9 +45,24 @@ public:
     TextureDefinition(bool freeonceloaded = false);
     virtual ~TextureDefinition();
 
+    // TextureDefinition Getters
+    bool IsFullyLoaded() { return m_FullyLoaded; }
+
+    const char* GetFilename() { return (const char*)m_Filename; }
+    MyFileObject* GetFile() { return m_pFile; }
+    GLuint GetTextureID() { return m_TextureID; }
+
+    unsigned int GetMemoryUsed() { return m_MemoryUsed; }
+
+    int GetWidth() { return m_Width; }
+    int GetHeight() { return m_Height; }
+
+    // TextureDefinition Methods
     bool QueryFreeWhenCreated() { return m_FreeFileFromRamWhenTextureCreated; }
     
     void Invalidate(bool cleanglallocs);
+
+    void FinishLoadingFileAndGenerateTexture();
 
 public:
 #if MYFW_USING_WX

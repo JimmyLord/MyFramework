@@ -17,6 +17,7 @@
 SoundCue::SoundCue()
 {
     m_FullyLoaded = false;
+    m_UnsavedChanges = false;
 
     m_Name[0] = 0;
     m_pFile = 0;
@@ -37,6 +38,7 @@ void SoundCue::Release()
         m_pSourcePool->ReturnObjectToPool( this );
 
         m_FullyLoaded = false;
+        m_UnsavedChanges = false;
         m_Name[0] = 0;
         SAFE_RELEASE( m_pFile );
         m_pSourcePool = 0;
@@ -85,13 +87,14 @@ void SoundCue::ImportFromFile()
                     MyAssert( jPath->valuestring[0] != 0 );
                     if( jPath )
                     {
-                        g_pGameCore->m_pSoundManager->AddSoundToCue( this, jPath->valuestring );
+                        g_pGameCore->GetSoundManager()->AddSoundToCue( this, jPath->valuestring );
                     }
                 }
             }
         }
 
         m_FullyLoaded = true;
+        m_UnsavedChanges = false;
     }
 
     cJSON_Delete( jRoot );
@@ -133,6 +136,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         return;
 
     m_FullyLoaded = true;
+    m_UnsavedChanges = false;
 
     char filename[MAX_PATH];
 
@@ -250,7 +254,7 @@ void SoundCue::OnRightClick(wxTreeItemId treeid)
     m_TreeIDRightClicked = treeid;
 
     menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
-    if( m_RefCount == g_pGameCore->m_pSoundManager->m_NumRefsPlacedOnSoundCueBySystem )
+    if( m_RefCount == g_pGameCore->GetSoundManager()->m_NumRefsPlacedOnSoundCueBySystem )
     {
         menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
     }
@@ -285,7 +289,7 @@ void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
 
     case RightClick_Unload:
         {
-            SoundManager* pSoundManager = g_pGameCore->m_pSoundManager;
+            SoundManager* pSoundManager = g_pGameCore->GetSoundManager();
 
             MyAssert( pSoundCue && pSoundCue->GetRefCount() == pSoundManager->m_NumRefsPlacedOnSoundCueBySystem );
 
@@ -373,7 +377,7 @@ void SoundManager::Tick()
 #endif
         }
 
-        if( pCue->m_FullyLoaded )
+        if( pCue->IsFullyLoaded() )
         {
             m_Cues.MoveTail( pCue );
         }
@@ -487,7 +491,7 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
     // TODO: fix
     SoundObject* pSoundObject = 0;
 #else
-    SoundObject* pSoundObject = g_pGameCore->m_pSoundPlayer->LoadSound( fullpath );
+    SoundObject* pSoundObject = g_pGameCore->GetSoundPlayer()->LoadSound( fullpath );
 #endif
 
     if( pSoundObject )
@@ -503,6 +507,8 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 #else
         pCue->m_pSoundObjects.Add( pSoundObject );
 #endif //MYFW_USING_WX
+
+        pCue->m_UnsavedChanges = true;
     }
 }
 
@@ -529,6 +535,8 @@ void SoundManager::RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject)
 #else
     pCue->m_pSoundObjects.Remove_MaintainOrder( pSoundObject );
 #endif
+
+    pCue->m_UnsavedChanges = true;
 }
 
 SoundCue* SoundManager::FindCueByName(const char* name)
@@ -601,7 +609,7 @@ int SoundManager::PlayCue(SoundCue* pCue)
     int randindex = rand()%pCue->m_pSoundObjects.size();
 
     SoundObject* pSoundObject = (SoundObject*)pCue->m_pSoundObjects[randindex];
-    return g_pGameCore->m_pSoundPlayer->PlaySound( pSoundObject );
+    return g_pGameCore->GetSoundPlayer()->PlaySound( pSoundObject );
 }
 
 void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback)
@@ -635,7 +643,7 @@ void SoundManager::SaveAllCues(bool saveunchanged)
     {
         SoundCue* pCue = (SoundCue*)pNode;
 
-        //if( pCue->m_UnsavedChanges || saveunchanged )
+        if( pCue->m_UnsavedChanges || saveunchanged )
         {
             pCue->SaveSoundCue( 0 );
         }
@@ -767,7 +775,7 @@ void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
                 }
 
                 // Add each wav.
-                g_pGameCore->m_pSoundManager->AddSoundToCue( pNewCue, relativepath );
+                g_pGameCore->GetSoundManager()->AddSoundToCue( pNewCue, relativepath );
             }
 
             if( strcmp( extension, ".mycue" ) == 0 )

@@ -12,6 +12,18 @@ Currently supports the following platforms:
 - Emscripten
 - Windows phone 8 (not maintained for years)
 
+3rd party libraries:
+- Box2D (github.com/erincatto/Box2D)
+- cJSON (github.com/DaveGamble/cJSON)
+- Cotire (github.com/sakra/cotire)
+- Expression Evaluator (strchr.com/expression_evaluator)
+- LodePNG (github.com/lvandeve/lodepng)
+- myrand (bedaux.net/mtrand)
+- OpenAL (www.openal.org)
+- pthreads-w32 (www.sourceware.org/pthreads-win32)
+- Simplex Noise (staffwww.itn.liu.se/~stegu/simplexnoise)
+- wxWidgets (github.com/wxWidgets/wxWidgets)
+
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:
 
 Windows

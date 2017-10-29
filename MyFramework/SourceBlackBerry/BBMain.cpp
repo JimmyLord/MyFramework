@@ -353,7 +353,7 @@ int bbmain(const char* UUID)
 
     double lasttime = MyTime_GetSystemTime();
 
-    g_pGameCore->m_pMediaPlayer->StartUpMediaPlayer(); // has to come after g_pGameCore->OneTimeInit();
+    g_pGameCore->GetMediaPlayer()->StartUpMediaPlayer(); // has to come after g_pGameCore->OneTimeInit();
 
 #if MYFW_BLACKBERRY10
     g_pIAPManager = MyNew IAPManager();
@@ -373,7 +373,7 @@ int bbmain(const char* UUID)
         while( true )
         {
             int timeout = 0;
-            if( g_pGameCore->m_HasFocus == false || g_pGameCore->m_Settled == true )
+            if( g_pGameCore->HasFocus() == false || g_pGameCore->IsSettled() == true )
                 timeout = -1;
 
             StoreOldKeyHeldStateAndClearCurrent(); // part of hack to get keyheld messages.
@@ -384,14 +384,14 @@ int bbmain(const char* UUID)
 
             //// deal with the payment manager.
             //if( g_pIAPManager->Tick() )
-            //    g_pGameCore->m_Settled = false;
+            //    g_pGameCore->IsSettled() = false;
 
             rc = bps_get_event( &event, timeout );
             MyAssert( rc == BPS_SUCCESS );
 
             if( event )
             {
-                g_pGameCore->m_Settled = false;
+                g_pGameCore->SetIsNotSettled();
 
                 int domain = bps_event_get_domain( event );
 
@@ -434,7 +434,7 @@ int bbmain(const char* UUID)
         // send a key held message for each key held since previous frame.
         GenerateKeyHeldMessages();
 
-        if( g_pGameCore->m_HasFocus )
+        if( g_pGameCore->HasFocus() )
         {
             //LOGInfo( LOGTag, "timepassed - %f\n", (float)timepassed );
             g_pGameCore->OnDrawFrameStart( 0 );
@@ -447,7 +447,7 @@ int bbmain(const char* UUID)
         //LOGInfo( LOGTag, "swap\n" );
     }
 
-    g_pGameCore->m_pMediaPlayer->ShutdownMediaPlayer();
+    g_pGameCore->GetMediaPlayer()->ShutdownMediaPlayer();
 
     //Stop requesting events from libscreen
     screen_stop_events( screen_cxt );

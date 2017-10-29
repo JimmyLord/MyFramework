@@ -370,6 +370,7 @@ void PanelObjectList::SelectObject(void* pObject)
     if( pObject == 0 )
     {
         m_pTree_Objects->UnselectAll();
+        m_pTree_Objects->ClearFocusedItem();
         return;
     }
 
@@ -631,6 +632,13 @@ void PanelObjectList::SetCustomObjectForCallback_LabelEdit(wxTreeItemId id, void
         pData->m_pObject_LabelEdit = pObject;
 }
 
+void PanelObjectList::RemoveAllObjects()
+{
+    wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
+
+    m_pTree_Objects->DeleteChildren( idroot );
+}
+
 void PanelObjectList::RemoveObject(void* pObject)
 {
     wxTreeItemId idroot = m_pTree_Objects->GetRootItem();
@@ -656,6 +664,20 @@ void* PanelObjectList::GetObject(wxTreeItemId id)
     TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
 
     return pData->m_pObject;
+}
+
+void* PanelObjectList::GetUserData(wxTreeItemId id)
+{
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    return pData->m_pUserData;
+}
+
+void PanelObjectList::SetUserData(wxTreeItemId id, void* pUserData)
+{
+    TreeItemDataGenericObjectInfo* pData = (TreeItemDataGenericObjectInfo*)m_pTree_Objects->GetItemData( id );
+
+    pData->m_pUserData = pUserData;
 }
 
 void* PanelObjectList::Tree_GetParentObject(void* pObject)

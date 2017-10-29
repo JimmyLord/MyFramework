@@ -84,30 +84,30 @@ void SetMusicVolume(float volume)
     IOSSetMusicVolume( volume );
 #elif MYFW_WINDOWS
 #elif MYFW_BLACKBERRY
-    if( g_pGameCore->m_pMediaPlayer == 0 )
+    if( g_pGameCore->GetMediaPlayer() == 0 )
         return;
 
     if( volume == 0 )
     {
-        g_pGameCore->m_pMediaPlayer->Pause();
+        g_pGameCore->GetMediaPlayer()->Pause();
     }
     else
     {
-        g_pGameCore->m_pMediaPlayer->Play();
-        g_pGameCore->m_pMediaPlayer->SetVolume( volume );
+        g_pGameCore->GetMediaPlayer()->Play();
+        g_pGameCore->GetMediaPlayer()->SetVolume( volume );
     }
 #elif MYFW_WP8
-    if( g_pGameCore->m_pSoundPlayer == 0 )
+    if( g_pGameCore->GetSoundPlayer() == 0 )
         return;
 
     if( volume == 0 )
     {
-        g_pGameCore->m_pSoundPlayer->PauseMusic();
+        g_pGameCore->GetSoundPlayer()->PauseMusic();
     }
     else
     {
-        //g_pGameCore->m_pSoundPlayer->PlayMusic(0);
-        g_pGameCore->m_pSoundPlayer->UnpauseMusic();
+        //g_pGameCore->GetSoundPlayer()->PlayMusic(0);
+        g_pGameCore->GetSoundPlayer()->UnpauseMusic();
     }
 #endif
 }
@@ -180,8 +180,15 @@ void LaunchApplication(const char* appname, const char* arguments)
     wchar_t exewide[512];
     mbstowcs_s( 0, exewide, appname, 512 );
     wchar_t argswide[512];
-    mbstowcs_s( 0, argswide, arguments, 512 );
-    ShellExecute( NULL, L"open", exewide, argswide, NULL, SW_SHOWNORMAL );
+    if( arguments != 0 )
+    {
+        mbstowcs_s( 0, argswide, arguments, 512 );
+        ShellExecute( NULL, L"open", exewide, argswide, 0, SW_SHOWNORMAL );
+    }
+    else
+    {
+        ShellExecute( NULL, L"open", exewide, 0, 0, SW_SHOWNORMAL );
+    }
 #endif
 }
 
