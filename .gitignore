@@ -7,12 +7,6 @@
 *.prd
 *.suo
 *.ti
-/Box2D_v2.2.1/Build/vs2010/bin
-/Box2D_v2.2.1/Build/vs2010/obj
-/Box2D_v2.2.1/Build/vs2012/bin
-/Box2D_v2.2.1/Build/vs2012/obj
-/Box2D_v2.2.1/Build/vs2013/bin
-/Box2D_v2.2.1/Build/vs2013/obj
 /MyFramework/MyFramework.xcodeproj/xcuserdata
 /Output
 build

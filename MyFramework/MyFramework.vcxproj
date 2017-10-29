@@ -3507,6 +3507,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\BMPFactoryLoader.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\Global.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\HTTPLayer.java" />
