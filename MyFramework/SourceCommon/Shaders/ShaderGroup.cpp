@@ -310,7 +310,7 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFilename(const char* fullpath)
         ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
 
         MyFileObject* pFile = pShaderGroup->GetFile();
-        if( strcmp( pFile->GetFullPath(), fullpath ) == 0 )
+        if( pFile && strcmp( pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pShaderGroup;
         }
