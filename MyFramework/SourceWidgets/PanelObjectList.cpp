@@ -747,19 +747,19 @@ wxTreeItemId PanelObjectList::Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemI
     return idnew;
 }
 
-void PanelObjectList::Tree_MoveObject(void* pObjectToMove, void* pPreviousObject, bool makechildofprevious)
+wxTreeItemId PanelObjectList::Tree_MoveObject(void* pObjectToMove, void* pPreviousObject, bool makechildofprevious)
 {
     MyAssert( pObjectToMove != 0 );
 
     wxTreeItemId idtomove = FindObject( pObjectToMove );
     MyAssert( idtomove.IsOk() );
-    if( idtomove.IsOk() == false ) return;
+    if( idtomove.IsOk() == false ) return wxTreeItemId(); // return an invalid id.
 
     wxTreeItemId idprevious = FindObject( pPreviousObject );
     MyAssert( idprevious.IsOk() );
-    if( idprevious.IsOk() == false ) return;
+    if( idprevious.IsOk() == false ) return wxTreeItemId(); // return an invalid id.
 
-    Tree_MoveObject( idtomove, idprevious, makechildofprevious );
+    return Tree_MoveObject( idtomove, idprevious, makechildofprevious );
 }
 
 wxString PanelObjectList::GetObjectName(void* pObject)

@@ -152,7 +152,7 @@ public:
 
     void* Tree_GetParentObject(void* pObject);
     wxTreeItemId Tree_MoveObject(wxTreeItemId idtomove, wxTreeItemId idprevious, bool makechildofprevious);
-    void Tree_MoveObject(void* pObjectToMove, void* pPreviousObject, bool makechildofprevious);
+    wxTreeItemId Tree_MoveObject(void* pObjectToMove, void* pPreviousObject, bool makechildofprevious);
 
     wxTreeItemId FindObject(void* pObject);
     void SelectObject(void* pObject); // pass in 0 to unselect all.
