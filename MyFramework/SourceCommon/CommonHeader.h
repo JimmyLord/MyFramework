@@ -281,6 +281,7 @@ typedef int socklen_t;
 #endif
 
 #if MYFW_BLACKBERRY
+#define MYFW_OPENGLES2 1
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 1
@@ -326,6 +327,7 @@ using namespace Osp::Graphics::Opengl;
 #endif
 
 #if MYFW_ANDROID
+#define MYFW_OPENGLES2 1
 #undef USE_PTHREAD
 #define USE_PTHREAD 0
 #include <jni.h>
@@ -368,6 +370,7 @@ typedef unsigned long   u_long;
 #endif
 
 #if MYFW_IOS
+#define MYFW_OPENGLES2 1
 #define glBindVertexArray glBindVertexArrayOES
 #define glDeleteVertexArrays glDeleteVertexArraysOES
 #define glGenVertexArrays glGenVertexArraysOES

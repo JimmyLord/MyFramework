@@ -14,7 +14,7 @@
 #include <SLES/OpenSLES_Android.h>
 #include "../SourceCommon/Sound/WaveLoader.h"
 
-struct SoundObject : public CPPListNode
+struct SoundObject : public CPPListNode, public RefCount
 {
 public:
     MyFileObject* m_pFile;

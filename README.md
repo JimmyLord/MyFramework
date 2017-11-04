@@ -48,8 +48,8 @@ Android
 - vs-android (http://code.google.com/p/vs-android/) to compile c++ code in Visual Studio 2010
     - vs-android-0.964.zip
 - jdk-7u76-windows-x64.exe
-- android-studio-bundle-141.2422023-windows.exe
-- android-ndk-r10e-windows-x86_64.exe
+- android-studio-ide-171.4408382-windows.exe
+- android-ndk-r10e-windows-x86_64.exe <- latest version supported by vs-android
 - apache-ant-1.9.3-bin.zip
 - setx ANDROID_NDK_ROOT E:\Apps\android-ndk-r10e
 - setx ANDROID_HOME E:\Apps\Android\sdk <- to allow vs-android to build apk

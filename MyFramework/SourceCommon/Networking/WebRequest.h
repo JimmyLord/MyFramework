@@ -32,7 +32,7 @@ protected:
 
     struct in_addr m_InAddr;
     sockaddr_in m_ServerAddress;
-    SOCKET m_Sock;
+    int m_Sock;
     char* m_Hostname;
     unsigned short m_Port;
     bool m_SocketConnected;

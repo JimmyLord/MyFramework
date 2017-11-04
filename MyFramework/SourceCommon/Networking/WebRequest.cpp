@@ -62,7 +62,7 @@ WebRequestObject::WebRequestObject()
     m_Initialized = false;
     m_WaitingForGetHostByName = false;
 
-    m_Sock = INVALID_SOCKET;
+    m_Sock = 0;
     m_Hostname = 0;
     m_Port = -1;
     m_SocketConnected = false;
@@ -90,9 +90,9 @@ WebRequestObject::~WebRequestObject()
 
 void WebRequestObject::Reset()
 {
-    if( m_Sock != INVALID_SOCKET )
+    if( m_Sock != 0 )
         close( m_Sock );
-    m_Sock = INVALID_SOCKET;
+    m_Sock = 0;
     m_SocketConnected = false;
     m_RequestSent = false;
     m_ResponseReady = false;
@@ -239,10 +239,10 @@ void* WebRequestObject::Thread_GetHostByName(void* obj)
 
 void WebRequestObject::RequestCloseConnection()
 {
-    MyAssert( m_Sock != INVALID_SOCKET );
-    if( m_Sock != INVALID_SOCKET )
+    MyAssert( m_Sock != 0 );
+    if( m_Sock != 0 )
         close( m_Sock );
-    m_Sock = INVALID_SOCKET;
+    m_Sock = 0;
 
     m_CloseConnectionOnNextTick = true;
 }
@@ -255,7 +255,7 @@ void WebRequestObject::CreateSocket()
     m_Sock = socket( AF_INET, SOCK_STREAM, 0 );
 #endif
 
-    if( m_Sock == INVALID_SOCKET )
+    if( m_Sock == 0 )
     {
 #if _DEBUG
         int sockerr = WSAGetLastError();
@@ -289,7 +289,7 @@ void WebRequestObject::CreateSocket()
         LOGError( LOGTag, "WebRequestObject::CreateSocket() fcntl failed m_Sock=%d errno=%d\n", m_Sock, sockerr );
 #endif
         close( m_Sock );
-        m_Sock = INVALID_SOCKET;
+        m_Sock = 0;
         m_SomethingWentWrong = true;
         m_RequestPending = false;
         return;
@@ -298,10 +298,10 @@ void WebRequestObject::CreateSocket()
 
 bool WebRequestObject::ConnectSocket()
 {
-    MyAssert( m_Sock != INVALID_SOCKET );
-    if( m_Sock == INVALID_SOCKET )
+    MyAssert( m_Sock != 0 );
+    if( m_Sock == 0 )
     {
-        LOGError( LOGTag, "WebRequestObject::ConnectSocket() m_Sock == INVALID_SOCKET\n" );
+        LOGError( LOGTag, "WebRequestObject::ConnectSocket() m_Sock == 0\n" );
         return true; // error
     }
 
@@ -321,7 +321,7 @@ bool WebRequestObject::ConnectSocket()
         {
             LOGError( LOGTag, "WebRequestObject::ConnectSocket() error = %d, m_Sock = %d\n", err, m_Sock );
             close( m_Sock );
-            m_Sock = INVALID_SOCKET;
+            m_Sock = 0;
             m_SomethingWentWrong = true;
             m_RequestPending = false;
             return true; // error
@@ -434,7 +434,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
         return;
     }
 
-    if( m_Sock == INVALID_SOCKET )
+    if( m_Sock == 0 )
         return;
 
     if( m_SocketConnected == false )
@@ -471,7 +471,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
                 m_Sock, errno, len, reqbuf );
 
             close( m_Sock );
-            m_Sock = INVALID_SOCKET;
+            m_Sock = 0;
             m_SomethingWentWrong = true;
             m_RequestPending = false;
             return; // error
@@ -502,7 +502,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
             {
                 LOGError( LOGTag, "WebRequestObject::Tick() recv err=%d\n", err );
                 close( m_Sock );
-                m_Sock = INVALID_SOCKET;
+                m_Sock = 0;
                 m_SomethingWentWrong = true;
                 m_RequestPending = false;
                 return; // error
@@ -523,7 +523,7 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
             {
                 LOGError( LOGTag, "WebRequestObject::Tick() timeout?\n" );
                 close( m_Sock );
-                m_Sock = INVALID_SOCKET;
+                m_Sock = 0;
                 m_SomethingWentWrong = true;
                 m_RequestPending = false;
                 return; // error
@@ -532,10 +532,10 @@ void WebRequestObject::Tick(const char* customuseragentchunk)
             m_ResponseReady = true;
             m_RequestPending = false;
 
-            MyAssert( m_Sock != INVALID_SOCKET );
-            if( m_Sock != INVALID_SOCKET )
+            MyAssert( m_Sock != 0 );
+            if( m_Sock != 0 )
                 close( m_Sock );
-            m_Sock = INVALID_SOCKET;
+            m_Sock = 0;
 
             char* statuscode = strstr( m_pBuffer, " " );
             int errorcode = atoi( statuscode );
