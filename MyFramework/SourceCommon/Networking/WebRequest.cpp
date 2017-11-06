@@ -250,7 +250,7 @@ void WebRequestObject::RequestCloseConnection()
 void WebRequestObject::CreateSocket()
 {
 #if MYFW_WINDOWS
-    m_Sock = socket( AF_INET, SOCK_STREAM, 0 );//IPPROTO_TCP );
+    m_Sock = (int)socket( AF_INET, SOCK_STREAM, 0 );//IPPROTO_TCP );
 #else
     m_Sock = socket( AF_INET, SOCK_STREAM, 0 );
 #endif

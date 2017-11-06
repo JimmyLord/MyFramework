@@ -44,7 +44,7 @@ UDPSocket::~UDPSocket()
 
 void UDPSocket::Create(unsigned short port)
 {
-    m_SocketHandle = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+    m_SocketHandle = (int)socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 
     if( m_SocketHandle <= 0 )
     {
