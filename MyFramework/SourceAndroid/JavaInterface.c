@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -34,7 +34,7 @@ static long _getTime(void)
 }
 
 // Call to initialize the graphics state
-void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer, jstring devicename)
+void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobject thiz, jobject activity, jobject assetmgr, jobject bmploader, jobject soundplayer, jstring devicename, jstring launchscene)
 {
     //LOGInfo( LOGTag, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     //LOGInfo( LOGTag, ">");
@@ -42,7 +42,7 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobj
     //LOGInfo( LOGTag, ">");
     //LOGInfo( LOGTag, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-    __android_log_print(ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnCreate");
+    __android_log_print( ANDROID_LOG_INFO, "Flathead", "[Flow] - NativeOnCreate" );
 
     g_pJavaEnvironment = env;
     g_pMainActivity = activity;
@@ -60,8 +60,20 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobj
     g_pAndroidDeviceName[i] = 0;
     (*env)->ReleaseStringUTFChars( env, devicename, devicenamechar );
 
+    const char* launchscenebuffer[260];
+    launchscenebuffer[0] = 0;
+
+    if( launchscene )
     {
-        App_Activity_OnCreate();
+        const char* launchscenechar = (*env)->GetStringUTFChars( env, launchscene, 0 );
+        strcpy( launchscenebuffer, launchscenechar );
+        (*env)->ReleaseStringUTFChars( env, launchscene, launchscenechar );
+
+        __android_log_print( ANDROID_LOG_INFO, "Flathead", launchscenebuffer );
+    }
+
+    {
+        App_Activity_OnCreate( launchscenebuffer );
     }
 
     g_pJavaEnvironment = 0;

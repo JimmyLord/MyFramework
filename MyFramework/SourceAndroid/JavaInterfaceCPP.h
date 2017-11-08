@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -23,7 +23,7 @@ extern char g_pAndroidDeviceName[128];
 extern "C" {
 #endif
 
-extern void App_Activity_OnCreate();
+extern void App_Activity_OnCreate(const char* launchscene);
 extern void App_Activity_OnDestroy();
 extern void App_Activity_OnPause();
 extern void App_Activity_OnResume();
@@ -45,6 +45,6 @@ extern void App_IAPManager_OnResult(int responseCode, const char* purchaseData, 
 
 // the AndroidMain_CreateGameCore() should be defined in main.cpp and
 //     create a new instance of the game specific subclass of GameCore.
-void AndroidMain_CreateGameCore();
+void AndroidMain_CreateGameCore(const char* launchscene);
 
 #endif //__JavaInterfaceCPP_H__

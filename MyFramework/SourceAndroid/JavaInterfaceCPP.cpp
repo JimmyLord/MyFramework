@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -49,9 +49,9 @@ AndroidTouchEvent g_TouchEventQueue[MAX_TOUCH_EVENTS];
 int currentreadindex = 0;
 int currentwriteindex = 0;
 
-void App_Activity_OnCreate()
+void App_Activity_OnCreate(const char* launchscene)
 {
-    AndroidMain_CreateGameCore();
+    AndroidMain_CreateGameCore( launchscene );
 
     pthread_mutex_init( &g_TouchInputMutex, 0 );
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -227,10 +227,16 @@ public class MYFWActivity extends Activity
 
         m_MainLayout.addView( m_GLView );
 
+        Intent intent = getIntent();
+        String launchscene = intent.getStringExtra( "LaunchScene" );
+
+        Log.v( "Flathead", "LaunchScene -> " + launchscene );
+
         NativeOnCreate( Global.m_Activity, Global.m_Activity.GetAssetManager(),
                         Global.m_Activity.GetBMPFactoryLoader(),
                         Global.m_Activity.GetSoundPlayer(),
-                        GetDeviceName() );
+                        GetDeviceName(),
+                        launchscene );
 
         m_IAPManager = new IAPManager( this );
         m_IAPManager.GetPurchasesAsync();
@@ -426,7 +432,8 @@ public class MYFWActivity extends Activity
     }
 
     private static native void NativeOnCreate(Object activity, Object assetmgr,
-                                              Object bmploader, Object sndplayer, String devicename);
+                                              Object bmploader, Object sndplayer, String devicename,
+                                              String launchscene);
 
     private static native void NativeOnDestroy();
 
