@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -17,6 +17,7 @@ const char* GetRelativePath(char* fullpath)
 #if MYFW_WINDOWS
     GetCurrentDirectoryA( MAX_PATH, workingdir );
 #else
+    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
     workingdir[0] = 0;
 #endif
 
@@ -43,6 +44,7 @@ const char* GetRelativePath(const char* fullpath)
 #if MYFW_WINDOWS
     GetCurrentDirectoryA( MAX_PATH, workingdir );
 #else
+    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
     workingdir[0] = 0;
 #endif
 
@@ -55,6 +57,20 @@ const char* GetRelativePath(const char* fullpath)
     }
 
     return 0;
+}
+
+void GetFullPath(const char* relativepath, char* fullpath, unsigned int maxcharsinfullpatharray)
+{
+    char workingdir[MAX_PATH];
+#if MYFW_WINDOWS
+    GetCurrentDirectoryA( MAX_PATH, workingdir );
+#else
+    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
+    workingdir[0] = 0;
+#endif
+
+    sprintf_s( fullpath, maxcharsinfullpatharray, "%s/%s", workingdir, relativepath );
+    MyAssert( strlen(fullpath)+1 < maxcharsinfullpatharray );
 }
 
 void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, char* outExtension, int sizeExtension)

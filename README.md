@@ -64,7 +64,7 @@ iOS
 - Xcode 6.1
     
 Emscripten
-- emsdk-1.16.0-web-64bit
+- emscipten-1.35.0-64bit
     - https://github.com/kripken/emscripten
     
 NaCl
