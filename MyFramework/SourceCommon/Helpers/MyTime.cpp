@@ -13,6 +13,7 @@
 #include <sys/time.h>
 #endif
 
+// Exposed to Lua, change elsewhere if function signature changes.
 double MyTime_GetSystemTime(bool realtime)
 {
 #if MYFW_IOS || MYFW_OSX
@@ -57,6 +58,7 @@ double MyTime_GetSystemTime(bool realtime)
 
 static double starttime = MyTime_GetSystemTime();
 
+// Exposed to Lua, change elsewhere if function signature changes.
 double MyTime_GetRunningTime()
 {
     double currenttime = MyTime_GetSystemTime();
@@ -65,6 +67,7 @@ double MyTime_GetRunningTime()
 }
 
 double g_UnpausedTime = 0;
+// Exposed to Lua, change elsewhere if function signature changes.
 double MyTime_GetUnpausedTime()
 {
     return g_UnpausedTime;

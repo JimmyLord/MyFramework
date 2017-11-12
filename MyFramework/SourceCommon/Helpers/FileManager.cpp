@@ -164,6 +164,7 @@ MyFileObject* FileManager::CreateFileObject(const char* fullpath)
     return pFile;
 }
 
+// Exposed to Lua, change elsewhere if function signature changes.
 MyFileObject* FileManager::RequestFile(const char* filename)
 {
     MyAssert( filename != 0 );

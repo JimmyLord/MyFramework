@@ -590,6 +590,7 @@ SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
     return 0;
 }
 
+// Exposed to Lua, change elsewhere if function signature changes.
 int SoundManager::PlayCueByName(const char* name)
 {
     SoundCue* pCue = FindCueByName( name );
