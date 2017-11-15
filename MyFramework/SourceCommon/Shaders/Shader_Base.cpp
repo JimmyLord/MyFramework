@@ -514,7 +514,10 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* vbo, BufferDefiniti
         //       so need to set since VAOs don't change these values
         if( m_aHandle_Normal != -1 )
         {
-            glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
+            if( vbo->m_VertexFormat == VertexFormat_Sprite )
+                glVertexAttrib3f( m_aHandle_Normal, 0, 0, -1 );
+            else
+                glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
         }
     }
     checkGlError( "SetupAttributes" );

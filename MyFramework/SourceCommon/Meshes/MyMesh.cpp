@@ -1851,27 +1851,26 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberofsegments)
     m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_FAN;
 
     // delete the old buffers, if we want an circle with more verts.
-    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
-        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_2dCircle", "Verts" );
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
+        Vertex_Sprite* pVerts = MyNew Vertex_Sprite[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
     }
 
-    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     float anglechange = -2.0f * PI / numverts;
 
     for( int i=0; i<numverts; i++ )
     {
-        pVerts[i].pos.x = cos( i*anglechange ) * radius;
-        pVerts[i].pos.y = sin( i*anglechange ) * radius;
-        pVerts[i].pos.z = 0;
+        pVerts[i].x = cos( i*anglechange ) * radius;
+        pVerts[i].y = sin( i*anglechange ) * radius;
 
-        pVerts[i].uv.x = cos( i*anglechange );
-        pVerts[i].uv.y = sin( i*anglechange );
+        pVerts[i].u = cos( i*anglechange );
+        pVerts[i].v = sin( i*anglechange );
     }
 
     m_AABounds.Set( Vector3(0), Vector3(radius, radius, 0) );
@@ -1900,15 +1899,15 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
     m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_STRIP;
 
     // delete the old buffers, if we want an circle with more verts.
-    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
-        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_2dCircle", "Verts" );
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
+        Vertex_Sprite* pVerts = MyNew Vertex_Sprite[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
     }
 
-    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     float percentofcircle = (startangle - endangle)/360.0f;
@@ -1916,19 +1915,18 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
 
     float startrad = startangle/180.0f * PI;
 
+    // Normals for 2D shapes are set to (0,1,0), so plot them out on the X/Z plane.
     for( unsigned int i=0; i<numberofsegments + 1; i++ )
     {
-        pVerts[i*2 + 0].pos.x = cos( startrad + i*anglechange ) * endradius;
-        pVerts[i*2 + 0].pos.y = sin( startrad + i*anglechange ) * endradius;
-        pVerts[i*2 + 0].pos.z = 0;
-        pVerts[i*2 + 0].uv.x = cos( startrad + i*anglechange );
-        pVerts[i*2 + 0].uv.y = sin( startrad + i*anglechange );
+        pVerts[i*2 + 0].x = cos( startrad + i*anglechange ) * endradius;
+        pVerts[i*2 + 0].y = sin( startrad + i*anglechange ) * endradius;
+        pVerts[i*2 + 0].u = cos( startrad + i*anglechange );
+        pVerts[i*2 + 0].v = sin( startrad + i*anglechange );
 
-        pVerts[i*2 + 1].pos.x = cos( startrad + i*anglechange ) * startradius;
-        pVerts[i*2 + 1].pos.y = sin( startrad + i*anglechange ) * startradius;
-        pVerts[i*2 + 1].pos.z = 0;
-        pVerts[i*2 + 1].uv.x = cos( startrad + i*anglechange );
-        pVerts[i*2 + 1].uv.y = sin( startrad + i*anglechange );
+        pVerts[i*2 + 1].x = cos( startrad + i*anglechange ) * startradius;
+        pVerts[i*2 + 1].y = sin( startrad + i*anglechange ) * startradius;
+        pVerts[i*2 + 1].u = cos( startrad + i*anglechange );
+        pVerts[i*2 + 1].v = sin( startrad + i*anglechange );
     }
 
     m_AABounds.Set( Vector3(0), Vector3(endradius, endradius, 0) );
