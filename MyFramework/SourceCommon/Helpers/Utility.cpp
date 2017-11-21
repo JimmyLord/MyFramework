@@ -9,8 +9,21 @@
 
 #include "CommonHeader.h"
 
-// will replace backslashes with forward slashes in fullpath
-// will return 0 if path is not relative.
+// Replace all slashes with forward slashes.
+void FixSlashesInPath(char* path)
+{
+    unsigned int i=0;
+    while( path[i] != 0 )
+    {
+        if( path[i] == '\\' )
+            path[i] = '/';
+
+        i++;
+    }
+}
+
+// Will replace backslashes with forward slashes in fullpath.
+// Will return 0 if path is not relative.
 const char* GetRelativePath(char* fullpath)
 {
     char workingdir[MAX_PATH];
@@ -24,34 +37,12 @@ const char* GetRelativePath(char* fullpath)
     unsigned int workingdirpathlen = (unsigned int)strlen( workingdir );
     unsigned int fullpathlen = (unsigned int)strlen( fullpath );
 
-    if( strncmp( workingdir, fullpath, workingdirpathlen ) == 0 )
-    {
-        for( unsigned int i=workingdirpathlen+1; i<fullpathlen-1; i++ )
-        {
-            if( fullpath[i] == '\\' )
-                fullpath[i] = '/';
-        }
+    FixSlashesInPath( workingdir );
+    FixSlashesInPath( fullpath );
 
-        return &fullpath[workingdirpathlen+1];
-    }
-
-    return 0;
-}
-
-const char* GetRelativePath(const char* fullpath)
-{
-    char workingdir[MAX_PATH];
-#if MYFW_WINDOWS
-    GetCurrentDirectoryA( MAX_PATH, workingdir );
-#else
-    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
-    workingdir[0] = 0;
-#endif
-
-    unsigned int workingdirpathlen = (unsigned int)strlen( workingdir );
-    unsigned int fullpathlen = (unsigned int)strlen( fullpath );
-
-    if( strncmp( workingdir, fullpath, workingdirpathlen ) == 0 )
+    // Case insensitive string compare.
+    // TODO: Change to strncasecmp on other systems when this doesn't compile.
+    if( _strnicmp( workingdir, fullpath, workingdirpathlen ) == 0 )
     {
         return &fullpath[workingdirpathlen+1];
     }
@@ -71,6 +62,8 @@ void GetFullPath(const char* relativepath, char* fullpath, unsigned int maxchars
 
     sprintf_s( fullpath, maxcharsinfullpatharray, "%s/%s", workingdir, relativepath );
     MyAssert( strlen(fullpath)+1 < maxcharsinfullpatharray );
+
+    FixSlashesInPath( fullpath );
 }
 
 void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, char* outExtension, int sizeExtension)
