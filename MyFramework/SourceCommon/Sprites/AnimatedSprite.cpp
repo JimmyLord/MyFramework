@@ -448,10 +448,10 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     if( m_pAnimDef == 0 )
         return 0;
     
-    Vector3 position = m_pAnimDef->GetPosition( m_TimeFromStart );
-    Vector3 scale = m_pAnimDef->GetScale( m_TimeFromStart );
-    float alpha = m_pAnimDef->GetAlpha( m_TimeFromStart );
-    Vector3 rotation = m_pAnimDef->GetRotation( m_TimeFromStart );
+    //Vector3 position = m_pAnimDef->GetPosition( m_TimeFromStart );
+    //Vector3 scale = m_pAnimDef->GetScale( m_TimeFromStart );
+    //float alpha = m_pAnimDef->GetAlpha( m_TimeFromStart );
+    //Vector3 rotation = m_pAnimDef->GetRotation( m_TimeFromStart );
 
     if( m_pParentMatrix )
     {

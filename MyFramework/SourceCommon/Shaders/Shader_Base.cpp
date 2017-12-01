@@ -700,7 +700,7 @@ void Shader_Base::ProgramPointSize(float pointsize)
 {
     if( m_uHandle_PointSize != -1 )
     {
-#if !MYFW_OPENGLES2
+#if !MYFW_OPENGLES2 && !MYFW_OSX
         // Enable GL_PROGRAM_POINT_SIZE to allow vertex shader to set point sizes.
         // TODO: Is this necessary? Works fine without this line on my Intel 4000.
         glEnable( GL_PROGRAM_POINT_SIZE );
@@ -710,7 +710,7 @@ void Shader_Base::ProgramPointSize(float pointsize)
     }
     else
     {
-#if !MYFW_OPENGLES2
+#if !MYFW_OPENGLES2 && !MYFW_OSX
         // Disable GL_PROGRAM_POINT_SIZE so point sizes are determined by glPointSize().
         // TODO: Is this necessary? Works fine without this line on my Intel 4000.
         glDisable( GL_PROGRAM_POINT_SIZE );

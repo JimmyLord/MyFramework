@@ -190,7 +190,8 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
 
 #pragma warning( push )
 #pragma warning( disable : 4996 )
-            int result = sscanf( &m_pBuffer[i+keywordlen+1], "uniform %s %[^;]", uniformtype, uniformname );
+            //int result =
+            sscanf( &m_pBuffer[i+keywordlen+1], "uniform %s %[^;]", uniformtype, uniformname );
 #pragma warning( pop )
 
             for( unsigned int j=0; j<keywordlen; j++ )
@@ -199,7 +200,7 @@ void MyFileObjectShader::ParseAndCleanupExposedUniforms()
             MyAssert( m_NumExposedUniforms < MAX_EXPOSED_UNIFORMS );
 
             // Convert the type string to an enum
-            ExposedUniformType type;
+            ExposedUniformType type = ExposedUniformType_NotSet;
             if( strcmp( uniformtype, "float" ) == 0 )       type = ExposedUniformType_Float;
             if( strcmp( uniformtype, "vec2" ) == 0 )        type = ExposedUniformType_Vec2;
             if( strcmp( uniformtype, "vec3" ) == 0 )        type = ExposedUniformType_Vec3;

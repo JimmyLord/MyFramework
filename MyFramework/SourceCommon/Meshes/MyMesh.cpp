@@ -61,7 +61,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
     MaterialDefinition* pMaterial = m_pMaterial;
     int NumVertsToDraw = m_NumVertsToDraw;
     int NumIndicesToDraw = m_NumIndicesToDraw;
-    int VertexFormat = m_VertexFormat;
+    //int VertexFormat = m_VertexFormat;
     int PrimitiveType = m_PrimitiveType;
     int PointSize = m_PointSize;        
 
@@ -1955,7 +1955,7 @@ void MyMesh::CreateGrass(Vector3 topleftpos, Vector2 size, Vector2Int bladecount
 
     LOGInfo( LOGTag, "MyMesh::CreateGrass numverts: %d\n", numverts );
 
-    unsigned int numtris = (bladecount.x) * (bladecount.y);
+    //unsigned int numtris = (bladecount.x) * (bladecount.y);
     unsigned int numindices = 0;
 
     if( m_SubmeshList.Length() == 0 )
