@@ -126,7 +126,7 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatViewProj, MyMatrix* pWorld
     clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
 
     // check visibility two planes at a time
-    bool visible;
+    bool visible = true;
     for( int component=0; component<3; component++ ) // loop through x/y/z
     {
         // check if all 8 points are less than the -w extent of it's axis
