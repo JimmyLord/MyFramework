@@ -133,7 +133,7 @@
 #endif
 
 #if !MYFW_WINDOWS
-#define MAX_PATH 260
+#define MAX_PATH 1024 // TODO: fix this to be PATH_MAX everywhere once I'm in an editor that works...
 #endif
 
 //============================================================================================================

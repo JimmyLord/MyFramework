@@ -38,7 +38,14 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     sprintf_s( fullpath, MAX_PATH, "app/native/%s", filename );
 
     filehandle = fopen( fullpath, "rb" );
-#elif MYFW_IOS || MYFW_OSX
+#elif MYFW_OSX
+    char currentdir[PATH_MAX];
+    getcwd( currentdir, PATH_MAX );
+
+    const char* fullpath = filename;
+
+    filehandle = fopen( filename, "rb" );
+#elif MYFW_IOS
     const char* fullpath = filename;
     
     filehandle = IOS_fopen( fullpath );
@@ -435,7 +442,7 @@ void MyFileObject::OnRightClick()
     menu.Append( RightClick_OpenFile, "Open file" );
     menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
     menu.Append( RightClick_UnloadFile, "Unload File" );
-    menu.Append( RightClick_FindAllReferences, "Find References (" + std::to_string( (long long)this->GetRefCount() ) + ")" );
+    menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
     

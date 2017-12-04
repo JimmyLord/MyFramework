@@ -175,7 +175,9 @@ void MainFrame::AddPanes()
     // create the opengl canvas
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
     m_pGLCanvas = MyNew MainGLCanvas( (wxFrame*)this, args, 0, true );
+#if MYFW_WINDOWS
     m_pGLCanvas->RequestRawMouseAccess();
+#endif
     m_pGLCanvas->SetSize( 600, 600 );
 
     // Create the undo/redo command stack
@@ -451,7 +453,9 @@ bool MainApp::OnInit()
     // Initialize OpenGL Extensions, must be done after OpenGL Context is created
     m_pMainFrame->m_pGLCanvas->MakeContextCurrent();
 
+#if !MYFW_OSX
     OpenGL_InitExtensions();
+#endif
 
 #if MYFW_WINDOWS
     WGL_InitExtensions();
@@ -731,7 +735,7 @@ void MainGLCanvas::MouseLeftDown(wxMouseEvent& event)
         event.m_y = m_MouseYPositionWhenLocked;
     }
 
-    if( g_GLCanvasIDActive != 0 || this->HasFocus() == true && (m_GameWantsLockedMouse == false || m_SystemMouseIsLocked == true) )
+    if( g_GLCanvasIDActive != 0 || (this->HasFocus() == true && (m_GameWantsLockedMouse == false || m_SystemMouseIsLocked == true)) )
     {
         m_MouseButtonStates |= (1 << 0);
         m_MousePosition.Set( (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation );

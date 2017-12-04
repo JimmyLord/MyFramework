@@ -26,12 +26,12 @@ void FixSlashesInPath(char* path)
 // Will return 0 if path is not relative.
 const char* GetRelativePath(char* fullpath)
 {
-    char workingdir[MAX_PATH];
 #if MYFW_WINDOWS
+    char workingdir[MAX_PATH];
     GetCurrentDirectoryA( MAX_PATH, workingdir );
 #else
-    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
-    workingdir[0] = 0;
+    char workingdir[PATH_MAX];
+    getcwd( workingdir, PATH_MAX );
 #endif
 
     unsigned int workingdirpathlen = (unsigned int)strlen( workingdir );

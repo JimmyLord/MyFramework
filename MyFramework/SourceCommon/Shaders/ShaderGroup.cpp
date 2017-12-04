@@ -149,7 +149,7 @@ void ShaderGroup::OnRightClick() // StaticOnRightClick
     {
         menu.Append( RightClick_OpenFile, "Open File" );
         menu.Append( RightClick_UnloadFile, "Unload File" );
-        menu.Append( RightClick_FindAllReferences, "Find References (" + std::to_string( (long long)this->GetRefCount() ) + ")" );
+        menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
     }
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ShaderGroup::OnPopupClick );

@@ -7,8 +7,8 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __WinMainWx_H__
-#define __WinMainWx_H__
+#ifndef __MYFWMainWx_H__
+#define __MYFWMainWx_H__
 
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
@@ -244,4 +244,4 @@ public:
     void KeyChar(wxKeyEvent& event);
 };
 
-#endif //__WinMainWx_H__
+#endif //__MYFWMainWx_H__

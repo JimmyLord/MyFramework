@@ -68,7 +68,7 @@ public:
             wxCheckListBox::Check( itemselected, true );
 
         // Wasn't needed in older versions of wxWidgets, but manually send an event that the checkboxes have changed.
-        SendEvent( itemselected );
+        ((wxMenuBase*)this)->SendEvent( itemselected );
 
         event.Skip();
     }

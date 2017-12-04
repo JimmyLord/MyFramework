@@ -278,7 +278,7 @@ bool PlatformSpecific_CheckKeyState(int keycode)
     // default: just pass the keycode through, may not always work in wx where mykeycodes match wx's not win32's
     else return GetKeyState( keycode ) ? true : false;
 #else
-    MyAssert( false ); // fix me on mac/linux?
+    //MyAssert( false ); // fix me on mac/linux?
 #endif
 
     return false;
@@ -297,7 +297,7 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 
 void PlatformSpecific_SetMouseLock(bool lock)
 {
-#if MYFW_USING_WX || MYFW_WINDOWS || MYFW_BLACKBERRY
+#if MYFW_WINDOWS || MYFW_BLACKBERRY
     SetMouseLock( lock );
 #elif MYFW_NACL
     g_pInstance->SetMouseLock( lock );
@@ -308,7 +308,7 @@ void PlatformSpecific_SetMouseLock(bool lock)
 
 bool PlatformSpecific_IsMouseLocked()
 {
-#if MYFW_USING_WX || MYFW_WINDOWS || MYFW_BLACKBERRY
+#if MYFW_WINDOWS || MYFW_BLACKBERRY
     return IsMouseLocked();
 #elif MYFW_NACL
     return g_pInstance->IsMouseLocked();

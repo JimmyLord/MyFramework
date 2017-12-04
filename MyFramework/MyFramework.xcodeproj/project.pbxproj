@@ -127,6 +127,16 @@
 		0423ABD31AE2FD8D00C1AE29 /* FileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EED41ABF401C00AD4B64 /* FileManager.h */; };
 		0423ABD41AE2FD8D00C1AE29 /* MyFileObjectShader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EF141ABF401C00AD4B64 /* MyFileObjectShader.h */; };
 		0423ABD51AE2FD8D00C1AE29 /* GameCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC81ABF401C00AD4B64 /* GameCore.h */; };
+		04316D221FD48982009DCA2E /* MYFWMainWx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04316D1F1FD48968009DCA2E /* MYFWMainWx.cpp */; };
+		04316D231FD48982009DCA2E /* MYFWMainWx.h in Headers */ = {isa = PBXBuildFile; fileRef = 04316D1E1FD48967009DCA2E /* MYFWMainWx.h */; };
+		04316D291FD48B2A009DCA2E /* GLExtensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04316D251FD48B29009DCA2E /* GLExtensions.cpp */; };
+		04316D2A1FD48B2A009DCA2E /* GLExtensions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04316D251FD48B29009DCA2E /* GLExtensions.cpp */; };
+		04316D2B1FD48B2A009DCA2E /* GLExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 04316D261FD48B29009DCA2E /* GLExtensions.h */; };
+		04316D2C1FD48B2A009DCA2E /* GLExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 04316D261FD48B29009DCA2E /* GLExtensions.h */; };
+		04316D2D1FD48B2A009DCA2E /* MYFWOSXMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04316D271FD48B29009DCA2E /* MYFWOSXMain.cpp */; };
+		04316D2E1FD48B2A009DCA2E /* MYFWOSXMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04316D271FD48B29009DCA2E /* MYFWOSXMain.cpp */; };
+		04316D2F1FD48B2A009DCA2E /* MYFWOSXMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 04316D281FD48B29009DCA2E /* MYFWOSXMain.h */; };
+		04316D301FD48B2A009DCA2E /* MYFWOSXMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 04316D281FD48B29009DCA2E /* MYFWOSXMain.h */; };
 		044C64251ADED39000BABD53 /* CommonHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEB21ABF401C00AD4B64 /* CommonHeader.cpp */; };
 		044C64331ADED39E00BABD53 /* BMFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E9EEC31ABF401C00AD4B64 /* BMFont.cpp */; };
 		044C64341ADED39E00BABD53 /* BMFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E9EEC41ABF401C00AD4B64 /* BMFont.h */; };
@@ -843,6 +853,12 @@
 
 /* Begin PBXFileReference section */
 		0423ABD91AE2FD8D00C1AE29 /* libMyFramework-wx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-wx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		04316D1E1FD48967009DCA2E /* MYFWMainWx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYFWMainWx.h; sourceTree = "<group>"; };
+		04316D1F1FD48968009DCA2E /* MYFWMainWx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MYFWMainWx.cpp; sourceTree = "<group>"; };
+		04316D251FD48B29009DCA2E /* GLExtensions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLExtensions.cpp; sourceTree = "<group>"; };
+		04316D261FD48B29009DCA2E /* GLExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLExtensions.h; sourceTree = "<group>"; };
+		04316D271FD48B29009DCA2E /* MYFWOSXMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MYFWOSXMain.cpp; sourceTree = "<group>"; };
+		04316D281FD48B29009DCA2E /* MYFWOSXMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYFWOSXMain.h; sourceTree = "<group>"; };
 		044C640E1ADED37A00BABD53 /* libMyFramework-OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libMyFramework-OSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		045026181FD18E7F00E7691E /* TextureDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDefinition.h; sourceTree = "<group>"; };
 		045026191FD18E7F00E7691E /* TextureDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDefinition.cpp; sourceTree = "<group>"; };
@@ -1173,9 +1189,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04316D241FD48B29009DCA2E /* SourceOSX */ = {
+			isa = PBXGroup;
+			children = (
+				04316D251FD48B29009DCA2E /* GLExtensions.cpp */,
+				04316D261FD48B29009DCA2E /* GLExtensions.h */,
+				04316D271FD48B29009DCA2E /* MYFWOSXMain.cpp */,
+				04316D281FD48B29009DCA2E /* MYFWOSXMain.h */,
+			);
+			path = SourceOSX;
+			sourceTree = "<group>";
+		};
 		04936D3B1AE3EA1300344903 /* SourceWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				04316D1F1FD48968009DCA2E /* MYFWMainWx.cpp */,
+				04316D1E1FD48967009DCA2E /* MYFWMainWx.h */,
 				04936D3C1AE3EA1300344903 /* CommandStack.cpp */,
 				04936D3D1AE3EA1300344903 /* CommandStack.h */,
 				04936D3E1AE3EA1300344903 /* DragAndDropHackery.cpp */,
@@ -1768,6 +1797,7 @@
 				049CB4791FD1ADF50038B582 /* Libraries */,
 				04E9EEB11ABF401C00AD4B64 /* SourceCommon */,
 				BF71EAE9151BA314009F0CD9 /* SourceIOS */,
+				04316D241FD48B29009DCA2E /* SourceOSX */,
 				04936D3B1AE3EA1300344903 /* SourceWidgets */,
 				BF71E9C7151BA15B009F0CD9 /* Frameworks */,
 				BF71E9C6151BA15B009F0CD9 /* Products */,
@@ -1863,6 +1893,7 @@
 				0423ABA71AE2FD8D00C1AE29 /* WebRequest.h in Headers */,
 				049CF1E41FD1B0110038B582 /* TextureDefinition.h in Headers */,
 				0423ABA81AE2FD8D00C1AE29 /* ColorStructs.h in Headers */,
+				04316D2C1FD48B2A009DCA2E /* GLExtensions.h in Headers */,
 				049CF1D81FD1B0060038B582 /* SoundManager.h in Headers */,
 				0423ABA91AE2FD8D00C1AE29 /* MyLight.h in Headers */,
 				049CF1A61FD1AF200038B582 /* b2WeldJoint.h in Headers */,
@@ -1885,6 +1916,7 @@
 				049CF17E1FD1AF200038B582 /* b2WorldCallbacks.h in Headers */,
 				04936D4D1AE3EA1300344903 /* EditorCommands.h in Headers */,
 				049CF16D1FD1AF200038B582 /* b2Settings.h in Headers */,
+				04316D301FD48B2A009DCA2E /* MYFWOSXMain.h in Headers */,
 				049CF1B41FD1AF4C0038B582 /* lodepng.h in Headers */,
 				0423ABB11AE2FD8D00C1AE29 /* Plane.h in Headers */,
 				049CF1AC1FD1AF3C0038B582 /* b2Settings.h in Headers */,
@@ -1953,6 +1985,7 @@
 				049CF1E21FD1B0110038B582 /* MaterialDefinition.h in Headers */,
 				049CF1921FD1AF200038B582 /* b2DistanceJoint.h in Headers */,
 				049CF1DC1FD1B00C0038B582 /* My2DAnimInfo.h in Headers */,
+				04316D231FD48982009DCA2E /* MYFWMainWx.h in Headers */,
 				0423ABD11AE2FD8D00C1AE29 /* VertexFormatManager.h in Headers */,
 				0423ABD21AE2FD8D00C1AE29 /* Shader_Base.h in Headers */,
 				0423ABD31AE2FD8D00C1AE29 /* FileManager.h in Headers */,
@@ -2028,6 +2061,7 @@
 				044C64861ADED3E100BABD53 /* AnimatedSprite.h in Headers */,
 				044C64361ADED39E00BABD53 /* FontManager.h in Headers */,
 				049CF1411FD1AF1F0038B582 /* b2PrismaticJoint.h in Headers */,
+				04316D2B1FD48B2A009DCA2E /* GLExtensions.h in Headers */,
 				049CF1491FD1AF1F0038B582 /* b2WeldJoint.h in Headers */,
 				049CF1C01FD1AFCF0038B582 /* CPPList.h in Headers */,
 				04CDEC491FD25341006D7D06 /* EventTypeManager.h in Headers */,
@@ -2071,6 +2105,7 @@
 				044C64801ADED3D700BABD53 /* VertexFormats.h in Headers */,
 				044C64961ADED3E100BABD53 /* SpriteSheet_XYZVertexColor.h in Headers */,
 				044C648E1ADED3E100BABD53 /* MySprite_XYZVertexColor.h in Headers */,
+				04316D2F1FD48B2A009DCA2E /* MYFWOSXMain.h in Headers */,
 				044C64391ADED3B100BABD53 /* glext.h in Headers */,
 				049CF12D1FD1AF1F0038B582 /* b2EdgeAndCircleContact.h in Headers */,
 				049CF1251FD1AF1F0038B582 /* b2ChainAndPolygonContact.h in Headers */,
@@ -2362,6 +2397,7 @@
 				0423AB581AE2FD8D00C1AE29 /* ParticleRenderer.cpp in Sources */,
 				049CF16C1FD1AF200038B582 /* b2Settings.cpp in Sources */,
 				0423AB591AE2FD8D00C1AE29 /* WaveLoader.cpp in Sources */,
+				04316D2E1FD48B2A009DCA2E /* MYFWOSXMain.cpp in Sources */,
 				0423AB5A1AE2FD8D00C1AE29 /* Shader_Base.cpp in Sources */,
 				0423AB5B1AE2FD8D00C1AE29 /* Plane.cpp in Sources */,
 				0423AB5C1AE2FD8D00C1AE29 /* OpenGLWrapper.cpp in Sources */,
@@ -2443,6 +2479,7 @@
 				049CF18F1FD1AF200038B582 /* b2PolygonContact.cpp in Sources */,
 				04CDEC841FD2537E006D7D06 /* SceneGraph_Octree.cpp in Sources */,
 				049CF1D31FD1AFF40038B582 /* ParticleRendererInstanced.cpp in Sources */,
+				04316D2A1FD48B2A009DCA2E /* GLExtensions.cpp in Sources */,
 				049CF1701FD1AF200038B582 /* b2Timer.cpp in Sources */,
 				049CF1931FD1AF200038B582 /* b2FrictionJoint.cpp in Sources */,
 				0423AB7C1AE2FD8D00C1AE29 /* BufferManager.cpp in Sources */,
@@ -2486,6 +2523,7 @@
 				049CF1AF1FD1AF470038B582 /* cJSON.cpp in Sources */,
 				04CDEC561FD25352006D7D06 /* GamepadManager.cpp in Sources */,
 				049CF1A91FD1AF200038B582 /* b2Rope.cpp in Sources */,
+				04316D221FD48982009DCA2E /* MYFWMainWx.cpp in Sources */,
 				0423AB8D1AE2FD8D00C1AE29 /* LeaderboardStorageScoreLoop.cpp in Sources */,
 				0423AB8E1AE2FD8D00C1AE29 /* CommonHeader.cpp in Sources */,
 				0423AB8F1AE2FD8D00C1AE29 /* SpriteBatch.cpp in Sources */,
@@ -2523,6 +2561,7 @@
 				049CF1DD1FD1B0110038B582 /* MaterialDefinition.cpp in Sources */,
 				044C64331ADED39E00BABD53 /* BMFont.cpp in Sources */,
 				044C645E1ADED3C900BABD53 /* GameService_MyServer.cpp in Sources */,
+				04316D291FD48B2A009DCA2E /* GLExtensions.cpp in Sources */,
 				044C64F41ADEE59B00BABD53 /* SavedData.mm in Sources */,
 				044C64501ADED3C400BABD53 /* LightManager.cpp in Sources */,
 				04CDEC551FD25352006D7D06 /* GamepadManager.cpp in Sources */,
@@ -2607,6 +2646,7 @@
 				044C645A1ADED3C400BABD53 /* MyMeshLoader.cpp in Sources */,
 				049CF1C51FD1AFCF0038B582 /* MyQuaternion.cpp in Sources */,
 				049CF11E1FD1AF1F0038B582 /* b2World.cpp in Sources */,
+				04316D2D1FD48B2A009DCA2E /* MYFWOSXMain.cpp in Sources */,
 				044C64891ADED3E100BABD53 /* MySprite.cpp in Sources */,
 				049CF12C1FD1AF1F0038B582 /* b2EdgeAndCircleContact.cpp in Sources */,
 				04CDEC401FD25341006D7D06 /* EventManager.cpp in Sources */,
@@ -2792,7 +2832,7 @@
 				);
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../wxWidgets/include ../../wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../Framework/Libraries/wxWidgets/include ../../Framework/Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
 			};
 			name = Debug;
 		};
@@ -2807,7 +2847,7 @@
 				);
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../wxWidgets/include ../../wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../Framework/Libraries/wxWidgets/include ../../Framework/Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
 			};
 			name = Release;
 		};
