@@ -56,12 +56,12 @@ const char* GetRelativePath(char* fullpath)
 
 void GetFullPath(const char* relativepath, char* fullpath, unsigned int maxcharsinfullpatharray)
 {
-    char workingdir[MAX_PATH];
 #if MYFW_WINDOWS
+    char workingdir[MAX_PATH];
     GetCurrentDirectoryA( MAX_PATH, workingdir );
 #else
-    MyAssert( false ); // TODO: implement on OSX and Linux (others?)
-    workingdir[0] = 0;
+    char workingdir[PATH_MAX];
+    getcwd( workingdir, PATH_MAX );
 #endif
 
     sprintf_s( fullpath, maxcharsinfullpatharray, "%s/%s", workingdir, relativepath );
