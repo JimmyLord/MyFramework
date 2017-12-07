@@ -91,9 +91,17 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     if( premadeprogramhandle == 0 )
         programhandle = glCreateProgram();
 
+#if MYFW_WINDOWS
+    // Skipping location 0 for AMD drivers that don't like glVertexAttrib4f() calls on location 0.
+    int positionindex = 1;
+#else
+    // Sticking with location 0 for everything else
+    // For OSX, nothing renders if positions are at location 1.
+    int positionindex = 0;
+#endif
+
     // Explicit binding of locations,
-    // skipping location 0 for AMD drivers that don't like glVertexAttrib4f() calls on location 0
-    glBindAttribLocation( programhandle, 1, "a_Position" );
+    glBindAttribLocation( programhandle, positionindex, "a_Position" );
     glBindAttribLocation( programhandle, 2, "a_UVCoord" );
     glBindAttribLocation( programhandle, 3, "a_Normal" );
     glBindAttribLocation( programhandle, 4, "a_VertexColor" );
@@ -103,7 +111,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeprogramhandle)
     if( BaseShader::LoadAndCompile( programhandle ) == false )
         return false;
 
-    m_aHandle_Position =    1; //GetAttributeLocation( m_ProgramHandle, "a_Position" );
+    m_aHandle_Position =    positionindex; //GetAttributeLocation( m_ProgramHandle, "a_Position" );
     m_aHandle_UVCoord =     2; //GetAttributeLocation( m_ProgramHandle, "a_UVCoord" );
     m_aHandle_Normal =      3; //GetAttributeLocation( m_ProgramHandle, "a_Normal" );
     m_aHandle_VertexColor = 4; //GetAttributeLocation( m_ProgramHandle, "a_VertexColor" );
