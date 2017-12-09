@@ -2832,7 +2832,7 @@
 				);
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../Framework/Libraries/wxWidgets/include ../../Framework/Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) ../Libraries/wxWidgets/include ../Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
 			};
 			name = Debug;
 		};
@@ -2847,7 +2847,7 @@
 				);
 				PRODUCT_NAME = "MyFramework-wx";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(inherited) ../../Framework/Libraries/wxWidgets/include ../../Framework/Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) ../Libraries/wxWidgets/include ../Libraries/wxWidgets/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1";
 			};
 			name = Release;
 		};
@@ -2884,7 +2884,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = MyFramework;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../Libraries/b2Settings $(SRCROOT)/../Libraries/Box2D/Box2D";
+				USER_HEADER_SEARCH_PATHS = ". ../Libraries/b2Settings ../Libraries/Box2D/Box2D";
 			};
 			name = Debug;
 		};
@@ -2896,7 +2896,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = MyFramework;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../Libraries/b2Settings $(SRCROOT)/../Libraries/Box2D/Box2D";
+				USER_HEADER_SEARCH_PATHS = ". ../Libraries/b2Settings ../Libraries/Box2D/Box2D";
 			};
 			name = Release;
 		};
