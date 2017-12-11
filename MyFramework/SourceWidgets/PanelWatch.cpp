@@ -1281,7 +1281,6 @@ void PanelWatch::OnEditBoxKillFocus(wxFocusEvent& event)
 void PanelWatch::OnMouseDown(wxMouseEvent& event)
 {
     //LOGInfo( LOGTag, "OnMouseDown:\n" );
-    event.Skip();
 
     int controlid = event.GetId();
     VariableProperties* pVar = &m_pVariables[controlid];
@@ -1312,10 +1311,17 @@ void PanelWatch::OnMouseDown(wxMouseEvent& event)
         pVar->m_StartMousePosition = pos;
         pVar->m_LastMousePosition = pos;
 
+#if !MYFW_OSX
         pVar->GetTextCtrl()->CaptureMouse();
+#endif
         pVar->m_CapturedMouse = true;
         m_MouseIsCaptured = true;
+
+        // We handled the event, so don't call event.Skip();
+        return;
     }
+
+    event.Skip();
 }
 
 void PanelWatch::OnMouseUp(wxMouseEvent& event)
@@ -1331,7 +1337,9 @@ void PanelWatch::OnMouseUp(wxMouseEvent& event)
     {
         if( pVar->m_CapturedMouse )
         {
+#if !MYFW_OSX
             pVar->GetTextCtrl()->ReleaseMouse();
+#endif
             pVar->m_CapturedMouse = false;
             m_MouseIsCaptured = false;
         }
