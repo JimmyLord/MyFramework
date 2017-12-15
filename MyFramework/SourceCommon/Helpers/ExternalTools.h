@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -69,13 +69,14 @@
 
 #elif MYFW_OSX
 
-#define MYKEYCODE_LSHIFT        16
-#define MYKEYCODE_RSHIFT        16
-#define MYKEYCODE_LCTRL         17
-#define MYKEYCODE_RCTRL         17
+#define MYKEYCODE_LSHIFT        56
+#define MYKEYCODE_RSHIFT        60
+#define MYKEYCODE_LCTRL         59
+#define MYKEYCODE_RCTRL         62
 
-#endif
+#endif // Platforms.
 
+// Defaults if the platforms up above didn't set the keycode.
 #ifndef MYKEYCODE_BACKSPACE
 #define MYKEYCODE_BACKSPACE     8
 #endif
@@ -87,7 +88,6 @@
 #endif
 #ifndef MYKEYCODE_ESC
 #define MYKEYCODE_ESC           27
-
 #endif
 #ifndef MYKEYCODE_LEFT
 #define MYKEYCODE_LEFT          37

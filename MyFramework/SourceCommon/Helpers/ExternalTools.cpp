@@ -269,7 +269,9 @@ void ShowKeyboard(bool show)
 
 bool PlatformSpecific_CheckKeyState(int keycode)
 {
-#if MYFW_WINDOWS
+#if MYFW_USING_WX && !MYFW_WINDOWS
+    return wxGetKeyState( (wxKeyCode)keycode );
+#elif MYFW_WINDOWS
     if( keycode == MYKEYCODE_LCTRL )        return (GetKeyState( VK_CONTROL ) & 0x8000) ? true : false;
     else if( keycode == MYKEYCODE_LALT )    return (GetKeyState( VK_MENU ) & 0x8000)    ? true : false;
     else if( keycode == MYKEYCODE_LSHIFT )  return (GetKeyState( VK_SHIFT ) & 0x8000)   ? true : false;
