@@ -22,6 +22,7 @@ public:
     IAPManager();
     virtual ~IAPManager();
 
+    void Initialize();
     void Purchase(const char* IAPProductID);
     void GetExistingPurchases();
     //void getPrice(const QString &id, const QString &sku);

@@ -24,7 +24,9 @@ void IOSSetMusicVolume(float volume)
 //    appDelegate.avAudioPlayer.volume = volume;
     
     if( volume == 0.0 )
+    {
         [appDelegate.avAudioPlayer stop];
+    }
     else
     {
         UInt32 otherAudioIsPlaying = 0;

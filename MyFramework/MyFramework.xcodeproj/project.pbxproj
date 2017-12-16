@@ -2363,7 +2363,7 @@
 		BF71E9BC151BA15A009F0CD9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0920;
 				TargetAttributes = {
 					044C640D1ADED37A00BABD53 = {
 						CreatedOnToolsVersion = 6.2;
@@ -2878,11 +2878,13 @@
 		BF71E9D0151BA15B009F0CD9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "_DEBUG=1";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = MyFramework;
 				USER_HEADER_SEARCH_PATHS = ". ../Libraries/b2Settings ../Libraries/Box2D/Box2D";
 			};
@@ -2909,6 +2911,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "MyFramework-iOS";
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -2921,6 +2924,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "MyFramework-iOS";
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};

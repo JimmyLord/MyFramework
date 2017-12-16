@@ -382,8 +382,8 @@ typedef unsigned long   u_long;
 #include <CoreFoundation/CFDate.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include "../SourceIOS/IAPManagerIOS.h"

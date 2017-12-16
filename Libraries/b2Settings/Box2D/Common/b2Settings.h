@@ -11,8 +11,12 @@
 #define __NotTheRealB2Settings_H__
 
 // I'm still not using C++11+, so defining override to nothing.
+#ifndef override
 #define override
+#endif
+#ifndef nullptr
 #define nullptr 0
+#endif
 
 // Include the real b2Settings.h
 #if !_DEBUG && !defined(NDEBUG)

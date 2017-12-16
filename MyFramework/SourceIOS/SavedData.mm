@@ -14,25 +14,35 @@
 #if MYFW_OSX
 #include <Foundation/NSPathUtilities.h>
 #endif
+#include <Foundation/NSFileManager.h>
 
 #include <Corefoundation/CFBundle.h>
 #include <CoreFoundation/CFURL.h>
+
+//- (NSURL *)applicationDocumentsDirectory
+//{
+//    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+//}
 
 FILE* OpenSavedDataFile(const char* subpath, const char* filename, const char* filemode)
 {
     NSString* path = 0;
     FILE* file = 0;
 
-    NSArray* documentDir = NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
-    
-    if( documentDir )
+    NSURL* documentURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    //NSArray* documentDir = NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
+
+    //if( documentDir )
+    //{
+    //    path = [documentDir objectAtIndex:0];
+    if( documentURL )
     {
-        path = [documentDir objectAtIndex:0];
-    
+        path = [documentURL path];
+
         const char* approotpathstr = [path cStringUsingEncoding:NSASCIIStringEncoding];
-    
-        char fullpath[MAX_PATH];
-        sprintf_s( fullpath, MAX_PATH, "%s/%s%s", approotpathstr, subpath, filename );
+
+        char fullpath[PATH_MAX];
+        sprintf_s( fullpath, PATH_MAX, "%s/%s%s", approotpathstr, subpath, filename );
 
         file = fopen( fullpath, filemode );
     }
