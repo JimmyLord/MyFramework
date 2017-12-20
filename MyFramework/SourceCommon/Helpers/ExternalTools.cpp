@@ -189,6 +189,9 @@ void LaunchApplication(const char* appname, const char* arguments)
     {
         ShellExecute( NULL, L"open", exewide, 0, 0, SW_SHOWNORMAL );
     }
+#elif MYFW_OSX
+    // TODO: pass arguments to process.
+    system( appname );
 #endif
 }
 
