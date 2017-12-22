@@ -68,7 +68,11 @@ public:
             wxCheckListBox::Check( itemselected, true );
 
         // Wasn't needed in older versions of wxWidgets, but manually send an event that the checkboxes have changed.
+        // Also seems to lock-up on OSX.
+        // TODO: Fix on OSX, avoiding this breaks the functionality.
+#if !MYFW_OSX
         ((wxMenuBase*)this)->SendEvent( itemselected );
+#endif
 
         event.Skip();
     }
@@ -2066,7 +2070,8 @@ wxString PanelWatch::GetFlagsAsString(int variablenum)
     wxString string;
 
     int count = 0;
-    for( int i=0; i<m_pVariables[variablenum].m_NumEnumTypes; i++ )
+    int numenumtypes = m_pVariables[variablenum].m_NumEnumTypes;
+    for( int i=0; i<numenumtypes; i++ )
     {
         if( pCheckListComboPopup->IsChecked( i ) )
         {
