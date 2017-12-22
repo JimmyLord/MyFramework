@@ -67,12 +67,11 @@ public:
         else
             wxCheckListBox::Check( itemselected, true );
 
-        // Wasn't needed in older versions of wxWidgets, but manually send an event that the checkboxes have changed.
-        // Also seems to lock-up on OSX.
-        // TODO: Fix on OSX, avoiding this breaks the functionality.
-#if !MYFW_OSX
-        ((wxMenuBase*)this)->SendEvent( itemselected );
-#endif
+        // Send an event that the checkboxes have changed.
+        wxCommandEvent evt( wxEVT_CHECKLISTBOX, this->GetId() );
+        evt.SetInt( itemselected );
+        evt.SetEventObject( this );
+        this->ProcessEvent( evt );
 
         event.Skip();
     }
