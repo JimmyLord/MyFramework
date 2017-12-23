@@ -442,7 +442,11 @@ void MyFileObject::OnRightClick()
     menu.Append( RightClick_OpenFile, "Open file" );
     menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
     menu.Append( RightClick_UnloadFile, "Unload File" );
+#if MYFW_OSX
+    menu.Append( RightClick_FindAllReferences, "Find References" );
+#else
     menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
+#endif
 
     menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
     
