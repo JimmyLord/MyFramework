@@ -220,13 +220,16 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
         return;
     }
 
-    // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
-#if MYFW_WINDOWS
+    // Dummy data to kick off the drag/drop op.  Real data is handled by objects in g_DragAndDropStruct.
     wxCustomDataObject dataobject;
     dataobject.SetFormat( *g_pMyDataFormat );
-    wxDropSource dragsource( dataobject );    
-    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+#if MYFW_WINDOWS
+    wxDropSource dragsource( dataobject );
+#else //elif MYFW_OSX
+    wxDropSource dragsource( this );
+    dragsource.SetData( dataobject );
 #endif
+    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 }
 
 void PanelObjectList::OnActivate(wxTreeEvent& event)

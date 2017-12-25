@@ -759,12 +759,14 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     }
 
     // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
-#if MYFW_WINDOWS // TODO: fix on OSX
     wxCustomDataObject dataobject;
     dataobject.SetFormat( *g_pMyDataFormat );
-    wxDropSource dragsource( dataobject );    
-    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+#if MYFW_WINDOWS // TODO: fix on OSX
+    wxDropSource dragsource( dataobject );
+#else //elif MYFW_OSX
+    wxDropSource dragsource( dataobject, this );
 #endif
+    wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 }
 
 void PanelMemory::UpdateRootNodeDrawCallCount()
