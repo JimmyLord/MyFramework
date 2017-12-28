@@ -755,16 +755,19 @@ void PanelMemory::OnDragBegin(wxTreeEvent& event)
     }
     else
     {
-        return; // cancel drag and drop.
+        return; // Cancel drag and drop.
     }
 
-    // dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+    // Dummy data to kick off the drag/drop op.  Real data is handled by objects in list.
+#if MYFW_WINDOWS
     wxCustomDataObject dataobject;
     dataobject.SetFormat( *g_pMyDataFormat );
-#if MYFW_WINDOWS // TODO: fix on OSX
     wxDropSource dragsource( dataobject );
 #else //elif MYFW_OSX
-    wxDropSource dragsource( dataobject, this );
+    wxFileDataObject dataobject; // Using wxCustomDataObject doesn't work on OSX, TODO: look deeper
+    dataobject.SetFormat( *g_pMyDataFormat );
+    wxDropSource dragsource( this );
+    dragsource.SetData( dataobject );
 #endif
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
 }

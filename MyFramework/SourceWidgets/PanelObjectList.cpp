@@ -217,19 +217,22 @@ void PanelObjectList::OnDragBegin(wxTreeEvent& event)
     // If no items added themselves to the g_DragAndDropStruct, cancel drag and drop.
     if( g_DragAndDropStruct.GetItemCount() == 0 )
     {
-        return;
+        return; // Cancel drag and drop.
     }
 
     // Dummy data to kick off the drag/drop op.  Real data is handled by objects in g_DragAndDropStruct.
+#if MYFW_WINDOWS
     wxCustomDataObject dataobject;
     dataobject.SetFormat( *g_pMyDataFormat );
-#if MYFW_WINDOWS
     wxDropSource dragsource( dataobject );
 #else //elif MYFW_OSX
+    wxFileDataObject dataobject; // Using wxCustomDataObject doesn't work on OSX, TODO: look deeper
+    dataobject.SetFormat( *g_pMyDataFormat );
     wxDropSource dragsource( this );
     dragsource.SetData( dataobject );
 #endif
     wxDragResult result = dragsource.DoDragDrop( wxDrag_CopyOnly );
+    int bp = 1;
 }
 
 void PanelObjectList::OnActivate(wxTreeEvent& event)
