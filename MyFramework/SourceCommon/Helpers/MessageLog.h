@@ -33,7 +33,7 @@ extern MessageLogCallbackFunction g_pMessageLogCallbackFunction;
 void LOGInfo(const char* tag, const char* message, ...);
 void LOGError(const char* tag, const char* message, ...);
 void LOGDebug(const char* tag, const char* message, ...);
-#elif _DEBUG && (MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN || MYFW_LINUX)
+#elif (_DEBUG || MYFW_USING_WX) && (MYFW_NACL || MYFW_BLACKBERRY || MYFW_BADA || MYFW_IOS || MYFW_OSX || MYFW_EMSCRIPTEN || MYFW_LINUX)
 void LOGInfo(const char* tag, const char* message, ...);
 void LOGError(const char* tag, const char* message, ...);
 void LOGDebug(const char* tag, const char* message, ...);

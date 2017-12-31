@@ -74,6 +74,8 @@ protected:
 
 #if MYFW_WINDOWS
     FILETIME m_FileLastWriteTime;
+#else
+    time_t m_FileLastWriteTime;
 #endif
 
 public:
@@ -102,6 +104,8 @@ public:
 
 #if MYFW_WINDOWS
     FILETIME GetFileLastWriteTime() { return m_FileLastWriteTime; }
+#else
+    time_t GetFileLastWriteTime() { return m_FileLastWriteTime; }
 #endif
 
     // Callbacks

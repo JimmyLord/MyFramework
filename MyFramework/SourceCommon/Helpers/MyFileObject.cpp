@@ -103,6 +103,8 @@ MyFileObject::MyFileObject()
 #if MYFW_WINDOWS
     m_FileLastWriteTime.dwHighDateTime = 0;
     m_FileLastWriteTime.dwLowDateTime = 0;
+#else
+    m_FileLastWriteTime = 0;
 #endif
 
 #if MYFW_USING_WX
@@ -388,6 +390,15 @@ bool MyFileObject::IsNewVersionAvailable()
         
         m_FileLastWriteTime = data.ftLastWriteTime;
     }
+#else
+    struct stat data;
+    stat( m_FullPath, &data );
+    if( m_FileLastWriteTime != data.st_mtime )
+    {
+        updated = true;
+
+        m_FileLastWriteTime = data.st_mtime;
+    }
 #endif
 
     return updated;
@@ -400,6 +411,10 @@ void MyFileObject::UpdateTimestamp()
     GetFileData( m_FullPath, &data );
 
     m_FileLastWriteTime = data.ftLastWriteTime;
+#else
+    struct stat data;
+    stat( m_FullPath, &data );
+    m_FileLastWriteTime = data.st_mtime;
 #endif
 }
 

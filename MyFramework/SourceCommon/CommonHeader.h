@@ -403,6 +403,9 @@ typedef unsigned long   u_long;
 #define USE_OPENAL 1
 #include <pthread.h>
 #include <time.h>
+#ifndef st_mtime
+#define st_mtime st_mtimespec.tv_sec // for compatibility with Linux.
+#endif
 #include <CoreFoundation/CFDate.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>

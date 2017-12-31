@@ -74,7 +74,7 @@ void LOGDebug(const char* tag, const char* message, ...)
 #include <stdio.h>
 #endif
 
-#if _DEBUG
+#if _DEBUG || MYFW_USING_WX
 
 void LOGInfo(const char* tag, const char* message, ...)
 {
