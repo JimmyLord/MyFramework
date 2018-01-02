@@ -390,7 +390,7 @@ bool MyFileObject::IsNewVersionAvailable()
         
         m_FileLastWriteTime = data.ftLastWriteTime;
     }
-#else
+#elif MYFW_USING_WX
     struct stat data;
     stat( m_FullPath, &data );
     if( m_FileLastWriteTime != data.st_mtime )
@@ -411,7 +411,7 @@ void MyFileObject::UpdateTimestamp()
     GetFileData( m_FullPath, &data );
 
     m_FileLastWriteTime = data.ftLastWriteTime;
-#else
+#elif MYFW_USING_WX
     struct stat data;
     stat( m_FullPath, &data );
     m_FileLastWriteTime = data.st_mtime;
