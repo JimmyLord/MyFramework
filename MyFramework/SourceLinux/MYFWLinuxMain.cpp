@@ -216,12 +216,26 @@ void GenerateMouseEvents(GameCore* pGameCore)
 
             if( xdiff != 0 || ydiff != 0 )
             {
-                pGameCore->OnTouch( GCBA_Held, buttonstates, xdiff, ydiff, 0, 0 );
+                if( buttonstates == 0 )
+                    pGameCore->OnTouch( GCBA_Held, -1, xdiff, ydiff, 0, 0 );
+                if( buttonstates && 1 << 0 )
+                    pGameCore->OnTouch( GCBA_Held, 0, xdiff, ydiff, 0, 0 );
+                if( buttonstates && 1 << 1 )
+                    pGameCore->OnTouch( GCBA_Held, 1, xdiff, ydiff, 0, 0 );
+                if( buttonstates && 1 << 2 )
+                    pGameCore->OnTouch( GCBA_Held, 2, xdiff, ydiff, 0, 0 );
             }
         }
         else
         {
-            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates == 0 )
+                pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 0 )
+                pGameCore->OnTouch( GCBA_Held, 0, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 1 )
+                pGameCore->OnTouch( GCBA_Held, 1, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 2 )
+                pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
         }
     }
     else
@@ -229,7 +243,15 @@ void GenerateMouseEvents(GameCore* pGameCore)
         // Only send mouse positions if system mouse isn't locked
         if( g_SystemMouseIsLocked == false )
         {
-            pGameCore->OnTouch( GCBA_Held, buttonstates, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates == 0 )
+                pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 0 )
+                pGameCore->OnTouch( GCBA_Held, 0, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 1 )
+                pGameCore->OnTouch( GCBA_Held, 1, (float)mousex, (float)mousey, 0, 0 );
+            if( buttonstates && 1 << 2 )
+                pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
+            
         }
     }
 }

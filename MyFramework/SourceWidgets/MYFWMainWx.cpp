@@ -657,7 +657,12 @@ bool MainGLCanvas::MSWHandleMessage(WXLRESULT* result, WXUINT message, WXWPARAM 
 
                 if( xdiff != 0 || ydiff != 0 )
                 {
-                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, m_MouseButtonStates, xdiff, ydiff, m_MousePosition.z ) );
+                    if( m_MouseButtonStates & 1 << 0 )
+                        m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 0, xdiff, ydiff, m_MousePosition.z ) );
+                    if( m_MouseButtonStates & 1 << 1 )
+                        m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 1, xdiff, ydiff, m_MousePosition.z ) );
+                    if( m_MouseButtonStates & 1 << 2 )
+                        m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 2, xdiff, ydiff, m_MousePosition.z ) );
                 }
             }
         }
@@ -701,7 +706,14 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
 
             if( xdiff != 0 || ydiff != 0 )
             {
-                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, m_MouseButtonStates, xdiff, ydiff, (float)event.m_wheelRotation ) );
+                if( m_MouseButtonStates == 0 )
+                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, -1, xdiff, ydiff, (float)event.m_wheelRotation ) );
+                if( m_MouseButtonStates & 1 << 0 )
+                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 0, xdiff, ydiff, (float)event.m_wheelRotation ) );
+                if( m_MouseButtonStates & 1 << 1 )
+                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 1, xdiff, ydiff, (float)event.m_wheelRotation ) );
+                if( m_MouseButtonStates & 1 << 2 )
+                    m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_RelativeMovement, 2, xdiff, ydiff, (float)event.m_wheelRotation ) );
             }
         }
     }
@@ -710,7 +722,14 @@ void MainGLCanvas::MouseMoved(wxMouseEvent& event)
         // Send mouse positions if this window's mouse cursor isn't locked
         if( m_SystemMouseIsLocked == false )
         {
-            m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, m_MouseButtonStates, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+            if( m_MouseButtonStates == 0 )
+                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, -1, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+            if( m_MouseButtonStates & 1 << 0 )
+                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, 0, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+            if( m_MouseButtonStates & 1 << 1 )
+                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, 1, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
+            if( m_MouseButtonStates & 1 << 2 )
+                m_InputEventQueue.push_back( EditorInputEvent( -1, -1, -1, GCBA_Held, 2, (float)event.m_x, (float)event.m_y, (float)event.m_wheelRotation ) );
         }
     }
 }
@@ -1098,11 +1117,21 @@ void MainGLCanvas::ProcessInputEventQueue()
 
             if( m_SystemMouseIsLocked )
             {
-                //g_pGameCore->OnTouch( GCBA_RelativeMovement, m_MouseButtonStates, 0, 0, 0, 0 );
+                // if( m_MouseButtonStates & 1 << 0 )
+                //     g_pGameCore->OnTouch( GCBA_RelativeMovement, 0, 0, 0, 0, 0 );
+                // if( m_MouseButtonStates & 1 << 1 )
+                //     g_pGameCore->OnTouch( GCBA_RelativeMovement, 1, 0, 0, 0, 0 );
+                // if( m_MouseButtonStates & 1 << 2 )
+                //     g_pGameCore->OnTouch( GCBA_RelativeMovement, 2, 0, 0, 0, 0 );
             }
             else
             {
-                g_pGameCore->OnTouch( GCBA_Held, m_MouseButtonStates, m_MousePosition.x, m_MousePosition.y, m_MousePosition.z, 0 );
+                if( m_MouseButtonStates & 1 << 0 )
+                    g_pGameCore->OnTouch( GCBA_Held, 0, m_MousePosition.x, m_MousePosition.y, m_MousePosition.z, 0 );
+                if( m_MouseButtonStates & 1 << 1 )
+                    g_pGameCore->OnTouch( GCBA_Held, 1, m_MousePosition.x, m_MousePosition.y, m_MousePosition.z, 0 );
+                if( m_MouseButtonStates & 1 << 2 )
+                    g_pGameCore->OnTouch( GCBA_Held, 2, m_MousePosition.x, m_MousePosition.y, m_MousePosition.z, 0 );
             }
         }
     }
