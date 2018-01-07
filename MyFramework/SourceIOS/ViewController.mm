@@ -167,6 +167,8 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
     g_pGameCore->OnSurfaceCreated();
     g_pGameCore->OnSurfaceChanged( 0, 0, self.view.bounds.size.width*scale, self.view.bounds.size.height*scale );
     g_pGameCore->OneTimeInit();
+
+    InitFingers();
 }
 
 - (void)tearDownGL
@@ -208,6 +210,56 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
     }
 }
 
+const int MAX_FINGERS = 20;
+UITouch* m_Fingers[MAX_FINGERS];
+
+void InitFingers()
+{
+    for( int i=0; i<MAX_FINGERS; i++ )
+    {
+        m_Fingers[i] = 0;
+    }
+}
+
+int AddFinger(UITouch* pTouch)
+{
+    int oldfinger = FindFinger( pTouch );
+    if( oldfinger != -1 )
+        return oldfinger;
+
+    for( int i=0; i<MAX_FINGERS; i++ )
+    {
+        if( m_Fingers[i] == 0 )
+        {
+            m_Fingers[i] = pTouch;
+            return i;
+        }
+    }
+}
+
+int FindFinger(UITouch* pTouch)
+{
+    for( int i=0; i<MAX_FINGERS; i++ )
+    {
+        if( m_Fingers[i] == pTouch )
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int RemoveFinger(UITouch* pTouch)
+{
+    int id = FindFinger( pTouch );
+
+    if( id != -1 )
+        m_Fingers[id] = 0;
+
+    return id;
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     //Get all the touches.
@@ -222,9 +274,11 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
 
         CGPoint location = [touch locationInView:touch.view];
 
-        g_pGameCore->OnTouch( GCBA_Down, i, location.x*scale, location.y*scale, 0, 0 );
+        int fingerid = AddFinger( touch );
+
+        g_pGameCore->OnTouch( GCBA_Down, fingerid, location.x*scale, location.y*scale, 0, 0 );
         
-        //LOGInfo( LOGTag, "touchesBegan %d, loc(%0.1f, %0.1f)\n", i, location.x, location.y );
+        LOGInfo( LOGTag, "touchesBegan %d, loc(%0.1f, %0.1f)\n", fingerid, location.x, location.y );
     }
 }
 
@@ -241,10 +295,12 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
         UITouch* touch = [[allTouches allObjects] objectAtIndex:i];
         
         CGPoint location = [touch locationInView:touch.view];
-        
-        g_pGameCore->OnTouch( GCBA_Up, i, location.x*scale, location.y*scale, 0, 0 );
+                
+        int fingerid = RemoveFinger( touch );
 
-        //LOGInfo( LOGTag, "touchesEnded %d, loc(%0.1f, %0.1f)\n", i, location.x, location.y );
+        g_pGameCore->OnTouch( GCBA_Up, fingerid, location.x*scale, location.y*scale, 0, 0 );
+
+        LOGInfo( LOGTag, "touchesEnded %d, loc(%0.1f, %0.1f)\n", fingerid, location.x, location.y );
     }
 }
 
@@ -261,15 +317,28 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
         UITouch* touch = [[allTouches allObjects] objectAtIndex:i];
         
         CGPoint location = [touch locationInView:touch.view];
-        
-        g_pGameCore->OnTouch( GCBA_Held, i, location.x*scale, location.y*scale, 0, 0 );
 
-        //LOGInfo( LOGTag, "touchesMoved %d, loc(%0.1f, %0.1f)\n", i, location.x, location.y );
+        int fingerid = FindFinger( touch );
+		if( fingerid == -1 )
+            fingerid = AddFinger( touch );
+        
+        g_pGameCore->OnTouch( GCBA_Held, fingerid, location.x*scale, location.y*scale, 0, 0 );
+
+        LOGInfo( LOGTag, "touchesMoved %d, loc(%0.1f, %0.1f)\n", fingerid, location.x, location.y );
     }
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    //Get all the touches.
+    NSSet* allTouches = event.allTouches;
+    
+    for( int i=0; i<allTouches.count; i++ )
+    {
+        UITouch* touch = [[allTouches allObjects] objectAtIndex:i];
+
+        RemoveFinger( touch );
+    }
 }
 
 @end
