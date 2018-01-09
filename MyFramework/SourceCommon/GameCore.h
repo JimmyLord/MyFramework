@@ -29,7 +29,7 @@ enum GameCoreInputMethods
 };
 
 enum GameCoreButtonActions // following android finger keys
-{ // ATM, the indexes for these are likely hardcoded into lua scripts, so can't really be changed
+{ // If changed here, change in LuaGameState.cpp and snippets.json as well.
     GCBA_Down,
     GCBA_Up,
     GCBA_Held,
@@ -38,7 +38,7 @@ enum GameCoreButtonActions // following android finger keys
 };
 
 enum GameCoreButtonIDs
-{
+{ // If changed here, change in LuaGameState.cpp and snippets.json as well.
     GCBI_Back,
     GCBI_Left,
     GCBI_Right,
