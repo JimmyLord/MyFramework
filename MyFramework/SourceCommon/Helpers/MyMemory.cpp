@@ -73,6 +73,8 @@ void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocat
         MyAssert( obj->Next != NULL );
         MyAssert( obj->Prev != NULL );
 
+        // Pointer to allocation not freed: ((char*)obj)+sizeof(MemObject)
+
         LOGInfo( LOGTag, "%s(%d):(%d) %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
         if( AssertOnAnyAllocation )
             MyAssert( false );
