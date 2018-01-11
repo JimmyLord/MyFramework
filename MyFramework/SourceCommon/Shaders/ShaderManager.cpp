@@ -422,7 +422,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     }
     else
     {
-        LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->GetFullPath() );
+        //LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->GetFullPath() );
     }
 
     MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );

@@ -47,7 +47,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, in
 TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfilter, int magfilter, int wraps, int wrapt)
 {
     MyAssert( pFile );
-    LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->GetFullPath() );
+    //LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->GetFullPath() );
 
     // find the texture if it already exists:
     TextureDefinition* pTextureDef = FindTexture( pFile );
@@ -83,7 +83,7 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfil
 
 FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
 {
-    LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
+    //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBO = MyNew FBODefinition();
     bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
@@ -141,7 +141,7 @@ void TextureManager::Tick()
 
             if( success )
             {
-                LOGInfo( LOGTag, "pFBODef->Create() succeeded\n" );
+                //LOGInfo( LOGTag, "pFBODef->Create() succeeded\n" );
                 //g_pPanelMemory->AddTexture( pFBODef );
 
                 m_InitializedFBOs.MoveTail( pFBODef );
@@ -249,7 +249,7 @@ void TextureManager::Tick()
 
         if( textureloaded )
         {
-            LOGInfo( LOGTag, "textureloaded %s\n", pTextureDef->m_Filename );
+            //LOGInfo( LOGTag, "textureloaded %s\n", pTextureDef->m_Filename );
 
             // By default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
             if( pTextureDef->QueryFreeWhenCreated() )
@@ -263,7 +263,7 @@ void TextureManager::Tick()
             g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnRightClick, TextureDefinition::StaticOnDrag );
 #endif
 
-            LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
+            //LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
         }
     }
 }

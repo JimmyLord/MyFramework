@@ -283,7 +283,10 @@ void GameCore::OnSurfaceLost()
 void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height)
 {
 #if !MYFW_IOS
-    LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
+    if( m_WindowWidth != width || m_WindowHeight != height )
+    {
+        LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
+    }
 #endif
 
     m_WindowStartX = (float)startx;

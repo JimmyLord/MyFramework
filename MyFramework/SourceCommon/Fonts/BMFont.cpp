@@ -62,7 +62,7 @@ short ReadNextBytesAsShort(const char* ptr, short expected)
 
 void BMFont::ReadFont(const char* filebuffer, unsigned int buffersize)
 {
-    LOGInfo( LOGTag, "ReadFont - %d, %c%c%c%c\n", buffersize, filebuffer[0], filebuffer[1], filebuffer[2], filebuffer[3] );
+    //LOGInfo( LOGTag, "ReadFont - %d, %c%c%c%c\n", buffersize, filebuffer[0], filebuffer[1], filebuffer[2], filebuffer[3] );
 
     MyAssert( filebuffer[0] == 'B' );
     MyAssert( filebuffer[1] == 'M' );

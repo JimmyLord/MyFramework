@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -1344,7 +1344,7 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
     if( numverts < 0 || numverts > 65535 )
         return;
 
-    LOGInfo( LOGTag, "MyMesh::CreatePlane\n" );
+    //LOGInfo( LOGTag, "MyMesh::CreatePlane\n" );
 
     unsigned int numtris = (vertcount.x - 1) * (vertcount.y - 1) * 2;
     unsigned int numindices = numtris * 3;
@@ -1456,7 +1456,7 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topleftpos, Vector2 size, Vector2In
 {
     checkGlError( "MyMesh::CreatePlaneUVsNotShared" );
 
-    LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared\n" );
+    //LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared\n" );
 
     unsigned int numquads = (vertcount.x - 1) * (vertcount.y - 1);
     unsigned int numtris = numquads * 2;
@@ -2088,11 +2088,9 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
     m_MeshReady = true;
 }
 
-void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness, ColorByte color)
+void MyMesh::CreateEditorTransformGizmoAxis(float length, float thickness)
 {
     CreateCylinder( thickness, 4, 0, length, 0, 1, 0, 1, 0, 1, 0, 1 );
-    // TODOMaterials
-    LOGError( LOGTag, "TransformGizmo color wasn't set properly... need to make a material for it\n" );
 }
 
 MaterialDefinition* MyMesh::GetMaterial(int submeshindex)

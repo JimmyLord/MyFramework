@@ -115,7 +115,7 @@ bool FBODefinition::Create()
     GLint maxsize;
 
     glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &maxsize );
-    LOGInfo( LOGTag, "CreateFBO - maxsize: %d\n", maxsize );
+    //LOGInfo( LOGTag, "CreateFBO - maxsize: %d\n", maxsize );
 
 #if MYFW_ANDROID
     int range[2], precision;
@@ -243,7 +243,7 @@ bool FBODefinition::Create()
         // attach color texture
         if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
         {
-            LOGInfo( LOGTag, "FBO: Attaching color texture %d\n", m_pColorTexture->m_TextureID );
+            //LOGInfo( LOGTag, "FBO: Attaching color texture %d\n", m_pColorTexture->m_TextureID );
             glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->m_TextureID, 0 );
         }
 
@@ -252,12 +252,12 @@ bool FBODefinition::Create()
         {
             if( m_DepthIsTexture )
             {
-                LOGInfo( LOGTag, "FBO: Attaching depth texture %d\n", m_pDepthTexture->m_TextureID );
+                //LOGInfo( LOGTag, "FBO: Attaching depth texture %d\n", m_pDepthTexture->m_TextureID );
                 glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->m_TextureID, 0 );
             }
             else
             {
-                LOGInfo( LOGTag, "FBO: Attaching depth renderbuffer %d\n", m_pDepthTexture->m_TextureID );
+                //LOGInfo( LOGTag, "FBO: Attaching depth renderbuffer %d\n", m_pDepthTexture->m_TextureID );
                glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_pDepthTexture->m_TextureID );
             }
         }
@@ -267,19 +267,19 @@ bool FBODefinition::Create()
         checkGlError( "glCheckFramebufferStatus" );
         if( status != GL_FRAMEBUFFER_COMPLETE )
         {
-            LOGInfo( LOGTag, "CreateFBO - error glCheckFramebufferStatus( GL_FRAMEBUFFER )\n" );
+            //LOGInfo( LOGTag, "CreateFBO - error glCheckFramebufferStatus( GL_FRAMEBUFFER )\n" );
             //MyAssert( false );
             Invalidate( true );
             return false;
         }
 
-        LOGInfo( LOGTag, "FBO: created successfully\n" );
+        //LOGInfo( LOGTag, "FBO: created successfully\n" );
 
         MyBindFramebuffer( GL_FRAMEBUFFER, 0, 0, 0 );
         checkGlError( "glBindFramebufferEXT" );
     }
 
-    LOGInfo( LOGTag, "CreateFBO - complete (%d, %d)\n", m_TextureWidth, m_TextureHeight );
+    //LOGInfo( LOGTag, "CreateFBO - complete (%d, %d)\n", m_TextureWidth, m_TextureHeight );
 #else
     return false;
 #endif
