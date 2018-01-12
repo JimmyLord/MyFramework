@@ -66,6 +66,9 @@ public:
 
 public:
 #if MYFW_USING_WX
+    bool m_ShowInMemoryPanel;
+    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+
     enum RightClickOptions
     {
         RightClick_UnloadFile = 1000,

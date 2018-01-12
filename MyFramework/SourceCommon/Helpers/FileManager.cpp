@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -259,7 +259,10 @@ void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
     }
 
 #if MYFW_USING_WX
-    g_pPanelMemory->AddFile( pFile, pFile->GetExtensionWithDot(), pFile->GetFullPath(), MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
+    if( pFile->m_ShowInMemoryPanel )
+    {
+        g_pPanelMemory->AddFile( pFile, pFile->GetExtensionWithDot(), pFile->GetFullPath(), MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
+    }
 #endif
 }
 
