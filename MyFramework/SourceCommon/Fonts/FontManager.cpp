@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -98,6 +98,13 @@ void FontManager::Tick()
             }
             strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
             pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+#if MYFW_USING_WX
+            if( pFontDef->m_pFile->MemoryPanel_IsVisible() == false )
+            {
+                pFontDef->m_pTextureDef->GetFile()->MemoryPanel_Hide();
+                pFontDef->m_pTextureDef->MemoryPanel_Hide();
+            }
+#endif
         }
 
         // when the font texture is loaded, move the font to the other list and mark it fully loaded.

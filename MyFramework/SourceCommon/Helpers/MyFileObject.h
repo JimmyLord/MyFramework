@@ -131,6 +131,7 @@ public:
 #if MYFW_USING_WX
     bool m_ShowInMemoryPanel;
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+    bool MemoryPanel_IsVisible() { return m_ShowInMemoryPanel; }
 
     enum RightClickOptions
     {
