@@ -10,9 +10,11 @@
 #include "CommonHeader.h"
 #include "DragAndDropHackery.h"
 
+#if MYFW_USING_WX
 #include <wx/treectrl.h>
 #include <wx/dragimag.h>
 #include <wx/dcbuffer.h>
+#endif //MYFW_USING_WX
 
 DragAndDropStruct g_DragAndDropStruct;
 
@@ -52,6 +54,7 @@ DragAndDropItem* DragAndDropStruct::GetItem(int index)
     return &m_Items[index];
 }
 
+#if MYFW_USING_WX
 DragAndDropTreeMarker::DragAndDropTreeMarker(wxWindow* pParent)
 : wxPanel( pParent, wxID_ANY, wxDefaultPosition, wxSize(80, 2) )
 {
@@ -65,3 +68,4 @@ void DragAndDropTreeMarker::onPaint(wxPaintEvent &evt)
     dc.SetBrush( *wxRED_BRUSH );
     dc.DrawRectangle( 0, 0, 80, 2 );
 }
+#endif

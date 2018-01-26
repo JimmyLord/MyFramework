@@ -11,9 +11,11 @@
 #define __EditorCommands_H__
 
 class EditorCommand;
+#if MYFW_USING_WX
 class EditorCommand_PanelWatchNumberValueChanged;
 class EditorCommand_PanelWatchColorChanged;
 class EditorCommand_PanelWatchPointerChanged;
+#endif //MYFW_USING_WX
 class EditorCommand_UnloadSoundCues;
 
 class EditorCommand
@@ -45,6 +47,7 @@ public:
 
 //====================================================================================================
 
+#if MYFW_USING_WX
 class EditorCommand_PanelWatchNumberValueChanged : public EditorCommand
 {
 protected:
@@ -113,7 +116,7 @@ public:
     virtual void Undo();
     virtual EditorCommand* Repeat();
 };
-
+#endif //MYFW_USING_WX
 //====================================================================================================
 
 class EditorCommand_UnloadSoundCues : public EditorCommand

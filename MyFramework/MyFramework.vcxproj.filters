@@ -121,6 +121,9 @@
     <Filter Include="Libraries\pthreads-w32">
       <UniqueIdentifier>{d7b3a536-229b-402a-bdfd-732b432d3c52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source-Editor">
+      <UniqueIdentifier>{5f959bfc-ec17-407d-85d4-5054d2d8f1c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -372,9 +375,6 @@
     <ClCompile Include="SourceIOS\IAPManagerIOS.mm">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClCompile>
-    <ClCompile Include="SourceWidgets\DragAndDropHackery.cpp">
-      <Filter>Source-Platform\Source - Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp">
       <Filter>Source\Meshes</Filter>
     </ClCompile>
@@ -383,12 +383,6 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Meshes\MeshManager.cpp">
       <Filter>Source\Meshes</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceWidgets\CommandStack.cpp">
-      <Filter>Source-Platform\Source - Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceWidgets\EditorCommands.cpp">
-      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Meshes\LightManager.cpp">
       <Filter>Source\Meshes</Filter>
@@ -512,6 +506,15 @@
     </ClCompile>
     <ClCompile Include="SourceWidgets\MYFWMainWx.cpp">
       <Filter>Source-Platform\Source - Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEditor\CommandStack.cpp">
+      <Filter>Source-Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEditor\DragAndDropHackery.cpp">
+      <Filter>Source-Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceEditor\EditorCommands.cpp">
+      <Filter>Source-Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -812,9 +815,6 @@
     <ClInclude Include="SourceIOS\IAPManagerIOS.h">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClInclude>
-    <ClInclude Include="SourceWidgets\DragAndDropHackery.h">
-      <Filter>Source-Platform\Source - Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h">
       <Filter>Source\Meshes</Filter>
     </ClInclude>
@@ -823,12 +823,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MeshManager.h">
       <Filter>Source\Meshes</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceWidgets\CommandStack.h">
-      <Filter>Source-Platform\Source - Widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceWidgets\EditorCommands.h">
-      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\LightManager.h">
       <Filter>Source\Meshes</Filter>
@@ -859,9 +853,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MyAssert.h">
       <Filter>Source\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceWidgets\expr_eval.h">
-      <Filter>Source-Platform\Source - Widgets</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Textures\MaterialDefinition.h">
       <Filter>Source\Textures</Filter>
@@ -970,6 +961,18 @@
     </ClInclude>
     <ClInclude Include="..\Libraries\pthreads-w32\include\semaphore.h">
       <Filter>Libraries\pthreads-w32</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEditor\CommandStack.h">
+      <Filter>Source-Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEditor\DragAndDropHackery.h">
+      <Filter>Source-Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEditor\EditorCommands.h">
+      <Filter>Source-Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEditor\expr_eval.h">
+      <Filter>Source-Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

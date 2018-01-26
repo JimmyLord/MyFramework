@@ -22,6 +22,10 @@ int g_RequestedHeight;
 int g_InitialWidth;
 int g_InitialHeight;
 
+#if MYFW_USING_IMGUI
+unsigned int g_GLCanvasIDActive = 0;
+#endif
+
 HGLRC hRenderingContext = 0;
 HDC hDeviceContext = 0;
 HWND hWnd = 0;

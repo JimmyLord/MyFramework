@@ -87,7 +87,7 @@ void MaterialManager::Tick()
             g_pPanelMemory->RemoveMaterial( pMaterial );
             g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
             g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif // MYFW_USING_WX
+#endif //MYFW_USING_WX
 
             m_Materials.MoveTail( pMaterial );
         }

@@ -8,13 +8,14 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../SourceWidgets/CommandStack.h"
-#include "../SourceWidgets/EditorCommands.h"
+#include "../SourceEditor/CommandStack.h"
+#include "../SourceEditor/EditorCommands.h"
 
 //====================================================================================================
 // EditorCommand_PanelWatchNumberValueChanged
 //====================================================================================================
 
+#if MYFW_USING_WX
 EditorCommand_PanelWatchNumberValueChanged::EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj)
 {
     m_Name = "EditorCommand_PanelWatchNumberValueChanged";
@@ -319,6 +320,7 @@ EditorCommand* EditorCommand_PanelWatchPointerChanged::Repeat()
 {
     return 0;
 }
+#endif //MYFW_USING_WX
 
 //====================================================================================================
 // EditorCommand_UnloadSoundCues

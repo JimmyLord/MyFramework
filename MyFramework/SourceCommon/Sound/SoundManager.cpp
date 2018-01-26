@@ -9,9 +9,9 @@
 
 #include "CommonHeader.h"
 
-#if MYFW_USING_WX
-#include "../../SourceWidgets/EditorCommands.h"
-#include "../../SourceWidgets/CommandStack.h"
+#if MYFW_EDITOR
+#include "../../SourceEditor/EditorCommands.h"
+#include "../../SourceEditor/CommandStack.h"
 #endif
 
 SoundCue::SoundCue()

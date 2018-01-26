@@ -8,8 +8,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../SourceWidgets/CommandStack.h"
-#include "../SourceWidgets/EditorCommands.h"
+#include "../SourceEditor/CommandStack.h"
+#include "../SourceEditor/EditorCommands.h"
 
 #define DEBUG_EDITOR_COMMANDS 0
 

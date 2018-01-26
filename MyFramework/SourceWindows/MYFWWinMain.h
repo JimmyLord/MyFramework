@@ -10,6 +10,10 @@
 #ifndef __MYFWWinMain_H__
 #define __MYFWWinMain_H__
 
+#if MYFW_USING_IMGUI
+extern unsigned int g_GLCanvasIDActive;
+#endif
+
 bool MYFW_GetKey(int value);
 int MYFWWinMain(int width, int height);
 

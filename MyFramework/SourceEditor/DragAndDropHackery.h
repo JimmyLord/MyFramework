@@ -54,6 +54,7 @@ public:
 
 extern DragAndDropStruct g_DragAndDropStruct;
 
+#if MYFW_USING_WX
 // Attempt to add a visual marker when I drag/drop from the trees
 //   idea taken from: https://forums.wxwidgets.org/viewtopic.php?t=40168
 class DragAndDropTreeMarker : public wxPanel
@@ -64,5 +65,6 @@ protected:
 public:
     DragAndDropTreeMarker(wxWindow* pParent);
 };
+#endif
 
 #endif // __DragAndDropHackery_H__

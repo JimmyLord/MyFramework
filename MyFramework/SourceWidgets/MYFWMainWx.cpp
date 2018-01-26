@@ -10,8 +10,8 @@
 #include "CommonHeader.h"
 #include "MYFWMainWx.h"
 
-#include "../SourceWidgets/EditorCommands.h"
-#include "../SourceWidgets/CommandStack.h"
+#include "../SourceEditor/EditorCommands.h"
+#include "../SourceEditor/CommandStack.h"
 
 #define TESTING_FRAGCOORDISSUE 0
 

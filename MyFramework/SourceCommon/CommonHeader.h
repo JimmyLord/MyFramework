@@ -252,6 +252,12 @@ typedef int socklen_t;
 #include "wx/menu.h"
 #include "wx/artprov.h"
 #pragma warning( pop )
+#endif
+
+#if MYFW_EDITOR
+#if MYFW_WINDOWS && MYFW_USING_IMGUI
+#include "../SourceWindows/MYFWWinMain.h"
+#endif
 #include <vector>
 #include <map>
 #include <list>
@@ -566,7 +572,10 @@ typedef unsigned long   u_long;
 #include "../SourceWidgets/PanelObjectList.h"
 #include "../SourceWidgets/PanelMemory.h"
 #include "../SourceWidgets/PanelWatch.h"
-#include "../SourceWidgets/DragAndDropHackery.h"
+#endif
+
+#if MYFW_EDITOR
+#include "../SourceEditor/DragAndDropHackery.h"
 #endif
 
 #endif //__CommonHeader_H__
