@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -121,6 +121,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
                 if( g_SystemMouseIsLocked == true )
                 {
                     g_SystemMouseIsLocked = false;
+                    //LOGInfo( LOGTag, "System Mouse unlocked\n" );
                     ShowCursor( true );
                 }
                 else
@@ -195,19 +196,39 @@ void GetMouseCoordinates(int* mx, int* my)
     }
 }
 
-void SetMouseLock(bool lock)
+Vector2 g_PositionToLockMouse;
+
+void SetMouseLock(bool lock, Vector2 pos)
 {
     if( lock )
     {
-        LOGInfo( LOGTag, "SetMouseLock( true );\n" );
+        g_PositionToLockMouse = pos;
+        //LOGInfo( LOGTag, "SetMouseLock( true ) - (%0.0f, %0.0f);\n", pos.x, pos.y );
 
         g_GameWantsLockedMouse = true;
+
+        g_SystemMouseIsLocked = true;
+        //LOGInfo( LOGTag, "System Mouse Locked\n" );
+        ShowCursor( false );
+
+        g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x; //g_WindowWidth/2; //mousex;
+        g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y; //g_WindowHeight/2; //mousey;
+
+        // Set the mouse back to it's screen space position
+        POINT p;
+        p.x = g_MouseXPositionWhenLocked;
+        p.y = g_MouseYPositionWhenLocked;
+        ClientToScreen( hWnd, &p );
+        SetCursorPos( p.x, p.y );
     }
     else
     {
-        LOGInfo( LOGTag, "SetMouseLock( false );\n" );
+        //LOGInfo( LOGTag, "SetMouseLock( false );\n" );
 
         g_GameWantsLockedMouse = false;
+
+        g_SystemMouseIsLocked = false;
+        ShowCursor( true );
     }
 }
 
@@ -239,20 +260,31 @@ void GenerateMouseEvents(GameCore* pGameCore)
             if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
             {
                 g_SystemMouseIsLocked = true;
+                //LOGInfo( LOGTag, "System Mouse Locked\n" );
                 ShowCursor( false );
                 
-                g_MouseXPositionWhenLocked = g_WindowWidth/2; //mousex;
-                g_MouseYPositionWhenLocked = g_WindowHeight/2; //mousey;
+                g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x; //g_WindowWidth/2; //mousex;
+                g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y; //g_WindowHeight/2; //mousey;
 
-                mousex = g_WindowWidth/2;
-                mousey = g_WindowHeight/2;
+                mousex = g_MouseXPositionWhenLocked;
+                mousey = g_MouseYPositionWhenLocked;
             }
 
+            //LOGInfo( LOGTag, "Mouse down\n" );
             pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
+
+            if( g_GameWantsLockedMouse && g_SystemMouseIsLocked )
+            {
+                mousex = g_MouseXPositionWhenLocked;
+                mousey = g_MouseYPositionWhenLocked;
+            }
         }
 
         if( buttons[i] == 0 && buttonsold[i] == 1 )
+        {
+            //LOGInfo( LOGTag, "Mouse up\n" );
             pGameCore->OnTouch( GCBA_Up, i, (float)mousex, (float)mousey, 0, 0 ); // new release
+        }
     }
 
     int buttonstates = 0;
@@ -277,6 +309,8 @@ void GenerateMouseEvents(GameCore* pGameCore)
 
             float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
             float ydiff = (float)mousey - g_MouseYPositionWhenLocked;
+
+            //LOGInfo( LOGTag, "Mouse move relative\n" );
 
             if( xdiff != 0 || ydiff != 0 )
             {
@@ -307,6 +341,8 @@ void GenerateMouseEvents(GameCore* pGameCore)
         // Only send mouse positions if system mouse isn't locked
         if( g_SystemMouseIsLocked == false )
         {
+            //LOGInfo( LOGTag, "Mouse move absolute\n" );
+
             if( buttonstates == 0 )
                 pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
             if( buttonstates & 1 << 0 )
@@ -573,6 +609,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if( g_GameWantsLockedMouse )
             {
                 g_SystemMouseIsLocked = false;
+                //LOGInfo( LOGTag, "System Mouse Unlocked\n" );
                 ShowCursor( true );
             }
         }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -302,7 +302,9 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 
 void PlatformSpecific_SetMouseLock(bool lock)
 {
-#if MYFW_WINDOWS || MYFW_BLACKBERRY
+#if MYFW_WINDOWS
+    SetMouseLock( lock, Vector2( 300, 300 ) );
+#elif MYFW_BLACKBERRY
     SetMouseLock( lock );
 #elif MYFW_NACL
     g_pInstance->SetMouseLock( lock );

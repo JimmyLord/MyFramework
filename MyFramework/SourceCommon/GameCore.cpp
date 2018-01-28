@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -282,12 +282,12 @@ void GameCore::OnSurfaceLost()
 
 void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height)
 {
-#if !MYFW_IOS
-    if( m_WindowWidth != width || m_WindowHeight != height )
-    {
-        LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
-    }
-#endif
+//#if !MYFW_IOS
+//    if( m_WindowWidth != width || m_WindowHeight != height )
+//    {
+//        LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
+//    }
+//#endif
 
     m_WindowStartX = (float)startx;
     m_WindowStartY = (float)starty;
