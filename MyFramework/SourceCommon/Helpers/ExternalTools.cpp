@@ -302,7 +302,9 @@ void PlatformSpecific_SetMousePosition(float x, float y)
 
 void PlatformSpecific_SetMouseLock(bool lock)
 {
-#if MYFW_WINDOWS
+#if MYFW_USING_WX
+    SetMouseLock( lock );
+#elif MYFW_WINDOWS
     SetMouseLock( lock, Vector2( 300, 300 ) );
 #elif MYFW_BLACKBERRY
     SetMouseLock( lock );

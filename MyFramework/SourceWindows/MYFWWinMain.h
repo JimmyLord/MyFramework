@@ -10,6 +10,8 @@
 #ifndef __MYFWWinMain_H__
 #define __MYFWWinMain_H__
 
+extern HWND g_hWnd;
+
 #if MYFW_USING_IMGUI
 extern unsigned int g_GLCanvasIDActive;
 #endif

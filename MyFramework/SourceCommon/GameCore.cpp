@@ -36,6 +36,10 @@ GameCore::GameCore()
     g_pIAPManager = MyNew IAPManager;
 #endif
 
+    m_WindowStartX = 0;
+    m_WindowStartY = 0;
+    m_WindowWidth = 0;
+    m_WindowHeight = 0;
     m_HasFocus = true;
     m_Settled = false;
 
@@ -374,16 +378,13 @@ bool GameCore::OnKeys(GameCoreButtonActions action, int keycode, int unicodechar
         // if the key is mapped to a button, then call the button handler.
         if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
         {
-            return OnButtons( GCBA_Down, m_KeyMappingToButtons[keycode] );
+            return OnButtons( action, m_KeyMappingToButtons[keycode] );
         }
         else
         {
             m_LastInputMethodUsed = InputMethod_Keyboard;
         }
     }
-
-    if( keycode >= 0 && keycode < 255 )
-        m_KeysHeld[keycode] = true;
 
     return false;
 }
@@ -413,21 +414,6 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
 bool GameCore::OnKeyUp(int keycode, int unicodechar)
 {
     // TODO: don't ignore the unicode characters.
-
-#if MYFW_USING_WX
-    if( g_GLCanvasIDActive == 0 )
-#endif
-    {
-        // if the key is mapped to a button, then call the button handler.
-        if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
-        {
-            return OnButtons( GCBA_Up, m_KeyMappingToButtons[keycode] );
-        }
-        else
-        {
-            m_LastInputMethodUsed = InputMethod_Keyboard;
-        }
-    }
 
     if( keycode >= 0 && keycode < 255 )
         m_KeysHeld[keycode] = false;
@@ -465,18 +451,20 @@ bool GameCore::IsKeyHeld(int keycode)
 void GameCore::GenerateKeyHeldMessages()
 {
     // generate held messages for keys and buttons.
-//    for( int i=0; i<255; i++ )
-//    {
-//        if( m_KeysHeld[i] )
-//        {
-//#if MYFW_WINDOWS || MYFW_OSX
-//            if( i >= 'A' && i <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
-//                g_pGameCore->OnKeys( GCBA_Held, i, i+32 );
-//            else
-//#endif
-//                g_pGameCore->OnKeys( GCBA_Held, i, i );
-//        }
-//    }
+#if MYFW_USING_IMGUI
+    for( int i=0; i<255; i++ )
+    {
+        if( m_KeysHeld[i] )
+        {
+#if MYFW_WINDOWS || MYFW_OSX
+            if( i >= 'A' && i <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
+                g_pGameCore->OnKeys( GCBA_Held, i, i+32 );
+            else
+#endif
+                g_pGameCore->OnKeys( GCBA_Held, i, i );
+        }
+    }
+#endif
 
     for( int i=0; i<GCBI_NumButtons; i++ )
     {

@@ -111,10 +111,6 @@ public:
     float GetWindowHeight() { return m_WindowHeight; }
     bool HasFocus() { return m_HasFocus; }
     bool IsSettled() { return m_Settled; }
-    void SetIsNotSettled() { m_Settled = false; }
-
-    void RequestKeyboardOpen() { m_KeyboardOpenRequested = true; }
-    void RequestKeyboardClose() { m_KeyboardCloseRequested = true; }
 
     int GetLastInputMethodUsed() { return m_LastInputMethodUsed; }
 
@@ -125,6 +121,12 @@ public:
 #if MYFW_BLACKBERRY
     MediaPlayer* GetMediaPlayer() { return m_pMediaPlayer; }
 #endif
+
+    // GameCore Setters
+    void SetIsNotSettled() { m_Settled = false; }
+
+    void RequestKeyboardOpen() { m_KeyboardOpenRequested = true; }
+    void RequestKeyboardClose() { m_KeyboardCloseRequested = true; }
 
     // GameCore Methods
     virtual void InitializeManagers();

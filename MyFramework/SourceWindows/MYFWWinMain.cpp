@@ -28,7 +28,7 @@ unsigned int g_GLCanvasIDActive = 0;
 
 HGLRC hRenderingContext = 0;
 HDC hDeviceContext = 0;
-HWND hWnd = 0;
+HWND g_hWnd = 0;
 HINSTANCE hInstance;
 
 int g_WindowWidth = 0;
@@ -87,9 +87,9 @@ void SetWindowSize(int width, int height)
     }
 
     // Typecast from LONG_PTR to DWORD should be ok when querying GWL_STYLE and GWL_EXSTYLE    
-    DWORD dwStyle = (DWORD)GetWindowLongPtr( hWnd, GWL_STYLE );
-    DWORD dwExStyle = (DWORD)GetWindowLongPtr( hWnd, GWL_EXSTYLE );
-    HMENU menu = GetMenu( hWnd );
+    DWORD dwStyle = (DWORD)GetWindowLongPtr( g_hWnd, GWL_STYLE );
+    DWORD dwExStyle = (DWORD)GetWindowLongPtr( g_hWnd, GWL_EXSTYLE );
+    HMENU menu = GetMenu( g_hWnd );
 
     // Calculate the full size of the window needed to match our client area of width/height
     RECT WindowRect = { 0, 0, width, height };
@@ -98,7 +98,7 @@ void SetWindowSize(int width, int height)
     int windowwidth = WindowRect.right - WindowRect.left;
     int windowheight = WindowRect.bottom - WindowRect.top;
     
-    SetWindowPos( hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
+    SetWindowPos( g_hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
     
     ResizeGLScene( width, height );
 }
@@ -183,12 +183,10 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
 
 void GetMouseCoordinates(int* mx, int* my)
 {
-    extern HWND hWnd;
-
     POINT p;
     if( GetCursorPos( &p ) )
     {
-        if( ScreenToClient( hWnd, &p ) )
+        if( ScreenToClient( g_hWnd, &p ) )
         {
             *mx = p.x;
             *my = p.y;
@@ -218,7 +216,7 @@ void SetMouseLock(bool lock, Vector2 pos)
         POINT p;
         p.x = g_MouseXPositionWhenLocked;
         p.y = g_MouseYPositionWhenLocked;
-        ClientToScreen( hWnd, &p );
+        ClientToScreen( g_hWnd, &p );
         SetCursorPos( p.x, p.y );
     }
     else
@@ -304,7 +302,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
             POINT p;
             p.x = g_MouseXPositionWhenLocked;
             p.y = g_MouseYPositionWhenLocked;
-            ClientToScreen( hWnd, &p );
+            ClientToScreen( g_hWnd, &p );
             SetCursorPos( p.x, p.y );
 
             float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
@@ -378,16 +376,16 @@ GLvoid KillGLWindow()
         hRenderingContext = 0;
     }
 
-    if( hDeviceContext && !ReleaseDC( hWnd, hDeviceContext ) )
+    if( hDeviceContext && !ReleaseDC( g_hWnd, hDeviceContext ) )
     {
         MessageBox( 0, L"Release Device Context Failed.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
         hDeviceContext = 0;
     }
 
-    if( hWnd && !DestroyWindow( hWnd ) )
+    if( g_hWnd && !DestroyWindow( g_hWnd ) )
     {
         MessageBox( 0, L"Could Not Release hWnd.", L"SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-        hWnd = 0;
+        g_hWnd = 0;
     }
 
     if( !UnregisterClass( L"OpenGL", hInstance ) )
@@ -471,18 +469,18 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
 
     AdjustWindowRectEx( &WindowRect, dwStyle, false, dwExStyle );   // Adjust Window To True Requested Size
 
-    if( !( hWnd = CreateWindowEx( dwExStyle,                            // Extended Style For The Window
-                                  L"OpenGL",                            // Class Name
-                                  title,                                // Window Title
-                                  WS_CLIPSIBLINGS | WS_CLIPCHILDREN |   // Required Window Style
-                                    dwStyle,                            // Selected Window Style
-                                  0, 0,                                 // Window Position
-                                  WindowRect.right-WindowRect.left,     // Calculate Adjusted Window Width
-                                  WindowRect.bottom-WindowRect.top,     // Calculate Adjusted Window Height
-                                  0,                                    // No Parent Window
-                                  0,                                    // No Menu
-                                  hInstance,                            // Instance
-                                  0)))                                  // Don't Pass Anything To WM_CREATE
+    if( !( g_hWnd = CreateWindowEx( dwExStyle,                            // Extended Style For The Window
+                                    L"OpenGL",                            // Class Name
+                                    title,                                // Window Title
+                                    WS_CLIPSIBLINGS | WS_CLIPCHILDREN |   // Required Window Style
+                                      dwStyle,                            // Selected Window Style
+                                    0, 0,                                 // Window Position
+                                    WindowRect.right-WindowRect.left,     // Calculate Adjusted Window Width
+                                    WindowRect.bottom-WindowRect.top,     // Calculate Adjusted Window Height
+                                    0,                                    // No Parent Window
+                                    0,                                    // No Menu
+                                    hInstance,                            // Instance
+                                    0)))                                  // Don't Pass Anything To WM_CREATE
     {
         KillGLWindow();
         MessageBox( 0, L"Window Creation Error.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
@@ -511,7 +509,7 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
         0, 0, 0                         // Layer Masks Ignored
     };
 
-    if( !( hDeviceContext = GetDC( hWnd ) ) ) // Did We Get A Device Context?
+    if( !( hDeviceContext = GetDC( g_hWnd ) ) ) // Did We Get A Device Context?
     {
         KillGLWindow();
         MessageBox( 0, L"Can't Create A GL Device Context.", L"ERROR", MB_OK|MB_ICONEXCLAMATION );
@@ -546,9 +544,9 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
         return 0;
     }
 
-    ShowWindow( hWnd, SW_SHOW );     // Show The Window
-    SetForegroundWindow( hWnd );     // Slightly Higher Priority
-    SetFocus( hWnd );                // Sets Keyboard Focus To The Window
+    ShowWindow( g_hWnd, SW_SHOW );     // Show The Window
+    SetForegroundWindow( g_hWnd );     // Slightly Higher Priority
+    SetFocus( g_hWnd );                // Sets Keyboard Focus To The Window
     ResizeGLScene( width, height );  // Set Up Our Perspective GL Screen
 
     return true;
