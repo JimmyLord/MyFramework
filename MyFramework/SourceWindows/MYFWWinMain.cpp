@@ -35,6 +35,7 @@ int g_WindowWidth = 0;
 int g_WindowHeight = 0;
 bool g_KeyStates[256];
 bool g_MouseButtonStates[3];
+int g_MouseWheelDelta = 0;
 bool g_WindowIsActive = true;
 bool g_FullscreenMode = true;
 
@@ -290,6 +291,12 @@ void GenerateMouseEvents(GameCore* pGameCore)
     {
         if( buttons[i] == 1 && buttonsold[i] == 1 )
             buttonstates |= (1 << i);
+    }
+
+    if( g_MouseWheelDelta != 0 )
+    {
+        pGameCore->OnTouch( GCBA_Wheel, buttonstates, (float)mousex, (float)mousey, (float)g_MouseWheelDelta/WHEEL_DELTA, 0 );
+        g_MouseWheelDelta = 0;
     }
 
     // Game window wants mouse locked.
@@ -682,6 +689,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_MBUTTONUP:
         {
             g_MouseButtonStates[2] = false;
+        }
+        return 0;
+
+    case WM_MOUSEWHEEL:
+        {
+            g_MouseWheelDelta += GET_WHEEL_DELTA_WPARAM( wParam );
         }
         return 0;
 
