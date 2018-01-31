@@ -199,7 +199,7 @@ Vector2 g_PositionToLockMouse;
 
 void SetMouseLock(bool lock, Vector2 pos)
 {
-    if( lock )
+    if( lock == true && g_GameWantsLockedMouse == false )
     {
         g_PositionToLockMouse = pos;
         //LOGInfo( LOGTag, "SetMouseLock( true ) - (%0.0f, %0.0f);\n", pos.x, pos.y );
@@ -220,7 +220,8 @@ void SetMouseLock(bool lock, Vector2 pos)
         ClientToScreen( g_hWnd, &p );
         SetCursorPos( p.x, p.y );
     }
-    else
+    
+    if( lock == false && g_GameWantsLockedMouse == true )
     {
         //LOGInfo( LOGTag, "SetMouseLock( false );\n" );
 
