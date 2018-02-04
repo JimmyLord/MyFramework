@@ -149,6 +149,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
         }
     }
 
+#if !MYFW_EDITOR
     if( keys[MYKEYCODE_LCTRL] && keys['M'] == 1 && keysold['M'] == 0 ) // new press
         h_moviemode = !h_moviemode;
     if( keys[MYKEYCODE_LCTRL] && keys['S'] == 1 && keysold['S'] == 0 ) // new press
@@ -180,6 +181,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
     {
         SetWindowSize( (int)(g_InitialWidth*1.5f), g_InitialWidth );
     }
+#endif
 }
 
 void GetMouseCoordinates(int* mx, int* my)

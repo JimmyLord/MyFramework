@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -15,7 +15,7 @@ class GameLevel;
 class BMFont;
 class SoundPlayer;
 class SoundManager;
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 class CommandStack;
 #endif
 
@@ -162,17 +162,18 @@ public:
     bool OnKeyUp(int keycode, int unicodechar);
 
     virtual bool IsKeyHeld(int keycode);
+    virtual void ForceKeyRelease(int keycode);
 
     virtual void OnPurchaseComplete(const char* id, const char* sku, IAPErrorCodes errorcode, bool newpurchase) { }
 
     virtual const char* GetMatchmakingGameName() { return 0; }
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 protected:
     CommandStack* m_pCommandStack;
 
 public:
-    void SetCommandStack(CommandStack* pCommandStack) { m_pCommandStack = pCommandStack; }
+    void SetCommandStack(CommandStack* pCommandStack) { MyAssert( m_pCommandStack == 0 ); m_pCommandStack = pCommandStack; }
     CommandStack* GetCommandStack() { return m_pCommandStack; }
 #endif
 };

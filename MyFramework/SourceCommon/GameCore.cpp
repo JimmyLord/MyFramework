@@ -13,6 +13,10 @@
 #include "../SourceCommon/Input/GamepadManager.h"
 #include "../SourceWindows/GamepadManagerXInput.h"
 
+#if MYFW_EDITOR
+#include "../SourceEditor/CommandStack.h"
+#endif
+
 GameCore* g_pGameCore = 0;
 
 GameCore::GameCore()
@@ -58,6 +62,10 @@ GameCore::GameCore()
         m_KeysHeld[i] = false;
         m_KeyMappingToButtons[i] = GCBI_NumButtons;
     }
+
+#if MYFW_EDITOR
+    m_pCommandStack = 0;
+#endif
 }
 
 GameCore::~GameCore()
@@ -324,6 +332,10 @@ void GameCore::OnDrawFrameDone()
 {
     g_GLStats.EndFrame();
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
+
+#if MYFW_EDITOR
+    m_pCommandStack->IncrementFrameCount();
+#endif
 }
 
 void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathafter)
@@ -446,6 +458,12 @@ bool GameCore::IsKeyHeld(int keycode)
     }
 
     return false;
+}
+
+void GameCore::ForceKeyRelease(int keycode)
+{
+    if( keycode >= 0 && keycode < 255 )
+        m_KeysHeld[keycode] = false;
 }
 
 void GameCore::GenerateKeyHeldMessages()
