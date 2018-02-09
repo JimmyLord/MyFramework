@@ -754,126 +754,6 @@ void MaterialDefinition::OnLabelEdit(wxString newlabel) // StaticOnLabelEdit
     }
 }
 
-void MaterialDefinition::SaveMaterial(const char* relativepath)
-{
-    if( m_Name[0] == 0 )
-        return;
-
-    char filename[MAX_PATH];
-
-    if( m_pFile != 0 )
-    {
-        // if a file exists, use the existing file's fullpath
-        strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
-    }
-    else
-    {
-        // if a file doesn't exist, create the filename out of parts.
-        // TODO: move most of this block into generic system code.
-        MyAssert( relativepath != 0 );
-
-        char workingdir[MAX_PATH];
-#if MYFW_WINDOWS
-        _getcwd( workingdir, MAX_PATH * sizeof(char) );
-#else
-        getcwd( workingdir, MAX_PATH * sizeof(char) );
-#endif
-        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
-#if MYFW_WINDOWS
-        CreateDirectoryA( filename, 0 );
-#else
-        MyAssert( false );
-#endif
-        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, m_Name );
-
-        // this is a new file, check for filename conflict
-        {
-            unsigned int count = 0;
-            char newname[MAX_MATERIAL_NAME_LEN];
-            strcpy_s( newname, MAX_MATERIAL_NAME_LEN, m_Name );
-            while( g_pFileManager->DoesFileExist( filename ) == true )
-            {
-                count++;
-
-                sprintf_s( newname, MAX_MATERIAL_NAME_LEN, "%s(%d)", m_Name, count );
-                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, newname );
-            }
-            strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );
-        }
-    }
-
-    // Create the json string to save into the material file
-    char* jsonstr = 0;
-    {
-        cJSON* jRoot = cJSON_CreateObject();
-
-        cJSON* jMaterial = cJSON_CreateObject();
-        cJSON_AddItemToObject( jRoot, "Material", jMaterial );
-
-        cJSON_AddStringToObject( jMaterial, "Name", m_Name );
-        if( m_pShaderGroup )
-            cJSON_AddStringToObject( jMaterial, "Shader", m_pShaderGroup->GetFile()->GetFullPath() );
-        if( m_pShaderGroupInstanced )
-            cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->GetFullPath() );
-        if( m_pTextureColor )
-            cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->GetFilename() );
-
-        ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorAmbient", &tempcolor.r, 4 );
-
-        tempcolor = m_ColorDiffuse.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorDiffuse", &tempcolor.r, 4 );
-
-        tempcolor = m_ColorSpecular.AsColorFloat();
-        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorSpecular", &tempcolor.r, 4 );
-
-        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "Tint", &m_Tint.r, 4 );
-        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "SpecColor", &m_SpecColor.r, 4 );
-        cJSON_AddNumberToObject( jMaterial, "Shininess", m_Shininess );
-
-        cJSON_AddNumberToObject( jMaterial, "Blend", m_BlendType );
-
-        cJSONExt_AddFloatArrayToObject( jMaterial, "UVScale", &m_UVScale.x, 2 );
-        cJSONExt_AddFloatArrayToObject( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
-
-        ExportExposedUniformValues( jMaterial );
-
-        // dump material json structure to disk
-        jsonstr = cJSON_Print( jRoot );
-        cJSON_Delete( jRoot );
-    }
-
-    if( jsonstr != 0 )
-    {
-        FILE* pFile = 0;
-#if MYFW_WINDOWS
-        fopen_s( &pFile, filename, "wb" );
-#else
-        pFile = fopen( filename, "wb" );
-#endif
-        if( pFile )
-        {
-            fprintf( pFile, "%s", jsonstr );
-            fclose( pFile );
-        }
-
-        cJSONExt_free( jsonstr );
-
-        // if the file managed to save, request it.
-        if( m_pFile == 0 )
-        {
-            sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
-            m_pFile = g_pFileManager->RequestFile( filename );
-        }
-
-        // Update timestamp when saving a file to disk, so it doesn't reload when alt-tabbing.
-        if( m_pFile != 0 )
-        {
-            m_pFile->UpdateTimestamp();
-        }
-    }
-}
-
 void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y) // StaticOnDropShader
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
@@ -1110,3 +990,125 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
     g_pPanelWatch->m_PaddingLeft = oldpaddingleft;
 }
 #endif //MYFW_USING_WX
+
+#if MYFW_EDITOR
+void MaterialDefinition::SaveMaterial(const char* relativepath)
+{
+    if( m_Name[0] == 0 )
+        return;
+
+    char filename[MAX_PATH];
+
+    if( m_pFile != 0 )
+    {
+        // if a file exists, use the existing file's fullpath
+        strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
+    }
+    else
+    {
+        // if a file doesn't exist, create the filename out of parts.
+        // TODO: move most of this block into generic system code.
+        MyAssert( relativepath != 0 );
+
+        char workingdir[MAX_PATH];
+#if MYFW_WINDOWS
+        _getcwd( workingdir, MAX_PATH * sizeof(char) );
+#else
+        getcwd( workingdir, MAX_PATH * sizeof(char) );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
+#if MYFW_WINDOWS
+        CreateDirectoryA( filename, 0 );
+#else
+        MyAssert( false );
+#endif
+        sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, m_Name );
+
+        // this is a new file, check for filename conflict
+        {
+            unsigned int count = 0;
+            char newname[MAX_MATERIAL_NAME_LEN];
+            strcpy_s( newname, MAX_MATERIAL_NAME_LEN, m_Name );
+            while( g_pFileManager->DoesFileExist( filename ) == true )
+            {
+                count++;
+
+                sprintf_s( newname, MAX_MATERIAL_NAME_LEN, "%s(%d)", m_Name, count );
+                sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, newname );
+            }
+            strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, newname );
+        }
+    }
+
+    // Create the json string to save into the material file
+    char* jsonstr = 0;
+    {
+        cJSON* jRoot = cJSON_CreateObject();
+
+        cJSON* jMaterial = cJSON_CreateObject();
+        cJSON_AddItemToObject( jRoot, "Material", jMaterial );
+
+        cJSON_AddStringToObject( jMaterial, "Name", m_Name );
+        if( m_pShaderGroup )
+            cJSON_AddStringToObject( jMaterial, "Shader", m_pShaderGroup->GetFile()->GetFullPath() );
+        if( m_pShaderGroupInstanced )
+            cJSON_AddStringToObject( jMaterial, "ShaderInstanced", m_pShaderGroupInstanced->GetFile()->GetFullPath() );
+        if( m_pTextureColor )
+            cJSON_AddStringToObject( jMaterial, "TexColor", m_pTextureColor->GetFilename() );
+
+        ColorFloat tempcolor = m_ColorAmbient.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorAmbient", &tempcolor.r, 4 );
+
+        tempcolor = m_ColorDiffuse.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorDiffuse", &tempcolor.r, 4 );
+
+        tempcolor = m_ColorSpecular.AsColorFloat();
+        cJSONExt_AddFloatArrayToObject( jMaterial, "ColorSpecular", &tempcolor.r, 4 );
+
+        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "Tint", &m_Tint.r, 4 );
+        //cJSONExt_AddUnsignedCharArrayToObject( jMaterial, "SpecColor", &m_SpecColor.r, 4 );
+        cJSON_AddNumberToObject( jMaterial, "Shininess", m_Shininess );
+
+        cJSON_AddNumberToObject( jMaterial, "Blend", m_BlendType );
+
+        cJSONExt_AddFloatArrayToObject( jMaterial, "UVScale", &m_UVScale.x, 2 );
+        cJSONExt_AddFloatArrayToObject( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
+
+        ExportExposedUniformValues( jMaterial );
+
+        // dump material json structure to disk
+        jsonstr = cJSON_Print( jRoot );
+        cJSON_Delete( jRoot );
+    }
+
+    if( jsonstr != 0 )
+    {
+        FILE* pFile = 0;
+#if MYFW_WINDOWS
+        fopen_s( &pFile, filename, "wb" );
+#else
+        pFile = fopen( filename, "wb" );
+#endif
+        if( pFile )
+        {
+            fprintf( pFile, "%s", jsonstr );
+            fclose( pFile );
+        }
+
+        cJSONExt_free( jsonstr );
+
+        // if the file managed to save, request it.
+        if( m_pFile == 0 )
+        {
+            sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
+            m_pFile = g_pFileManager->RequestFile( filename );
+        }
+
+        // Update timestamp when saving a file to disk, so it doesn't reload when alt-tabbing.
+        if( m_pFile != 0 )
+        {
+            m_pFile->UpdateTimestamp();
+        }
+    }
+}
+#endif //MYFW_EDITOR

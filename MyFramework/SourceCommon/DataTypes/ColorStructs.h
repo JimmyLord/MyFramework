@@ -177,6 +177,14 @@ public:
                            this->a / 255.0f );
     }
 
+    inline void SetFromColorFloat(const ColorFloat o)
+    {
+        o.r < 0 ? this->r = 0 : o.r > 1 ? this->r = 255 : this->r = (unsigned char)(o.r * 255.0f);
+        o.g < 0 ? this->g = 0 : o.g > 1 ? this->g = 255 : this->g = (unsigned char)(o.g * 255.0f);
+        o.b < 0 ? this->b = 0 : o.b > 1 ? this->b = 255 : this->b = (unsigned char)(o.b * 255.0f);
+        o.a < 0 ? this->a = 0 : o.a > 1 ? this->a = 255 : this->a = (unsigned char)(o.a * 255.0f);
+    }
+
     inline ColorByte operator *(const float o) const
     {
         return ColorByte( this->r * o < 255 ? (unsigned char)(this->r * o) : 255,

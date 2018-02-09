@@ -75,8 +75,9 @@ public:
 
     void MoveFileToFrontOfFileLoadedList(MyFileObject* pFile);
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     bool DoesFileExist(const char* fullpath);
+#if MYFW_USING_WX
     MyFileObject* LoadFileNow(const char* fullpath);
 
     void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
@@ -84,7 +85,8 @@ public:
 
     void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc);
     void Editor_FindAllReferences(MyFileObject* pFile);
-#endif
+#endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 enum SaveFileOperation

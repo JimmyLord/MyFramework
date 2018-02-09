@@ -422,7 +422,7 @@ void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
     }
 }
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 bool FileManager::DoesFileExist(const char* fullpath)
 {
 #if MYFW_WINDOWS
@@ -441,7 +441,9 @@ bool FileManager::DoesFileExist(const char* fullpath)
 
     return false;
 }
+#endif //MYFW_EDITOR
 
+#if MYFW_USING_WX
 MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 {
     MyAssert( DoesFileExist( fullpath ) );

@@ -11,6 +11,7 @@
 #define __MaterialDefinition_H__
 
 class MaterialManager;
+class EditorMainFrame_ImGui;
 
 class ExposedUniformValue
 {
@@ -39,6 +40,7 @@ extern const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes];
 class MaterialDefinition : public CPPListNode, public RefCount
 {
     friend class MaterialManager;
+    friend class EditorMainFrame_ImGui;
 
 public:
     static const int MAX_MATERIAL_NAME_LEN = 128;
@@ -120,6 +122,7 @@ public:
     bool IsTransparent();
 
 public:
+#if MYFW_EDITOR
 #if MYFW_USING_WX
     enum RightClickOptions
     {
@@ -160,9 +163,10 @@ public:
     static void StaticOnRightClickTexture(void* pObjectPtr, int controlid) { ((MaterialDefinition*)pObjectPtr)->OnRightClickTexture(controlid); }
     void OnRightClickTexture(int controlid);
 
-    void SaveMaterial(const char* relativepath);
     void AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms);
 #endif //MYFW_USING_WX
+    void SaveMaterial(const char* relativepath);
+#endif //MYFW_EDITOR
 };
 
 #endif //__MaterialDefinition_H__
