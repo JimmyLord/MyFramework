@@ -40,7 +40,7 @@ TextureDefinition::TextureDefinition(bool freeonceloaded)
     m_WrapS = GL_CLAMP_TO_EDGE;
     m_WrapT = GL_CLAMP_TO_EDGE;
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     m_ShowInMemoryPanel = true;
 #endif
 }

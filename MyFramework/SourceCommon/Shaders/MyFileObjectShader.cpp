@@ -104,7 +104,7 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
                 pShaderFile->m_IsAnIncludeFile = true;
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
                 // Don't add include files to memory panel.
                 pShaderFile->MemoryPanel_Hide();
 #endif

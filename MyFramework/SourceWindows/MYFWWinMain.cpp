@@ -554,10 +554,14 @@ bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char 
         return 0;
     }
 
-    ShowWindow( g_hWnd, SW_SHOW );     // Show The Window
-    SetForegroundWindow( g_hWnd );     // Slightly Higher Priority
-    SetFocus( g_hWnd );                // Sets Keyboard Focus To The Window
+    ShowWindow( g_hWnd, SW_SHOW );   // Show The Window
+    SetForegroundWindow( g_hWnd );   // Slightly Higher Priority
+    SetFocus( g_hWnd );              // Sets Keyboard Focus To The Window
     ResizeGLScene( width, height );  // Set Up Our Perspective GL Screen
+
+#if MYFW_EDITOR
+    DragAcceptFiles( g_hWnd, TRUE );
+#endif
 
     return true;
 }
@@ -704,6 +708,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         {
             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
+        }
+        return 0;
+
+    case WM_DROPFILES:
+        {
+            HDROP hDrop = (HDROP)wParam;
+            
+            char filename[MAX_PATH];
+            unsigned int filecount = DragQueryFileA( hDrop, -1, (LPSTR)filename, MAX_PATH );
+
+            for( unsigned int i=0; i<filecount; i++ )
+            {
+                DragQueryFileA( hDrop, i, filename, MAX_PATH );
+
+                g_pGameCore->OnDropFile( filename );
+            }
+
+            DragFinish( hDrop );
         }
         return 0;
     }

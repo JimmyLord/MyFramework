@@ -98,7 +98,7 @@ void FontManager::Tick()
             }
             strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
             pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-#if MYFW_USING_WX
+#if MYFW_EDITOR
             if( pFontDef->m_pFile->MemoryPanel_IsVisible() == false )
             {
                 pFontDef->m_pTextureDef->GetFile()->MemoryPanel_Hide();

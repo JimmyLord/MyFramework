@@ -19,6 +19,10 @@ extern TextureManager* g_pTextureManager;
 
 class TextureManager
 {
+#if MYFW_USING_IMGUI
+    friend class EditorMainFrame_ImGui;
+#endif
+
 protected:
     CPPListHead m_LoadedTextures;
     CPPListHead m_TexturesStillLoading;

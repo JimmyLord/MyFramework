@@ -128,11 +128,11 @@ public:
     void UpdateTimestamp();
 
 public:
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     bool m_ShowInMemoryPanel;
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
     bool MemoryPanel_IsVisible() { return m_ShowInMemoryPanel; }
-
+#if MYFW_USING_WX
     enum RightClickOptions
     {
         RightClick_ViewInWatchWindow = 1000,
@@ -159,6 +159,7 @@ public:
     void* m_CustomLeftClickObject;
     void SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object);
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 #endif //__MyFileObject_H__

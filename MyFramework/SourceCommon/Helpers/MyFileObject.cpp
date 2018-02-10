@@ -107,9 +107,11 @@ MyFileObject::MyFileObject()
     m_FileLastWriteTime = 0;
 #endif
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     m_ShowInMemoryPanel = true;
+#endif
 
+#if MYFW_USING_WX
     m_CustomLeftClickCallback = 0;
     m_CustomLeftClickObject = 0;
 #endif

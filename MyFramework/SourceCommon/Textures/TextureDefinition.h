@@ -65,9 +65,10 @@ public:
     void FinishLoadingFileAndGenerateTexture();
 
 public:
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     bool m_ShowInMemoryPanel;
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+#if MYFW_USING_WX
 
     enum RightClickOptions
     {
@@ -82,6 +83,7 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((TextureDefinition*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 #endif //__TextureDefinition_H__

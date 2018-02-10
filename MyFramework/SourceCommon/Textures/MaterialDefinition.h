@@ -40,7 +40,9 @@ extern const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes];
 class MaterialDefinition : public CPPListNode, public RefCount
 {
     friend class MaterialManager;
+#if MYFW_USING_IMGUI
     friend class EditorMainFrame_ImGui;
+#endif
 
 public:
     static const int MAX_MATERIAL_NAME_LEN = 128;
