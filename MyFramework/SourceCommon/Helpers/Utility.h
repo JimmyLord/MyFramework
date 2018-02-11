@@ -86,13 +86,13 @@ inline float MyRoundToMultipleOf(float number, float multiple)
     if( number >= 0 )
     {
         number += multiple / 2.0f;
-        number -= fmod( number, multiple );
+        number -= (float)fmod( number, multiple );
     }
     else
     {
         number *= -1;
         number += multiple / 2.0f;
-        number -= fmod( number, multiple );
+        number -= (float)fmod( number, multiple );
         number *= -1;
     }
 

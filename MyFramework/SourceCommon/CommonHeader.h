@@ -459,6 +459,9 @@ typedef unsigned long   u_long;
 #endif
 #include "../SourceWindows/SavedData.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"
+#if WINVER >= 0x0A00
+#define _TIMESPEC_DEFINED
+#endif
 #include "../../Libraries/pthreads-w32/include/pthread.h"
 #include "Networking/WebRequest.h"
 #endif

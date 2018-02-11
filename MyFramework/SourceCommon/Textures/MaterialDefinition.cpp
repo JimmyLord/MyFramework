@@ -654,38 +654,6 @@ bool MaterialDefinition::IsTransparent()
 }
 
 #if MYFW_USING_WX
-bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
-{
-    if( GetTextureColor() && GetTextureColor()->GetFile() == pFile )
-    {
-        return true;
-    }
-
-    if( m_pShaderGroup )
-    {
-        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
-
-        if( pShaderFile == pFile )
-            return true;
-
-        if( pShaderFile )
-        {
-            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
-            {
-                if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
-                {
-                    if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->GetFile() == pFile )
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-
-    return false;
-}
-    
 void MaterialDefinition::OnLeftClick(unsigned int count) // StaticOnLeftClick
 {
 }
@@ -992,6 +960,38 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
 #endif //MYFW_USING_WX
 
 #if MYFW_EDITOR
+bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
+{
+    if( GetTextureColor() && GetTextureColor()->GetFile() == pFile )
+    {
+        return true;
+    }
+
+    if( m_pShaderGroup )
+    {
+        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
+
+        if( pShaderFile == pFile )
+            return true;
+
+        if( pShaderFile )
+        {
+            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
+            {
+                if( pShaderFile->m_ExposedUniforms[i].m_Type == ExposedUniformType_Sampler2D )
+                {
+                    if( m_UniformValues[i].m_pTexture && m_UniformValues[i].m_pTexture->GetFile() == pFile )
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void MaterialDefinition::SaveMaterial(const char* relativepath)
 {
     if( m_Name[0] == 0 )

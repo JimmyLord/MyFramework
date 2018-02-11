@@ -405,7 +405,7 @@ GLvoid KillGLWindow()
     }
 }
 
-bool CreateGLWindow(wchar_t* title, int width, int height, char colorbits, char zbits, char stencilbits, bool fullscreenflag)
+bool CreateGLWindow(wchar_t* title, int width, int height, unsigned char colorbits, unsigned char zbits, unsigned char stencilbits, bool fullscreenflag)
 {
     GLuint PixelFormat;
 

@@ -11,12 +11,20 @@
 #define __NotTheRealB2Settings_H__
 
 // I'm still not using C++11+, so defining override to nothing.
+#if __cplusplus < 201103L
+
+// xkeycheck.h in VS2017 doesn't like us redefining keywords,
+//    but since it allows us to turn off those warnings, let's do that.
+#define _ALLOW_KEYWORD_MACROS
+
 #ifndef override
 #define override
 #endif
 #ifndef nullptr
 #define nullptr 0
 #endif
+
+#endif //__cplusplus < 201103L
 
 // Include the real b2Settings.h
 #if !_DEBUG && !defined(NDEBUG)
