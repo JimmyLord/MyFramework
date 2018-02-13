@@ -441,9 +441,7 @@ bool FileManager::DoesFileExist(const char* fullpath)
 
     return false;
 }
-#endif //MYFW_EDITOR
 
-#if MYFW_USING_WX
 MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 {
     MyAssert( DoesFileExist( fullpath ) );
@@ -494,7 +492,7 @@ void FileManager::Editor_FindAllReferences(MyFileObject* pFile)
         m_pFindAllReferencesCallbackFunc( m_pFindAllReferencesCallbackObj, pFile );
     }
 }
-#endif
+#endif //MYFW_EDITOR
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()
 {

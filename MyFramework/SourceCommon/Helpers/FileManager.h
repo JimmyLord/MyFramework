@@ -44,14 +44,6 @@ protected:
     static void* Thread_FileIO(void* obj);
 #endif //USE_PTHREAD
 
-#if MYFW_USING_WX
-    void* m_pFileUnloadedCallbackObj;
-    FileManager_Editor_OnFileUnloaded_CallbackFunction m_pFileUnloadedCallbackFunc;
-
-    void* m_pFindAllReferencesCallbackObj;
-    FileManager_Editor_OnFindAllReferences_CallbackFunction m_pFindAllReferencesCallbackFunc;    
-#endif
-
 public:
     FileManager();
     virtual ~FileManager();
@@ -76,8 +68,15 @@ public:
     void MoveFileToFrontOfFileLoadedList(MyFileObject* pFile);
 
 #if MYFW_EDITOR
+protected:
+    void* m_pFileUnloadedCallbackObj;
+    FileManager_Editor_OnFileUnloaded_CallbackFunction m_pFileUnloadedCallbackFunc;
+
+    void* m_pFindAllReferencesCallbackObj;
+    FileManager_Editor_OnFindAllReferences_CallbackFunction m_pFindAllReferencesCallbackFunc;    
+
+public:
     bool DoesFileExist(const char* fullpath);
-#if MYFW_USING_WX
     MyFileObject* LoadFileNow(const char* fullpath);
 
     void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
@@ -85,7 +84,6 @@ public:
 
     void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc);
     void Editor_FindAllReferences(MyFileObject* pFile);
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 

@@ -81,6 +81,10 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 #endif
+
+#if MYFW_EDITOR
+    void CallMaterialCreatedCallbacks(MaterialDefinition* pMaterial);
+#endif
 };
 
 #endif //__MaterialManager_H__

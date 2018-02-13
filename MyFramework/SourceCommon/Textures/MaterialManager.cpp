@@ -330,7 +330,6 @@ void MaterialManager::OnPopupClick(wxEvent &evt)
         MaterialDefinition* pMaterial = g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
         // TODO: this material will cause an assert on shutdown, unless released by some other code.
 
-#if MYFW_USING_WX
         // find the selected folder and put the object into that folder.
         wxString wxcategory = g_pPanelMemory->m_pTree_Materials->GetItemText( g_pMaterialManager->m_TreeIDRightClicked );
         const char* category = wxcategory;
@@ -346,9 +345,7 @@ void MaterialManager::OnPopupClick(wxEvent &evt)
         g_pPanelMemory->AddMaterial( pMaterial, category, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
         g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 
-        for( unsigned int i=0; i<g_pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
-            g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
-#endif
+        CallMaterialCreatedCallbacks( pMaterial );
     }
 }
 
@@ -356,5 +353,13 @@ void MaterialManager::OnDrag()
 {
     //g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
     //g_DragAndDropStruct.m_Value = this;
+}
+#endif //MYFW_USING_WX
+
+#if MYFW_EDITOR
+void MaterialManager::CallMaterialCreatedCallbacks(MaterialDefinition* pMaterial)
+{
+    for( unsigned int i=0; i<g_pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
+        g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
 }
 #endif

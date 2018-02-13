@@ -80,13 +80,16 @@ public:
 
     bool IsFullyLoaded() { return m_FullyLoaded; }
 
+#if MYFW_EDITOR
 public:
-#if MYFW_USING_WX
     void SaveSoundCue(const char* relativefolder);
 
+#if MYFW_USING_WX
+public:
     SoundCueWxEventHandler m_WxEventHandler;
     wxTreeItemId m_TreeIDRightClicked;
 
+public:
     static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((SoundCue*)pObjectPtr)->OnLabelEdit( newlabel ); }
     void OnLabelEdit(wxString newlabel);
 
@@ -99,6 +102,7 @@ public:
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundCue*)pObjectPtr)->OnRightClick( id ); }
     void OnRightClick(wxTreeItemId treeid);
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 #if MYFW_USING_WX
@@ -170,14 +174,21 @@ public:
     void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback);
     void RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback);
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
+protected:
+    unsigned int m_NumRefsPlacedOnSoundCueBySystem; // Stores the lowest refcount required to unload a soundcue in editor.
+
+public:
     void SaveAllCues(bool saveunchanged = false);
+    void Editor_AddToNumRefsPlacedOnSoundCueBySystem() { m_NumRefsPlacedOnSoundCueBySystem += 1; }
+    unsigned int Editor_GetNumRefsPlacedOnSoundCueBySystem() { return m_NumRefsPlacedOnSoundCueBySystem; }
 
-    void AddSoundCueToMemoryPanel(SoundCue* pCue);
-
+#if MYFW_USING_WX
+public:
     SoundManagerWxEventHandler m_WxEventHandler;
     wxTreeItemId m_TreeIDRightClicked;
-    unsigned int m_NumRefsPlacedOnSoundCueBySystem; // Stores the lowest refcount required to unload a soundcue in editor.
+
+    void AddSoundCueToMemoryPanel(SoundCue* pCue);
 
     // Callbacks for root of tree
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }
@@ -192,7 +203,8 @@ public:
 
     static void StaticOnRightClickSoundObject(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClickSoundObject( id ); }
     void OnRightClickSoundObject(wxTreeItemId treeid);
-#endif
+#endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 #endif //__SoundManager_H__
