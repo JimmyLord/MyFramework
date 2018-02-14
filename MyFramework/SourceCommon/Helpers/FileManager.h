@@ -84,6 +84,8 @@ public:
 
     void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc);
     void Editor_FindAllReferences(MyFileObject* pFile);
+
+    void SortFileLists();
 #endif //MYFW_EDITOR
 };
 

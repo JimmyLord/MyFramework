@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -184,6 +184,18 @@
 #include "Events/EventManager.h"
 
 #if MYFW_WINDOWS
+#if _MSC_VER >= 1910 // VS2017+
+// At the moment, this mainly affects which XAudio2 lib we're including.
+// It's prefered to use the xaudio2 from the DirectX SDK (2010) for compatibility reasons,
+//   but the Windows 10 sdk's version of xaudio supports Win8+, so that's not an unreasonable fallback.
+// TODO: find way to detect if DXSDK is installed and use it if it is.
+#define _WIN32_WINNT 0x0602 // _WIN32_WINNT_WIN8 (Includes windows 8, 10)
+#pragma comment( lib, "xaudio2.lib" )
+#else
+// The DirectX SDK (2010) will be required for XAudio2.
+#define _WIN32_WINNT 0x0500 // _WIN32_WINNT_WIN2K (Includes windows 2000, XP, Vista, 7, 8, 10)
+#endif
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <WinSock.h>
@@ -459,7 +471,7 @@ typedef unsigned long   u_long;
 #endif
 #include "../SourceWindows/SavedData.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"
-#if WINVER >= 0x0A00
+#if WINVER >= 0x0602
 #define _TIMESPEC_DEFINED
 #endif
 #include "../../Libraries/pthreads-w32/include/pthread.h"

@@ -492,6 +492,25 @@ void FileManager::Editor_FindAllReferences(MyFileObject* pFile)
         m_pFindAllReferencesCallbackFunc( m_pFindAllReferencesCallbackObj, pFile );
     }
 }
+
+signed char FileSortFunc(CPPListNode* a, CPPListNode* b)
+{
+    MyFileObject* fa = (MyFileObject*)a;
+    MyFileObject* fb = (MyFileObject*)b;
+
+    int diff = strcmp( fa->GetExtensionWithDot(), fb->GetExtensionWithDot() );
+    if( diff == 0 )
+    {
+        diff = strcmp( fa->GetFilenameWithoutExtension(), fb->GetFilenameWithoutExtension() );
+    }
+
+    return (signed char)diff;
+}
+
+void FileManager::SortFileLists()
+{
+    m_FilesLoaded.Sort( FileSortFunc );
+}
 #endif //MYFW_EDITOR
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()
