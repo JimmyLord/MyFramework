@@ -193,7 +193,10 @@
 #pragma comment( lib, "xaudio2.lib" )
 #else
 // The DirectX SDK (2010) will be required for XAudio2.
-#define _WIN32_WINNT 0x0500 // _WIN32_WINNT_WIN2K (Includes windows 2000, XP, Vista, 7, 8, 10)
+// Need 2000 for WINDOWINFO
+//#define _WIN32_WINNT 0x0500 // _WIN32_WINNT_WIN2K (Includes windows 2000, XP, Vista, 7, 8, 10)
+// Need XP for RAWINPUTDEVICE
+#define _WIN32_WINNT 0x0501 // _WIN32_WINNT_WINXP (Includes windows XP, Vista, 7, 8, 10)
 #endif
 
 #define WIN32_LEAN_AND_MEAN

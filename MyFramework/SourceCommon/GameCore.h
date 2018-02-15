@@ -65,6 +65,7 @@ class GameCore
 {
 protected:
     bool m_OneTimeInitWasCalled; // HACK: NaCl and Android builds call OneTimeInit too often, so this will ensure it doesn't get called multiple times.
+    bool m_GameConfirmedCloseIsOkay; // Setting this flag should cause the main game window to close.
 
     bool m_GLSurfaceIsValid;
 
@@ -134,6 +135,10 @@ public:
     virtual void OneTimeInit();
     virtual void OnPrepareToDie();
     virtual bool IsReadyToRender();
+
+    virtual void RequestClose() { m_GameConfirmedCloseIsOkay = true; } // Always close when requested.
+    virtual bool HasGameConfirmedCloseIsOkay() { return m_GameConfirmedCloseIsOkay; }
+    virtual void SetGameConfirmedCloseIsOkay() { m_GameConfirmedCloseIsOkay = true; }
 
     virtual double Tick(double TimePassed); // returns time used... i.e. unpaused time.
     virtual void OnFocusGained();

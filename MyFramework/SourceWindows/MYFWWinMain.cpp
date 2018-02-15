@@ -128,7 +128,10 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
                 else
                 {
                     if( g_EscapeButtonWillQuit )
-                        g_CloseProgramRequested = true;
+                    {
+                        g_pGameCore->RequestClose();
+                        //g_CloseProgramRequested = true;
+                    }
                 }
             }
             
@@ -597,7 +600,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
         {
+#if MYFW_EDITOR
+            g_pGameCore->RequestClose();
+#else
             PostQuitMessage( 0 );
+#endif
         }
         return 0;
 
@@ -811,7 +818,7 @@ int MYFWWinMain(int width, int height)
 
             if( g_WindowIsActive )
             {
-                if( g_CloseProgramRequested )
+                if( g_CloseProgramRequested || g_pGameCore->HasGameConfirmedCloseIsOkay() )
                 {
                     done = true;
                 }
