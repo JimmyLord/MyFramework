@@ -309,7 +309,7 @@ void MaterialDefinition::SetName(const char* name)
 {
     MyAssert( name );
 
-    if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
+    if( strcmp( m_Name, name ) == 0 ) // Name hasn't changed.
         return;
 
     //size_t len = strlen( name );
@@ -318,8 +318,9 @@ void MaterialDefinition::SetName(const char* name)
 
     if( m_pFile )
     {
+        // Rename the file on disk and force a save to update the name in the material file.
         m_pFile->Rename( name );
-        // TODO: rename the file on disk.
+        SaveMaterial( 0 );
     }
 
 #if MYFW_USING_WX
