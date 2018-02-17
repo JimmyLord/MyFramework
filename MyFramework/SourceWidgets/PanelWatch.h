@@ -79,7 +79,7 @@ class PanelWatch;
 extern PanelWatch* g_pPanelWatch;
 
 typedef void (*PanelWatchCallback)(void*);
-typedef void (*PanelWatchCallbackDropTarget)(void* pObjectPtr, int controlid, wxCoord x, wxCoord y);
+typedef void (*PanelWatchCallbackDropTarget)(void* pObjectPtr, int controlid, int x, int y);
 typedef void (*PanelWatchCallbackValueChanged)(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue, bool valuewaschangedbydragging);
 typedef void (*PanelWatchCallbackRightClick)(void* pObjectPtr, int controlid);
 typedef void (*PanelWatchCallbackButtonPressed)(void* pObjectPtr, int buttonid);
@@ -94,9 +94,9 @@ public:
 public:
     PanelWatchDropTarget();
 
-    //virtual wxDragResult OnDragEnter(wxCoord x, wxCoord y, wxDragResult defResult);
-    virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
-    virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
+    //virtual wxDragResult OnDragEnter(int x, int y, wxDragResult defResult);
+    virtual wxDragResult OnDragOver(int x, int y, wxDragResult defResult);
+    virtual wxDragResult OnData(int x, int y, wxDragResult defResult);
 };
 
 struct VariableProperties

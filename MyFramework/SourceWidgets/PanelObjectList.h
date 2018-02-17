@@ -18,19 +18,19 @@ extern PanelObjectList* g_pPanelObjectList;
 typedef void (*PanelObjectListObjectCallback)(void* pObjectPtr);
 typedef void (*PanelObjectListObjectCallbackLeftClick)(void* pObjectPtr, wxTreeItemId id, unsigned int count);
 typedef void (*PanelObjectListObjectCallbackRightClick)(void* pObjectPtr, wxTreeItemId id);
-typedef void (*PanelObjectListObjectCallbackDropTarget)(void* pObjectPtr, wxTreeItemId id, int controlid, wxCoord x, wxCoord y);
+typedef void (*PanelObjectListObjectCallbackDropTarget)(void* pObjectPtr, wxTreeItemId id, int controlid, int x, int y);
 typedef void (*PanelObjectListObjectCallbackLabelEdit)(void* pObjectPtr, wxTreeItemId id, wxString);
 
 typedef void (*PanelObjectListCallback)(void* pObjectPtr);
 
 // Macros to make life easier if I change the params of any of these functions.
 #define MYFW_PANELOBJECTLIST_DEFINE_CALLBACK_ONDROP(FunctionName, ObjectClass) \
-    static void Static##FunctionName(void* pObjectPtr, wxTreeItemId id, int controlid, wxCoord x, wxCoord y) \
+    static void Static##FunctionName(void* pObjectPtr, wxTreeItemId id, int controlid, int x, int y) \
     { ((ObjectClass*)pObjectPtr)->FunctionName(id, controlid, x, y); } \
-    void FunctionName(wxTreeItemId id, int controlid, wxCoord x, wxCoord y);
+    void FunctionName(wxTreeItemId id, int controlid, int x, int y);
 
 #define MYFW_PANELOBJECTLIST_DECLARE_CALLBACK_ONDROP(FunctionName, ObjectClass) \
-    void ObjectClass::FunctionName(wxTreeItemId id, int controlid, wxCoord x, wxCoord y)
+    void ObjectClass::FunctionName(wxTreeItemId id, int controlid, int x, int y)
 
 class TreeItemDataGenericObjectInfo : public wxTreeItemData
 {
@@ -78,8 +78,8 @@ public:
 public:
     PanelObjectListDropTarget();
 
-    virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
-    virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
+    virtual wxDragResult OnDragOver(int x, int y, wxDragResult defResult);
+    virtual wxDragResult OnData(int x, int y, wxDragResult defResult);
 };
 
 void UpdatePanelWatchWithSelectedItems();
@@ -119,9 +119,9 @@ protected:
     void UpdateRootNodeObjectCount();
 
     // drop code for drag and drop.
-//    virtual wxDragResult OnEnter(wxCoord x, wxCoord y, wxDragResult defResult);
-//    virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);
-//    virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult);
+//    virtual wxDragResult OnEnter(int x, int y, wxDragResult defResult);
+//    virtual wxDragResult OnDragOver(int x, int y, wxDragResult defResult);
+//    virtual wxDragResult OnData(int x, int y, wxDragResult defResult);
 
 public:
     PanelObjectList(wxFrame* parentframe);

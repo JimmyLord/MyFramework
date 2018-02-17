@@ -102,8 +102,8 @@ public:
     void OnSaveAnimationsPressed(int buttonid);
 
     // Watch panel callbacks.
-    static void StaticOnDropMaterial(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }
-    void OnDropMaterial(int controlid, wxCoord x, wxCoord y);
+    static void StaticOnDropMaterial(void* pObjectPtr, int controlid, int x, int y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }
+    void OnDropMaterial(int controlid, int x, int y);
 
     void SaveAnimationControlFile();
 #endif

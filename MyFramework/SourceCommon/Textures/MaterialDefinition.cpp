@@ -723,7 +723,7 @@ void MaterialDefinition::OnLabelEdit(wxString newlabel) // StaticOnLabelEdit
     }
 }
 
-void MaterialDefinition::OnDropShader(int controlid, wxCoord x, wxCoord y) // StaticOnDropShader
+void MaterialDefinition::OnDropShader(int controlid, int x, int y) // StaticOnDropShader
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
 
@@ -767,7 +767,7 @@ void MaterialDefinition::OnRightClickShader(int controlid) // StaticOnRightClick
     }
 }
 
-void MaterialDefinition::OnDropTexture(int controlid, wxCoord x, wxCoord y) // StaticOnDropTexture
+void MaterialDefinition::OnDropTexture(int controlid, int x, int y) // StaticOnDropTexture
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
 

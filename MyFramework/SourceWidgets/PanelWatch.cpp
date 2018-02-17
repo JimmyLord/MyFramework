@@ -1133,17 +1133,17 @@ PanelWatchDropTarget::PanelWatchDropTarget()
     m_ControlIndex = -1;
 }
 
-//wxDragResult PanelWatchDropTarget::OnDragEnter(wxCoord x, wxCoord y, wxDragResult defResult)
+//wxDragResult PanelWatchDropTarget::OnDragEnter(int x, int y, wxDragResult defResult)
 //{
 //    return wxDragCopy;
 //}
 
-wxDragResult PanelWatchDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
+wxDragResult PanelWatchDropTarget::OnDragOver(int x, int y, wxDragResult defResult)
 {
     return wxDragCopy;
 }
 
-wxDragResult PanelWatchDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
+wxDragResult PanelWatchDropTarget::OnData(int x, int y, wxDragResult defResult)
 {
     // figure out which object the stuff was dropped on and let it know.
     MyAssert( m_pCallbackObj && m_pCallbackFunc );

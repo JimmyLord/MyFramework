@@ -151,14 +151,14 @@ public:
     void OnLabelEdit(wxString newlabel);
 
     // Watch panel callbacks.
-    static void StaticOnDropShader(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(controlid, x, y); }
-    void OnDropShader(int controlid, wxCoord x, wxCoord y);
+    static void StaticOnDropShader(void* pObjectPtr, int controlid, int x, int y) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(controlid, x, y); }
+    void OnDropShader(int controlid, int x, int y);
 
     static void StaticOnRightClickShader(void* pObjectPtr, int controlid) { ((MaterialDefinition*)pObjectPtr)->OnRightClickShader(controlid); }
     void OnRightClickShader(int controlid);
 
-    static void StaticOnDropTexture(void* pObjectPtr, int controlid, wxCoord x, wxCoord y) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(controlid, x, y); }
-    void OnDropTexture(int controlid, wxCoord x, wxCoord y);
+    static void StaticOnDropTexture(void* pObjectPtr, int controlid, int x, int y) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(controlid, x, y); }
+    void OnDropTexture(int controlid, int x, int y);
 
     static void StaticOnRightClickTexture(void* pObjectPtr, int controlid) { ((MaterialDefinition*)pObjectPtr)->OnRightClickTexture(controlid); }
     void OnRightClickTexture(int controlid);

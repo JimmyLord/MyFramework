@@ -239,7 +239,7 @@ void My2DAnimInfo::OnSaveAnimationsPressed(int buttonid)
     SaveAnimationControlFile();
 }
 
-void My2DAnimInfo::OnDropMaterial(int controlid, wxCoord x, wxCoord y)
+void My2DAnimInfo::OnDropMaterial(int controlid, int x, int y)
 {
     DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
 

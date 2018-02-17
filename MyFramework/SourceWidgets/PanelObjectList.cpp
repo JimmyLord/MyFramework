@@ -286,7 +286,7 @@ PanelObjectListDropTarget::PanelObjectListDropTarget()
     SetDataObject( dataobject );
 }
 
-wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult)
+wxDragResult PanelObjectListDropTarget::OnDragOver(int x, int y, wxDragResult defResult)
 {
     wxTreeItemId id = m_pPanelObjectList->m_pTree_Objects->HitTest( wxPoint(x, y) );
     if( id.IsOk() )
@@ -315,7 +315,7 @@ wxDragResult PanelObjectListDropTarget::OnDragOver(wxCoord x, wxCoord y, wxDragR
     return wxDragCopy;
 }
 
-wxDragResult PanelObjectListDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult defResult)
+wxDragResult PanelObjectListDropTarget::OnData(int x, int y, wxDragResult defResult)
 {
     m_pPanelObjectList->m_pDragAndDropTreeMarker->Hide();
 
