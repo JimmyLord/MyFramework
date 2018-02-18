@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -116,4 +116,58 @@ void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, ch
             i--;
         }
     }
+}
+
+// Taken from https://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
+//   and changed to accomodate an additional needle terminator as well as 0.
+char* MyStrIStr(const char* haystack, const char* needle, unsigned char extraNeedleTerminator)
+{
+    do
+    {
+        const char* h = haystack;
+        const char* n = needle;
+        while( tolower( (unsigned char)*h ) == tolower( (unsigned char)*n ) && n != 0 && *n != extraNeedleTerminator )
+        {
+            h++;
+            n++;
+        }
+        if( *n == 0 || *n == extraNeedleTerminator )
+        {
+            return (char*)haystack;
+        }
+    } while( *haystack++ );
+    
+    return 0;
+}
+
+bool CheckIfMultipleSubstringsAreInString(const char* string, const char* substrings, unsigned char delimiter)
+{
+    MyAssert( string != 0 );
+    MyAssert( substrings != 0 );
+
+    const char* ss = substrings;
+
+    while( *ss != 0 )
+    {
+        // Advance to next substring after a delimiter. Ignores multiple delimiters in a row.
+        while( *ss == delimiter )
+        {
+            ss++;
+        }
+
+        // 'ss' should be at the start of one of the substrings.
+        if( *ss != 0 && MyStrIStr( string, ss, delimiter ) == 0 )
+        {
+            // This substring wasn't found.
+            return false;
+        }
+
+        // Advance to next delimiter or end of string.
+        while( *ss != 0 && *ss != delimiter )
+        {
+            ss++;
+        }
+    }
+    
+    return true;
 }

@@ -40,9 +40,9 @@ protected:
 
     MyList<MaterialCreatedCallbackStruct> m_pMaterialCreatedCallbackList;
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     MaterialDefinition* m_pDefaultEditorMaterial;
-#endif //MYFW_USING_WX
+#endif
 
 public:
     MaterialManager();
@@ -55,7 +55,7 @@ public:
     // Callbacks
     void RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback);
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     void SaveAllMaterials(bool saveunchanged = false);
 
     MaterialDefinition* GetDefaultEditorMaterial();

@@ -20,7 +20,9 @@ MaterialManager::MaterialManager()
 #if MYFW_USING_WX
     wxTreeItemId idroot = g_pPanelMemory->m_pTree_Materials->GetRootItem();
     g_pPanelMemory->SetMaterialPanelCallbacks( idroot, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
+#endif
 
+#if MYFW_EDITOR
     m_pDefaultEditorMaterial = 0;
 #endif
 
@@ -29,7 +31,7 @@ MaterialManager::MaterialManager()
 
 MaterialManager::~MaterialManager()
 {
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     SAFE_RELEASE( m_pDefaultEditorMaterial );
 #endif
 
@@ -116,7 +118,7 @@ void MaterialManager::FreeAllMaterials()
     }
 }
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 void MaterialManager::SaveAllMaterials(bool saveunchanged)
 {
     for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
@@ -142,7 +144,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 
     return m_pDefaultEditorMaterial;
 }
-#endif
+#endif //MYFW_EDITOR
 
 MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
 {
