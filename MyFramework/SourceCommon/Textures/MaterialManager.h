@@ -58,6 +58,8 @@ public:
 #if MYFW_EDITOR
     void SaveAllMaterials(bool saveunchanged = false);
 
+    MaterialDefinition* Editor_GetFirstMaterialLoaded()       { return (MaterialDefinition*)m_Materials.GetHead(); }
+    MaterialDefinition* Editor_GetFirstMaterialStillLoading() { return (MaterialDefinition*)m_MaterialsStillLoading.GetHead(); }
     MaterialDefinition* GetDefaultEditorMaterial();
 #endif
 
