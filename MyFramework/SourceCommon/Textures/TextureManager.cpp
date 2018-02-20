@@ -137,6 +137,9 @@ void TextureManager::Tick()
             if( pFBODef->m_FailedToInit )
                 continue;
 
+            if( pFBODef->m_NeedColorTexture == false && pFBODef->m_DepthBits == 0 )
+                continue;
+
             bool success = pFBODef->Create();
 
             if( success )
