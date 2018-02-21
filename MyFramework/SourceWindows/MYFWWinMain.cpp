@@ -650,6 +650,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_KeyStates['['] = true;
             else if( wParam == VK_OEM_6 )
                 g_KeyStates[']'] = true;
+            else if( wParam == VK_DELETE ) // main delete key or '.'/delete key on numpad.
+                g_KeyStates[MYKEYCODE_DELETE] = true;
             else
                 g_KeyStates[wParam] = true;
         }
@@ -665,6 +667,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_KeyStates['['] = false;
             else if( wParam == VK_OEM_6 )
                 g_KeyStates[']'] = false;
+            else if( wParam == VK_DELETE ) // delete or '.' on numpad.
+                g_KeyStates[MYKEYCODE_DELETE] = false;
             else
                 g_KeyStates[wParam] = false;
         }
