@@ -594,6 +594,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER:
                     return 0;
+
+                // Hotkeys are handled manually elsewhere.
+                case SC_KEYMENU:
+                    // Let common alt keys be handled by the system.
+                    // Alt-Space (window context menu)
+                    // Alt-F4    (close window) - actually handled in SYSKEYDOWN, but leaving here just in case.
+                    if( lParam != ' ' &&
+                        lParam != VK_F4
+                      )
+                    {
+                        return 0;
+                    }
             }
         }
         break;
@@ -669,6 +681,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 g_KeyStates[']'] = false;
             else if( wParam == VK_DELETE ) // delete or '.' on numpad.
                 g_KeyStates[MYKEYCODE_DELETE] = false;
+            else
+                g_KeyStates[wParam] = false;
+        }
+        return 0;
+
+    case WM_SYSKEYDOWN:
+        {
+            // Key presses when alt is held.
+            if( wParam == VK_LMENU || wParam == VK_MENU )
+                g_KeyStates[MYKEYCODE_LALT] = true;
+            else if( wParam == VK_RMENU )
+                g_KeyStates[MYKEYCODE_RALT] = true;
+            else if( wParam == VK_F4 && (lParam & (1 << 29)) )
+                break; // Let Alt-F4 pass through.
+            else
+                g_KeyStates[wParam] = true;
+        }
+        return 0;
+
+    case WM_SYSKEYUP:
+        {
+            // Key releases when alt is released.
+            if( wParam == VK_LMENU || wParam == VK_MENU )
+                g_KeyStates[MYKEYCODE_LALT] = false;
+            else if( wParam == VK_RMENU )
+                g_KeyStates[MYKEYCODE_RALT] = false;
+            else if( wParam == VK_F4 && (lParam & (1 << 29)) )
+                break; // Since we ignored the down, let's ignore the up
             else
                 g_KeyStates[wParam] = false;
         }

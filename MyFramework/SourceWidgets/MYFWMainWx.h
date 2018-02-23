@@ -18,15 +18,6 @@ class MainGLCanvas;
 class CommandStack;
 class MainApp;
 
-enum GLViewTypes
-{
-    GLView_Full,
-    GLView_Tall,
-    GLView_Square,
-    GLView_Wide,
-    GLView_NumTypes,
-};
-
 enum EditorWindowTypes
 {
     EditorWindow_Game,
