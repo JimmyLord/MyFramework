@@ -974,6 +974,9 @@
     <ClInclude Include="SourceEditor\expr_eval.h">
       <Filter>Source-Editor</Filter>
     </ClInclude>
+    <ClInclude Include="SourceEditor\EditorViewTypes.h">
+      <Filter>Source-Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SourceIOS\ExternalToolsIOS.mm">

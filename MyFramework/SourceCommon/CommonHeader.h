@@ -270,6 +270,7 @@ typedef int socklen_t;
 #endif
 
 #if MYFW_EDITOR
+#include "../SourceEditor/EditorViewTypes.h"
 #if MYFW_WINDOWS && MYFW_USING_IMGUI
 #include <direct.h>
 #include "../SourceWindows/MYFWWinMain.h"
