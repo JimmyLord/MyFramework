@@ -177,6 +177,9 @@ public:
     inline Vector4 DivideComponents(const Vector4& o) const { return Vector4(this->x / o.x, this->y / o.y, this->z / o.z, this->w / o.w); }
     //inline Vector4 MultiplyComponents(const Vector4Int& o) const { return Vector4(this->x * o.x, this->y * o.y, this->z * o.z, this->w * o.w); }
 
+    inline bool operator ==(const Vector4& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z) && fequal(this->w, o.w); }
+    inline bool operator !=(const Vector4& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z) || !fequal(this->w, o.w); }
+
     inline Vector4 operator -() const { return Vector4(-this->x, -this->y, -this->z, -this->w); }
     inline Vector4 operator *(const float o) const { return Vector4(this->x * o, this->y * o, this->z * o, this->w * o); }
     inline Vector4 operator /(const float o) const { return Vector4(this->x / o, this->y / o, this->z / o, this->w / o); }

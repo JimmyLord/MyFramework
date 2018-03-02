@@ -92,6 +92,12 @@ void cJSONExt_AddFloatArrayToObject(cJSON* object, const char* name, float* vars
     cJSON_AddItemToObject( object, name, jsonarray );
 }
 
+void cJSONExt_AddFloatArrayToArray(cJSON* object, float* vars, int numinarray)
+{
+    cJSON* jsonarray = cJSON_CreateFloatArray( vars, numinarray );
+    cJSON_AddItemToArray( object, jsonarray );
+}
+
 void cJSONExt_AddDoubleArrayToObject(cJSON* object, const char* name, double* vars, int numinarray)
 {
     cJSON* jsonarray = cJSON_CreateDoubleArray( vars, numinarray );
@@ -140,6 +146,25 @@ void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numina
 void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray)
 {
     cJSON* arrayobj = cJSON_GetObjectItem( object, name );
+    if( arrayobj )
+    {
+        int arraysize = cJSON_GetArraySize( arrayobj );
+        MyAssert( arraysize <= numinarray );
+        for( int i=0; i<arraysize; i++ )
+        {
+            if( i >= numinarray )
+                return;
+
+            cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
+            if( obj )
+                vars[i] = (float)obj->valuedouble;
+        }
+    }
+}
+
+void cJSONExt_GetFloatArrayFromArray(cJSON* arrayobject, unsigned int index, float* vars, int numinarray)
+{
+    cJSON* arrayobj = cJSON_GetArrayItem( arrayobject, index );
     if( arrayobj )
     {
         int arraysize = cJSON_GetArraySize( arrayobj );
