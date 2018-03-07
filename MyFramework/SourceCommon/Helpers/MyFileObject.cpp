@@ -447,33 +447,6 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
     m_FileLoadStatus = FileLoadStatus_LoadedButNotFinalized;
 }
 
-#if MYFW_USING_WX
-void MyFileObject::OnLeftClick(unsigned int count)
-{
-}
-
-void MyFileObject::OnRightClick()
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
-    menu.Append( RightClick_OpenFile, "Open file" );
-    menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
-    menu.Append( RightClick_UnloadFile, "Unload File" );
-#if MYFW_OSX
-    menu.Append( RightClick_FindAllReferences, "Find References" );
-#else
-    menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
-#endif
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
-    
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
 void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
 {
 #if MYFW_WINDOWS
@@ -520,11 +493,8 @@ void MyFileObject::OSOpenContainingFolder()
 #endif
 }
 
-void MyFileObject::OnPopupClick(wxEvent &evt)
+void MyFileObject::OnPopupClick(MyFileObject* pFileObject, int id)
 {
-    MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
     switch( id )
     {
     case RightClick_OpenFile:
@@ -541,6 +511,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
 
     case RightClick_ViewInWatchWindow:
         {
+#if MYFW_USING_WX
             g_pPanelWatch->ClearAllVariables();
 
             g_pPanelWatch->AddSpace( pFileObject->m_FullPath );
@@ -551,6 +522,7 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
 
                 pMesh->FillPropertiesWindow( false );
             }
+#endif //MYFW_USING_WX
         }
         break;
 
@@ -566,6 +538,41 @@ void MyFileObject::OnPopupClick(wxEvent &evt)
         }
         break;
     }
+}
+
+#if MYFW_USING_WX
+void MyFileObject::OnLeftClick(unsigned int count)
+{
+}
+
+void MyFileObject::OnRightClick()
+{
+ 	wxMenu menu;
+    menu.SetClientData( this );
+    
+    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
+    menu.Append( RightClick_OpenFile, "Open file" );
+    menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
+    menu.Append( RightClick_UnloadFile, "Unload File" );
+#if MYFW_OSX
+    menu.Append( RightClick_FindAllReferences, "Find References" );
+#else
+    menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
+#endif
+
+    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
+    
+
+    // blocking call.
+    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
+}
+
+void MyFileObject::OnPopupClick(wxEvent &evt)
+{
+    MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
+
+    int id = evt.GetId();
+    OnPopupClick( pFileObject, id );
 }
 
 void MyFileObject::OnDrag()

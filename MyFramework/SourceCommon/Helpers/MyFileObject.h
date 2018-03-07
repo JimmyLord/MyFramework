@@ -129,10 +129,6 @@ public:
 
 public:
 #if MYFW_EDITOR
-    bool m_ShowInMemoryPanel;
-    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
-    bool MemoryPanel_IsVisible() { return m_ShowInMemoryPanel; }
-#if MYFW_USING_WX
     enum RightClickOptions
     {
         RightClick_ViewInWatchWindow = 1000,
@@ -142,9 +138,16 @@ public:
         RightClick_FindAllReferences,
     };
 
+    bool m_ShowInMemoryPanel;
+    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+    bool MemoryPanel_IsVisible() { return m_ShowInMemoryPanel; }
+
     void OSLaunchFile(bool createfileifdoesntexist);
     void OSOpenContainingFolder();
 
+    void OnPopupClick(MyFileObject* pFileObject, int id);
+
+#if MYFW_USING_WX
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);
 
