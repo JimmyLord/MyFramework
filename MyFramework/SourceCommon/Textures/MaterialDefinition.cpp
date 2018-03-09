@@ -103,14 +103,16 @@ void MaterialDefinition::Init()
     m_UVScale.Set( 1, 1 );
     m_UVOffset.Set( 0, 0 );
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
     {
-        m_UniformValues[i].m_Name = "";
+#if MYFW_USING_WX
         m_UniformValues[i].m_ControlID = -1;
+#endif //MYFW_USING_WX
+        m_UniformValues[i].m_Name = "";
         m_UniformValues[i].m_Type = ExposedUniformType_NotSet;
     }
-#endif
+#endif //MYFW_EDITOR
 
 #if MYFW_USING_WX
     m_ControlID_Shader = -1;
@@ -371,7 +373,7 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
         else
         {
             // In editor builds, always register finished loading callback to know if the file was reloaded due to changes.
-#if MYFW_USING_WX
+#if MYFW_EDITOR
             m_pShaderGroup->GetFile()->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoading );
 #endif
 
@@ -389,7 +391,7 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
 {
     // In editor builds, keep the finished loading callback registered,
     //     so we can reset exposed uniforms if shader file is reloaded due to changes.
-#if !MYFW_USING_WX
+#if !MYFW_EDITOR
     // Unregister this callback.
     pFile->UnregisterFileFinishedLoadingCallback( this );
 #endif
@@ -410,7 +412,7 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
 
 void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingvalues)
 {
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     static ExposedUniformValue g_PreviousUniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
     // Backup the old values, then restore them below.
@@ -437,7 +439,7 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
                 m_UniformValues[i].SetToInitialValue( pShaderFile->m_ExposedUniforms[i].m_Type );
             }
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
             // Copy the names of all the uniforms first, will be used to search for values.
             for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
             {

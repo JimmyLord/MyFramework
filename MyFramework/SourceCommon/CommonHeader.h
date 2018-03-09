@@ -276,6 +276,7 @@ typedef int socklen_t;
 #include "../SourceWindows/MYFWWinMain.h"
 #endif
 #include <vector>
+#include <string>
 #include <map>
 #include <list>
 #endif
