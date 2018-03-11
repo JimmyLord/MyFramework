@@ -18,6 +18,8 @@ TextureManager* g_pTextureManager = 0;
 TextureManager::TextureManager()
 {
     m_MaxTexturesToLoadInOneTick = -1;
+
+    m_pErrorTexture = 0;
 }
 
 TextureManager::~TextureManager()
@@ -376,4 +378,68 @@ void TextureManager::InvalidateAllTextures(bool cleanglallocs)
 
         m_UninitializedFBOs.MoveTail( pFBODef );
     }
+}
+
+TextureDefinition* TextureManager::GetErrorTexture()
+{
+    // If the error texture isn't created, create it.
+    if( m_pErrorTexture == 0 )
+    {
+        m_pErrorTexture = MyNew TextureDefinition();
+
+        m_pErrorTexture->m_ManagedByTextureManager = true;
+        m_pErrorTexture->m_MinFilter = GL_NEAREST;
+        m_pErrorTexture->m_MagFilter = GL_NEAREST;
+        m_pErrorTexture->m_WrapS = GL_REPEAT;
+        m_pErrorTexture->m_WrapT = GL_REPEAT;
+
+        unsigned int width = 64;
+        unsigned int height = 64;
+        unsigned char* pixelbuffer = MyNew unsigned char[width*height*4];
+
+        for( unsigned int y=0; y<height; y++ )
+        {
+            for( unsigned int x=0; x<width; x++ )
+            {
+                if( (x+y)%2 == 0 )
+                {
+                    pixelbuffer[(y*width+x)*4 + 0] = 0;
+                    pixelbuffer[(y*width+x)*4 + 1] = 0;
+                    pixelbuffer[(y*width+x)*4 + 2] = 255;
+                    pixelbuffer[(y*width+x)*4 + 3] = 255;
+                }
+                else
+                {
+                    pixelbuffer[(y*width+x)*4 + 0] = 0;
+                    pixelbuffer[(y*width+x)*4 + 1] = 0;
+                    pixelbuffer[(y*width+x)*4 + 2] = 0;
+                    pixelbuffer[(y*width+x)*4 + 3] = 255;
+                }
+            }
+        }
+
+        GLuint texhandle = 0;
+        glGenTextures( 1, &texhandle );
+        MyAssert( texhandle != 0 );
+        glActiveTexture( GL_TEXTURE0 );
+        glBindTexture( GL_TEXTURE_2D, texhandle );
+
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelbuffer );
+        checkGlError( "glTexImage2D" );
+        delete[] pixelbuffer;
+
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+        m_pErrorTexture->m_Width = width;
+        m_pErrorTexture->m_Height = height;
+
+        m_pErrorTexture->m_TextureID = texhandle;
+
+        m_LoadedTextures.AddTail( m_pErrorTexture );
+    }
+
+    return m_pErrorTexture;
 }

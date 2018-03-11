@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -614,8 +614,12 @@ void Shader_Base::ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldm
 
     checkGlError( "Shader_Base::ProgramBaseUniforms" );
 
-    if( m_uHandle_TextureColor != -1 && pTexture != 0 )
+    if( m_uHandle_TextureColor != -1 )
     {
+        // If the shader wants a texture and we didn't pass one in, use a default texture.
+        if( pTexture == 0 )
+            pTexture = g_pTextureManager->GetErrorTexture();
+
         MyActiveTexture( GL_TEXTURE0 + 0 );
         glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
@@ -872,6 +876,9 @@ void Shader_Base::ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pSh
 
     if( m_uHandle_ShadowTexture != -1 )
     {
+        if( pShadowTex == 0 )
+            pShadowTex = g_pTextureManager->GetErrorTexture();
+
         MyActiveTexture( GL_TEXTURE0 + 1 );
         glBindTexture( GL_TEXTURE_2D, pShadowTex->GetTextureID() );
 
@@ -883,6 +890,9 @@ void Shader_Base::ProgramLightmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureLightmap != -1 )
     {
+        if( pTexture == 0 )
+            pTexture = g_pTextureManager->GetErrorTexture();
+
         MyActiveTexture( GL_TEXTURE0 + 2 );
         glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
@@ -894,6 +904,9 @@ void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureDepth != -1 && pTexture != 0 )
     {
+        if( pTexture == 0 )
+            pTexture = g_pTextureManager->GetErrorTexture();
+
         MyActiveTexture( GL_TEXTURE0 + 3 );
         glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
 
@@ -949,12 +962,18 @@ void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valuearray)
             break;
 
         case ExposedUniformType_Sampler2D:
-            if( valuearray[i].m_pTexture )
             {
-                MyActiveTexture( GL_TEXTURE0 + 4 + numtexturesset );
-                glBindTexture( GL_TEXTURE_2D, valuearray[i].m_pTexture->GetTextureID() );
-                glUniform1i( m_uHandle_ExposedUniforms[i], 4 + numtexturesset );
-                numtexturesset++;
+                TextureDefinition* pTexture = valuearray[i].m_pTexture;
+                if( pTexture == 0 )
+                    pTexture = g_pTextureManager->GetErrorTexture();
+
+                if( pTexture )
+                {
+                    MyActiveTexture( GL_TEXTURE0 + 4 + numtexturesset );
+                    glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
+                    glUniform1i( m_uHandle_ExposedUniforms[i], 4 + numtexturesset );
+                    numtexturesset++;
+                }
             }
             break;
 
