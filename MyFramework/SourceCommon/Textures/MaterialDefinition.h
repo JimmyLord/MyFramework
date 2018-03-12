@@ -16,11 +16,13 @@ class EditorMainFrame_ImGui;
 class ExposedUniformValue
 {
 public:
+#if MYFW_EDITOR
 #if MYFW_USING_WX
     int m_ControlID;
 #endif
     std::string m_Name;
     ExposedUniformType m_Type; // used when reloading shader, needed to release ref on texture.
+#endif //MYFW_EDITOR
 
     ExposedUniformValue()
     {

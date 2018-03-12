@@ -595,7 +595,10 @@ void MaterialDefinition::ExportExposedUniformValues(cJSON* jMaterial)
                     break;
 
                 case ExposedUniformType_Sampler2D:
-                    cJSON_AddStringToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_pTexture->GetFilename() );
+                    if( m_UniformValues[i].m_pTexture )
+                    {
+                        cJSON_AddStringToObject( jMaterial, pInfo->m_Name, m_UniformValues[i].m_pTexture->GetFilename() );
+                    }
                     break;
 
                 case ExposedUniformType_NotSet:
