@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -39,6 +39,22 @@ public:
     int m_PointSize;
 
     void* m_pUserData;
+
+    void Clear()
+    {
+        m_Flags = SceneGraphFlag_Opaque;
+        m_Layers = 0;
+        m_pTransform = 0;
+        m_pMesh = 0;
+        m_pSubmesh = 0;
+        m_pMaterial = 0;
+        m_Visible = false;
+
+        m_GLPrimitiveType = 0;
+        m_PointSize = 0;
+
+        m_pUserData = 0;
+    }
 };
 
 class SceneGraph_Base
