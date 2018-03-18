@@ -12,7 +12,7 @@
 
 class MyFileObject;
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif
 
