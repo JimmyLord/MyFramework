@@ -447,6 +447,7 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
     m_FileLoadStatus = FileLoadStatus_LoadedButNotFinalized;
 }
 
+#if MYFW_EDITOR
 void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
 {
 #if MYFW_WINDOWS
@@ -586,3 +587,4 @@ void MyFileObject::SetCustomLeftClickCallback(PanelObjectListObjectCallback call
     m_CustomLeftClickCallback = callback;
 }
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR

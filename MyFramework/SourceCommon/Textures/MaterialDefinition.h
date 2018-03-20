@@ -26,7 +26,9 @@ public:
 
     ExposedUniformValue()
     {
+#if MYFW_EDITOR
         m_Type = ExposedUniformType_NotSet;
+#endif //MYFW_EDITOR
     }
 
     union

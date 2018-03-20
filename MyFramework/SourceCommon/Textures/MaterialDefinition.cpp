@@ -322,7 +322,9 @@ void MaterialDefinition::SetName(const char* name)
     {
         // Rename the file on disk and force a save to update the name in the material file.
         m_pFile->Rename( name );
+#if MYFW_EDITOR
         SaveMaterial( 0 );
+#endif //MYFW_EDITOR
     }
 
 #if MYFW_USING_WX
