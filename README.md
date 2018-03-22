@@ -21,7 +21,7 @@ Currently supports the following platforms:
 - myrand (bedaux.net/mtrand)
 - OpenAL (www.openal.org)
 - pthreads-w32 (www.sourceware.org/pthreads-win32)
-- Simplex Noise (staffwww.itn.liu.se/~stegu/simplexnoise)
+- OpenSimplexNoiseInC (github.com/smcameron/open-simplex-noise-in-c)
 - wxWidgets (github.com/wxWidgets/wxWidgets)
 
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:

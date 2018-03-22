@@ -150,6 +150,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
+
 #include "DataTypes/MyTypes.h"
 
 #include "Memory/MyStackAllocator.h"
@@ -524,8 +526,6 @@ typedef unsigned long   u_long;
 
 #include "Multithreading/MyThread.h"
 #include "Multithreading/MyJobManager.h"
-
-#include "Noise/SimplexNoise.h"
 
 #include "Helpers/MyFileObject.h"
 #include "Shaders/MyFileObjectShader.h"

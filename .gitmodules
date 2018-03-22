@@ -7,3 +7,6 @@
 [submodule "Libraries/Cotire"]
 	path = Libraries/Cotire
 	url = https://github.com/sakra/cotire.git
+[submodule "Libraries/OpenSimplexInC"]
+	path = Libraries/OpenSimplexInC
+	url = https://github.com/smcameron/open-simplex-noise-in-c.git

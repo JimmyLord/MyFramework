@@ -109,9 +109,6 @@
     <Filter Include="Source\Input">
       <UniqueIdentifier>{9f6e2177-bf84-4827-8452-04d329dde9ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Noise">
-      <UniqueIdentifier>{32feb027-2a83-4ce4-b799-fde4eecbb30b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Multithreading">
       <UniqueIdentifier>{2cabcba5-766d-4d7a-856e-4cd0607e9f65}</UniqueIdentifier>
     </Filter>
@@ -123,6 +120,9 @@
     </Filter>
     <Filter Include="Source-Editor">
       <UniqueIdentifier>{5f959bfc-ec17-407d-85d4-5054d2d8f1c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\OpenSimplexInC">
+      <UniqueIdentifier>{ae50c135-b1a5-47d7-8eac-7618130d1030}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -468,9 +468,6 @@
     <ClCompile Include="SourceCommon\Input\GamepadManager.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\Noise\SimplexNoise.cpp">
-      <Filter>Source\Noise</Filter>
-    </ClCompile>
     <ClCompile Include="SourceCommon\DataTypes\MyTypes.cpp">
       <Filter>Source\DataTypes</Filter>
     </ClCompile>
@@ -515,6 +512,9 @@
     </ClCompile>
     <ClCompile Include="SourceEditor\EditorCommands.cpp">
       <Filter>Source-Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\OpenSimplexInC\open-simplex-noise.c">
+      <Filter>Libraries\OpenSimplexInC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -911,9 +911,6 @@
     <ClInclude Include="SourceCommon\Input\GamepadManager.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCommon\Noise\SimplexNoise.h">
-      <Filter>Source\Noise</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\MyTypes.h">
       <Filter>Source\DataTypes</Filter>
     </ClInclude>
@@ -976,6 +973,9 @@
     </ClInclude>
     <ClInclude Include="SourceEditor\EditorViewTypes.h">
       <Filter>Source-Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\OpenSimplexInC\open-simplex-noise.h">
+      <Filter>Libraries\OpenSimplexInC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
