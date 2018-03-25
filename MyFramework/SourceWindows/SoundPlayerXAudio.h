@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -13,6 +13,10 @@
 #include "../SourceCommon/Sound/WaveLoader.h"
 
 class MyFileObject;
+struct SoundObject;
+class SoundChannel;
+class VoiceCallback;
+class SoundPlayer;
 
 struct IXAudio2;
 struct IXAudio2SourceVoice;
@@ -20,23 +24,28 @@ struct IXAudio2MasteringVoice;
 
 struct SoundObject : public CPPListNode, public RefCount
 {
-public:
+protected:
     MyFileObject* m_pFile;
     MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
-
     XAUDIO2_BUFFER m_XAudioBuffer;
 
     MySimplePool<SoundObject>* m_pSourcePool;
 
 public:
     SoundObject();
+    ~SoundObject();
 
     virtual void Release(); // override from RefCount
 
     cJSON* ExportAsJSONObject();
     const char* GetFullPath();
 
-    void CreateSourceVoice(IXAudio2* pEngine);
+    void SetFile(MyFileObject* pFile);
+    void Init();
+
+    void SetSourcePool(MySimplePool<SoundObject>* pSourcePool) { m_pSourcePool = pSourcePool; }
+    XAUDIO2_BUFFER* GetXAudioBuffer() { return &m_XAudioBuffer; }
+    bool IsValid() { return m_WaveDesc.valid; }
 };
 
 class SoundChannel
@@ -51,23 +60,54 @@ public:
 
 protected:
     IXAudio2SourceVoice* m_pSourceVoice;
+    VoiceCallback* m_pVoiceCallback;
 
     SoundChannelStates m_CurrentState;
     double m_TimePlaybackStarted;
 
 public:
     SoundChannel();
+    ~SoundChannel();
 
     void PlaySound(SoundObject* pSoundObject);
     void StopSound();
 
     IXAudio2SourceVoice* GetSourceVoice() { return m_pSourceVoice; }
-    void SetSourceVoice(IXAudio2SourceVoice* voice) { m_pSourceVoice = voice; }
+    void SetSourceVoice(IXAudio2SourceVoice* voice, VoiceCallback* pVoiceCallback) { m_pSourceVoice = voice; m_pVoiceCallback = pVoiceCallback; }
 
     SoundChannelStates GetState() { return m_CurrentState; }
     void SetState(SoundChannelStates state) { m_CurrentState = state; }
 
     double GetTimePlaybackStarted() { return m_TimePlaybackStarted; }
+};
+
+class VoiceCallback : public IXAudio2VoiceCallback
+{
+public:
+    SoundChannel* m_pChannel;
+
+    VoiceCallback(SoundChannel* pChannel)
+    {
+        m_pChannel = pChannel;
+    }
+
+    virtual ~VoiceCallback()
+    {
+    }
+
+    // Called when the voice has just finished playing a contiguous audio stream.
+    void __stdcall OnStreamEnd()
+    {
+        m_pChannel->SetState( SoundChannel::SoundChannelState_Free );
+    }
+
+    // Unused methods are stubs.
+    void __stdcall OnVoiceProcessingPassEnd() {}
+    void __stdcall OnVoiceProcessingPassStart(UINT32 SamplesRequired) {}
+    void __stdcall OnBufferEnd(void* pBufferContext) {}
+    void __stdcall OnBufferStart(void* pBufferContext) {}
+    void __stdcall OnLoopEnd(void* pBufferContext) {}
+    void __stdcall OnVoiceError(void* pBufferContext, HRESULT Error) {}
 };
 
 class SoundPlayer
@@ -81,7 +121,7 @@ protected:
 
     MySimplePool<SoundObject> m_SoundObjectPool;
     //CPPListHead m_pSounds; // SoundObject*
-    SoundChannel m_Channels[MAX_CHANNELS];
+    SoundChannel* m_pChannels[MAX_CHANNELS];
     SoundObject m_Music;
 
 #define SoundGroup_Music    0
@@ -104,6 +144,10 @@ public:
     SoundObject* LoadSound(MyFileObject* pFile);
 
     void Shutdown();
+
+    int FindFreeChannel();
+    int FindOldestChannel();
+
     int PlaySound(SoundObject* pSoundObject);
     int PlaySound(int soundid);
     void StopSound(int channel);

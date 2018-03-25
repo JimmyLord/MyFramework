@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -22,6 +22,10 @@ SoundObject::SoundObject()
 #if _DEBUG
     m_BaseCount = 1; // RefCount hack: since soundobjects are in an array in soundplayer, final ref won't be released.
 #endif
+}
+
+SoundObject::~SoundObject()
+{
 }
 
 void SoundObject::Release() // override from RefCount
@@ -56,26 +60,47 @@ const char* SoundObject::GetFullPath()
     return m_pFile->GetFullPath();
 }
 
-void SoundObject::CreateSourceVoice(IXAudio2* pEngine)
+void SoundObject::SetFile(MyFileObject* pFile)
 {
-    WAVEFORMATEX waveformat;
-    waveformat.wFormatTag = m_WaveDesc.audioformat;
-    waveformat.nChannels = (WORD)m_WaveDesc.numchannels;
-    waveformat.nSamplesPerSec = m_WaveDesc.samplerate;
-    waveformat.nAvgBytesPerSec = m_WaveDesc.byterate;
-    waveformat.nBlockAlign = m_WaveDesc.blockalign;
-    waveformat.wBitsPerSample = (WORD)m_WaveDesc.bytespersample * 8;
-    waveformat.cbSize = 0;
+    m_pFile = pFile;
+    pFile->AddRef();
+    m_WaveDesc.valid = false;
+}
 
-    m_XAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
-    m_XAudioBuffer.AudioBytes = m_WaveDesc.datasize;
-    m_XAudioBuffer.pAudioData = (const BYTE*)m_WaveDesc.data;
-    m_XAudioBuffer.PlayBegin = 0;
-    m_XAudioBuffer.PlayLength = 0;
-    m_XAudioBuffer.LoopBegin = 0;
-    m_XAudioBuffer.LoopLength = 0;
-    m_XAudioBuffer.LoopCount = 0;
-    m_XAudioBuffer.pContext = 0;
+void SoundObject::Init()
+{
+    MyAssert( m_pFile );
+
+    if( m_pFile->IsFinishedLoading() )
+    {
+        m_WaveDesc = WaveLoader::ParseWaveBuffer( m_pFile->GetBuffer(), m_pFile->GetFileLength() );
+
+        if( m_WaveDesc.valid == false )
+        {
+            LOGError( LOGTag, "WAV file parsing failed (%s)\n", m_pFile->GetFullPath() );
+        }
+        else
+        {
+            //WAVEFORMATEX waveformat;
+            //waveformat.wFormatTag = m_WaveDesc.audioformat;
+            //waveformat.nChannels = (WORD)m_WaveDesc.numchannels;
+            //waveformat.nSamplesPerSec = m_WaveDesc.samplerate;
+            //waveformat.nAvgBytesPerSec = m_WaveDesc.byterate;
+            //waveformat.nBlockAlign = m_WaveDesc.blockalign;
+            //waveformat.wBitsPerSample = (WORD)m_WaveDesc.bytespersample * 8;
+            //waveformat.cbSize = 0;
+
+            m_XAudioBuffer.Flags = XAUDIO2_END_OF_STREAM;
+            m_XAudioBuffer.AudioBytes = m_WaveDesc.datasize;
+            m_XAudioBuffer.pAudioData = (const BYTE*)m_WaveDesc.data;
+            m_XAudioBuffer.PlayBegin = 0;
+            m_XAudioBuffer.PlayLength = 0;
+            m_XAudioBuffer.LoopBegin = 0;
+            m_XAudioBuffer.LoopLength = 0;
+            m_XAudioBuffer.LoopCount = 0;
+            m_XAudioBuffer.pContext = 0;
+        }
+    }
 }
 
 //====================================================================================================
@@ -84,9 +109,15 @@ void SoundObject::CreateSourceVoice(IXAudio2* pEngine)
 SoundChannel::SoundChannel()
 {
     m_pSourceVoice = 0;
+    m_pVoiceCallback = 0;
 
     m_CurrentState = SoundChannelState_Free;
     m_TimePlaybackStarted = 0;
+}
+
+SoundChannel::~SoundChannel()
+{
+    delete m_pVoiceCallback;
 }
 
 void SoundChannel::PlaySound(SoundObject* pSoundObject)
@@ -94,13 +125,15 @@ void SoundChannel::PlaySound(SoundObject* pSoundObject)
     m_pSourceVoice->Stop();
 	m_pSourceVoice->FlushSourceBuffers();
     m_pSourceVoice->Start();
-    m_pSourceVoice->SubmitSourceBuffer( &pSoundObject->m_XAudioBuffer );
+    m_pSourceVoice->SubmitSourceBuffer( pSoundObject->GetXAudioBuffer() );
 
     m_TimePlaybackStarted = MyTime_GetUnpausedTime();
 }
 
 void SoundChannel::StopSound()
 {
+    m_CurrentState = SoundChannelState_Free;
+
     m_pSourceVoice->Stop();
 	m_pSourceVoice->FlushSourceBuffers();
 
@@ -141,20 +174,29 @@ SoundPlayer::SoundPlayer()
         waveformat.wBitsPerSample = 16;
         waveformat.cbSize = 0;
 
-        int result = m_pEngine->CreateSourceVoice( &pSourceVoice, &waveformat );
+        m_pChannels[i] = new SoundChannel();
+
+        VoiceCallback* pVoiceCallback = new VoiceCallback( m_pChannels[i] );
+        int result = m_pEngine->CreateSourceVoice( &pSourceVoice, &waveformat, 0, XAUDIO2_DEFAULT_FREQ_RATIO, pVoiceCallback );
         if( result != S_OK )
         {
+            delete pVoiceCallback;
             LOGError( LOGTag, "Unable to create source voice\n" );
         }
         else
         {
-            m_Channels[i].SetSourceVoice( pSourceVoice );
+            m_pChannels[i]->SetSourceVoice( pSourceVoice, pVoiceCallback );
         }
     }
 }
 
 SoundPlayer::~SoundPlayer()
 {
+    for( int i=0; i<MAX_CHANNELS; i++ )
+    {
+        delete m_pChannels[i];
+    }
+
     //SoundObject* pSound = 0;
     //while( pSound = (SoundObject*)m_pSounds.GetHead() )
     //{
@@ -217,28 +259,14 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
 
     //m_pSounds.AddTail( pSound );
 
-    pSound->m_pSourcePool = &m_SoundObjectPool;
+    pSound->SetSourcePool( &m_SoundObjectPool );
 
     // store the wave file and wave desc into a soundobject and return the soundobject.
     // file may not be fully loaded, so m_WaveDesc.valid == false
     //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
 
-    pSound->m_pFile = pFile;
-    pFile->AddRef();
-    pSound->m_WaveDesc.valid = false;
-
-    if( pFile->IsFinishedLoading() )
-    {
-        pSound->m_WaveDesc = WaveLoader::ParseWaveBuffer( pFile->GetBuffer(), pFile->GetFileLength() );
-        if( pSound->m_WaveDesc.valid == false )
-        {
-            LOGError( LOGTag, "WAV file parsing failed (%s)\n", pFile->GetFullPath() );
-        }
-        else
-        {
-            pSound->CreateSourceVoice( m_pEngine );
-        }
-    }
+    pSound->SetFile( pFile );
+    pSound->Init();
 
     return pSound;
 }
@@ -247,59 +275,66 @@ void SoundPlayer::Shutdown()
 {
 }
 
-int SoundPlayer::PlaySound(SoundObject* pSoundObject)
+int SoundPlayer::FindFreeChannel()
 {
-    // Attempt to parse the file again in case it wasn't loaded the first time.
-    if( pSoundObject->m_WaveDesc.valid == false )
+    int channelIndex = -1;
+
+    for( channelIndex = 0; channelIndex < MAX_CHANNELS; channelIndex++ )
     {
-        MyAssert( pSoundObject->m_pFile );
-        if( pSoundObject->m_pFile->IsFinishedLoading() )
+        if( m_pChannels[channelIndex]->GetState() == SoundChannel::SoundChannelState_Free )
+            break;
+    }
+
+    // If all channels are in use, find and use the oldest sound channel
+    if( channelIndex == MAX_CHANNELS )
+    {
+        channelIndex = FindOldestChannel();
+    }
+
+    return channelIndex;
+}
+
+int SoundPlayer::FindOldestChannel()
+{
+    int channelIndex;
+
+    double oldestTime = DBL_MAX;
+    for( int i = 0; i < MAX_CHANNELS; i++ )
+    {
+        double thisTime = m_pChannels[i]->GetTimePlaybackStarted();
+        if( thisTime < oldestTime )
         {
-            pSoundObject->m_WaveDesc = WaveLoader::ParseWaveBuffer( pSoundObject->m_pFile->GetBuffer(), pSoundObject->m_pFile->GetFileLength() );
-            if( pSoundObject->m_WaveDesc.valid == false )
-            {
-                LOGError( LOGTag, "WAV file parsing failed (%s)\n", pSoundObject->m_pFile->GetFullPath() );
-            }
-            else
-            {
-                pSoundObject->CreateSourceVoice( m_pEngine );
-            }
+            oldestTime = thisTime;
+            channelIndex = i;
         }
     }
 
-    if( pSoundObject->m_WaveDesc.valid == false )
+    return channelIndex;
+}
+
+int SoundPlayer::PlaySound(SoundObject* pSoundObject)
+{
+    // Attempt to parse the file again in case it wasn't loaded the first time.
+    if( pSoundObject->IsValid() == false )
+    {
+        pSoundObject->Init();
+    }
+
+    if( pSoundObject->IsValid() == false )
     {
         return -1; // sound didn't play
     }
 
-    // find a free channel
-    int channelindex;
-    for( channelindex = 0; channelindex < MAX_CHANNELS; channelindex++ )
-    {
-        if( m_Channels[channelindex].GetState() == SoundChannel::SoundChannelState_Free )
-            break;
-    }
+    // Find a free or oldest channel.
+    int channelIndex = FindFreeChannel();
 
-    // if all channels are in use, find and use the oldest sound channel
-    if( channelindex == -1 )
-    {
-        double oldesttime = DBL_MAX;
-        for( int i = 0; i < MAX_CHANNELS; i++ )
-        {
-            double thistime = m_Channels[channelindex].GetTimePlaybackStarted();
-            if( thistime < oldesttime )
-            {
-                oldesttime = thistime;
-                channelindex = i;
-            }
-        }
-    }
+    // If no channel was found (should be impossible since we'll also accept oldest channel)
+    if( channelIndex == -1 )
+        return -1;
 
-    m_Channels[channelindex].PlaySound( pSoundObject );
+    m_pChannels[channelIndex]->PlaySound( pSoundObject );
 
-    return channelindex;
-
-    return 0; //channel;
+    return channelIndex;
 }
 
 int SoundPlayer::PlaySound(int soundid)
@@ -318,7 +353,7 @@ int SoundPlayer::PlaySound(int soundid)
 
 void SoundPlayer::StopSound(int channel)
 {
-    m_Channels[channel].StopSound();
+    m_pChannels[channel]->StopSound();
 }
 
 void SoundPlayer::PauseSound(int channel)
