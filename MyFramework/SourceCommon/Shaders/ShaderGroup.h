@@ -63,7 +63,7 @@ public:
     void DisableShadowCasting_AndDoItBadly_WillBeReplaced();
 
 public:
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     enum RightClickOptions
     {
         RightClick_OpenFile = 1000,
@@ -71,6 +71,9 @@ public:
         RightClick_FindAllReferences,
     };
 
+    void OnPopupClick(ShaderGroup* pShaderGroup, int id);
+
+#if MYFW_USING_WX
     // Memory panel callbacks
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((ShaderGroup*)pObjectPtr)->OnLeftClick( count ); }
     void OnLeftClick(unsigned int count);
@@ -82,6 +85,7 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 };
 
 class ShaderGroupManager

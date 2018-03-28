@@ -134,7 +134,6 @@ public:
 
 public:
 #if MYFW_EDITOR
-#if MYFW_USING_WX
     enum RightClickOptions
     {
         RightClick_ViewInWatchWindow = 1000,
@@ -142,6 +141,9 @@ public:
         RightClick_FindAllReferences,
     };
 
+    void OnPopupClick(MaterialDefinition* pMaterial, int id);
+
+#if MYFW_USING_WX
     int m_ControlID_Shader;
     int m_ControlID_ShaderInstanced;
 

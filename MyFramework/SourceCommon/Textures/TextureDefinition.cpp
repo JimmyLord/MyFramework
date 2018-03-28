@@ -68,6 +68,29 @@ TextureDefinition::~TextureDefinition()
 #endif
 }
 
+#if MYFW_EDITOR
+void TextureDefinition::OnPopupClick(TextureDefinition* pTexture, int id)
+{
+    MyFileObject* pTextureFile = pTexture->m_pFile;
+
+    switch( id )
+    {
+    case RightClick_UnloadFile:
+        {
+            if( pTextureFile )
+                g_pFileManager->Editor_UnloadFile( pTextureFile );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            if( pTextureFile )
+                g_pFileManager->Editor_FindAllReferences( pTextureFile );
+        }
+        break;
+    }
+}
+
 #if MYFW_USING_WX
 void TextureDefinition::OnRightClick() // StaticOnRightClick
 {
@@ -90,25 +113,9 @@ void TextureDefinition::OnRightClick() // StaticOnRightClick
 void TextureDefinition::OnPopupClick(wxEvent &evt)
 {
     TextureDefinition* pTexture = (TextureDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-    MyFileObject* pTextureFile = pTexture->m_pFile;
 
     int id = evt.GetId();
-    switch( id )
-    {
-    case RightClick_UnloadFile:
-        {
-            if( pTextureFile )
-                g_pFileManager->Editor_UnloadFile( pTextureFile );
-        }
-        break;
-
-    case RightClick_FindAllReferences:
-        {
-            if( pTextureFile )
-                g_pFileManager->Editor_FindAllReferences( pTextureFile );
-        }
-        break;
-    }
+    OnPopupClick( pTexture, id );
 }
 
 void TextureDefinition::OnDrag()
@@ -116,6 +123,7 @@ void TextureDefinition::OnDrag()
     g_DragAndDropStruct.Add( DragAndDropType_TextureDefinitionPointer, this );
 }
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 
 void TextureDefinition::Invalidate(bool cleanglallocs)
 {

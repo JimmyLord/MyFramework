@@ -66,16 +66,18 @@ public:
 
 public:
 #if MYFW_EDITOR
-    bool m_ShowInMemoryPanel;
-    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
-#if MYFW_USING_WX
-
     enum RightClickOptions
     {
         RightClick_UnloadFile = 1000,
         RightClick_FindAllReferences,
     };
 
+    bool m_ShowInMemoryPanel;
+    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+
+    void OnPopupClick(TextureDefinition* pTexture, int id);
+
+#if MYFW_USING_WX
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((TextureDefinition*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).

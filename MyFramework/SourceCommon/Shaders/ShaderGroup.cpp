@@ -139,6 +139,35 @@ ShaderGroup::~ShaderGroup()
 #endif
 }
 
+#if MYFW_EDITOR
+void ShaderGroup::OnPopupClick(ShaderGroup* pShaderGroup, int id)
+{
+    MyFileObject* pFileObject = pShaderGroup->GetFile();
+
+    switch( id )
+    {
+    case RightClick_OpenFile:
+        {
+            pFileObject->OSLaunchFile( true );
+        }
+        break;
+
+    case RightClick_UnloadFile:
+        {
+            if( pFileObject )
+                g_pFileManager->Editor_UnloadFile( pFileObject );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            if( pFileObject )
+                g_pFileManager->Editor_FindAllReferences( pFileObject );
+        }
+        break;
+    }
+}
+
 #if MYFW_USING_WX
 void ShaderGroup::OnLeftClick(unsigned int count) // StaticOnLeftClick
 {
@@ -165,31 +194,9 @@ void ShaderGroup::OnRightClick() // StaticOnRightClick
 void ShaderGroup::OnPopupClick(wxEvent &evt)
 {
     ShaderGroup* pShaderGroup = (ShaderGroup*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-    MyFileObject* pFileObject = pShaderGroup->GetFile();
 
     int id = evt.GetId();
-    switch( id )
-    {
-    case RightClick_OpenFile:
-        {
-            pFileObject->OSLaunchFile( true );
-        }
-        break;
-
-    case RightClick_UnloadFile:
-        {
-            if( pFileObject )
-                g_pFileManager->Editor_UnloadFile( pFileObject );
-        }
-        break;
-
-    case RightClick_FindAllReferences:
-        {
-            if( pFileObject )
-                g_pFileManager->Editor_FindAllReferences( pFileObject );
-        }
-        break;
-    }
+    OnPopupClick( pShaderGroup, id );
 }
 
 void ShaderGroup::OnDrag() // StaticOnDrag
@@ -197,6 +204,7 @@ void ShaderGroup::OnDrag() // StaticOnDrag
     g_DragAndDropStruct.Add( DragAndDropType_ShaderGroupPointer, this );
 }
 #endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 
 BaseShader* ShaderGroup::GlobalPass(int numlights, int numbones)
 {

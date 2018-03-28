@@ -661,6 +661,36 @@ bool MaterialDefinition::IsTransparent()
     return true;
 }
 
+void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
+{
+    MyFileObject* pMaterialFile = pMaterial->GetFile();
+
+    switch( id )
+    {
+    case RightClick_ViewInWatchWindow:
+        {
+#if MYFW_USING_WX
+            pMaterial->AddToWatchPanel( true, true, true );
+#endif
+        }
+        break;
+
+    case RightClick_UnloadFile:
+        {
+            if( pMaterialFile )
+                g_pFileManager->Editor_UnloadFile( pMaterialFile );
+        }
+        break;
+
+    case RightClick_FindAllReferences:
+        {
+            if( pMaterialFile )
+                g_pFileManager->Editor_FindAllReferences( pMaterialFile );
+        }
+        break;
+    }
+}
+
 #if MYFW_USING_WX
 void MaterialDefinition::OnLeftClick(unsigned int count) // StaticOnLeftClick
 {
@@ -689,31 +719,9 @@ void MaterialDefinition::OnRightClick() // StaticOnRightClick
 void MaterialDefinition::OnPopupClick(wxEvent &evt)
 {
     MaterialDefinition* pMaterial = (MaterialDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-    MyFileObject* pMaterialFile = pMaterial->GetFile();
 
     int id = evt.GetId();
-    switch( id )
-    {
-    case RightClick_ViewInWatchWindow:
-        {
-            pMaterial->AddToWatchPanel( true, true, true );
-        }
-        break;
-
-    case RightClick_UnloadFile:
-        {
-            if( pMaterialFile )
-                g_pFileManager->Editor_UnloadFile( pMaterialFile );
-        }
-        break;
-
-    case RightClick_FindAllReferences:
-        {
-            if( pMaterialFile )
-                g_pFileManager->Editor_FindAllReferences( pMaterialFile );
-        }
-        break;
-    }
+    OnPopupClick( pMaterial, id );
 }
 
 void MaterialDefinition::OnDrag() // StaticOnDrag
