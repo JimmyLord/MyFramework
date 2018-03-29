@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -18,11 +18,11 @@ protected:
     bool m_HasValidResources;
     bool m_FullyLoaded;
 
-public:
+protected:
     bool m_FailedToInit;
     bool m_OnlyFreeOnShutdown;
 
-    TextureDefinition* m_pColorTexture;
+    TextureDefinition* m_pColorTextures[4];
     TextureDefinition* m_pDepthTexture;
     GLuint m_FrameBufferID;
 
@@ -57,6 +57,19 @@ public:
     void Unbind(bool restorelastframebufferid);
 
     void Invalidate(bool cleanglallocs);
+
+    // Getters
+    TextureDefinition* GetColorTexture(int index) { return m_pColorTextures[index]; }
+    TextureDefinition* GetDepthTexture() { return m_pDepthTexture; }
+
+    GLuint GetFrameBufferID() { return m_FrameBufferID; }
+
+    unsigned int GetWidth() { return m_Width; }
+    unsigned int GetHeight() { return m_Height; }
+
+    unsigned int GetTextureWidth() { return m_TextureWidth; }
+    unsigned int GetTextureHeight() { return m_TextureHeight; }
+
 };
 
 #endif //__FBODefinition_H__

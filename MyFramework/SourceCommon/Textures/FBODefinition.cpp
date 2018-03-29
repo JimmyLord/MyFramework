@@ -16,7 +16,10 @@ FBODefinition::FBODefinition()
     m_FailedToInit = false;
     m_OnlyFreeOnShutdown = false;
 
-    m_pColorTexture = 0;
+    m_pColorTextures[0] = 0;
+    m_pColorTextures[1] = 0;
+    m_pColorTextures[2] = 0;
+    m_pColorTextures[3] = 0;
     m_pDepthTexture = 0;
     m_FrameBufferID = 0;
 
@@ -63,6 +66,12 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
             NewTextureHeight = powsize;
     }
 
+    // Don't allow FBO textures to shrink, just use a smaller piece of them.
+    if( NewTextureWidth < m_TextureWidth )
+        NewTextureWidth = m_TextureWidth;
+    if( NewTextureHeight < m_TextureHeight )
+        NewTextureHeight = m_TextureHeight;
+
     bool newtextureneeded = false;
     bool newfilteroptions = false;
 
@@ -83,6 +92,17 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
     m_MinFilter = minfilter;
     m_MagFilter = magfilter;
 
+    if( m_pColorTextures[0] )
+    {
+        m_pColorTextures[0]->m_Width = width;
+        m_pColorTextures[0]->m_Height = width;
+    }
+    if( m_pDepthTexture )
+    {
+        m_pDepthTexture->m_Width = width;
+        m_pDepthTexture->m_Height = width;
+    }
+
     m_NeedColorTexture = needcolor;
     m_DepthBits = depthbits;
     m_DepthIsTexture = depthreadable;
@@ -90,7 +110,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
     // if filter options changed, reset them on the texture
     if( newfilteroptions == true )
     {
-        glBindTexture( GL_TEXTURE_2D, m_pColorTexture->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, m_pColorTextures[0]->m_TextureID );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
         glBindTexture( GL_TEXTURE_2D, 0 );
@@ -148,17 +168,17 @@ bool FBODefinition::Create()
 
     if( m_NeedColorTexture )
     {
-        m_pColorTexture = MyNew TextureDefinition();
+        m_pColorTextures[0] = MyNew TextureDefinition();
 
-        glGenTextures( 1, &m_pColorTexture->m_TextureID );
+        glGenTextures( 1, &m_pColorTextures[0]->m_TextureID );
         m_HasValidResources = true;
 
-        m_pColorTexture->m_MinFilter = m_MinFilter;
-        m_pColorTexture->m_MagFilter = m_MagFilter;
-        m_pColorTexture->m_WrapS = GL_CLAMP_TO_EDGE;
-        m_pColorTexture->m_WrapT = GL_CLAMP_TO_EDGE;
-        m_pColorTexture->m_Width = m_Width;
-        m_pColorTexture->m_Height = m_Height;
+        m_pColorTextures[0]->m_MinFilter = m_MinFilter;
+        m_pColorTextures[0]->m_MagFilter = m_MagFilter;
+        m_pColorTextures[0]->m_WrapS = GL_CLAMP_TO_EDGE;
+        m_pColorTextures[0]->m_WrapT = GL_CLAMP_TO_EDGE;
+        m_pColorTextures[0]->m_Width = m_Width;
+        m_pColorTextures[0]->m_Height = m_Height;
     }
     checkGlError( "glGenTextures" );
 
@@ -186,9 +206,9 @@ bool FBODefinition::Create()
     }
 
     // create the texture
-    if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+    if( m_pColorTextures[0] && m_pColorTextures[0]->m_TextureID != 0 )
     {
-        glBindTexture( GL_TEXTURE_2D, m_pColorTexture->m_TextureID );
+        glBindTexture( GL_TEXTURE_2D, m_pColorTextures[0]->m_TextureID );
         //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -241,10 +261,10 @@ bool FBODefinition::Create()
         MyBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID, 0, 0 );
 
         // attach color texture
-        if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+        if( m_pColorTextures[0] && m_pColorTextures[0]->m_TextureID != 0 )
         {
-            //LOGInfo( LOGTag, "FBO: Attaching color texture %d\n", m_pColorTexture->m_TextureID );
-            glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->m_TextureID, 0 );
+            //LOGInfo( LOGTag, "FBO: Attaching color texture %d\n", m_pColorTextures[0]->m_TextureID );
+            glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTextures[0]->m_TextureID, 0 );
         }
 
         // attach depth renderbuffer
@@ -338,10 +358,10 @@ void FBODefinition::Invalidate(bool cleanglallocs)
             g_GLStats.m_PreviousFramebufferHeight = 0;
         }
 
-        if( m_pColorTexture && m_pColorTexture->m_TextureID != 0 )
+        if( m_pColorTextures[0] && m_pColorTextures[0]->m_TextureID != 0 )
         {
-            glDeleteTextures( 1, &m_pColorTexture->m_TextureID );
-            m_pColorTexture->m_TextureID = 0;
+            glDeleteTextures( 1, &m_pColorTextures[0]->m_TextureID );
+            m_pColorTextures[0]->m_TextureID = 0;
         }
 
         if( m_pDepthTexture && m_pDepthTexture->m_TextureID != 0 )
@@ -364,15 +384,15 @@ void FBODefinition::Invalidate(bool cleanglallocs)
     }
     else
     {
-        if( m_pColorTexture )
-            m_pColorTexture->Invalidate( false );
+        if( m_pColorTextures[0] )
+            m_pColorTextures[0]->Invalidate( false );
         if( m_pDepthTexture )
             m_pDepthTexture->Invalidate( false );
 
         m_FrameBufferID = 0;
     }
 
-    SAFE_RELEASE( m_pColorTexture );
+    SAFE_RELEASE( m_pColorTextures[0] );
     SAFE_RELEASE( m_pDepthTexture );
 
     m_FullyLoaded = false;
