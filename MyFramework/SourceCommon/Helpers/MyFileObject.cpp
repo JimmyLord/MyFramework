@@ -130,6 +130,8 @@ MyFileObject::~MyFileObject()
     if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
         Remove();
 
+    MyAssert( m_FileFinishedLoadingCallbackList.GetHead() == 0 );
+
     SAFE_DELETE_ARRAY( m_FullPath );
     SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
     SAFE_DELETE_ARRAY( m_ExtensionWithDot );

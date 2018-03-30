@@ -305,6 +305,9 @@ MyMesh::~MyMesh()
     if( this->Prev )
         this->Remove();
 
+    if( m_pSourceFile && m_pSourceFile->IsFinishedLoading() )
+        m_pSourceFile->UnregisterFileFinishedLoadingCallback( this );
+
     SAFE_RELEASE( m_pSourceFile );
 
     Clear();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -661,6 +661,7 @@ bool MaterialDefinition::IsTransparent()
     return true;
 }
 
+#if MYFW_EDITOR
 void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
 {
     MyFileObject* pMaterialFile = pMaterial->GetFile();
@@ -975,7 +976,6 @@ void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinu
 }
 #endif //MYFW_USING_WX
 
-#if MYFW_EDITOR
 bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
 {
     if( GetTextureColor() && GetTextureColor()->GetFile() == pFile )
