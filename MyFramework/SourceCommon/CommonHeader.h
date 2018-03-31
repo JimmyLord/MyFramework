@@ -570,11 +570,11 @@ typedef unsigned long   u_long;
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"
 
+#include "Textures/FBODefinition.h"
 #include "Textures/TextureDefinition.h"
 #include "Textures/TextureManager.h"
 #include "Textures/MaterialDefinition.h"
 #include "Textures/MaterialManager.h"
-#include "Textures/FBODefinition.h"
 
 #include "Sprites/My2DAnimInfo.h" // requires MaterialDefinition
 

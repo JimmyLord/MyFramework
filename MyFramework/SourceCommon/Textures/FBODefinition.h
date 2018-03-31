@@ -14,6 +14,13 @@ class FBODefinition : public CPPListNode, public RefCount
 {
     friend class TextureManager;
 
+public:
+    enum FBOColorFormat
+    {
+        FBOColorFormat_None,
+        FBOColorFormat_RGBA,
+    };
+
 protected:
     bool m_HasValidResources;
     bool m_FullyLoaded;
@@ -35,7 +42,7 @@ protected:
     int m_MinFilter;
     int m_MagFilter;
 
-    bool m_NeedColorTexture;
+    FBOColorFormat m_ColorFormats[4];
     int m_DepthBits;
     bool m_DepthIsTexture;
 
@@ -50,8 +57,8 @@ public:
 
     bool IsFullyLoaded() { return m_FullyLoaded; }
 
-    // returns true if a new texture needs to be created.
-    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable);
+    // Returns true if a new texture needs to be created.
+    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat colorformat, int depthbits, bool depthreadable);
 
     void Bind(bool storeframebufferid);
     void Unbind(bool restorelastframebufferid);
@@ -69,7 +76,6 @@ public:
 
     unsigned int GetTextureWidth() { return m_TextureWidth; }
     unsigned int GetTextureHeight() { return m_TextureHeight; }
-
 };
 
 #endif //__FBODefinition_H__

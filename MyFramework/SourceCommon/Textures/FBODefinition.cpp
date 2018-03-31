@@ -32,7 +32,10 @@ FBODefinition::FBODefinition()
     m_MinFilter = GL_LINEAR;
     m_MagFilter = GL_LINEAR;
 
-    m_NeedColorTexture = true;
+    m_ColorFormats[0] = FBOColorFormat_None;
+    m_ColorFormats[1] = FBOColorFormat_None;
+    m_ColorFormats[2] = FBOColorFormat_None;
+    m_ColorFormats[3] = FBOColorFormat_None;
     m_DepthBits = 32;
     m_DepthIsTexture = false;
 
@@ -47,7 +50,7 @@ FBODefinition::~FBODefinition()
 }
 
 // returns true if a new texture needs to be created.
-bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
+bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat colorformat, int depthbits, bool depthreadable)
 {
     MyAssert( width <= 4096 );
     MyAssert( height <= 4096 );
@@ -78,7 +81,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
     if( m_TextureWidth != NewTextureWidth || m_TextureHeight != NewTextureHeight )
         newtextureneeded = true;
 
-    if( m_NeedColorTexture != needcolor || m_DepthBits != depthbits || m_DepthIsTexture != depthreadable )
+    if( m_ColorFormats[0] != colorformat || m_DepthBits != depthbits || m_DepthIsTexture != depthreadable )
         newtextureneeded = true;
 
     if( newtextureneeded == false && (m_MinFilter != minfilter || m_MagFilter != magfilter) )
@@ -103,7 +106,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
         m_pDepthTexture->m_Height = width;
     }
 
-    m_NeedColorTexture = needcolor;
+    m_ColorFormats[0] = colorformat;
     m_DepthBits = depthbits;
     m_DepthIsTexture = depthreadable;
 
@@ -166,8 +169,9 @@ bool FBODefinition::Create()
     m_HasValidResources = true;
     checkGlError( "glGenFramebuffers" );
 
-    if( m_NeedColorTexture )
+    if( m_ColorFormats[0] != 0 )
     {
+        MyAssert( m_pColorTextures[0] == 0 );
         m_pColorTextures[0] = MyNew TextureDefinition();
 
         glGenTextures( 1, &m_pColorTextures[0]->m_TextureID );
@@ -184,6 +188,7 @@ bool FBODefinition::Create()
 
     if( m_DepthBits != 0 )
     {
+        MyAssert( m_pDepthTexture == 0 );
         m_pDepthTexture = MyNew TextureDefinition();
 
         MyAssert( m_DepthBits == 16 || m_DepthBits == 24 || m_DepthBits == 32 );
@@ -206,11 +211,15 @@ bool FBODefinition::Create()
     }
 
     // create the texture
-    if( m_pColorTextures[0] && m_pColorTextures[0]->m_TextureID != 0 )
+    if( m_pColorTextures[0] && m_pColorTextures[0]->m_TextureID != FBOColorFormat_None )
     {
+        GLint colorformat = GL_RGBA;
+        //if( m_ColorFormat[0] == FBOColorFormat_RGBA )
+        //    colorformat = GL_RGBA;
+
         glBindTexture( GL_TEXTURE_2D, m_pColorTextures[0]->m_TextureID );
         //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, m_TextureWidth, m_TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        glTexImage2D( GL_TEXTURE_2D, 0, colorformat, m_TextureWidth, m_TextureHeight, 0, colorformat, GL_UNSIGNED_BYTE, NULL );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );

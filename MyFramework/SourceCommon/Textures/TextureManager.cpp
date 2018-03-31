@@ -83,12 +83,12 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfil
     return pTextureDef;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBO = MyNew FBODefinition();
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformat, depthbits, depthreadable );
     pFBO->m_OnlyFreeOnShutdown = onlyfreeonshutdown;
 
     if( newtexneeded )
@@ -100,14 +100,14 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
 }
 
 // return true if new texture was needed.
-bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, bool needcolor, int depthbits, bool depthreadable)
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable)
 {
     //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
         return false;
     //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
 
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, needcolor, depthbits, depthreadable );
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformat, depthbits, depthreadable );
 
     if( newtexneeded )
     {
@@ -139,7 +139,7 @@ void TextureManager::Tick()
             if( pFBODef->m_FailedToInit )
                 continue;
 
-            if( pFBODef->m_NeedColorTexture == false && pFBODef->m_DepthBits == 0 )
+            if( pFBODef->m_ColorFormats[0] == FBODefinition::FBOColorFormat_None && pFBODef->m_DepthBits == 0 )
                 continue;
 
             bool success = pFBODef->Create();
