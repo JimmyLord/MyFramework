@@ -18,6 +18,7 @@ class ShaderGroupManager;
 enum ShaderPassTypes
 {
     ShaderPass_Main,
+    ShaderPass_MainDeferred,
     ShaderPass_MainNoReceiveShadows,
     ShaderPass_ShadowCastRGBA,
     ShaderPass_NumTypes,

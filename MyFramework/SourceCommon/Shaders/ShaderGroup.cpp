@@ -15,6 +15,7 @@ ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
 const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
 {
     "#define PassMain 1\n#define ReceiveShadows 1\n",
+    "#define PassMain 1\n#define ReceiveShadows 0\n#define Deferred 1\n",
     "#define PassMain 1\n#define ReceiveShadows 0\n",
     "#define PassShadowCastRGB 1\n",
 };
