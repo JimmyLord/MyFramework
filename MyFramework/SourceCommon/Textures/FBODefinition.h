@@ -14,6 +14,8 @@ class FBODefinition : public CPPListNode, public RefCount
 {
     friend class TextureManager;
 
+    static const int MAX_COLOR_TEXTURES = 4;
+
 public:
     enum FBOColorFormat
     {
@@ -25,11 +27,10 @@ protected:
     bool m_HasValidResources;
     bool m_FullyLoaded;
 
-protected:
     bool m_FailedToInit;
     bool m_OnlyFreeOnShutdown;
 
-    TextureDefinition* m_pColorTextures[4];
+    TextureDefinition* m_pColorTextures[MAX_COLOR_TEXTURES];
     TextureDefinition* m_pDepthTexture;
     GLuint m_FrameBufferID;
 
@@ -42,28 +43,29 @@ protected:
     int m_MinFilter;
     int m_MagFilter;
 
-    FBOColorFormat m_ColorFormats[4];
+    FBOColorFormat m_ColorFormats[MAX_COLOR_TEXTURES];
     int m_DepthBits;
     bool m_DepthIsTexture;
 
     int m_LastFrameBufferID;
 
-protected:
-    bool Create(); // TextureManager will call this.
-
-public:
+protected: // Limiting access of setup, creation and destruction to TextureManager.
     FBODefinition();
     virtual ~FBODefinition();
 
-    bool IsFullyLoaded() { return m_FullyLoaded; }
-
-    // Returns true if a new texture needs to be created.
+    // Returns true if new textures need to be created.
     bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat colorformat, int depthbits, bool depthreadable);
+    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable);
+
+    bool Create();
+
+    void Invalidate(bool cleanglallocs);
+
+public:
+    bool IsFullyLoaded() { return m_FullyLoaded; }
 
     void Bind(bool storeframebufferid);
     void Unbind(bool restorelastframebufferid);
-
-    void Invalidate(bool cleanglallocs);
 
     // Getters
     TextureDefinition* GetColorTexture(int index) { return m_pColorTextures[index]; }

@@ -39,7 +39,9 @@ public:
     void Tick();
     
     FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable, bool onlyfreeonshutdown = false);
+    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable, bool onlyfreeonshutdown = false);
     bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable);
+    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable);
     void InvalidateFBO(FBODefinition* pFBO);
 
     TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);

@@ -99,6 +99,22 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
     return pFBO;
 }
 
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
+{
+    //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
+
+    FBODefinition* pFBO = MyNew FBODefinition();
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformats, numcolorformats, depthbits, depthreadable );
+    pFBO->m_OnlyFreeOnShutdown = onlyfreeonshutdown;
+
+    if( newtexneeded )
+    {
+        m_UninitializedFBOs.AddTail( pFBO );
+    }
+
+    return pFBO;
+}
+
 // return true if new texture was needed.
 bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable)
 {
@@ -108,6 +124,25 @@ bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int 
     //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
 
     bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformat, depthbits, depthreadable );
+
+    if( newtexneeded )
+    {
+        LOGInfo( LOGTag, "ReSetupFBO - Creating new FBO textures %dx%d\n", width, height );
+        InvalidateFBO( pFBO );
+    }
+
+    return newtexneeded;
+}
+
+// return true if new texture was needed.
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable)
+{
+    //MyAssert( width > 0 && height > 0 );
+    if( width <= 0 || height <= 0 )
+        return false;
+    //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
+
+    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformats, numcolorformats, depthbits, depthreadable );
 
     if( newtexneeded )
     {
