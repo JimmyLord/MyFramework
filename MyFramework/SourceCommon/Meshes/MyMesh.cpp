@@ -71,7 +71,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
         pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
     }
 #else
-    if( pMaterial == 0 )
+    if( pMaterial == 0 && pShaderOverride == 0 )
         return;
 #endif //MYFW_USING_WX
 
