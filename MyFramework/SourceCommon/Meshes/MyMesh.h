@@ -140,6 +140,7 @@ public:
     void SetSourceFile(MyFileObject* pFile);
 
     // Shape creation functions
+    void CreateClipSpaceQuad();
     void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags, Vector3 offset);
     void CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags);
     void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);

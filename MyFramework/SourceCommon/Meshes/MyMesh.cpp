@@ -696,6 +696,41 @@ void MyMesh::GuessAndAssignAppropriateShader()
 // ============================================================================================================================
 // Shape creation functions
 // ============================================================================================================================
+void MyMesh::CreateClipSpaceQuad()
+{
+    CreateSubmeshes( 1 );
+    MyAssert( m_SubmeshList.Count() == 1 );
+
+    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == 0 );
+    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == 0 );
+
+    unsigned short numverts = 4;
+    unsigned int numindices = 0;
+    m_SubmeshList[0]->m_NumVertsToDraw = numverts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_STRIP;
+
+    {
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
+        Vertex_Sprite* pVerts = MyNew Vertex_Sprite[24];
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, "MyMesh_ScreenSpaceQuad", "Verts" );
+    }
+
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+
+    if( pVerts )
+    {
+        pVerts[0].x = -1; pVerts[0].y =  1;   pVerts[0].u = 0; pVerts[0].v = 1; // upper left
+        pVerts[1].x =  1; pVerts[1].y =  1;   pVerts[1].u = 1; pVerts[1].v = 1; // upper right
+        pVerts[2].x = -1; pVerts[2].y = -1;   pVerts[2].u = 0; pVerts[2].v = 0; // lower left
+        pVerts[3].x =  1; pVerts[3].y = -1;   pVerts[3].u = 1; pVerts[3].v = 0; // lower right
+
+        m_AABounds.Set( Vector3( 0, 0, 0 ), Vector3( 0.5f, 0.5f, 0 ) );
+    }
+
+    m_MeshReady = true;
+}
+
 void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags, Vector3 offset)
 {
     CreateSubmeshes( 1 );

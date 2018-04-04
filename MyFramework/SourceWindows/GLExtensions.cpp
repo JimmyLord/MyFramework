@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -84,6 +84,7 @@ PFNGLGENFRAMEBUFFERSPROC            glGenFramebuffers = 0;
 PFNGLBINDFRAMEBUFFERPROC            glBindFramebuffer = 0;
 PFNGLFRAMEBUFFERTEXTURE2DPROC       glFramebufferTexture2D = 0;
 PFNGLCHECKFRAMEBUFFERSTATUSPROC     glCheckFramebufferStatus = 0;
+PFNGLDRAWBUFFERSPROC                glDrawBuffers = 0;
 
 PFNGLGENRENDERBUFFERSPROC           glGenRenderbuffers = 0;
 PFNGLBINDRENDERBUFFERPROC           glBindRenderbuffer = 0;
@@ -190,6 +191,8 @@ void OpenGL_InitExtensions()
     glCheckFramebufferStatus        = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)     wglGetProcAddress( "glCheckFramebufferStatus" );
     if( glCheckFramebufferStatus == 0 )
         glCheckFramebufferStatus    = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)     wglGetProcAddress( "glCheckFramebufferStatusEXT" );
+
+    glDrawBuffers                   = (PFNGLDRAWBUFFERSPROC)                wglGetProcAddress( "glDrawBuffers" );
 
     glGenRenderbuffers              = (PFNGLGENRENDERBUFFERSPROC)           wglGetProcAddress( "glGenRenderbuffers" );
     if( glGenRenderbuffers == 0 )
