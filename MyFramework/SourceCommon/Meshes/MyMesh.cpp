@@ -696,7 +696,7 @@ void MyMesh::GuessAndAssignAppropriateShader()
 // ============================================================================================================================
 // Shape creation functions
 // ============================================================================================================================
-void MyMesh::CreateClipSpaceQuad()
+void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
 {
     CreateSubmeshes( 1 );
     MyAssert( m_SubmeshList.Count() == 1 );
@@ -720,10 +720,10 @@ void MyMesh::CreateClipSpaceQuad()
 
     if( pVerts )
     {
-        pVerts[0].x = -1; pVerts[0].y =  1;   pVerts[0].u = 0; pVerts[0].v = 1; // upper left
-        pVerts[1].x =  1; pVerts[1].y =  1;   pVerts[1].u = 1; pVerts[1].v = 1; // upper right
-        pVerts[2].x = -1; pVerts[2].y = -1;   pVerts[2].u = 0; pVerts[2].v = 0; // lower left
-        pVerts[3].x =  1; pVerts[3].y = -1;   pVerts[3].u = 1; pVerts[3].v = 0; // lower right
+        pVerts[0].x = -1; pVerts[0].y =  1;   pVerts[0].u = 0;       pVerts[0].v = maxUV.y; // upper left
+        pVerts[1].x =  1; pVerts[1].y =  1;   pVerts[1].u = maxUV.x; pVerts[1].v = maxUV.y; // upper right
+        pVerts[2].x = -1; pVerts[2].y = -1;   pVerts[2].u = 0;       pVerts[2].v = 0;       // lower left
+        pVerts[3].x =  1; pVerts[3].y = -1;   pVerts[3].u = maxUV.x; pVerts[3].v = 0;       // lower right
 
         m_AABounds.Set( Vector3( 0, 0, 0 ), Vector3( 0.5f, 0.5f, 0 ) );
     }
