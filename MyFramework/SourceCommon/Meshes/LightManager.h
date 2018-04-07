@@ -32,6 +32,8 @@ public:
     void SetLightEnabled(MyLight* pLight, bool enabled);
 
     int FindNearestLights(LightTypes type, int numtofind, Vector3 pos, MyLight** ppLights);
+
+    CPPListHead* GetLightList() { return &m_LightList; }
 };
 
 #endif //__LightManager_H__
