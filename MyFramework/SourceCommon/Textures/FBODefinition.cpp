@@ -252,15 +252,26 @@ bool FBODefinition::Create()
         {
             MyAssert( m_ColorFormats[i] != FBOColorFormat_None );
 
-            GLint colorformat = 0;
-            if( m_ColorFormats[i] == FBOColorFormat_RGBA )
-                colorformat = GL_RGBA;
+            GLint internalformat = 0;
+            GLenum format = 0;
+            GLenum type = 0;
+            if( m_ColorFormats[i] == FBOColorFormat_RGBA_UByte )
+            {
+                internalformat = GL_RGBA;
+                format = GL_RGBA;
+                type = GL_UNSIGNED_BYTE;
+            }
+            if( m_ColorFormats[i] == FBOColorFormat_RGB_Float16 )
+            {
+                internalformat = GL_RGB16F;
+                format = GL_RGB;
+                type = GL_FLOAT;
+            }
 
-            MyAssert( colorformat != 0 );
+            MyAssert( format != 0 );
 
             glBindTexture( GL_TEXTURE_2D, m_pColorTextures[i]->m_TextureID );
-            //glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_TextureWidth, m_TextureHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL );
-            glTexImage2D( GL_TEXTURE_2D, 0, colorformat, m_TextureWidth, m_TextureHeight, 0, colorformat, GL_UNSIGNED_BYTE, NULL );
+            glTexImage2D( GL_TEXTURE_2D, 0, internalformat, m_TextureWidth, m_TextureHeight, 0, format, type, NULL );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );

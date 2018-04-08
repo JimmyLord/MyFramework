@@ -20,7 +20,8 @@ public:
     enum FBOColorFormat
     {
         FBOColorFormat_None,
-        FBOColorFormat_RGBA,
+        FBOColorFormat_RGBA_UByte,
+        FBOColorFormat_RGB_Float16,
     };
 
 protected:
