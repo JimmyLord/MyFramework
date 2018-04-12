@@ -854,8 +854,7 @@ void Shader_Base::ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* in
 
             if( m_uHandle_LightAttenuation[numpoints] != -1 )
             {
-                Vector3 atten = lightptrs[numpoints]->m_Attenuation;
-                //atten /= inverseworldmatrix->m11;
+                Vector3 atten = lightptrs[i]->m_Attenuation;
                 glUniform3f( m_uHandle_LightAttenuation[numpoints], atten.x, atten.y, atten.z );
             }
 
