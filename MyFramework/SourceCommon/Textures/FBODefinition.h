@@ -21,6 +21,7 @@ public:
     {
         FBOColorFormat_None,
         FBOColorFormat_RGBA_UByte,
+        FBOColorFormat_RGBA_Float16,
         FBOColorFormat_RGB_Float16,
     };
 

@@ -255,17 +255,29 @@ bool FBODefinition::Create()
             GLint internalformat = 0;
             GLenum format = 0;
             GLenum type = 0;
-            if( m_ColorFormats[i] == FBOColorFormat_RGBA_UByte )
+
+            switch( m_ColorFormats[i] )
             {
+            case FBOColorFormat_RGBA_UByte:
                 internalformat = GL_RGBA;
                 format = GL_RGBA;
                 type = GL_UNSIGNED_BYTE;
-            }
-            if( m_ColorFormats[i] == FBOColorFormat_RGB_Float16 )
-            {
+                break;
+
+            case FBOColorFormat_RGBA_Float16:
+                internalformat = GL_RGBA16F;
+                format = GL_RGBA;
+                type = GL_FLOAT;
+                break;
+
+            case FBOColorFormat_RGB_Float16:
                 internalformat = GL_RGB16F;
                 format = GL_RGB;
                 type = GL_FLOAT;
+                break;
+
+            case FBOColorFormat_None:
+                assert( false );
             }
 
             MyAssert( format != 0 );
