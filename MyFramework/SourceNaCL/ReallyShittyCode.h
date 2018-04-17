@@ -19,6 +19,7 @@
 #define sscanf_s                    sscanf
 #define vsnprintf_s(a,b,c,d,e)      vsnprintf(a,b,d,e)
 #define _stricmp                    strcasecmp
+#define _strnicmp                   strncasecmp                 
 //#define _TRUNCATE
 #endif //!MYFW_PPAPI
 

@@ -41,12 +41,7 @@ const char* GetRelativePath(char* fullpath)
     FixSlashesInPath( fullpath );
 
     // Case insensitive string compare.
-    // TODO: Change to strncasecmp on other systems when this doesn't compile.
-#if MYFW_WINDOWS
     if( _strnicmp( workingdir, fullpath, workingdirpathlen ) == 0 )
-#else
-    if( strncasecmp( workingdir, fullpath, workingdirpathlen ) == 0 )
-#endif
     {
         return &fullpath[workingdirpathlen+1];
     }

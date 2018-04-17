@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,6 +16,14 @@ enum MaterialBlendType
     MaterialBlendType_Off,
     MaterialBlendType_On,
     MaterialBlendType_NumTypes,
+};
+
+enum MaterialBlendFactors
+{
+    MaterialBlendFactor_One,
+    MaterialBlendFactor_SrcAlpha,
+    MaterialBlendFactor_OneMinusSrcAlpha,
+    MaterialBlendFactor_NumTypes,
 };
 
 #endif //__GlobalEnums_H__

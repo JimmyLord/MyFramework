@@ -24,6 +24,8 @@ public:
     ShaderPassTypes m_PassType;
 
     MaterialBlendType m_BlendType;
+    MaterialBlendFactors m_BlendFactorSrc;
+    MaterialBlendFactors m_BlendFactorDest;
 
     const char* m_pFilename;
     MyFileObjectShader* m_pFile; // vertex shader

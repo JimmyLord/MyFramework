@@ -58,6 +58,8 @@ void BaseShader::Init_BaseShader()
 
     m_PassType = ShaderPass_NumTypes;
     m_BlendType = MaterialBlendType_Off;
+    m_BlendFactorSrc = MaterialBlendFactor_SrcAlpha;
+    m_BlendFactorDest = MaterialBlendFactor_OneMinusSrcAlpha;
 
     m_pFilename = 0;
     m_pFile = 0;
@@ -223,6 +225,25 @@ void BaseShader::LoadFromFile()
 #endif
 }
 
+void ParseBlendFactor(const char* buffer, MaterialBlendFactors* pBlendFactorOut)
+{
+    const char* endOfBlendFactor = strpbrk( buffer, " \t\n\r" );
+    char blendFactor[32];
+    if( endOfBlendFactor - buffer > 31 )
+        strncpy_s( blendFactor, buffer, 31 );
+    else
+        strncpy_s( blendFactor, buffer, endOfBlendFactor - buffer );
+
+    if( _stricmp( blendFactor, "One" ) == 0 )
+    {
+        *pBlendFactorOut = MaterialBlendFactor_One;
+        return;
+    }
+
+    // Blend factor not found, output an error.
+    LOGError( LOGTag, "BlendMode not supported: %s\n", blendFactor );
+}
+
 bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 {
     MyAssert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
@@ -286,6 +307,27 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                     strncmp( &buffer[i], blendstr, strlen( blendstr ) ) == 0 )
                 {
                     m_BlendType = MaterialBlendType_On; 
+                }
+
+                char blendFuncStr[] = "#define BLENDFUNC";
+                int blendFuncStrLen = strlen( blendFuncStr );
+                if( i + blendFuncStrLen < m_pFile->GetFileLength() &&
+                    strncmp( &buffer[i], blendFuncStr, blendFuncStrLen ) == 0 )
+                {
+                    i += blendFuncStrLen + 1;
+
+                    const char* endOfLine = strchr( &buffer[i], '\n' );
+                    if( endOfLine )
+                    {
+                        ParseBlendFactor( &buffer[i], &m_BlendFactorSrc );
+                     
+                        const char* startOfSecondBlendFactor = strchr( &buffer[i], ' ' );
+
+                        if( startOfSecondBlendFactor < endOfLine )
+                        {
+                            ParseBlendFactor( startOfSecondBlendFactor + 1, &m_BlendFactorDest );
+                        }
+                    }
                 }
 
                 char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";
