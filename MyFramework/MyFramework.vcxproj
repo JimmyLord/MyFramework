@@ -2020,6 +2020,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.cpp" />
     <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp" />
+    <ClCompile Include="SourceCommon\Helpers\GlobalEnums.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp" />
     <ClCompile Include="SourceCommon\Helpers\FileManager.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyAssert.cpp" />

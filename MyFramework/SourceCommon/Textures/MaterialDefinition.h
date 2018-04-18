@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -131,6 +131,14 @@ public:
     MaterialBlendType GetBlendType() { return m_BlendType; }
     bool IsTransparent(BaseShader* pShader);
     bool IsTransparent();
+    MaterialBlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
+    MaterialBlendFactors GetShaderBlendFactorSrc();
+    GLenum GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader);
+    GLenum GetShaderBlendFactorSrc_OpenGL();
+    MaterialBlendFactors GetShaderBlendFactorDest(BaseShader* pShader);
+    MaterialBlendFactors GetShaderBlendFactorDest();
+    GLenum GetShaderBlendFactorDest_OpenGL();
+    GLenum GetShaderBlendFactorDest_OpenGL(BaseShader* pShader);
 
 public:
 #if MYFW_EDITOR

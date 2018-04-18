@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -7,25 +7,11 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __GlobalEnums_H__
-#define __GlobalEnums_H__
+#include "CommonHeader.h"
 
-enum MaterialBlendType
+GLenum MaterialBlendFactors_OpenGL[MaterialBlendFactor_NumTypes] = 
 {
-    MaterialBlendType_UseShaderValue,
-    MaterialBlendType_Off,
-    MaterialBlendType_On,
-    MaterialBlendType_NumTypes,
+    GL_ONE,                       // MaterialBlendFactor_One,
+    GL_SRC_ALPHA,                 // MaterialBlendFactor_SrcAlpha,
+    GL_ONE_MINUS_SRC_ALPHA,       // MaterialBlendFactor_OneMinusSrcAlpha,
 };
-
-enum MaterialBlendFactors
-{
-    MaterialBlendFactor_One,
-    MaterialBlendFactor_SrcAlpha,
-    MaterialBlendFactor_OneMinusSrcAlpha,
-    MaterialBlendFactor_NumTypes,
-};
-
-extern GLenum MaterialBlendFactors_OpenGL[MaterialBlendFactor_NumTypes];
-
-#endif //__GlobalEnums_H__

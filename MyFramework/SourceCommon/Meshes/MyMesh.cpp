@@ -251,7 +251,10 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
                 if( pMaterial->IsTransparent( pShader ) )
                 {
                     glEnable( GL_BLEND );
-                    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                    
+                    GLenum srcfactor = pShader->GetShaderBlendFactorSrc_OpenGL();
+                    GLenum destfactor = pShader->GetShaderBlendFactorDest_OpenGL();
+                    glBlendFunc( srcfactor, destfactor );
                 }
 
                 if( pMesh->m_pSetupCustomUniformsCallback )

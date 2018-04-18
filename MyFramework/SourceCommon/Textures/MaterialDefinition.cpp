@@ -661,6 +661,74 @@ bool MaterialDefinition::IsTransparent()
     return true;
 }
 
+MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
+{
+    if( pShader )
+        return pShader->m_BlendFactorSrc;
+
+    return MaterialBlendFactor_SrcAlpha;
+}
+
+MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
+{
+    if( m_pShaderGroup )
+    {
+        BaseShader* pShader = m_pShaderGroup->GetShader( ShaderPass_Main );
+        if( pShader )
+            return pShader->m_BlendFactorSrc;
+    }
+
+    return MaterialBlendFactor_SrcAlpha;
+}
+
+GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader)
+{
+    MaterialBlendFactors factor = GetShaderBlendFactorSrc( pShader );
+    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    return MaterialBlendFactors_OpenGL[factor];
+}
+
+GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL()
+{
+    MaterialBlendFactors factor = GetShaderBlendFactorSrc();
+    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    return MaterialBlendFactors_OpenGL[factor];
+}
+
+MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest(BaseShader* pShader)
+{
+    if( pShader )
+        return pShader->m_BlendFactorDest;
+
+    return MaterialBlendFactor_OneMinusSrcAlpha;
+}
+
+MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
+{
+    if( m_pShaderGroup )
+    {
+        BaseShader* pShader = m_pShaderGroup->GetShader( ShaderPass_Main );
+        if( pShader )
+            return pShader->m_BlendFactorDest;
+    }
+
+    return MaterialBlendFactor_OneMinusSrcAlpha;
+}
+
+GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL(BaseShader* pShader)
+{
+    MaterialBlendFactors factor = GetShaderBlendFactorDest( pShader );
+    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    return MaterialBlendFactors_OpenGL[factor];
+}
+
+GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL()
+{
+    MaterialBlendFactors factor = GetShaderBlendFactorDest();
+    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    return MaterialBlendFactors_OpenGL[factor];
+}
+
 #if MYFW_EDITOR
 void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
 {
