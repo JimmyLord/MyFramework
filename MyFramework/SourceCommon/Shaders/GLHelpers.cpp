@@ -130,7 +130,7 @@ GLuint loadShader(GLenum shaderType, int numchunks, const char** ppChunks, int* 
             glGetShaderiv( shaderid, GL_INFO_LOG_LENGTH, &infoLen );
             if( infoLen )
             {
-                char* buf = (char*)malloc(infoLen);
+                char* buf = (char*)malloc( infoLen );
                 if( buf )
                 {
                     printShaderSource( shaderid );

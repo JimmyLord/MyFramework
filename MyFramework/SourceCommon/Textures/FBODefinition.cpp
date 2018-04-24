@@ -16,6 +16,7 @@ FBODefinition::FBODefinition()
     m_FailedToInit = false;
     m_OnlyFreeOnShutdown = false;
 
+    m_NumColorTextures = 0;
     for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
     {
         m_pColorTextures[i] = 0;
@@ -48,14 +49,14 @@ FBODefinition::~FBODefinition()
 }
 
 // Returns true if a new textures need to be created.
-bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat colorformat, int depthbits, bool depthreadable)
+bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable)
 {
-    return Setup( width, height, minfilter, magfilter, &colorformat, 1, depthbits, depthreadable );
+    return Setup( width, height, minFilter, magFilter, &colorFormat, 1, depthBits, depthReadable );
 }
 
-bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable)
+bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
 {
-    MyAssert( numcolorformats < MAX_COLOR_TEXTURES );
+    MyAssert( numColorFormats < MAX_COLOR_TEXTURES );
     MyAssert( width <= 4096 );
     MyAssert( height <= 4096 );
 
@@ -85,16 +86,17 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
     if( m_TextureWidth != NewTextureWidth || m_TextureHeight != NewTextureHeight )
         newtextureneeded = true;
 
-    for( int i=0; i<numcolorformats; i++ )
+    m_NumColorTextures = numColorFormats;
+    for( int i=0; i<numColorFormats; i++ )
     {
-        if( m_ColorFormats[i] != colorformats[i] )
+        if( m_ColorFormats[i] != colorFormats[i] )
             newtextureneeded = true;
     }
     
-    if( m_DepthBits != depthbits || m_DepthIsTexture != depthreadable )
+    if( m_DepthBits != depthBits || m_DepthIsTexture != depthReadable )
         newtextureneeded = true;
 
-    if( newtextureneeded == false && (m_MinFilter != minfilter || m_MagFilter != magfilter) )
+    if( newtextureneeded == false && (m_MinFilter != minFilter || m_MagFilter != magFilter) )
         newfilteroptions = true;
 
     m_TextureWidth = NewTextureWidth;
@@ -102,8 +104,8 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
 
     m_Width = width;
     m_Height = height;
-    m_MinFilter = minfilter;
-    m_MagFilter = magfilter;
+    m_MinFilter = minFilter;
+    m_MagFilter = magFilter;
 
     for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
     {
@@ -124,12 +126,12 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minfilter
         m_ColorFormats[i] = FBOColorFormat_None;
     }
 
-    for( int i=0; i<numcolorformats; i++ )
+    for( int i=0; i<numColorFormats; i++ )
     {
-        m_ColorFormats[i] = colorformats[i];
+        m_ColorFormats[i] = colorFormats[i];
     }
-    m_DepthBits = depthbits;
-    m_DepthIsTexture = depthreadable;
+    m_DepthBits = depthBits;
+    m_DepthIsTexture = depthReadable;
 
     // If filter options changed, reset them on the texture
     if( newfilteroptions == true )
@@ -370,6 +372,10 @@ bool FBODefinition::Create()
             return false;
         }
 
+        // Set up the textures for GL to write to.
+        GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+        glDrawBuffers( m_NumColorTextures, buffers );
+
         //LOGInfo( LOGTag, "FBO: created successfully\n" );
 
         MyBindFramebuffer( GL_FRAMEBUFFER, 0, 0, 0 );
@@ -386,7 +392,7 @@ bool FBODefinition::Create()
     return true;
 }
 
-void FBODefinition::Invalidate(bool cleanglallocs)
+void FBODefinition::Invalidate(bool cleanGLAllocs)
 {
     m_FailedToInit = false;
 
@@ -394,7 +400,7 @@ void FBODefinition::Invalidate(bool cleanglallocs)
         return;
 
 #if !USE_D3D
-    if( cleanglallocs )
+    if( cleanGLAllocs )
     {
         checkGlError( "start of FBODefinition::Invalidate" );
 
@@ -461,10 +467,10 @@ void FBODefinition::Invalidate(bool cleanglallocs)
 #endif
 }
 
-void FBODefinition::Bind(bool storeframebufferid)
+void FBODefinition::Bind(bool storeFramebufferID)
 {
 #if !USE_D3D
-    //if( storeframebufferid )
+    //if( storeFramebufferID )
     //    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &m_LastFrameBufferID );
 
     MyBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID, m_Width, m_Height );
@@ -472,9 +478,9 @@ void FBODefinition::Bind(bool storeframebufferid)
 #endif
 }
 
-void FBODefinition::Unbind(bool restorelastframebufferid)
+void FBODefinition::Unbind(bool restoreLastFramebufferID)
 {
-    //if( restorelastframebufferid )
+    //if( restoreLastFramebufferID )
     //{
     //    MyAssert( m_LastFrameBufferID != -1 );
     //    MyBindFramebuffer( GL_FRAMEBUFFER, m_LastFrameBufferID );

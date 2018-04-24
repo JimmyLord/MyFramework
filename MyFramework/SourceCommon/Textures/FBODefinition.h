@@ -32,6 +32,7 @@ protected:
     bool m_FailedToInit;
     bool m_OnlyFreeOnShutdown;
 
+    unsigned int m_NumColorTextures;
     TextureDefinition* m_pColorTextures[MAX_COLOR_TEXTURES];
     TextureDefinition* m_pDepthTexture;
     GLuint m_FrameBufferID;
@@ -56,18 +57,18 @@ protected: // Limiting access of setup, creation and destruction to TextureManag
     virtual ~FBODefinition();
 
     // Returns true if new textures need to be created.
-    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat colorformat, int depthbits, bool depthreadable);
-    bool Setup(unsigned int width, unsigned int height, int minfilter, int magfilter, FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable);
+    bool Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable);
+    bool Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
 
     bool Create();
 
-    void Invalidate(bool cleanglallocs);
+    void Invalidate(bool cleanGLAllocs);
 
 public:
     bool IsFullyLoaded() { return m_FullyLoaded; }
 
-    void Bind(bool storeframebufferid);
-    void Unbind(bool restorelastframebufferid);
+    void Bind(bool storeFramebufferID);
+    void Unbind(bool restoreLastFramebufferID);
 
     // Getters
     TextureDefinition* GetColorTexture(int index) { return m_pColorTextures[index]; }
