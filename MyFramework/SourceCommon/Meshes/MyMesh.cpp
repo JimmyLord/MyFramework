@@ -14,6 +14,10 @@ MySubmesh::MySubmesh()
 {
     m_pMaterial = 0;
 
+#if _DEBUG && MYFW_WINDOWS
+    m_TriggerBreakpointOnNextDraw = false;
+#endif
+
     m_VertexFormat = -1;
 
     m_pVertexBuffer = 0;
@@ -55,6 +59,14 @@ unsigned int MySubmesh::GetStride()
 void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "Start of MySubmesh::Draw()" );
+
+#if _DEBUG && MYFW_WINDOWS
+    if( m_TriggerBreakpointOnNextDraw )
+    {
+        __debugbreak();
+        m_TriggerBreakpointOnNextDraw = false;
+    }
+#endif //_DEBUG && MYFW_WINDOWS
 
     BufferDefinition* pVertexBuffer = m_pVertexBuffer;
     BufferDefinition* pIndexBuffer = m_pIndexBuffer;

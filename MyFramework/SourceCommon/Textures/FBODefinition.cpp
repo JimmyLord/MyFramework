@@ -285,7 +285,7 @@ bool FBODefinition::Create()
             MyAssert( format != 0 );
 
             glBindTexture( GL_TEXTURE_2D, m_pColorTextures[i]->m_TextureID );
-            glTexImage2D( GL_TEXTURE_2D, 0, internalformat, m_TextureWidth, m_TextureHeight, 0, format, type, NULL );
+            glTexImage2D( GL_TEXTURE_2D, 0, internalformat, m_TextureWidth, m_TextureHeight, 0, format, type, 0 );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
@@ -337,7 +337,7 @@ bool FBODefinition::Create()
         MyBindFramebuffer( GL_FRAMEBUFFER, m_FrameBufferID, 0, 0 );
 
         // Attach color texture.
-        for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
+        for( unsigned int i=0; i<m_NumColorTextures; i++ )
         {
             if( m_pColorTextures[i] && m_pColorTextures[i]->m_TextureID != 0 )
             {

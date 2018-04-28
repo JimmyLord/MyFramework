@@ -39,6 +39,10 @@ class MySubmesh
 protected:
     MaterialDefinition* m_pMaterial;
 
+#if _DEBUG && MYFW_WINDOWS
+    bool m_TriggerBreakpointOnNextDraw; // Used by editor to trap the next time this object is drawn.
+#endif
+
 public:
     int m_VertexFormat;
 
@@ -59,6 +63,10 @@ public:
     unsigned int GetStride();
 
     virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+
+#if _DEBUG && MYFW_WINDOWS
+    void TriggerBreakpointOnNextDraw() { m_TriggerBreakpointOnNextDraw = true; }
+#endif
 };
 
 typedef void (*SetupCustomUniformsCallbackFunc)(void* pObjectPtr, Shader_Base* pShader);
