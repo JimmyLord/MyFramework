@@ -636,21 +636,24 @@ bool MaterialDefinition::IsTransparent(BaseShader* pShader)
 
     // check the shader
     if( m_BlendType == MaterialBlendType_UseShaderValue )
+    {
         return pShader->m_BlendType == MaterialBlendType_On ? true : false;
+    }
 
     return false;
 }
 
 bool MaterialDefinition::IsTransparent()
 {
-    // if shader from any pass is opaque, consider entire object opaque.
+    // Find first initialized shader from this group and return it's opacity setting.
     if( m_pShaderGroup )
     {
-        //for( int i=0; i<ShaderPass_NumTypes; i++ )
-        int i = ShaderPass_Main;
+        for( int i=0; i<ShaderPass_NumTypes; i++ )
+        //int i = ShaderPass_Main;
         {
             BaseShader* pShader = m_pShaderGroup->GetShader( (ShaderPassTypes)i );
-            if( pShader )
+
+            if( pShader && pShader->m_Initialized )
             {
                 if( IsTransparent( pShader ) == false )
                     return false;
@@ -658,6 +661,7 @@ bool MaterialDefinition::IsTransparent()
         }
     }
 
+    // If not shader is initialized, consider it transparent.
     return true;
 }
 

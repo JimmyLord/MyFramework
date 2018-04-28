@@ -108,7 +108,6 @@ void EventManager::SendEventNow(MyEvent* pEvent)
             (m_pEventHandlers[i]->m_pOnEventFunction)( m_pEventHandlers[i]->m_pObject, pEvent );
         }
     }
-    //g_pGameCore->OnEvent( pEvent );
 
     ReleaseEvent( pEvent );
 }

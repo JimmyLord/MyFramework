@@ -86,6 +86,23 @@ void ShaderGroup::Initialize()
     }
 }
 
+bool ShaderGroup::ContainsShader(BaseShader* pShader)
+{
+    for( int p=0; p<ShaderPass_NumTypes; p++ )
+    {
+        for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
+        {
+            for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+            {
+                if( m_pShaderPasses[p][lc][bc] == pShader )
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype)
 {
     // This must be called before the shader gets compiled since m_PassType is used to determine the

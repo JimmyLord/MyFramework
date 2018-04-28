@@ -468,6 +468,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     }
 
     MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );
+    pEvent->AttachPointer( "Shader", this );
     g_pEventManager->SendEventNow( pEvent );
 
     return true;
