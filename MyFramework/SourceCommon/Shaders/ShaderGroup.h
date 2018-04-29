@@ -32,6 +32,7 @@ typedef Shader_Base* (*ShaderGroupShaderAllocationFunction)(ShaderPassTypes pass
 
 class ShaderGroup : public CPPListNode, public RefCount
 {
+public:
     static const int SHADERGROUP_MAX_LIGHTS = 4;
     static const int SHADERGROUP_MAX_BONE_INFLUENCES = 4;
 

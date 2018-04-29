@@ -57,7 +57,7 @@ void BaseShader::Init_BaseShader()
     m_ShaderFailedToCompile = false;
 
     m_PassType = ShaderPass_NumTypes;
-    m_BlendType = MaterialBlendType_Off;
+    m_BlendType = MaterialBlendType_NotSet;
     m_BlendFactorSrc = MaterialBlendFactor_SrcAlpha;
     m_BlendFactorDest = MaterialBlendFactor_OneMinusSrcAlpha;
 
@@ -254,6 +254,10 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         //LOGError( LOGTag, "BaseShader::LoadAndCompile - m_ShaderFailedToCompile\n" );
         return false;
     }
+
+    // By default, turn blending "Off" if we try to compile this shader, as opposed to "Not Set"
+    // It will be turned on if "BLENDING On" is defined in the glsl file.
+    m_BlendType = MaterialBlendType_Off;
 
     if( m_pFile == 0 )
     {

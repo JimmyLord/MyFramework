@@ -15,6 +15,7 @@ enum MaterialBlendType
     MaterialBlendType_UseShaderValue,
     MaterialBlendType_Off,
     MaterialBlendType_On,
+    MaterialBlendType_NotSet,
     MaterialBlendType_NumTypes,
 };
 
