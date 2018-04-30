@@ -98,6 +98,7 @@ protected:
     MyList<MySubmesh*> m_SubmeshList;
 
     MyFileObject* m_pSourceFile;
+    bool m_LoadDefaultMaterials;
     bool m_ForceCheckForAnimationFile;
     bool m_MeshReady;
 
@@ -129,6 +130,9 @@ public:
 
     MyFileObject* GetFile() { return m_pSourceFile; }
     bool IsReady() { return m_MeshReady; }
+
+    // MyMesh Setters()
+    void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
 
     // MyMesh Methods
     void Clear();

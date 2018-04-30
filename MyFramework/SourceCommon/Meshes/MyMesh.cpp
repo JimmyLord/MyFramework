@@ -296,6 +296,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
 MyMesh::MyMesh()
 {
     m_pSourceFile = 0;
+    m_LoadDefaultMaterials = true;
     m_ForceCheckForAnimationFile = false;
     m_MeshReady = false;
 

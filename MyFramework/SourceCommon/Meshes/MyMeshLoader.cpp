@@ -145,13 +145,16 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
             MyAssert( ppVBO );
             MyAssert( ppIBO );
 
-            cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
-            if( jMaterial && jMaterial->valuestring )
+            if( m_LoadDefaultMaterials )
             {
-                MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
-                if( pMaterial )
-                    pSubmesh->SetMaterial( pMaterial );
-                pMaterial->Release();
+                cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
+                if( jMaterial && jMaterial->valuestring )
+                {
+                    MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
+                    if( pMaterial )
+                        pSubmesh->SetMaterial( pMaterial );
+                    pMaterial->Release();
+                }
             }
 
             cJSONExt_GetUnsignedInt( mesh, "TotalVerts", &totalverts );
