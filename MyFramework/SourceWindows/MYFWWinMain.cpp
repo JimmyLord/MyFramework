@@ -13,32 +13,35 @@
 // Initialize opengl window on windows, huge chunks taken from nehe
 //    http://nehe.gamedev.net/tutorial/creating_an_opengl_window_%28win32%29/13001/
 
-bool g_EscapeButtonWillQuit;
-bool g_CloseProgramRequested;
-
-int g_RequestedWidth;
-int g_RequestedHeight;
-
-int g_InitialWidth;
-int g_InitialHeight;
-
 #if MYFW_USING_IMGUI
 unsigned int g_GLCanvasIDActive = 0;
 #endif
 
-HGLRC hRenderingContext = 0;
-HDC hDeviceContext = 0;
 HWND g_hWnd = 0;
-HINSTANCE hInstance;
 
-int g_WindowWidth = 0;
-int g_WindowHeight = 0;
-bool g_KeyStates[256];
-bool g_MouseButtonStates[3];
-int g_MouseWheelDelta = 0;
-bool g_WindowIsActive = true;
-bool g_FullscreenMode = true;
+static bool g_EscapeButtonWillQuit;
+static bool g_CloseProgramRequested;
 
+static int g_RequestedWidth;
+static int g_RequestedHeight;
+
+static int g_InitialWidth;
+static int g_InitialHeight;
+
+static HGLRC hRenderingContext = 0;
+static HDC hDeviceContext = 0;
+static HINSTANCE hInstance;
+
+static int g_WindowWidth = 0;
+static int g_WindowHeight = 0;
+static bool g_KeyStates[256];
+static bool g_MouseButtonStates[3];
+static int g_MouseWheelDelta = 0;
+static Vector2 g_RawMouseDelta(0);
+static bool g_WindowIsActive = true;
+static bool g_FullscreenMode = true;
+
+static bool g_RawMouseInputInitialized = false;
 static bool g_GameWantsLockedMouse = false;
 static bool g_SystemMouseIsLocked = false;
 
@@ -87,12 +90,12 @@ void SetWindowSize(int width, int height)
         height = maxheight;
     }
 
-    // Typecast from LONG_PTR to DWORD should be ok when querying GWL_STYLE and GWL_EXSTYLE    
+    // Typecast from LONG_PTR to DWORD should be ok when querying GWL_STYLE and GWL_EXSTYLE.
     DWORD dwStyle = (DWORD)GetWindowLongPtr( g_hWnd, GWL_STYLE );
     DWORD dwExStyle = (DWORD)GetWindowLongPtr( g_hWnd, GWL_EXSTYLE );
     HMENU menu = GetMenu( g_hWnd );
 
-    // Calculate the full size of the window needed to match our client area of width/height
+    // Calculate the full size of the window needed to match our client area of width/height.
     RECT WindowRect = { 0, 0, width, height };
     AdjustWindowRectEx( &WindowRect, dwStyle, menu ? TRUE : FALSE, dwExStyle );
 
@@ -119,10 +122,10 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
             // If the game is set to quit on escape, then quit.
             if( i == MYKEYCODE_ESC )
             {
-                if( g_SystemMouseIsLocked == true )
+                if( g_SystemMouseIsLocked )
                 {
-                    g_SystemMouseIsLocked = false;
                     //LOGInfo( LOGTag, "System Mouse unlocked\n" );
+                    g_SystemMouseIsLocked = false;
                     ShowCursor( true );
                 }
                 else
@@ -135,20 +138,14 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
                 }
             }
             
-            //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-            //    pGameCore->OnKeyDown( i+32, i+32 );
-            //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
-                pGameCore->OnKeyDown( i, i );
+            pGameCore->OnKeyDown( i, i );
 
             //LOGInfo( LOGTag, "Calling pGameCore->OnKeyDown( %d, %d )\n", i, i );
         }
 
         if( keys[i] == 0 && keysold[i] == 1 )
         {
-            //if( i >= 'A' && i <= 'Z' && keys[MYKEYCODE_LSHIFT] == 0 && keys[MYKEYCODE_RSHIFT] == 0 )
-            //    pGameCore->OnKeyUp( i+32, i+32 );
-            //else if( keys[MYKEYCODE_LCTRL] == 0 && keys[MYKEYCODE_RCTRL] == 0 && keys[MYKEYCODE_LALT] == 0 && keys[MYKEYCODE_RALT] == 0 )
-                pGameCore->OnKeyUp( i, i );
+            pGameCore->OnKeyUp( i, i );
         }
     }
 
@@ -206,30 +203,29 @@ void SetMouseLock(bool lock, Vector2 pos)
 {
     if( lock == true && g_GameWantsLockedMouse == false )
     {
-        g_PositionToLockMouse = pos;
         //LOGInfo( LOGTag, "SetMouseLock( true ) - (%0.0f, %0.0f);\n", pos.x, pos.y );
-
         g_GameWantsLockedMouse = true;
 
-        g_SystemMouseIsLocked = true;
+        g_PositionToLockMouse = pos;
+
         //LOGInfo( LOGTag, "System Mouse Locked\n" );
+        g_SystemMouseIsLocked = true;
         ShowCursor( false );
 
-        g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x; //g_WindowWidth/2; //mousex;
-        g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y; //g_WindowHeight/2; //mousey;
+        g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x;
+        g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y;
 
-        // Set the mouse back to it's screen space position
-        POINT p;
-        p.x = g_MouseXPositionWhenLocked;
-        p.y = g_MouseYPositionWhenLocked;
-        ClientToScreen( g_hWnd, &p );
-        SetCursorPos( p.x, p.y );
+        // Set the mouse to it's screen space position.
+        POINT lockedMouseScreenPos;
+        lockedMouseScreenPos.x = g_MouseXPositionWhenLocked;
+        lockedMouseScreenPos.y = g_MouseYPositionWhenLocked;
+        ClientToScreen( g_hWnd, &lockedMouseScreenPos );
+        SetCursorPos( lockedMouseScreenPos.x, lockedMouseScreenPos.y );
     }
     
     if( lock == false && g_GameWantsLockedMouse == true )
     {
         //LOGInfo( LOGTag, "SetMouseLock( false );\n" );
-
         g_GameWantsLockedMouse = false;
 
         g_SystemMouseIsLocked = false;
@@ -264,12 +260,12 @@ void GenerateMouseEvents(GameCore* pGameCore)
         {
             if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
             {
-                g_SystemMouseIsLocked = true;
                 //LOGInfo( LOGTag, "System Mouse Locked\n" );
+                g_SystemMouseIsLocked = true;
                 ShowCursor( false );
                 
-                g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x; //g_WindowWidth/2; //mousex;
-                g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y; //g_WindowHeight/2; //mousey;
+                g_MouseXPositionWhenLocked = (int)g_PositionToLockMouse.x;
+                g_MouseYPositionWhenLocked = (int)g_PositionToLockMouse.y;
 
                 mousex = g_MouseXPositionWhenLocked;
                 mousey = g_MouseYPositionWhenLocked;
@@ -308,48 +304,64 @@ void GenerateMouseEvents(GameCore* pGameCore)
     // Game window wants mouse locked.
     if( g_GameWantsLockedMouse )
     {
-        // Only send mouse movement messages (position diffs) if the system mouse is locked
+        // Only send relative mouse movement messages if the system mouse is locked.
         if( g_SystemMouseIsLocked )
         {
-            // Set the mouse back to it's screen space position
-            POINT p;
-            p.x = g_MouseXPositionWhenLocked;
-            p.y = g_MouseYPositionWhenLocked;
-            ClientToScreen( g_hWnd, &p );
-            SetCursorPos( p.x, p.y );
-
-            float xdiff = (float)mousex - g_MouseXPositionWhenLocked;
-            float ydiff = (float)mousey - g_MouseYPositionWhenLocked;
-
-            //LOGInfo( LOGTag, "Mouse move relative\n" );
-
-            if( xdiff != 0 || ydiff != 0 )
+            if( g_RawMouseInputInitialized )
             {
-                if( buttonstates == 0 )
-                    pGameCore->OnTouch( GCBA_RelativeMovement, -1, xdiff, ydiff, 0, 0 );
-                if( buttonstates & 1 << 0 )
-                    pGameCore->OnTouch( GCBA_RelativeMovement, 0, xdiff, ydiff, 0, 0 );
-                if( buttonstates & 1 << 1 )
-                    pGameCore->OnTouch( GCBA_RelativeMovement, 1, xdiff, ydiff, 0, 0 );
-                if( buttonstates & 1 << 2 )
-                    pGameCore->OnTouch( GCBA_RelativeMovement, 2, xdiff, ydiff, 0, 0 );
+                if( g_RawMouseDelta.x != 0 || g_RawMouseDelta.y != 0 )
+                {
+                    if( buttonstates == 0 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, -1, g_RawMouseDelta.x, g_RawMouseDelta.y, 0, 0 );
+                    if( buttonstates & 1 << 0 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 0, g_RawMouseDelta.x, g_RawMouseDelta.y, 0, 0 );
+                    if( buttonstates & 1 << 1 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 1, g_RawMouseDelta.x, g_RawMouseDelta.y, 0, 0 );
+                    if( buttonstates & 1 << 2 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 2, g_RawMouseDelta.x, g_RawMouseDelta.y, 0, 0 );
+                }
+            }
+            else
+            {
+                // TODO: There are issues with this if the global display scale is set to anything but 1.
+                //       GetCursor can return a different position than SetCursor on "sub-pixels" causing drift.
+
+                // Set the mouse back to it's screen space position.
+                POINT lockedMouseScreenPos;
+                lockedMouseScreenPos.x = g_MouseXPositionWhenLocked;
+                lockedMouseScreenPos.y = g_MouseYPositionWhenLocked;            
+                ClientToScreen( g_hWnd, &lockedMouseScreenPos );
+                SetCursorPos( lockedMouseScreenPos.x, lockedMouseScreenPos.y );
+
+                POINT currentMouseScreenPos;
+                currentMouseScreenPos.x = mousex;
+                currentMouseScreenPos.y = mousey;            
+                ClientToScreen( g_hWnd, &currentMouseScreenPos );
+
+                int xdiff = currentMouseScreenPos.x - lockedMouseScreenPos.x;
+                int ydiff = currentMouseScreenPos.y - lockedMouseScreenPos.y;
+
+                if( xdiff != 0 || ydiff != 0 )
+                {
+                    if( buttonstates == 0 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, -1, (float)xdiff, (float)ydiff, 0, 0 );
+                    if( buttonstates & 1 << 0 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 0, (float)xdiff, (float)ydiff, 0, 0 );
+                    if( buttonstates & 1 << 1 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 1, (float)xdiff, (float)ydiff, 0, 0 );
+                    if( buttonstates & 1 << 2 )
+                        pGameCore->OnTouch( GCBA_RelativeMovement, 2, (float)xdiff, (float)ydiff, 0, 0 );
+                }
             }
         }
         else
         {
-            //if( buttonstates == 0 )
-            //    pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
-            //if( buttonstates & 1 << 0 )
-            //    pGameCore->OnTouch( GCBA_Held, 0, (float)mousex, (float)mousey, 0, 0 );
-            //if( buttonstates & 1 << 1 )
-            //    pGameCore->OnTouch( GCBA_Held, 1, (float)mousex, (float)mousey, 0, 0 );
-            //if( buttonstates & 1 << 2 )
-            //    pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
+            // Don't send mouse messages if game requested mouse lock but it isn't locked yet.
         }
     }
     else
     {
-        // Only send mouse positions if system mouse isn't locked
+        // Only send mouse positions if system mouse isn't locked.
         if( g_SystemMouseIsLocked == false )
         {
             //LOGInfo( LOGTag, "Mouse move absolute\n" );
@@ -364,6 +376,8 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
         }
     }
+
+    g_RawMouseDelta.Set( 0, 0 );
 }
 
 GLvoid KillGLWindow()
@@ -637,10 +651,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             for( int i=0; i<3; i++ )
                 g_MouseButtonStates[i] = 0;
 
-            if( g_GameWantsLockedMouse )
+            if( g_SystemMouseIsLocked )
             {
-                g_SystemMouseIsLocked = false;
                 //LOGInfo( LOGTag, "System Mouse Unlocked\n" );
+                g_SystemMouseIsLocked = false;
                 ShowCursor( true );
             }
         }
@@ -708,7 +722,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             else if( wParam == VK_RMENU )
                 g_KeyStates[MYKEYCODE_RALT] = false;
             else if( wParam == VK_F4 && (lParam & (1 << 29)) )
-                break; // Since we ignored the down, let's ignore the up
+                break; // Since we ignored the down, let's ignore the up.
             else
                 g_KeyStates[wParam] = false;
         }
@@ -756,6 +770,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
 
+    case WM_INPUT:
+        {
+            unsigned int size = sizeof( RAWINPUT );
+            RAWINPUT rawinput;
+
+#if _DEBUG
+            unsigned int sizewanted;
+            GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, 0, &sizewanted, sizeof(RAWINPUTHEADER) );
+            MyAssert( size == sizewanted );
+#endif
+
+            GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, &rawinput, &size, sizeof(RAWINPUTHEADER) );
+
+            // Pass mouse position diffs to event queue.
+            if( rawinput.header.dwType == RIM_TYPEMOUSE )
+            {
+                // Accumulate all raw mouse messages until they get used at the start of the next frame.
+                if( g_SystemMouseIsLocked )
+                {
+                    //LOGInfo( "RawMouse", "%f (%d, %d)\n", MyTime_GetSystemTime(), rawinput.data.mouse.lLastX, rawinput.data.mouse.lLastY );
+
+                    g_RawMouseDelta.x += (float)rawinput.data.mouse.lLastX;
+                    g_RawMouseDelta.y += (float)rawinput.data.mouse.lLastY;
+                }
+            }
+        }
+        return 0;
+
     case WM_SIZE:
         {
             ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
@@ -781,8 +823,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
     }
 
-    // Pass all unhandled messages to DefWindowProc
+    // Pass all unhandled messages to DefWindowProc.
     return DefWindowProc( hWnd, uMsg, wParam, lParam );
+}
+
+void RequestRawMouseAccess()
+{
+    // Only attempt this once.
+    MyAssert( g_RawMouseInputInitialized == false );
+
+    // Request raw mouse access.
+    RAWINPUTDEVICE device;
+
+    device.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+    device.usUsage = 0x02;     // HID_USAGE_GENERIC_MOUSE
+    device.dwFlags = 0;
+    device.hwndTarget = 0;     // All windows in this app?
+
+    BOOL ret = RegisterRawInputDevices( &device, 1, sizeof(RAWINPUTDEVICE) );
+    if( ret == false )
+    {
+        // Registration failed. Call GetLastError for the cause of the error.
+        LOGError( LOGTag, "Failed to grab raw mouse device: %d\n", GetLastError() );
+    }
+    else
+    {
+        g_RawMouseInputInitialized = true;
+    }
 }
 
 int MYFWWinMain(int width, int height)
@@ -790,6 +857,8 @@ int MYFWWinMain(int width, int height)
 #if _DEBUG && MYFW_WINDOWS
     OverrideJSONMallocFree();
 #endif
+
+    RequestRawMouseAccess();
 
     g_EscapeButtonWillQuit = false;
     g_CloseProgramRequested = false;
@@ -809,7 +878,7 @@ int MYFWWinMain(int width, int height)
     MSG msg;
     bool done = false;
 
-    // Horrid key handling
+    // Horrid key handling.
     for( int i=0; i<256; i++ )
         g_KeyStates[i] = false;
 
@@ -822,13 +891,13 @@ int MYFWWinMain(int width, int height)
         return 0;
     }
 
-    // Create Our OpenGL Window
+    // Create Our OpenGL Window.
     if( !CreateGLWindow( L"OpenGL Window", width, height, 32, 31, 1, false ) )
     {
         return 0;
     }
 
-    // Initialize OpenGL Extensions, must be done after OpenGL Context is created
+    // Initialize OpenGL Extensions, must be done after OpenGL Context is created.
     OpenGL_InitExtensions();
     WGL_InitExtensions();
 
@@ -839,7 +908,7 @@ int MYFWWinMain(int width, int height)
 
     double lasttime = MyTime_GetSystemTime();
 
-    // Main loop
+    // Main loop.
     while( !done )
     {
         if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
