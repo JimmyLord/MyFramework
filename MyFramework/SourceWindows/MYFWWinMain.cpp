@@ -44,6 +44,7 @@ static bool g_FullscreenMode = true;
 static bool g_RawMouseInputInitialized = false;
 static bool g_GameWantsLockedMouse = false;
 static bool g_SystemMouseIsLocked = false;
+static POINT g_MousePositionBeforeLock;
 
 static int g_MouseXPositionWhenLocked = 300;
 static int g_MouseYPositionWhenLocked = 300;
@@ -220,6 +221,10 @@ void SetMouseLock(bool lock, Vector2 pos)
         lockedMouseScreenPos.x = g_MouseXPositionWhenLocked;
         lockedMouseScreenPos.y = g_MouseYPositionWhenLocked;
         ClientToScreen( g_hWnd, &lockedMouseScreenPos );
+
+        // Store the old cursor position.
+        GetCursorPos( &g_MousePositionBeforeLock );
+
         SetCursorPos( lockedMouseScreenPos.x, lockedMouseScreenPos.y );
     }
     
@@ -229,6 +234,10 @@ void SetMouseLock(bool lock, Vector2 pos)
         g_GameWantsLockedMouse = false;
 
         g_SystemMouseIsLocked = false;
+
+        // Restore the position of the cursor before it was locked.
+        SetCursorPos( g_MousePositionBeforeLock.x, g_MousePositionBeforeLock.y );
+
         ShowCursor( true );
     }
 }
