@@ -47,13 +47,13 @@ void CommandStack::ClearStacks()
     }
 }
 
-void CommandStack::ClearUndoStack(unsigned int numtoleave)
+void CommandStack::ClearUndoStack(unsigned int numToLeave)
 {
 #if DEBUG_EDITOR_COMMANDS
     LOGInfo( "EditorCommands", "ClearUndoStack\n" );
 #endif
 
-    while( m_UndoStack.size() > numtoleave )
+    while( m_UndoStack.size() > numToLeave )
     {
         delete m_UndoStack.back();
         m_UndoStack.pop_back();
@@ -68,26 +68,27 @@ void CommandStack::Undo(unsigned int levels)
 
     MyAssert( m_UndoStack.size() >= levels );
 
-    bool previouswaslinked = false;
+    bool previousWasLinked = false;
 
     for( unsigned int i=0; i<levels; i++ )
     {
         if( m_UndoStack.size() == 0 )
             return;
 
-        EditorCommand* pCommand = m_UndoStack.back(); m_UndoStack.pop_back();
+        EditorCommand* pCommand = m_UndoStack.back();
+        m_UndoStack.pop_back();
         pCommand->Undo();
 
 #if DEBUG_EDITOR_COMMANDS
         LOGInfo( "EditorCommands", "Undo: (%d)%s\n", pCommand->m_FrameExecuted, pCommand->m_Name );
 #endif
 
-        if( previouswaslinked )
-            pCommand->m_LinkedToNextCommandOnRedoStack = true; // mark this command as being linked to the next one on the redo stack.
+        if( previousWasLinked )
+            pCommand->m_LinkedToNextCommandOnRedoStack = true; // Mark this command as being linked to the next one on the redo stack.
 
         if( pCommand->m_LinkedToPreviousCommandOnUndoStack )
         {
-            previouswaslinked = true;
+            previousWasLinked = true;
             levels++;
         }
 
@@ -108,7 +109,8 @@ void CommandStack::Redo(unsigned int levels)
         if( m_RedoStack.size() == 0 )
             return;
 
-        EditorCommand* pCommand = m_RedoStack.back(); m_RedoStack.pop_back();
+        EditorCommand* pCommand = m_RedoStack.back();
+        m_RedoStack.pop_back();
         pCommand->Do();
 
 #if DEBUG_EDITOR_COMMANDS
@@ -122,36 +124,36 @@ void CommandStack::Redo(unsigned int levels)
     }
 }
 
-void CommandStack::Do(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
+void CommandStack::Do(EditorCommand* pCommand, bool linkToPrevious, bool autoLinkIfSameFrameAsPrevious)
 {
-    // Add the command to the undo stack before executing, allowing redo stack to be wiped
-    Add( pCommand, linktoprevious, autolinkifsameframeasprevious );
+    // Add the command to the undo stack before executing, allowing redo stack to be wiped.
+    Add( pCommand, linkToPrevious, autoLinkIfSameFrameAsPrevious );
 
     pCommand->Do();
 }
 
-void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autolinkifsameframeasprevious)
+void CommandStack::Add(EditorCommand* pCommand, bool linkToPrevious, bool autoLinkIfSameFrameAsPrevious)
 {
     MyAssert( pCommand );
     if( pCommand == 0 )
         return;
 
-    // Figure out if command should be linked to previous
+    // Figure out if command should be linked to previous.
     {
         pCommand->m_LinkedToPreviousCommandOnUndoStack = false;
 
-        // Set command to be linked to the previous command if it was executed on same frame (and link wanted)
+        // Set command to be linked to the previous command if it was executed on same frame (and link wanted).
         pCommand->m_FrameExecuted = m_CurrentFrame;
-        if( autolinkifsameframeasprevious && m_UndoStack.size() > 0 )
+        if( autoLinkIfSameFrameAsPrevious && m_UndoStack.size() > 0 )
         {
             if( pCommand->m_FrameExecuted == m_UndoStack.back()->m_FrameExecuted )
                 pCommand->m_LinkedToPreviousCommandOnUndoStack = true;
         }
 
-        // Force link
-        if( linktoprevious )
+        // Force link.
+        if( linkToPrevious )
         {
-            pCommand->m_LinkedToPreviousCommandOnUndoStack = linktoprevious;
+            pCommand->m_LinkedToPreviousCommandOnUndoStack = linkToPrevious;
         }
 
 #if DEBUG_EDITOR_COMMANDS
@@ -159,10 +161,10 @@ void CommandStack::Add(EditorCommand* pCommand, bool linktoprevious, bool autoli
 #endif
     }
 
-    // Add to undo stack
+    // Add to undo stack.
     m_UndoStack.push_back( pCommand );
 
-    // Wipe out the redo stack
+    // Wipe out the redo stack.
     {
         for( unsigned int i=0; i<m_RedoStack.size(); i++ )
             delete( m_RedoStack[i] );

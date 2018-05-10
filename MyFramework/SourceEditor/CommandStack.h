@@ -31,13 +31,13 @@ public:
     EditorCommand* GetUndoCommandAtIndex(unsigned int index) { return m_UndoStack[index]; }
 
     void ClearStacks();
-    void ClearUndoStack(unsigned int numtoleave = 0);
+    void ClearUndoStack(unsigned int numToLeave = 0);
 
     virtual void Undo(unsigned int levels);
     virtual void Redo(unsigned int levels);
 
-    virtual void Do(EditorCommand* pCommand, bool linktoprevious = false, bool autolinkifsameframeasprevious = true);
-    virtual void Add(EditorCommand* pCommand, bool linktoprevious = false, bool autolinkifsameframeasprevious = true);
+    virtual void Do(EditorCommand* pCommand, bool linkToPrevious = false, bool autoLinkIfSameFrameAsPrevious = true);
+    virtual void Add(EditorCommand* pCommand, bool linkToPrevious = false, bool autoLinkIfSameFrameAsPrevious = true);
 };
 
 #endif // __CommandStack_H__
