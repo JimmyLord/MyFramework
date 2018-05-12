@@ -288,13 +288,14 @@ SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMe
 
     if( pObject )
     {
-        pObject->m_Flags = flags;
+        pObject->SetFlags( flags );
+        pObject->SetMaterial( pMaterial, false );
+
         pObject->m_Layers = layers;
 
         pObject->m_pTransform = pTransform;
         pObject->m_pMesh = pMesh;
         pObject->m_pSubmesh = pSubmesh;
-        pObject->m_pMaterial = pMaterial;
         pObject->m_Visible = true;
 
         pObject->m_GLPrimitiveType = primitive;
@@ -342,10 +343,8 @@ void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender,
 void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     // Draw all scene graph objects contained in this node.
-    // TODO:
-    //    Remove frustum check for each individual object
 
-    // If node is not in frustum, return
+    // If node is not in frustum, return.
     if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatViewProj, 0 ) == false )
         return;
 
@@ -353,7 +352,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
-        if( (pObject->m_Flags & flags) == 0 )
+        if( (pObject->GetFlags() & flags) == 0 )
             continue;
 
         if( (pObject->m_Layers & layerstorender) == 0 )
@@ -368,12 +367,11 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
         if( pObject->m_Visible == false )
             continue;
 
+        // Pull info from SceneGraphObject.
         MyMatrix worldtransform = *pObject->m_pTransform;
         MyMesh* pMesh = pObject->m_pMesh;
-        MySubmesh* pSubmesh = pObject->m_pSubmesh;
-        MaterialDefinition* pMaterial = pObject->m_pMaterial;
 
-        // simple frustum check
+        // Simple frustum check. // Removed since entire octree nodes will be culled, but this could still be useful.
         //if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
         //{
         //    MyAABounds* bounds = pMesh->GetBounds();
@@ -382,6 +380,9 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
         //        continue;
         //}
 
+        // Update submesh with material, etc from SceneGraphObject.
+        MySubmesh* pSubmesh = pObject->m_pSubmesh;
+        MaterialDefinition* pMaterial = pObject->GetMaterial();
         pSubmesh->SetMaterial( pMaterial );
         pSubmesh->m_PrimitiveType = pObject->m_GLPrimitiveType;
         pSubmesh->m_PointSize = pObject->m_PointSize;

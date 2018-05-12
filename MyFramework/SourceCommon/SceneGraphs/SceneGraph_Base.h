@@ -24,15 +24,20 @@ typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGrou
 
 class SceneGraphObject : public CPPListNode
 {
-public:
-    // none of these hold references
-    // so if the object is free'd without removing the SceneGraphObject, bad things will happen.
+    // No variables hold references.
+    // If the object is free'd without removing the SceneGraphObject, bad things will happen.
+
+protected:
+    // Changing Opacity/Transparency flags should eventually shift the objects from one bucket to another.
+    // Changing materials will likely require changing the Opacity/Transparency SceneGraphFlags.
     SceneGraphFlags m_Flags;
+    MaterialDefinition* m_pMaterial;
+
+public:
     unsigned int m_Layers;
     MyMatrix* m_pTransform;
-    MyMesh* m_pMesh; // used for final bone transforms ATM
+    MyMesh* m_pMesh; // Used for final bone transforms.
     MySubmesh* m_pSubmesh;
-    MaterialDefinition* m_pMaterial;
     bool m_Visible;
 
     int m_GLPrimitiveType;
@@ -43,11 +48,12 @@ public:
     void Clear()
     {
         m_Flags = SceneGraphFlag_Opaque;
+        m_pMaterial = 0;
+
         m_Layers = 0;
         m_pTransform = 0;
         m_pMesh = 0;
         m_pSubmesh = 0;
-        m_pMaterial = 0;
         m_Visible = false;
 
         m_GLPrimitiveType = 0;
@@ -55,6 +61,14 @@ public:
 
         m_pUserData = 0;
     }
+
+    // Getters
+    SceneGraphFlags GetFlags() { return m_Flags; }
+    MaterialDefinition* GetMaterial() { return m_pMaterial; }
+
+    // Setters
+    void SetFlags(SceneGraphFlags newflags) { m_Flags = newflags; }
+    void SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags);
 };
 
 class SceneGraph_Base

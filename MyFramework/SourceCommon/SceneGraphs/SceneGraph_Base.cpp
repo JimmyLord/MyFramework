@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,6 +10,29 @@
 #include "CommonHeader.h"
 
 #include "SceneGraph_Base.h"
+
+void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
+{
+    m_pMaterial = pNewMaterial;
+
+    if( updateTransparencyFlags )
+    {
+        SceneGraphFlags flags = (SceneGraphFlags)(m_Flags & ~(SceneGraphFlag_Opaque | SceneGraphFlag_Transparent));
+        if( pNewMaterial )
+        {
+            if( pNewMaterial->IsTransparent() )
+                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Transparent);
+            else
+                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Opaque);
+        }
+        else
+        {
+            flags = (SceneGraphFlags)(flags | SceneGraphFlag_Opaque);
+        }
+
+        m_Flags = flags;
+    }
+}
 
 SceneGraph_Base::SceneGraph_Base()
 {

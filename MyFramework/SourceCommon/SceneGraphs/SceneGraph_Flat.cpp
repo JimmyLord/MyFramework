@@ -39,13 +39,14 @@ SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh
 
     if( pObject )
     {
-        pObject->m_Flags = flags;
+        pObject->SetFlags( flags );
+        pObject->SetMaterial( pMaterial, false );
+
         pObject->m_Layers = layers;
 
         pObject->m_pTransform = pTransform;
         pObject->m_pMesh = pMesh;
         pObject->m_pSubmesh = pSubmesh;
-        pObject->m_pMaterial = pMaterial;
         pObject->m_Visible = true;
 
         pObject->m_GLPrimitiveType = primitive;
@@ -86,7 +87,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
-        if( (pObject->m_Flags & flags) == 0 )
+        if( (pObject->GetFlags() & flags) == 0 )
             continue;
 
         if( (pObject->m_Layers & layerstorender) == 0 )
@@ -95,7 +96,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
         MyAssert( pObject->m_pSubmesh );
         //MyAssert( pObject->m_pMaterial );
 
-        if( pObject->m_pSubmesh == 0 || pObject->m_pMaterial == 0 )
+        if( pObject->m_pSubmesh == 0 || pObject->GetMaterial() == 0 )
             continue;
 
         if( pObject->m_Visible == false )
@@ -104,7 +105,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
         MyMatrix worldtransform = *pObject->m_pTransform;
         MyMesh* pMesh = pObject->m_pMesh;
         MySubmesh* pSubmesh = pObject->m_pSubmesh;
-        MaterialDefinition* pMaterial = pObject->m_pMaterial;
+        MaterialDefinition* pMaterial = pObject->GetMaterial();
 
         // simple frustum check
         if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
