@@ -58,6 +58,7 @@ public:
 
 protected:
     bool m_UnsavedChanges;
+    bool m_MaterialFileIsLoaded;
 
     char m_Name[MAX_MATERIAL_NAME_LEN]; // if [0] == 0, material won't save to disk.
     MyFileObject* m_pFile;
@@ -81,9 +82,6 @@ public:
     Vector2 m_UVOffset;
 
 public:
-    bool m_FullyLoaded;
-
-public:
     MaterialDefinition();
     MaterialDefinition(ShaderGroup* pShader);
     MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse);
@@ -98,6 +96,8 @@ public:
 
     const char* GetName() { return m_Name; }
     void SetName(const char* name);
+
+    bool IsFullyLoaded();
 
     MyFileObject* GetFile() { return m_pFile; }
     const char* GetMaterialDescription();

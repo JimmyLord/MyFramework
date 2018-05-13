@@ -29,7 +29,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     MyAssert( m_NumRenderables == 0 );
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
 

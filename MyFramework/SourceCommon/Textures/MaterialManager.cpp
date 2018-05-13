@@ -94,7 +94,7 @@ void MaterialManager::Tick()
             m_Materials.MoveTail( pMaterial );
         }
 
-        if( pMaterial->m_FullyLoaded )
+        if( pMaterial->m_MaterialFileIsLoaded )
         {
             m_Materials.MoveTail( pMaterial );
         }
@@ -153,7 +153,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
 
-    pMaterial->m_FullyLoaded = true;
+    pMaterial->m_MaterialFileIsLoaded = true;
 
     pMaterial->m_UnsavedChanges = true;
     strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pFile->GetFilenameWithoutExtension() );
@@ -173,7 +173,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
 
-    pMaterial->m_FullyLoaded = true;
+    pMaterial->m_MaterialFileIsLoaded = true;
     if( name != 0 )
     {
         pMaterial->m_UnsavedChanges = true;
@@ -227,7 +227,7 @@ void MaterialManager::ReloadMaterial(MaterialDefinition* pMaterial)
     MyAssert( pMaterial->m_pFile->GetFileLoadStatus() != FileLoadStatus_Success );
 
     m_MaterialsStillLoading.MoveTail( pMaterial );
-    pMaterial->m_FullyLoaded = false;
+    pMaterial->m_MaterialFileIsLoaded = false;
 }
 
 MaterialDefinition* MaterialManager::GetFirstMaterial()

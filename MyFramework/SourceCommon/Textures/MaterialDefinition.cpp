@@ -82,7 +82,7 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiff
 
 void MaterialDefinition::Init()
 {
-    m_FullyLoaded = false;
+    m_MaterialFileIsLoaded = false;
 
     m_UnsavedChanges = false;
 
@@ -287,7 +287,7 @@ void MaterialDefinition::ImportFromFile()
             ImportExposedUniformValues( jMaterial );
         }
 
-        m_FullyLoaded = true;
+        m_MaterialFileIsLoaded = true;
     }
 
     cJSON_Delete( jRoot );
@@ -333,6 +333,34 @@ void MaterialDefinition::SetName(const char* name)
         g_pPanelMemory->RenameObject( g_pPanelMemory->m_pTree_Materials, this, m_Name );
     }
 #endif //MYFW_USING_WX
+}
+
+bool MaterialDefinition::IsFullyLoaded()
+{
+    if( m_MaterialFileIsLoaded == false )
+    {
+        return false;
+    }
+
+    if( m_pShaderGroup && m_pShaderGroup->GetFile() )
+    {
+        if( m_pShaderGroup->GetFile()->IsFinishedLoading() == false )
+            return false;
+    }
+
+    if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetFile() )
+    {
+        if( m_pShaderGroupInstanced->GetFile()->IsFinishedLoading() == false )
+            return false;
+    }
+
+    if( m_pTextureColor && m_pTextureColor->GetFile() )
+    {
+        if( m_pTextureColor->GetFile()->IsFinishedLoading() == false )
+            return false;
+    }
+
+    return true;
 }
 
 const char* MaterialDefinition::GetMaterialDescription()

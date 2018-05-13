@@ -278,7 +278,7 @@ void SceneGraph_Octree::Resize(float minx, float miny, float minz, float maxx, f
     }
 }
 
-SceneGraphObject* SceneGraph_Octree::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
 

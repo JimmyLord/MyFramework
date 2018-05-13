@@ -42,3 +42,14 @@ SceneGraph_Base::SceneGraph_Base()
 SceneGraph_Base::~SceneGraph_Base()
 {
 }
+
+SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, unsigned int layers, void* pUserData)
+{
+    // Add the object with the opaque flag set.
+    SceneGraphObject* pSceneGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitive, pointsize, SceneGraphFlag_Opaque, layers, pUserData);
+
+    // Set the material again, this time also overwrite the opacity flags with the material setting.
+    pSceneGraphObject->SetMaterial( pMaterial, true );
+
+    return pSceneGraphObject;
+}
