@@ -61,6 +61,8 @@ void BaseShader::Init_BaseShader()
     m_BlendFactorSrc = MaterialBlendFactor_SrcAlpha;
     m_BlendFactorDest = MaterialBlendFactor_OneMinusSrcAlpha;
 
+    m_Emissive = false;
+
     m_pFilename = 0;
     m_pFile = 0;
     m_pFilePixelShader = 0;
@@ -332,6 +334,13 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                             ParseBlendFactor( startOfSecondBlendFactor + 1, &m_BlendFactorDest );
                         }
                     }
+                }
+
+                char emissivestr[] = "#define EMISSIVE";
+                if( i + strlen(emissivestr) < m_pFile->GetFileLength() &&
+                    strncmp( &buffer[i], emissivestr, strlen( emissivestr ) ) == 0 )
+                {
+                    m_Emissive = true; 
                 }
 
                 char geoshaderstr[] = "#define USING_GEOMETRY_SHADER 1";

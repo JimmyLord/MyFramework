@@ -27,6 +27,8 @@ public:
     MaterialBlendFactors m_BlendFactorSrc;
     MaterialBlendFactors m_BlendFactorDest;
 
+    bool m_Emissive;
+
     const char* m_pFilename;
     MyFileObjectShader* m_pFile; // vertex shader
     MyFileObjectShader* m_pFilePixelShader;

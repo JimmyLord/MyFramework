@@ -24,6 +24,9 @@ void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool update
                 flags = (SceneGraphFlags)(flags | SceneGraphFlag_Transparent);
             else
                 flags = (SceneGraphFlags)(flags | SceneGraphFlag_Opaque);
+
+            if( pNewMaterial->IsEmissive() )
+                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Emissive);
         }
         else
         {

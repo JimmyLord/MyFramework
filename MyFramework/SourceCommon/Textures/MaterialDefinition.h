@@ -131,6 +131,8 @@ public:
     MaterialBlendType GetBlendType() { return m_BlendType; }
     bool IsTransparent(BaseShader* pShader);
     bool IsTransparent();
+    bool IsEmissive(BaseShader* pShader);
+    bool IsEmissive();
     MaterialBlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
     MaterialBlendFactors GetShaderBlendFactorSrc();
     GLenum GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader);

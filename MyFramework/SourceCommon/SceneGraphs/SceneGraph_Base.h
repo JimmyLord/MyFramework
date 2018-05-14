@@ -18,6 +18,7 @@ enum SceneGraphFlags
 {
     SceneGraphFlag_Opaque       = 0x01,
     SceneGraphFlag_Transparent  = 0x02,
+    SceneGraphFlag_Emissive     = 0x04,
 };
 
 typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);

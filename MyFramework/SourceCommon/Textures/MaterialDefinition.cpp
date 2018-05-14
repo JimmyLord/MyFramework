@@ -702,6 +702,44 @@ bool MaterialDefinition::IsTransparent()
     return true;
 }
 
+bool MaterialDefinition::IsEmissive(BaseShader* pShader)
+{
+    // check the shader
+    return pShader->m_Emissive;
+}
+
+bool MaterialDefinition::IsEmissive()
+{
+    // Find first initialized shader from this group and return it's emissive setting.
+    if( m_pShaderGroup )
+    {
+        for( int p=0; p<ShaderPass_NumTypes; p++ )
+        {
+            for( unsigned int lc=0; lc<ShaderGroup::SHADERGROUP_MAX_LIGHTS+1; lc++ )
+            {
+                for( unsigned int bc=0; bc<ShaderGroup::SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
+                {
+                    BaseShader* pShader = m_pShaderGroup->GetShader( (ShaderPassTypes)p, lc, bc );
+
+                    if( pShader )
+                    {
+                        MyAssert( pShader->m_BlendType != MaterialBlendType_UseShaderValue );
+
+                        // If the shader is loaded, m_BlendType will be set.  TODO: Don't rely on blendtype.
+                        if( pShader->m_BlendType != MaterialBlendType_NotSet )
+                        {
+                            return IsEmissive( pShader );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // If no shader is initialized, consider it not emissive.
+    return false;
+}
+
 MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
 {
     if( pShader )
