@@ -21,6 +21,13 @@ enum SceneGraphFlags
     SceneGraphFlag_Emissive     = 0x04,
 };
 
+enum EmissiveDrawOptions
+{
+    EmissiveDrawOption_NoEmissives,
+    EmissiveDrawOption_EitherEmissiveOrNot,
+    EmissiveDrawOption_OnlyEmissives,
+};
+
 typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
 
 class SceneGraphObject : public CPPListNode
@@ -68,24 +75,25 @@ public:
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
 
     // Setters
-    void SetFlags(SceneGraphFlags newflags) { m_Flags = newflags; }
+    void SetFlags(SceneGraphFlags newFlags) { m_Flags = newFlags; }
     void SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags);
 };
 
 class SceneGraph_Base
 {
-public:
+protected:
     MySimplePool<SceneGraphObject> m_pObjectPool;
 
 public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, unsigned int layers, void* pUserData);
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, unsigned int layers, void* pUserData);
+    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
-    virtual void Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc) = 0;
+    bool ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender);
+    virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc) = 0;
 };
 
 #endif //__SceneGraph_Base_H__

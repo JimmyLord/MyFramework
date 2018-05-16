@@ -46,13 +46,59 @@ SceneGraph_Base::~SceneGraph_Base()
 {
 }
 
-SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, unsigned int layers, void* pUserData)
 {
     // Add the object with the opaque flag set.
-    SceneGraphObject* pSceneGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitive, pointsize, SceneGraphFlag_Opaque, layers, pUserData);
+    SceneGraphObject* pSceneGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitiveType, pointSize, SceneGraphFlag_Opaque, layers, pUserData);
 
     // Set the material again, this time also overwrite the opacity flags with the material setting.
     pSceneGraphObject->SetMaterial( pMaterial, true );
 
     return pSceneGraphObject;
+}
+
+bool SceneGraph_Base::ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender)
+{
+    // Forward Passes:
+    //   opaque and opaque/emissive
+    //   transparent and transparent/emissive
+
+    // Deferred Passes:
+    //   deferred -> opaque
+    //   forward -> opaque/emissive
+    //   forward -> transparent and transparent/emissive
+
+    SceneGraphFlags objectFlags = pObject->GetFlags();
+
+    bool isOpaque      = objectFlags & SceneGraphFlag_Opaque   ? true : false;
+    bool isEmissive    = objectFlags & SceneGraphFlag_Emissive ? true : false;
+
+    // If we're drawing opaques and this object is transparent, kick out.
+    if( drawOpaques & !isOpaque )
+        return false;
+
+    // If we're drawing transparents and this object is opaque, kick out.
+    if( !drawOpaques & isOpaque )
+        return false;
+
+    // If we don't want to draw emissive objects and this object is emissive, kick out.
+    if( emissiveDrawOption == EmissiveDrawOption_NoEmissives && isEmissive )
+        return false;
+
+    // If we exclusively want to draw emissive objects and this object is not emissive, kick out.
+    if( emissiveDrawOption == EmissiveDrawOption_OnlyEmissives && isEmissive == false )
+        return false;
+
+    if( (pObject->m_Layers & layersToRender) == 0 )
+        return false;
+        
+    MyAssert( pObject->m_pSubmesh );
+
+    if( pObject->m_pSubmesh == 0 ) //|| pObject->GetMaterial() == 0 )
+        return false;
+
+    if( pObject->m_Visible == false )
+        return false;
+
+    return true;
 }

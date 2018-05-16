@@ -278,7 +278,7 @@ void SceneGraph_Octree::Resize(float minx, float miny, float minz, float maxx, f
     }
 }
 
-SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
 
@@ -298,8 +298,8 @@ SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransf
         pObject->m_pSubmesh = pSubmesh;
         pObject->m_Visible = true;
 
-        pObject->m_GLPrimitiveType = primitive;
-        pObject->m_PointSize = pointsize;
+        pObject->m_GLPrimitiveType = primitiveType;
+        pObject->m_PointSize = pointSize;
 
         pObject->m_pUserData = pUserData;
 
@@ -328,7 +328,7 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Octree::Draw()" );
 
@@ -337,10 +337,10 @@ void SceneGraph_Octree::Draw(SceneGraphFlags flags, unsigned int layerstorender,
         UpdateTree( m_pRootNode );
     }
 
-    DrawNode( m_pRootNode, flags, layerstorender, campos, camrot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+    DrawNode( m_pRootNode, drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
 }
 
-void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     // Draw all scene graph objects contained in this node.
 
@@ -352,19 +352,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
-        if( (pObject->GetFlags() & flags) == 0 )
-            continue;
-
-        if( (pObject->m_Layers & layerstorender) == 0 )
-            continue;
-        
-        MyAssert( pObject->m_pSubmesh );
-        //MyAssert( pObject->m_pMaterial );
-
-        if( pObject->m_pSubmesh == 0 ) //|| pObject->m_pMaterial == 0 )
-            continue;
-
-        if( pObject->m_Visible == false )
+        // Skip object if it doesn't match transparency/emissive settings, isn't on the right layer, etc.
+        if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )
             continue;
 
         // Pull info from SceneGraphObject.
@@ -404,19 +393,19 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, SceneGraphFlags flags,
 
         checkGlError( "SceneGraph_Octree::Draw() before pSubmesh->Draw()" );
 
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
+        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
 
         checkGlError( "SceneGraph_Octree::Draw() after pSubmesh->Draw()" );
     }
 
     checkGlError( "End of SceneGraph_Octree::Draw()" );
 
-    // recurse through children
+    // Recurse through children.
     for( int i=0; i<8; i++ )
     {
         if( pOctreeNode->m_pChildNodes[i] != 0 )
         {
-            DrawNode( pOctreeNode->m_pChildNodes[i], flags, layerstorender, campos, camrot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+            DrawNode( pOctreeNode->m_pChildNodes[i], drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
         }
     }
 }

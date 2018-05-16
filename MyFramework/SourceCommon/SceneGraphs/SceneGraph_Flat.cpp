@@ -29,7 +29,7 @@ SceneGraph_Flat::~SceneGraph_Flat()
     MyAssert( m_NumRenderables == 0 );
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitive, int pointsize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
 
@@ -49,8 +49,8 @@ SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransfor
         pObject->m_pSubmesh = pSubmesh;
         pObject->m_Visible = true;
 
-        pObject->m_GLPrimitiveType = primitive;
-        pObject->m_PointSize = pointsize;
+        pObject->m_GLPrimitiveType = primitiveType;
+        pObject->m_PointSize = pointSize;
 
         pObject->m_pUserData = pUserData;
 
@@ -79,7 +79,7 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, Vector3* campos, Vector3* camrot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Flat::Draw()" );
 
@@ -87,19 +87,8 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
     {
         SceneGraphObject* pObject = (SceneGraphObject*)pNode;
 
-        if( (pObject->GetFlags() & flags) == 0 )
-            continue;
-
-        if( (pObject->m_Layers & layerstorender) == 0 )
-            continue;
-        
-        MyAssert( pObject->m_pSubmesh );
-        //MyAssert( pObject->m_pMaterial );
-
-        if( pObject->m_pSubmesh == 0 || pObject->GetMaterial() == 0 )
-            continue;
-
-        if( pObject->m_Visible == false )
+        // Skip object if it doesn't match transparency/emissive settings, isn't on the right layer, etc.
+        if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )
             continue;
 
         MyMatrix worldtransform = *pObject->m_pTransform;
@@ -185,7 +174,7 @@ void SceneGraph_Flat::Draw(SceneGraphFlags flags, unsigned int layerstorender, V
 
         checkGlError( "SceneGraph_Flat::Draw() before pSubmesh->Draw()" );
 
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, campos, camrot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
+        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
 
         checkGlError( "SceneGraph_Flat::Draw() after pSubmesh->Draw()" );
     }
