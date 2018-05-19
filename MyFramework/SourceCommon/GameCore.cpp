@@ -321,7 +321,7 @@ void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsign
 
 void GameCore::OnDrawFrameStart(unsigned int canvasid)
 {
-    g_GLStats.NewFrame( canvasid );
+    g_GLStats.NewFrame();
 }
 
 void GameCore::OnDrawFrame(unsigned int canvasid)

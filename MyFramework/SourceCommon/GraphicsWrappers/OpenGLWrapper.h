@@ -18,6 +18,10 @@ public:
     int m_NumDrawCallsThisFrameSoFar;
     int m_NumDrawCallsLastFrame[10]; // store for up to canvasid's up to 10.
     int m_EvenOddFrame;
+    
+    // Variables used by draw call debugger.
+    int m_DrawCallLimit_Canvas;
+    int m_DrawCallLimit_Index;
 
     unsigned int m_CurrentCanvasID;
 
@@ -33,8 +37,11 @@ public:
     GLStats();
     ~GLStats();
 
-    void NewFrame(unsigned int canvasid);
+    void NewFrame();
     void EndFrame();
+
+    void NewCanvasFrame(unsigned int canvasid);
+    void EndCanvasFrame();
 
     int GetNumDrawCallsLastFrameForCurrentCanvasID();
 };

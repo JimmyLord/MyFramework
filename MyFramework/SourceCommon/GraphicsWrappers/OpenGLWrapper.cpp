@@ -23,6 +23,8 @@ GLStats::GLStats()
     for( int i=0; i<10; i++ )
         m_NumDrawCallsLastFrame[i] = 0;
     m_EvenOddFrame = 0;
+    m_DrawCallLimit_Canvas = -1;
+    m_DrawCallLimit_Index = -1;
 
     m_CurrentCanvasID = 0;
 
@@ -39,11 +41,9 @@ GLStats::~GLStats()
 {
 }
 
-void GLStats::NewFrame(unsigned int canvasid)
+void GLStats::NewFrame()
 {
     m_NumFramesDrawn++;
-    m_CurrentCanvasID = canvasid;
-    m_NumDrawCallsThisFrameSoFar = 0;
     
     m_EvenOddFrame++;
     if( m_EvenOddFrame == 2 )
@@ -51,6 +51,16 @@ void GLStats::NewFrame(unsigned int canvasid)
 }
 
 void GLStats::EndFrame()
+{
+}
+
+void GLStats::NewCanvasFrame(unsigned int canvasid)
+{
+    m_CurrentCanvasID = canvasid;
+    m_NumDrawCallsThisFrameSoFar = 0;
+}
+
+void GLStats::EndCanvasFrame()
 {
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 )
@@ -103,16 +113,19 @@ void MyActiveTexture(GLenum texture)
 
 void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
 {
-    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
-
 #if MYFW_USING_WX
-    if( g_pPanelMemory->m_DrawCallIndexToDraw == -1 || g_pPanelMemory->m_DrawCallIndexToDraw == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+    if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+#elif MYFW_USING_IMGUI
+    if( g_GLStats.m_DrawCallLimit_Canvas != (int)g_GLStats.m_CurrentCanvasID ||
+        g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_NumDrawCallsThisFrameSoFar <= g_GLStats.m_DrawCallLimit_Index )
 #endif
     {
         checkGlError( "glDrawElements Before" );
         glDrawElements( mode, count, type, indices );
         checkGlError( "glDrawElements After" );
     }
+
+    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
 
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
@@ -124,15 +137,18 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
 
 void MyDrawArrays(GLenum mode, GLint first, GLsizei count)
 {
-    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
-
 #if MYFW_USING_WX
-    if( g_pPanelMemory->m_DrawCallIndexToDraw == -1 || g_pPanelMemory->m_DrawCallIndexToDraw == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+    if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+#elif MYFW_USING_IMGUI
+    if( g_GLStats.m_DrawCallLimit_Canvas != (int)g_GLStats.m_CurrentCanvasID ||
+        g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_NumDrawCallsThisFrameSoFar <= g_GLStats.m_DrawCallLimit_Index )
 #endif
     {
         glDrawArrays( mode, first, count );
         checkGlError( "glDrawArrays" );
     }
+
+    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
 
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
