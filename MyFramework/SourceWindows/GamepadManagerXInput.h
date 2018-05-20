@@ -21,7 +21,7 @@ public:
     virtual ~GamepadManagerXInput();
 
     virtual void Initialize();
-    virtual void Tick(double TimePassed);
+    virtual void Tick(float deltaTime);
 };
 
 #endif //__GamepadManagerXInput_H__

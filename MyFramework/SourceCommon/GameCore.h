@@ -140,7 +140,7 @@ public:
     virtual bool HasGameConfirmedCloseIsOkay() { return m_GameConfirmedCloseIsOkay; }
     virtual void SetGameConfirmedCloseIsOkay() { m_GameConfirmedCloseIsOkay = true; }
 
-    virtual double Tick(double TimePassed); // returns time used... i.e. unpaused time.
+    virtual float Tick(float deltaTime); // returns time used... i.e. unpaused time.
     virtual void OnFocusGained();
     virtual void OnFocusLost();
     virtual void OnSurfaceCreated();

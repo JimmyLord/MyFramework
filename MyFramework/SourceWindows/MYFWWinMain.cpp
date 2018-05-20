@@ -878,25 +878,16 @@ int MYFWWinMain(int width, int height)
     g_InitialWidth = width;
     g_InitialHeight = height;
 
-    if( g_InitialWidth > g_InitialHeight )
-    {
-        g_InitialWidth = height;
-        g_InitialHeight = width;
-    }
-
-    MSG msg;
-    bool done = false;
-
     // Horrid key handling.
     for( int i=0; i<256; i++ )
         g_KeyStates[i] = false;
 
-    // Initialize sockets
+    // Initialize sockets.
     WSAData wsaData;
     int code = WSAStartup( MAKEWORD(1, 1), &wsaData );
     if( code != 0 )
     {
-        LOGError( LOGTag, "WSAStartup error:%d\n",code );
+        LOGError( LOGTag, "WSAStartup error: %d\n",code );
         return 0;
     }
 
@@ -915,34 +906,37 @@ int MYFWWinMain(int width, int height)
     g_pGameCore->OnSurfaceChanged( 0, 0, width, height );
     g_pGameCore->OneTimeInit();
 
-    double lasttime = MyTime_GetSystemTime();
+    double lastTime = MyTime_GetSystemTime();
+
+    MSG windowsMessage;
+    bool quitMessageSent = false;
 
     // Main loop.
-    while( !done )
+    while( quitMessageSent == false )
     {
-        if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
+        if( PeekMessage( &windowsMessage, 0, 0, 0, PM_REMOVE ) )
         {
-            if( msg.message == WM_QUIT )
+            if( windowsMessage.message == WM_QUIT )
             {
-                done = true;
+                quitMessageSent = true;
             }
             else
             {
-                TranslateMessage( &msg );
-                DispatchMessage( &msg );
+                TranslateMessage( &windowsMessage );
+                DispatchMessage( &windowsMessage );
             }
         }
         else
         {
-            double currtime = MyTime_GetSystemTime();
-            double timepassed = currtime - lasttime;
-            lasttime = currtime;
+            double currentTime = MyTime_GetSystemTime();
+            float deltaTime = (float)(currentTime - lastTime);
+            lastTime = currentTime;
 
             if( g_WindowIsActive )
             {
                 if( g_CloseProgramRequested || g_pGameCore->HasGameConfirmedCloseIsOkay() )
                 {
-                    done = true;
+                    quitMessageSent = true;
                 }
                 else
                 {
@@ -950,7 +944,7 @@ int MYFWWinMain(int width, int height)
                     GenerateMouseEvents( g_pGameCore );
 
                     g_pGameCore->OnDrawFrameStart( 0 );
-                    g_UnpausedTime += g_pGameCore->Tick( timepassed );
+                    g_UnpausedTime += g_pGameCore->Tick( deltaTime );
                     g_pGameCore->OnDrawFrame( 0 );
                     g_pGameCore->OnDrawFrameDone();
 
@@ -967,7 +961,7 @@ int MYFWWinMain(int width, int height)
                             SaveScreenshot( g_WindowWidth, g_WindowHeight, tempname );
 
                             double timeafter = MyTime_GetSystemTime();
-                            lasttime += timeafter - timebefore;
+                            lastTime += timeafter - timebefore;
                         }
                     }
 
@@ -977,7 +971,7 @@ int MYFWWinMain(int width, int height)
                     if( 0 )
                     {
                         int targetframerate = 30;
-                        double rendertime = MyTime_GetSystemTime() - lasttime;
+                        double rendertime = MyTime_GetSystemTime() - lastTime;
                         if( rendertime*1000 < 1000.0f/targetframerate )
                         {
                             DWORD delay = (DWORD)( 1000.0f/targetframerate - rendertime*1000 );
@@ -999,5 +993,5 @@ int MYFWWinMain(int width, int height)
 
     WSACleanup();
 
-    return (int)msg.wParam;
+    return (int)windowsMessage.wParam;
 }

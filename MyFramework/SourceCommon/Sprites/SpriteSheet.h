@@ -52,7 +52,7 @@ public:
     virtual void Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
     virtual void Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
     //virtual void Create(MaterialDefinition* pMaterial, bool createsprites, bool creatematerials);
-    virtual void Tick(double TimePassed);
+    virtual void Tick(float deltaTime);
 
     int GetNumSprites() { return m_NumSprites; }
 

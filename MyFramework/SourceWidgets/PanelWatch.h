@@ -190,7 +190,7 @@ public:
     void OnClickStaticText(wxMouseEvent& event);
     void OnRightClickVariable(wxMouseEvent& event);
 
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
     void OnTimer(wxTimerEvent& event);
     void OnTextCtrlEnter(wxCommandEvent& event);
     void OnTextCtrlChanged(int controlid);

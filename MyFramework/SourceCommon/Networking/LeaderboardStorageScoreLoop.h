@@ -73,7 +73,7 @@ public:
     ~LeaderboardStorageScoreLoop();
 
     void Init();
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
 
     int FindBlockContainingID(int offset, int boardid);
     bool HasANetworkErrorOccured();

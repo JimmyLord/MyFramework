@@ -332,7 +332,7 @@ void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)
 
     //m_OpenGLContext->MakeContextCurrent(this);
 
-    static double lasttime = MyTime_GetSystemTime();
+    static double lastTime = MyTime_GetSystemTime();
 
     if( g_pGameCore )
     {
@@ -345,12 +345,12 @@ void MainInstance::DrawSelf(int32_t somevaluethecallbackfactorywants)
             }
         }
 
-        double currtime = MyTime_GetSystemTime();
-        double timepassed = currtime - lasttime;
-        lasttime = currtime;        
+        double currendTime = MyTime_GetSystemTime();
+        float deltaTime = (float)(currentTime - lastTime);
+        lastTime = currendTime;        
 
         g_pGameCore->OnDrawFrameStart( 0 );
-        g_UnpausedTime += g_pGameCore->Tick( timepassed );
+        g_UnpausedTime += g_pGameCore->Tick( deltaTime );
         g_pGameCore->OnDrawFrame( 0 );
         g_pGameCore->OnDrawFrameDone();
 

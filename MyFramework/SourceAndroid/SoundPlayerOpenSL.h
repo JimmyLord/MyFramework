@@ -84,7 +84,7 @@ public:
     void OnFocusGained();
     void OnFocusLost();
 
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
 
     SoundObject* LoadSound(const char* fullpath);
     SoundObject* LoadSound(MyFileObject* pFile);

@@ -102,7 +102,7 @@ void StunClient::Start(UDPSocket* socket, const char* stunserver, unsigned short
     LOGInfo( LOGTag, "StunClient::Start() ip=%d\n", inaddr.s_addr );
 }
 
-void StunClient::Tick(double TimePassed)
+void StunClient::Tick(float deltaTime)
 {
     if( m_Started == false )
         return;
@@ -259,7 +259,7 @@ void StunClient::Tick(double TimePassed)
         }
     }
 
-    m_TimeSinceLastBindingRequestSent += TimePassed;
+    m_TimeSinceLastBindingRequestSent += deltaTime;
 
     // send a new request 5 seconds after last one failed.
     if( m_TimeSinceLastBindingRequestSent > 5 )

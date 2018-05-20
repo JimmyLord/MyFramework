@@ -68,7 +68,7 @@ public:
     virtual ~GamepadManager();
 
     virtual void Initialize() = 0;
-    virtual void Tick(double TimePassed) = 0;
+    virtual void Tick(float deltaTime) = 0;
 };
 
 #endif //__GamepadManager_H__

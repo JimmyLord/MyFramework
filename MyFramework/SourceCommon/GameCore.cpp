@@ -188,20 +188,16 @@ bool GameCore::IsReadyToRender()
     return true;
 }
 
-double GameCore::Tick(double TimePassed)
+float GameCore::Tick(float deltaTime)
 {
-    m_TimePassedUnpausedLastFrame = (float)TimePassed;
-
-    m_TimeSinceGameStarted += (float)TimePassed;
+    m_TimePassedUnpausedLastFrame = deltaTime;
+    m_TimeSinceGameStarted += deltaTime;
 
     GenerateKeyHeldMessages();
 
 #if MYFW_WINDOWS
     size_t numbytesallocated = MyMemory_GetNumberOfBytesAllocated();
 #endif
-
-    //if( m_GLSurfaceIsValid == false )
-    //    return;
 
     g_pEventManager->Tick();
     g_pFileManager->Tick();
@@ -231,13 +227,14 @@ double GameCore::Tick(double TimePassed)
     }
 
     if( g_pGamepadManager )
-        g_pGamepadManager->Tick( TimePassed );
+        g_pGamepadManager->Tick( deltaTime );
 
 #if MYFW_USING_WX
-    g_pPanelWatch->Tick( TimePassed );
+    g_pPanelWatch->Tick( deltaTime );
 #endif
 
-    return TimePassed;
+    // Return how much time we advanced the game state.
+    return deltaTime;
 }
 
 void GameCore::OnFocusGained()

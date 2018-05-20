@@ -124,7 +124,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     pFile->Release();
 }
 
-void SpriteSheet::Tick(double TimePassed)
+void SpriteSheet::Tick(float deltaTime)
 {
     if( m_FullyLoaded )
         return;

@@ -26,7 +26,7 @@ void SoundPlayer::OnFocusLost()
 {
 }
 
-void SoundPlayer::Tick(double TimePassed)
+void SoundPlayer::Tick(float deltaTime)
 {
     for( int i=0; i<m_NumQueuedSounds; i++ )
     {

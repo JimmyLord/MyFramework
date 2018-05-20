@@ -1,18 +1,10 @@
 //
 // Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
 //
-// This software is provided 'as-is', without any express or implied
-// warranty.  In no event will the authors be held liable for any damages
-// arising from the use of this software.
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-// 1. The origin of this software must not be misrepresented; you must not
-// claim that you wrote the original software. If you use this software
-// in a product, an acknowledgment in the product documentation would be
-// appreciated but is not required.
-// 2. Altered source versions must be plainly marked as such, and must not be
-// misrepresented as being the original software.
+// This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
@@ -57,12 +49,12 @@ MyTweenPool::~MyTweenPool()
     SAFE_DELETE_ARRAY( m_FloatBlockAlloc );
 }
 
-void MyTweenPool::Tick(double timepassed)
+void MyTweenPool::Tick(float deltaTime)
 {
     unsigned int i;
 
     if( m_NumFloatsInUse > 0 )
-        m_Floats.Tick( timepassed );
+        m_Floats.Tick( deltaTime );
 
     for( i=0; i<m_NumFloatsInUse; i++ )
     {
@@ -83,7 +75,7 @@ void MyTweenPool::AddFloat(float* var, float startvalue, float endvalue, double 
 {
     MyAssert( m_NumFloatsInUse < m_Floats.m_ListOfVars.Length() );
 
-    m_Floats.SetFloat( m_NumFloatsInUse, var, startvalue, endvalue, tweentime, tweentype, delay + m_Floats.m_TimePassed, updatewhiledelayed, id );
+    m_Floats.SetFloat( m_NumFloatsInUse, var, startvalue, endvalue, tweentime, tweentype, delay + m_Floats.m_ElapsedTime, updatewhiledelayed, id );
     m_NumFloatsInUse++;
 }
 
@@ -158,7 +150,7 @@ MyTweener::MyTweener()
     m_HoldVarPositionsWhenIndividualVarsAreDone = true;
     m_ExternalAllocations = false;
 
-    m_TimePassed = 0;
+    m_ElapsedTime = 0;
 }
 
 MyTweener::MyTweener(int numvars)
@@ -169,7 +161,7 @@ MyTweener::MyTweener(int numvars)
     m_HoldVarPositionsWhenIndividualVarsAreDone = true;
     m_ExternalAllocations = false;
 
-    m_TimePassed = 0;
+    m_ElapsedTime = 0;
 }
 
 MyTweener::~MyTweener()
@@ -206,7 +198,7 @@ void MyTweener::Reset(bool removeallvariables)
         }
     }
 
-    m_TimePassed = 0;
+    m_ElapsedTime = 0;
     m_Done = false;
 }
 
@@ -368,12 +360,12 @@ void MyTweener::SetFloat(int index, float startvalue, float endvalue)
     ( (TweenFloat*)m_ListOfVars[index] )->m_EndValue = endvalue;
 }
 
-void MyTweener::Tick(double timepassed)
+void MyTweener::Tick(float deltaTime)
 {
     if( m_Done && m_HoldPositionWhenDone == false )
         return;
 
-    m_TimePassed += timepassed;
+    m_ElapsedTime += deltaTime;
 
     m_Done = true;
 
@@ -384,7 +376,7 @@ void MyTweener::Tick(double timepassed)
         if( pVar->m_Done && m_HoldVarPositionsWhenIndividualVarsAreDone == false )
             continue;
 
-        double passed = m_TimePassed - pVar->m_Delay;
+        double passed = m_ElapsedTime - pVar->m_Delay;
         if( passed < 0 )
         {
             m_Done = false;

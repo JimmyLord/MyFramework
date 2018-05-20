@@ -437,9 +437,9 @@ void AnimatedSpriteInstance::ResetAnimation()
     m_TimeFromStart = 0;
 }
 
-void AnimatedSpriteInstance::Tick(double TimePassed)
+void AnimatedSpriteInstance::Tick(float deltaTime)
 {
-    m_TimeFromStart += TimePassed;
+    m_TimeFromStart += deltaTime;
 }
 
 MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite)

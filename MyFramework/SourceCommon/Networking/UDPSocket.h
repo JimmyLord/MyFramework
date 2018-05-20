@@ -29,7 +29,7 @@ public:
     void Create(unsigned short port);
     void SetupKeepAliveTime(double keepalivetime, const char* keepaliveserver, unsigned short keepaliveport);
     void Close();
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
 
     bool SendTo(const char* message, int messagelen, const sockaddr_in* saddr);
     bool SendTo(const char* message, int messagelen, const int ip, const u_short port);

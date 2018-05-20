@@ -1486,7 +1486,7 @@ void PanelWatch::OnRightClickVariable(wxMouseEvent& event)
         pVar->m_pRightClickCallbackFunc( pVar->m_pCallbackObj, controlid );
 }
 
-void PanelWatch::Tick(double TimePassed)
+void PanelWatch::Tick(float deltaTime)
 {
     // Don't allow refresh if mouse if captured by any given control.
     if( m_NeedsRefresh && m_MouseIsCaptured == false )

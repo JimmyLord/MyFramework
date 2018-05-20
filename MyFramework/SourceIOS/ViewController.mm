@@ -185,10 +185,10 @@ extern bool IOSFUNC_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientatio
     float scale = self.view.contentScaleFactor;
     g_pGameCore->OnSurfaceChanged( 0, 0, self.view.bounds.size.width*scale, self.view.bounds.size.height*scale );
 
-    double timepassed = self.timeSinceLastUpdate;
+    double deltaTime = self.timeSinceLastUpdate;
 
     g_pGameCore->OnDrawFrameStart( 0 );
-    g_UnpausedTime += g_pGameCore->Tick( timepassed );
+    g_UnpausedTime += g_pGameCore->Tick( deltaTime );
     
     if( g_pGameCore->IsReadyToRender() )
     {

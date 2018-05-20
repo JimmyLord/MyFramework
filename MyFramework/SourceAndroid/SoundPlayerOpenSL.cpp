@@ -265,7 +265,7 @@ void SoundPlayer::OnFocusLost()
 {
 }
 
-void SoundPlayer::Tick(double TimePassed)
+void SoundPlayer::Tick(float deltaTime)
 {
 }
 

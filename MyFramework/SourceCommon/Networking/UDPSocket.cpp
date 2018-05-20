@@ -148,9 +148,9 @@ void UDPSocket::Close()
     m_TimeSinceLastPacketSent = 0;
 }
 
-void UDPSocket::Tick(double TimePassed)
+void UDPSocket::Tick(float deltaTime)
 {
-    m_TimeSinceLastPacketSent += TimePassed;
+    m_TimeSinceLastPacketSent += deltaTime;
 
     if( m_KeepAliveTime > 0 && m_TimeSinceLastPacketSent > m_KeepAliveTime )
     {

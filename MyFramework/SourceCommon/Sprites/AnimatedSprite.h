@@ -96,7 +96,7 @@ public:
 
     void Clear();
     void ResetAnimation();
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
 
     MySprite* SetupSpriteForDrawing(MySprite* overridesprite);
     void Draw(MyMatrix* matviewproj);

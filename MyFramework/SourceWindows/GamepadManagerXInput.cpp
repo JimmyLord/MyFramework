@@ -26,7 +26,7 @@ void GamepadManagerXInput::Initialize()
     GamepadManager::Initialize();
 }
 
-void GamepadManagerXInput::Tick(double TimePassed)
+void GamepadManagerXInput::Tick(float deltaTime)
 {
     for( DWORD i=0; i<MAX_GAMEPADS; i++ )
     {

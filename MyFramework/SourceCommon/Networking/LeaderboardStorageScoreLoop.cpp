@@ -54,7 +54,7 @@ bool LeaderboardStorageScoreLoop::HasANetworkErrorOccured()
     return false;
 }
 
-void LeaderboardStorageScoreLoop::Tick(double TimePassed)
+void LeaderboardStorageScoreLoop::Tick(float deltaTime)
 {
     if( m_Busy )
         return;

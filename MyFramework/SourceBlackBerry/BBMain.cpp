@@ -351,7 +351,7 @@ int bbmain(const char* UUID)
     g_pGameCore->OnSurfaceChanged( 0, 0, surface_width, surface_height );
     g_pGameCore->OneTimeInit();
 
-    double lasttime = MyTime_GetSystemTime();
+    double lastTime = MyTime_GetSystemTime();
 
     g_pGameCore->GetMediaPlayer()->StartUpMediaPlayer(); // has to come after g_pGameCore->OneTimeInit();
 
@@ -363,9 +363,9 @@ int bbmain(const char* UUID)
 
     while( !exit_application )
     {
-        double currtime = MyTime_GetSystemTime();
-        double timepassed = currtime - lasttime;
-        lasttime = currtime;
+        double currentTime = MyTime_GetSystemTime();
+        float deltaTime = (float)(currentTime - lastTime);
+        lastTime = currentTime;
 
         //Request and process all available BPS events
         bps_event_t* event = NULL;
@@ -436,9 +436,9 @@ int bbmain(const char* UUID)
 
         if( g_pGameCore->HasFocus() )
         {
-            //LOGInfo( LOGTag, "timepassed - %f\n", (float)timepassed );
+            //LOGInfo( LOGTag, "deltaTime - %f\n", deltaTime );
             g_pGameCore->OnDrawFrameStart( 0 );
-            g_UnpausedTime += g_pGameCore->Tick( timepassed );
+            g_UnpausedTime += g_pGameCore->Tick( deltaTime );
             g_pGameCore->OnDrawFrame( 0 );
             g_pGameCore->OnDrawFrameDone();
         }

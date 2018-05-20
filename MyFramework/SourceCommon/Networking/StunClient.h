@@ -51,7 +51,7 @@ public:
 
     void Reset();
     void Start(UDPSocket* socket, const char* stunserver, unsigned short stunport);
-    void Tick(double TimePassed);
+    void Tick(float deltaTime);
     const char* GetExternalIPAsString();
 };
 
