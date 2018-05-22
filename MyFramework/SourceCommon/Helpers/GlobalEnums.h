@@ -15,8 +15,8 @@ enum MaterialBlendType
     MaterialBlendType_UseShaderValue,
     MaterialBlendType_Off,
     MaterialBlendType_On,
-    MaterialBlendType_NotSet,
     MaterialBlendType_NumTypes,
+    MaterialBlendType_NotSet = MaterialBlendType_NumTypes + 20,
 };
 
 enum MaterialBlendFactors
