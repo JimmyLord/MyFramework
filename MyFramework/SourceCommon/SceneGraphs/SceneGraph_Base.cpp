@@ -17,7 +17,7 @@ void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool update
 
     if( updateTransparencyFlags )
     {
-        SceneGraphFlags flags = (SceneGraphFlags)(m_Flags & ~(SceneGraphFlag_Opaque | SceneGraphFlag_Transparent));
+        SceneGraphFlags flags = (SceneGraphFlags)(m_Flags & ~(SceneGraphFlag_Opaque | SceneGraphFlag_Transparent | SceneGraphFlag_Emissive));
         if( pNewMaterial )
         {
             if( pNewMaterial->IsTransparent() )
