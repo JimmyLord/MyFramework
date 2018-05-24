@@ -11,6 +11,27 @@
 
 #include "SceneGraph_Base.h"
 
+void SceneGraphObject::Clear()
+{
+    m_Flags = SceneGraphFlag_Opaque;
+    m_pMaterial = 0;
+
+#if MYFW_EDITOR
+    m_EditorObject = false;
+#endif
+
+    m_Layers = 0;
+    m_pTransform = 0;
+    m_pMesh = 0;
+    m_pSubmesh = 0;
+    m_Visible = false;
+
+    m_GLPrimitiveType = 0;
+    m_PointSize = 0;
+
+    m_pUserData = 0;
+}
+
 void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
 {
     m_pMaterial = pNewMaterial;

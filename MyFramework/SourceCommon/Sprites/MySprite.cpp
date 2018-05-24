@@ -460,7 +460,7 @@ void MySprite::DrawNoSetup()
     g_pD3DContext->DrawIndexed( 6, 0, 0 );
     //g_pD3DContext->Draw( 6, 0 );
 #else
-    MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+    MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
 #endif
 }
 
@@ -478,10 +478,10 @@ void MySprite::DeactivateShader()
 
 void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
 {
-    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride );
+    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, false );
 }
 
-void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
@@ -515,7 +515,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
         identitymat.SetIdentity();
         pShader->ProgramBoneTransforms( &identitymat, 1 );
 
-        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
         //pShader->DeactivateShader( m_pVertexBuffer, false );
     }
     else
@@ -565,7 +565,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
 
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 
-            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0 );
+            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
             pShader->DeactivateShader( m_pVertexBuffer, true );
         }
 

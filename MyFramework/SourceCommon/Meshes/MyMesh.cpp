@@ -56,7 +56,7 @@ unsigned int MySubmesh::GetStride()
     return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
 }
 
-void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     checkGlError( "Start of MySubmesh::Draw()" );
 
@@ -169,9 +169,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
         //}
 
         if( pIndexBuffer )
-            MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+            MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0, hideFromDrawList );
         else
-            MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
+            MyDrawArrays( PrimitiveType, 0, NumVertsToDraw, hideFromDrawList );
         //pShader->DeactivateShader( pVertexBuffer, false ); // disable attributes
 
         // always disable blending
@@ -275,9 +275,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, V
                 }
 
                 if( pIndexBuffer )
-                    MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0 );
+                    MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0, hideFromDrawList );
                 else
-                    MyDrawArrays( PrimitiveType, 0, NumVertsToDraw );
+                    MyDrawArrays( PrimitiveType, 0, NumVertsToDraw, hideFromDrawList );
 
                 checkGlError( "Drawing Mesh MyDrawElements()" );
 
@@ -2194,7 +2194,7 @@ void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Ve
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride );
+        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
     }
 
     checkGlError( "end of MyMesh::Draw()" );

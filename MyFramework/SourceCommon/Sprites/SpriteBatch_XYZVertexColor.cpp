@@ -137,7 +137,7 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
 #if USE_D3D
         g_pD3DContext->DrawIndexed( m_NumSprites*6, 0, 0 );
 #else
-        MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0 );
+        MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0, false );
 #endif
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }

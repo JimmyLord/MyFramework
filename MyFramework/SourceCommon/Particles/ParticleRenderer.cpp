@@ -228,7 +228,7 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
 //    //m_pMaterial = pMaterial;
 //}
 
-void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     DrawParticles( *campos, *camrot, matviewproj, pShaderOverride );
 }
@@ -301,7 +301,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* m
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
             matviewproj, 0, m_pMaterial ) )
     {
-        MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0 );
+        MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0, false );
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }
 #else

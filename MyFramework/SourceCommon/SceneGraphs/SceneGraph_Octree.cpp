@@ -288,6 +288,8 @@ SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransf
 
     if( pObject )
     {
+        pObject->Clear();
+
         pObject->SetFlags( flags );
         pObject->SetMaterial( pMaterial, false );
 
@@ -393,7 +395,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 
         checkGlError( "SceneGraph_Octree::Draw() before pSubmesh->Draw()" );
 
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
+        bool hideFromDrawList = pObject->IsEditorObject();
+        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
 
         checkGlError( "SceneGraph_Octree::Draw() after pSubmesh->Draw()" );
     }

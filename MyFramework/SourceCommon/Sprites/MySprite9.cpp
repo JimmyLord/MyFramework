@@ -183,7 +183,7 @@ void MySprite9::Draw(MyMatrix* matviewproj)
         g_pD3DContext->DrawIndexed( 6, 0, 0 );
         //g_pD3DContext->Draw( 6, 0 );
 #else
-        MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0 );
+        MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0, false );
 #endif
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }

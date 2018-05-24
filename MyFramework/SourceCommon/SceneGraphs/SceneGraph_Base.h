@@ -41,6 +41,10 @@ protected:
     SceneGraphFlags m_Flags;
     MaterialDefinition* m_pMaterial;
 
+#if MYFW_EDITOR
+    bool m_EditorObject;
+#endif
+
 public:
     unsigned int m_Layers;
     MyMatrix* m_pTransform;
@@ -53,22 +57,7 @@ public:
 
     void* m_pUserData;
 
-    void Clear()
-    {
-        m_Flags = SceneGraphFlag_Opaque;
-        m_pMaterial = 0;
-
-        m_Layers = 0;
-        m_pTransform = 0;
-        m_pMesh = 0;
-        m_pSubmesh = 0;
-        m_Visible = false;
-
-        m_GLPrimitiveType = 0;
-        m_PointSize = 0;
-
-        m_pUserData = 0;
-    }
+    void Clear();
 
     // Getters
     SceneGraphFlags GetFlags() { return m_Flags; }
@@ -77,6 +66,11 @@ public:
     // Setters
     void SetFlags(SceneGraphFlags newFlags) { m_Flags = newFlags; }
     void SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags);
+
+#if MYFW_EDITOR
+    void SetAsEditorObject() { m_EditorObject = true; }
+    bool IsEditorObject() { return m_EditorObject; }
+#endif
 };
 
 class SceneGraph_Base

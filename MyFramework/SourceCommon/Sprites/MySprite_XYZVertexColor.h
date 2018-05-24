@@ -35,7 +35,7 @@ public:
     //virtual void DrawNoSetup();
     //virtual void DeactivateShader();
     virtual void Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
     virtual void SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr );
     virtual void SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr );

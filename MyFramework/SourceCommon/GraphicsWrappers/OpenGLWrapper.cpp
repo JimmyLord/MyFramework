@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -111,13 +111,27 @@ void MyActiveTexture(GLenum texture)
     glActiveTexture( texture );
 }
 
-void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)
+void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, bool hideFromDrawList)
 {
 #if MYFW_USING_WX
     if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
 #elif MYFW_USING_IMGUI
-    if( g_GLStats.m_DrawCallLimit_Canvas != (int)g_GLStats.m_CurrentCanvasID ||
-        g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_NumDrawCallsThisFrameSoFar <= g_GLStats.m_DrawCallLimit_Index )
+    bool draw = true;
+    
+    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
+    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
+        g_GLStats.m_DrawCallLimit_Index != -1 )
+    {
+        // Don't draw "hidden/editor" items if we're debugging.
+        if( hideFromDrawList == true )
+            draw = false;
+
+        // Don't draw object above the draw limit.
+        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
+            draw = false;
+    }
+
+    if( draw )
 #endif
     {
         checkGlError( "glDrawElements Before" );
@@ -125,7 +139,10 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
         checkGlError( "glDrawElements After" );
     }
 
-    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+    if( hideFromDrawList == false )
+    {
+        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+    }
 
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
@@ -135,20 +152,37 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
 #endif
 }
 
-void MyDrawArrays(GLenum mode, GLint first, GLsizei count)
+void MyDrawArrays(GLenum mode, GLint first, GLsizei count, bool hideFromDrawList)
 {
 #if MYFW_USING_WX
     if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
 #elif MYFW_USING_IMGUI
-    if( g_GLStats.m_DrawCallLimit_Canvas != (int)g_GLStats.m_CurrentCanvasID ||
-        g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_NumDrawCallsThisFrameSoFar <= g_GLStats.m_DrawCallLimit_Index )
+    bool draw = true;
+    
+    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
+    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
+        g_GLStats.m_DrawCallLimit_Index != -1 )
+    {
+        // Don't draw "hidden/editor" items if we're debugging.
+        if( hideFromDrawList == true )
+            draw = false;
+
+        // Don't draw object above the draw limit.
+        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
+            draw = false;
+    }
+
+    if( draw )
 #endif
     {
         glDrawArrays( mode, first, count );
         checkGlError( "glDrawArrays" );
     }
 
-    g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+    if( hideFromDrawList == false )
+    {
+        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+    }
 
 #if MYFW_USING_WX
     if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )

@@ -62,7 +62,7 @@ public:
     void SetMaterial(MaterialDefinition* pMaterial);
     unsigned int GetStride();
 
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
 #if _DEBUG && MYFW_WINDOWS
     void TriggerBreakpointOnNextDraw() { m_TriggerBreakpointOnNextDraw = true; }

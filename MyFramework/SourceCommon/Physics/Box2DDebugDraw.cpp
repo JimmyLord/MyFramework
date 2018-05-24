@@ -54,7 +54,7 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     glDisable( GL_CULL_FACE );
     glDisable( GL_DEPTH_TEST );
 
-    MyDrawArrays( primitivetype, 0, vertexCount );
+    MyDrawArrays( primitivetype, 0, vertexCount, true );
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );

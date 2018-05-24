@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -56,8 +56,8 @@ extern GLStats g_GLStats;
 void MyBindBuffer(GLenum target, GLuint buffer);
 void MyDeleteBuffers(GLsizei num, GLuint* buffers);
 void MyActiveTexture(GLenum texture);
-void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
-void MyDrawArrays(GLenum mode, GLint first, GLsizei count);
+void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, bool hideFromDrawList);
+void MyDrawArrays(GLenum mode, GLint first, GLsizei count, bool hideFromDrawList);
 void MyUseProgram(GLuint program);
 
 void MyEnableVertexAttribArray(GLuint index);

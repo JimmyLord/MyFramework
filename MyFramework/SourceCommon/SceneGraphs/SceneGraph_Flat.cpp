@@ -174,7 +174,8 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 
         checkGlError( "SceneGraph_Flat::Draw() before pSubmesh->Draw()" );
 
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride );
+        bool hideFromDrawList = pObject->IsEditorObject();
+        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
 
         checkGlError( "SceneGraph_Flat::Draw() after pSubmesh->Draw()" );
     }
