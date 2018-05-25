@@ -97,6 +97,7 @@ public:
     const char* GetName() { return m_Name; }
     void SetName(const char* name);
 
+    bool IsShaderLoaded();
     bool IsFullyLoaded();
 
     MyFileObject* GetFile() { return m_pFile; }

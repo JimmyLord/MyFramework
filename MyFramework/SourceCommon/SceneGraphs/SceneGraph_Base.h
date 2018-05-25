@@ -40,6 +40,7 @@ protected:
     // Changing materials will likely require changing the Opacity/Transparency SceneGraphFlags.
     SceneGraphFlags m_Flags;
     MaterialDefinition* m_pMaterial;
+    bool m_WaitingForMaterialToFinishLoading;
 
 #if MYFW_EDITOR
     bool m_EditorObject;
@@ -62,6 +63,7 @@ public:
     // Getters
     SceneGraphFlags GetFlags() { return m_Flags; }
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
+    bool IsWaitingForMaterialToFinishLoading() { return m_WaitingForMaterialToFinishLoading; }
 
     // Setters
     void SetFlags(SceneGraphFlags newFlags) { m_Flags = newFlags; }

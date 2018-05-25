@@ -335,9 +335,9 @@ void MaterialDefinition::SetName(const char* name)
 #endif //MYFW_USING_WX
 }
 
-bool MaterialDefinition::IsFullyLoaded()
+bool MaterialDefinition::IsShaderLoaded()
 {
-    if( m_MaterialFileIsLoaded == false )
+    if( m_pFile && m_MaterialFileIsLoaded == false )
     {
         return false;
     }
@@ -352,6 +352,16 @@ bool MaterialDefinition::IsFullyLoaded()
     {
         if( m_pShaderGroupInstanced->GetFile()->IsFinishedLoading() == false )
             return false;
+    }
+
+    return true;
+}
+
+bool MaterialDefinition::IsFullyLoaded()
+{
+    if( IsShaderLoaded() == false )
+    {
+        return false;
     }
 
     if( m_pTextureColor && m_pTextureColor->GetFile() )

@@ -15,6 +15,7 @@ void SceneGraphObject::Clear()
 {
     m_Flags = SceneGraphFlag_Opaque;
     m_pMaterial = 0;
+    m_WaitingForMaterialToFinishLoading = false;
 
 #if MYFW_EDITOR
     m_EditorObject = false;
@@ -35,6 +36,14 @@ void SceneGraphObject::Clear()
 void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
 {
     m_pMaterial = pNewMaterial;
+
+    if( pNewMaterial->IsShaderLoaded() == false )
+    {
+        m_WaitingForMaterialToFinishLoading = true;
+        return;
+    }
+
+    m_WaitingForMaterialToFinishLoading = false;
 
     if( updateTransparencyFlags )
     {
@@ -88,6 +97,17 @@ bool SceneGraph_Base::ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOp
     //   deferred -> opaque
     //   forward -> opaque/emissive
     //   forward -> transparent and transparent/emissive
+
+    // If we're waiting for the material to finish loading, check if it's finished loading.
+    if( pObject->IsWaitingForMaterialToFinishLoading() )
+    {
+        // Check if material finished loading.
+        pObject->SetMaterial( pObject->GetMaterial(), true );
+        
+        // Check again; if we're still waiting for the material to finish loading, don't draw this object.
+        if( pObject->IsWaitingForMaterialToFinishLoading() )
+            return false;
+    }
 
     SceneGraphFlags objectFlags = pObject->GetFlags();
 
