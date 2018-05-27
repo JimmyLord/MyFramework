@@ -476,9 +476,9 @@ void MySprite::DeactivateShader()
     pShader->DeactivateShader( m_pVertexBuffer, true );
 }
 
-void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, false );
+    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
 }
 
 void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
@@ -565,7 +565,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
 
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 
-            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
+            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
             pShader->DeactivateShader( m_pVertexBuffer, true );
         }
 

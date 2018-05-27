@@ -22,6 +22,7 @@ public:
     // Variables used by draw call debugger.
     int m_DrawCallLimit_Canvas;
     int m_DrawCallLimit_Index;
+    int m_DrawCallLimit_BreakPointIndex;
 
     unsigned int m_CurrentCanvasID;
 

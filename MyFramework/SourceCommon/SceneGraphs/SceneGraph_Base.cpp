@@ -37,7 +37,7 @@ void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool update
 {
     m_pMaterial = pNewMaterial;
 
-    if( pNewMaterial->IsShaderLoaded() == false )
+    if( pNewMaterial && pNewMaterial->IsShaderLoaded() == false )
     {
         m_WaitingForMaterialToFinishLoading = true;
         return;

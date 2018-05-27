@@ -23,8 +23,10 @@ GLStats::GLStats()
     for( int i=0; i<10; i++ )
         m_NumDrawCallsLastFrame[i] = 0;
     m_EvenOddFrame = 0;
+    
     m_DrawCallLimit_Canvas = -1;
     m_DrawCallLimit_Index = -1;
+    m_DrawCallLimit_BreakPointIndex = -1;
 
     m_CurrentCanvasID = 0;
 
@@ -129,6 +131,17 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
         // Don't draw object above the draw limit.
         if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
             draw = false;
+
+#if _DEBUG && MYFW_WINDOWS
+        if( draw )
+        {
+            if( g_GLStats.m_DrawCallLimit_BreakPointIndex == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+            {
+                __debugbreak();
+                g_GLStats.m_DrawCallLimit_BreakPointIndex = -1;
+            }
+        }
+#endif //_DEBUG && MYFW_WINDOWS
     }
 
     if( draw )

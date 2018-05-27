@@ -167,9 +167,9 @@ void MySprite_XYZVertexColor::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite_XYZVertexColor::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void MySprite_XYZVertexColor::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, false );
+    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
 }
 
 void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
@@ -210,7 +210,7 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* 
 #if USE_D3D
         g_pD3DContext->DrawIndexed( 6, 0, 0 );
 #else
-        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
+        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
         //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
 #endif
         m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
