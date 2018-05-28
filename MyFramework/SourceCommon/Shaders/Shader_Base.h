@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -72,8 +72,7 @@ public:
     GLint m_uHandle_ExposedUniforms[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
 protected:
-    //void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
-    void InitializeAttributeArrays(VertexFormats vertformat, VertexFormat_Dynamic_Desc* pVertFormatDesc, GLuint vbo, GLuint ibo);
+    void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
     void InitializeVAO(GLuint vao);
 
 public:
@@ -83,28 +82,30 @@ public:
     void Init_Shader_Base();
     virtual ~Shader_Base();
 
-    virtual bool LoadAndCompile(GLuint premadeprogramhandle = 0);
+    virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
-    virtual void DeactivateShader(BufferDefinition* vbo = 0, bool usevaosifavailable = true);
+    virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
 
     bool CompileShader();
-    bool ActivateAndProgramShader(BufferDefinition* vbo, BufferDefinition* ibo, int ibotype, MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, MaterialDefinition* pMaterial);
-    bool ActivateAndProgramShader();
+    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* matViewProj, MyMatrix* matWorld, MaterialDefinition* pMaterial);
+    bool Activate();
 
-    void SetupAttributes(BufferDefinition* vbo, BufferDefinition* ibo, bool usevaosifavailable);
-    void ProgramBaseUniforms(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix, TextureDefinition* pTexture, ColorByte tint, ColorByte speccolor, float shininess);
-    void ProgramPosition(MyMatrix* viewprojmatrix, MyMatrix* worldmatrix);
+    void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
+    void ProgramTransforms(MyMatrix* matViewProj, MyMatrix* matWorld);
+    void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
     void ProgramTint(ColorByte tint);
-    void ProgramPointSize(float pointsize);
+    void ProgramPointSize(float pointSize);
     void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset);
-    void ProgramCamera(Vector3* campos, Vector3* camrot, MyMatrix* inverseworldmatrix);
-    void ProgramLights(MyLight** lightptrs, int numlights, MyMatrix* inverseworldmatrix);
-    void ProgramShadowLight(MyMatrix* shadowwvp, TextureDefinition* pShadowTex);
+    void ProgramCamera(Vector3* pCamPos, Vector3* pCamRot);
+    void ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld);
+    void ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld);
+    void ProgramShadowLightTransform(MyMatrix* matShadowWVP);
+    void ProgramShadowLightTexture(TextureDefinition* pShadowTex);
     void ProgramLightmap(TextureDefinition* pTexture);
     void ProgramDepthmap(TextureDefinition* pTexture);
-    void ProgramBoneTransforms(MyMatrix* transforms, int numtransforms);
+    void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms);
     void ProgramFramebufferSize(float width, float height);
-    void ProgramExposedUniforms(ExposedUniformValue* valuearray);
+    void ProgramExposedUniforms(ExposedUniformValue* valueArray);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };

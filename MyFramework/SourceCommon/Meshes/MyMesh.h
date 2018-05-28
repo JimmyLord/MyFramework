@@ -62,7 +62,10 @@ public:
     void SetMaterial(MaterialDefinition* pMaterial);
     unsigned int GetStride();
 
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
+    virtual bool SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* matWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex);
+    virtual void SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* matWorld, MyMatrix* matInverseWorld, MyMatrix* matViewProj, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP);
+    virtual void SetupAttributes(Shader_Base* pShader);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
 #if _DEBUG && MYFW_WINDOWS
     void TriggerBreakpointOnNextDraw() { m_TriggerBreakpointOnNextDraw = true; }
@@ -137,15 +140,10 @@ public:
     // MyMesh Methods
     void Clear();
 
-#if MYFW_WINDOWS
-    // TODO: CreateBuffers is now CreateOneSubmeshWithBuffers... remove this todo once old projects are updated
-    __declspec( deprecated("Use CreateOneSubmeshWithBuffers() instead")) void CreateBuffers();
-#endif
-
-    void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, int bytesperindex, unsigned int numindices, bool dynamic = false);
-    void CreateSubmeshes(int numsubmeshes);
-    void CreateVertexBuffer(int meshindex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numverts, bool dynamic = false);
-    void CreateIndexBuffer(int meshindex, int bytesperindex, unsigned int numindices, bool dynamic = false);
+    void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
+    void CreateSubmeshes(int numSubmeshes);
+    void CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, bool dynamic = false);
+    void CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
 
     void SetIndexBuffer(BufferDefinition* pBuffer);
 

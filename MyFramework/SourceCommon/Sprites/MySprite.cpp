@@ -509,7 +509,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
             return;
 
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
-        pShader->ProgramPosition( matviewproj, matworld );
+        pShader->ProgramTransforms( matviewproj, matworld );
 
         MyMatrix identitymat;
         identitymat.SetIdentity();

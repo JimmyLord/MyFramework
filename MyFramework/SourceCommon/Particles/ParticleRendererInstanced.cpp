@@ -192,7 +192,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
             }
         }
 
-        pShader->ProgramCamera( 0, &camrot, 0 );
+        pShader->ProgramCamera( 0, &camrot );
 
         checkGlError( "before glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
 
