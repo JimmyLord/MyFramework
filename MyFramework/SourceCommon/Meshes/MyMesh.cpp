@@ -309,8 +309,8 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, V
                 //if( didinverse == false )
                 //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
-                SetupMeshSpecificShaderUniforms( pShader, matWorld, &matInverseWorld, matViewProj, pCamPos, pLightPtrs, numLights, shadowLightVP );
                 SetupAttributes( pShader );
+                SetupMeshSpecificShaderUniforms( pShader, matWorld, &matInverseWorld, matViewProj, pCamPos, pLightPtrs, numLights, shadowLightVP );
 
                 int indexbuffertype = GL_UNSIGNED_BYTE;
                 if( pIndexBuffer != 0 )

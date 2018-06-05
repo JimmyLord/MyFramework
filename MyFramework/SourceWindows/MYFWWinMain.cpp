@@ -38,7 +38,8 @@ static bool g_KeyStates[256];
 static bool g_MouseButtonStates[3];
 static int g_MouseWheelDelta = 0;
 static Vector2 g_RawMouseDelta(0);
-static bool g_WindowIsActive = true;
+static bool g_WindowIsVisible = true;
+static bool g_OnlyUpdateOnEvents = false; // TODO: Change this setting depending on if gameplay or editor is active.
 static bool g_FullscreenMode = true;
 
 static bool g_RawMouseInputInitialized = false;
@@ -600,11 +601,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             if( !HIWORD(wParam) )
             {
-                g_WindowIsActive = true;
+                g_WindowIsVisible = true;
             }
             else
             {
-                g_WindowIsActive = false;
+                g_WindowIsVisible = false;
             } 
         }
         return 0;
@@ -646,11 +647,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SETFOCUS:
         {
             g_pGameCore->OnFocusGained();
+            g_OnlyUpdateOnEvents = false;
         }
         break;
 
     case WM_KILLFOCUS:
         {
+            g_OnlyUpdateOnEvents = true;
+
             if( g_pGameCore )
                 g_pGameCore->OnFocusLost();
 
@@ -928,11 +932,17 @@ int MYFWWinMain(int width, int height)
         }
         else
         {
+            if( g_OnlyUpdateOnEvents )
+            {
+                WaitMessage();
+                continue;
+            }
+
             double currentTime = MyTime_GetSystemTime();
             float deltaTime = (float)(currentTime - lastTime);
             lastTime = currentTime;
 
-            if( g_WindowIsActive )
+            if( g_WindowIsVisible )
             {
                 if( g_CloseProgramRequested || g_pGameCore->HasGameConfirmedCloseIsOkay() )
                 {
