@@ -19,7 +19,9 @@ extern unsigned int g_GLCanvasIDActive;
 bool MYFW_GetKey(int value);
 int MYFWWinMain(int width, int height);
 
-extern Vector2 g_PositionToLockMouse;
+// Will return whether or not this call locked the mouse.
+bool LockSystemMouse();
+
 void SetMouseLock(bool lock, Vector2 pos);
 bool IsMouseLocked();
 
