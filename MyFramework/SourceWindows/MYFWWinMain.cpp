@@ -17,7 +17,8 @@
 unsigned int g_GLCanvasIDActive = 0;
 #endif
 
-#define SHOW_SYSTEM_MOUSE_DEBUG_LOG 0
+#define SHOW_SYSTEM_MOUSE_DEBUG_LOG             0
+#define SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT    0
 
 HWND g_hWnd = 0;
 
@@ -49,8 +50,8 @@ static bool g_GameWantsLockedMouse = false;
 static bool g_SystemMouseIsLocked = false;
 static POINT g_MousePositionBeforeLock;
 
-static int g_MouseXPositionWhenLocked = 300;
-static int g_MouseYPositionWhenLocked = 300;
+static int g_MouseXPositionWhenLocked = -1;
+static int g_MouseYPositionWhenLocked = -1;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -128,10 +129,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
             {
                 if( g_SystemMouseIsLocked )
                 {
-                    if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-                        LOGInfo( "SystemMouse", "System Mouse unlocked\n" );
-                    g_SystemMouseIsLocked = false;
-                    ShowCursor( true );
+                    UnlockSystemMouse();
                 }
                 else
                 {
@@ -205,12 +203,34 @@ void GetMouseCoordinates(int* mx, int* my)
 // Will return whether or not this call locked the mouse.
 bool LockSystemMouse()
 {
-    if( g_GameWantsLockedMouse && g_SystemMouseIsLocked == false )
+    if( g_SystemMouseIsLocked == false )
     {
         if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
             LOGInfo( "SystemMouse", "System Mouse Locked\n" );
+
         g_SystemMouseIsLocked = true;
         ShowCursor( false );
+        
+        // Lock the mouse to the center of the screen.
+        g_MouseXPositionWhenLocked = g_WindowWidth / 2;
+        g_MouseYPositionWhenLocked = g_WindowHeight / 2;
+
+        return true;
+    }
+
+    return false;
+}
+
+// Will return whether or not this call unlocked the mouse.
+bool UnlockSystemMouse()
+{
+    if( g_SystemMouseIsLocked == true )
+    {
+        if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
+            LOGInfo( "SystemMouse", "System Mouse Unlocked\n" );
+
+        g_SystemMouseIsLocked = false;
+        ShowCursor( true );
         
         return true;
     }
@@ -224,6 +244,7 @@ void SetMouseLock(bool lock, Vector2 pos)
     {
         if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
             LOGInfo( "SystemMouse", "SetMouseLock( true ) - (%0.0f, %0.0f);\n", pos.x, pos.y );
+
         g_GameWantsLockedMouse = true;
 
         LockSystemMouse();
@@ -241,16 +262,12 @@ void SetMouseLock(bool lock, Vector2 pos)
     
     if( lock == false && g_GameWantsLockedMouse == true )
     {
-        if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-            LOGInfo( "SystemMouse", "SetMouseLock( false );\n" );
         g_GameWantsLockedMouse = false;
 
-        g_SystemMouseIsLocked = false;
+        UnlockSystemMouse();
 
         // Restore the position of the cursor before it was locked.
         SetCursorPos( g_MousePositionBeforeLock.x, g_MousePositionBeforeLock.y );
-
-        ShowCursor( true );
     }
 }
 
@@ -280,14 +297,19 @@ void GenerateMouseEvents(GameCore* pGameCore)
         if( buttons[i] == 1 && buttonsold[i] == 0 )
         {
 #if !MYFW_USING_IMGUI
-            // For non ImGui editor builds, finish the locking process here when the window is clicked.
+            // For non ImGui editor builds, if the game wants the mouse locked, finish the locking process here when the window is clicked.
             // Imgui editor window code will determine if the mouse is over the game window and handle the locking.
-            bool wasLockedBecauseOfThisClick = LockSystemMouse();
+            bool wasLockedBecauseOfThisClick = false;
+            if( g_GameWantsLockedMouse )
+            {
+                wasLockedBecauseOfThisClick = LockSystemMouse();
+            }
+
             if( wasLockedBecauseOfThisClick )
 #endif
             {
                 if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-                    LOGInfo( "SystemMouse", "Mouse down\n" );
+                    LOGInfo( "SystemMouse", "Mouse down (%d)\n", i );
                 pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
             }
         }
@@ -295,7 +317,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
         if( buttons[i] == 0 && buttonsold[i] == 1 )
         {
             if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-                LOGInfo( "SystemMouse", "Mouse up\n" );
+                LOGInfo( "SystemMouse", "Mouse up (%d)\n", i );
             pGameCore->OnTouch( GCBA_Up, i, (float)mousex, (float)mousey, 0, 0 ); // new release
         }
     }
@@ -321,7 +343,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
         {
             if( g_RawMouseInputInitialized )
             {
-                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
+                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG && SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT )
                     LOGInfo( "SystemMouse", "Raw mouse move relative (%0.2f, %0.2f)\n", g_RawMouseDelta.x, g_RawMouseDelta.y );
 
                 if( g_RawMouseDelta.x != 0 || g_RawMouseDelta.y != 0 )
@@ -335,6 +357,13 @@ void GenerateMouseEvents(GameCore* pGameCore)
                     if( buttonstates & 1 << 2 )
                         pGameCore->OnTouch( GCBA_RelativeMovement, 2, g_RawMouseDelta.x, g_RawMouseDelta.y, 0, 0 );
                 }
+
+                // Set the mouse back to it's screen space position.
+                POINT lockedMouseScreenPos;
+                lockedMouseScreenPos.x = g_MouseXPositionWhenLocked;
+                lockedMouseScreenPos.y = g_MouseYPositionWhenLocked;            
+                ClientToScreen( g_hWnd, &lockedMouseScreenPos );
+                SetCursorPos( lockedMouseScreenPos.x, lockedMouseScreenPos.y );
             }
             else
             {
@@ -356,7 +385,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 int xdiff = currentMouseScreenPos.x - lockedMouseScreenPos.x;
                 int ydiff = currentMouseScreenPos.y - lockedMouseScreenPos.y;
 
-                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
+                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG && SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT )
                     LOGInfo( "SystemMouse", "Mouse move relative (%d, %d)\n", xdiff, ydiff );
 
                 if( xdiff != 0 || ydiff != 0 )
@@ -382,7 +411,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
         // Only send mouse positions if system mouse isn't locked.
         if( g_SystemMouseIsLocked == false )
         {
-            if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
+            if( SHOW_SYSTEM_MOUSE_DEBUG_LOG && SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT )
                 LOGInfo( "SystemMouse", "Mouse move absolute\n" );
 
             if( buttonstates == 0 )
@@ -404,7 +433,7 @@ GLvoid KillGLWindow()
     if( g_FullscreenMode )
     {
         ChangeDisplaySettings( 0, 0 );
-        ShowCursor( true );
+        UnlockSystemMouse();
     }
 
     if( hRenderingContext )
@@ -505,7 +534,7 @@ bool CreateGLWindow(wchar_t* title, int width, int height, unsigned char colorbi
     {
         dwExStyle = WS_EX_APPWINDOW;
         dwStyle = WS_POPUP;
-        ShowCursor( false );
+        LockSystemMouse();
     }
     else
     {
@@ -675,10 +704,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             if( g_SystemMouseIsLocked )
             {
-                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-                    LOGInfo( "SystemMouse", "System Mouse Unlocked\n" );
-                g_SystemMouseIsLocked = false;
-                ShowCursor( true );
+                UnlockSystemMouse();
             }
         }
         break;

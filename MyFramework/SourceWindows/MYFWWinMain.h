@@ -21,6 +21,7 @@ int MYFWWinMain(int width, int height);
 
 // Will return whether or not this call locked the mouse.
 bool LockSystemMouse();
+bool UnlockSystemMouse();
 
 void SetMouseLock(bool lock, Vector2 pos);
 bool IsMouseLocked();
