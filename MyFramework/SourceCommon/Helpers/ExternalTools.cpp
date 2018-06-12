@@ -305,7 +305,7 @@ void PlatformSpecific_SetMouseLock(bool lock)
 #if MYFW_USING_WX
     SetMouseLock( lock );
 #elif MYFW_WINDOWS
-    SetMouseLock( lock, Vector2( 300, 300 ) );
+    SetMouseLock( lock );
 #elif MYFW_BLACKBERRY
     SetMouseLock( lock );
 #elif MYFW_NACL

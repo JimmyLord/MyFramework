@@ -23,7 +23,7 @@ int MYFWWinMain(int width, int height);
 bool LockSystemMouse();
 bool UnlockSystemMouse();
 
-void SetMouseLock(bool lock, Vector2 pos);
+void SetMouseLock(bool lock);
 bool IsMouseLocked();
 
 #endif //__MYFWWinMain_H__

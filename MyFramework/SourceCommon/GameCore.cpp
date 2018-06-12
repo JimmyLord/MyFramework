@@ -343,8 +343,6 @@ void GameCore::OnFileRenamed(const char* fullpathbefore, const char* fullpathaft
 void GameCore::SetMouseLock(bool lock)
 {
     m_MouseLockRequested = lock;
-
-    PlatformSpecific_SetMouseLock( lock );
 }
 
 bool GameCore::WasMouseLockRequested()
