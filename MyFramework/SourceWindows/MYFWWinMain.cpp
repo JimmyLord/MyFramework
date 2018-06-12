@@ -9,6 +9,7 @@
 
 #include "CommonHeader.h"
 #include "Screenshot.h"
+#include "MYFWWinMain.h"
 
 // Initialize opengl window on windows, huge chunks taken from nehe
 //    http://nehe.gamedev.net/tutorial/creating_an_opengl_window_%28win32%29/13001/
@@ -277,6 +278,9 @@ void GenerateMouseEvents(GameCore* pGameCore)
     {
         buttonsold[i] = buttons[i];
         buttons[i] = g_MouseButtonStates[i];
+
+        if( buttons[i] != 0 )
+            int bp = 1;
     }
 
     int mousex;
@@ -297,7 +301,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
                 wasLockedBecauseOfThisClick = LockSystemMouse();
             }
 
-            if( wasLockedBecauseOfThisClick )
+            if( wasLockedBecauseOfThisClick == false )
 #endif
             {
                 if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )

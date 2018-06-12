@@ -395,7 +395,11 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 
         checkGlError( "SceneGraph_Octree::Draw() before pSubmesh->Draw()" );
 
+#if MYFW_EDITOR
         bool hideFromDrawList = pObject->IsEditorObject();
+#else
+        bool hideFromDrawList = false;
+#endif
         pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
 
         checkGlError( "SceneGraph_Octree::Draw() after pSubmesh->Draw()" );
