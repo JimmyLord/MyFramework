@@ -292,22 +292,9 @@ void GenerateMouseEvents(GameCore* pGameCore)
     {
         if( buttons[i] == 1 && buttonsold[i] == 0 )
         {
-#if !MYFW_USING_IMGUI
-            // For non ImGui editor builds, if the game wants the mouse locked, finish the locking process here when the window is clicked.
-            // Imgui editor window code will determine if the mouse is over the game window and handle the locking.
-            bool wasLockedBecauseOfThisClick = false;
-            if( g_pGameCore->WasMouseLockRequested() )
-            {
-                wasLockedBecauseOfThisClick = LockSystemMouse();
-            }
-
-            if( wasLockedBecauseOfThisClick == false )
-#endif
-            {
-                if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
-                    LOGInfo( "SystemMouse", "Mouse down (%d)\n", i );
-                pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
-            }
+            if( SHOW_SYSTEM_MOUSE_DEBUG_LOG )
+                LOGInfo( "SystemMouse", "Mouse down (%d)\n", i );
+            pGameCore->OnTouch( GCBA_Down, i, (float)mousex, (float)mousey, 0, 0 ); // new press
         }
 
         if( buttons[i] == 0 && buttonsold[i] == 1 )
@@ -396,21 +383,20 @@ void GenerateMouseEvents(GameCore* pGameCore)
     }
     else
     {
-        // Don't send mouse messages if game requested mouse lock but it isn't locked yet.
-        if( g_pGameCore->WasMouseLockRequested() == false )
-        {
-            if( SHOW_SYSTEM_MOUSE_DEBUG_LOG && SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT )
-                LOGInfo( "SystemMouse", "Mouse move absolute\n" );
+        // If the system mouse isn't locked, send absolute mouse positions.
+        // If the game had requested a mouse lock, it should ignore these.
+        // These messages are needed for imgui windows over a game that wants the mouse locked.
+        if( SHOW_SYSTEM_MOUSE_DEBUG_LOG && SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT )
+            LOGInfo( "SystemMouse", "Mouse move absolute (%d, %d)\n", mousex, mousey );
 
-            if( buttonstates == 0 )
-                pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
-            if( buttonstates & 1 << 0 )
-                pGameCore->OnTouch( GCBA_Held, 0, (float)mousex, (float)mousey, 0, 0 );
-            if( buttonstates & 1 << 1 )
-                pGameCore->OnTouch( GCBA_Held, 1, (float)mousex, (float)mousey, 0, 0 );
-            if( buttonstates & 1 << 2 )
-                pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
-        }
+        if( buttonstates == 0 )
+            pGameCore->OnTouch( GCBA_Held, -1, (float)mousex, (float)mousey, 0, 0 );
+        if( buttonstates & 1 << 0 )
+            pGameCore->OnTouch( GCBA_Held, 0, (float)mousex, (float)mousey, 0, 0 );
+        if( buttonstates & 1 << 1 )
+            pGameCore->OnTouch( GCBA_Held, 1, (float)mousex, (float)mousey, 0, 0 );
+        if( buttonstates & 1 << 2 )
+            pGameCore->OnTouch( GCBA_Held, 2, (float)mousex, (float)mousey, 0, 0 );
     }
 
     g_RawMouseDelta.Set( 0, 0 );
