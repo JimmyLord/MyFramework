@@ -515,7 +515,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
         identitymat.SetIdentity();
         pShader->ProgramBoneTransforms( &identitymat, 1 );
 
-        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
+        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
         //pShader->DeactivateShader( m_pVertexBuffer, false );
     }
     else
