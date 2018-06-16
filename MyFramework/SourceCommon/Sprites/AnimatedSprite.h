@@ -99,7 +99,7 @@ public:
     void Tick(float deltaTime);
 
     MySprite* SetupSpriteForDrawing(MySprite* overridesprite);
-    void Draw(MyMatrix* matviewproj);
+    void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);
 
     void SetTime(double time);
 

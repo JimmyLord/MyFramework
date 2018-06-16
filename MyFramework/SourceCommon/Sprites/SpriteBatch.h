@@ -33,8 +33,8 @@ public:
     void SetMaterial(MaterialDefinition* pMaterial);
 
     virtual void AllocateVertices(int numsprites);
-    virtual void AddSprite(MyMatrix* matworld, MySprite* pSprite);
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void AddSprite(MyMatrix* pMatWorld, MySprite* pSprite);
+    virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);
 };
 
 #endif //__SpriteBatch_H__

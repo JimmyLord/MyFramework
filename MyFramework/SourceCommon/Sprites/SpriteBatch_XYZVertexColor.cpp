@@ -46,12 +46,12 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
 }
 
-void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite* pSprite)
+void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
 {
-    AddSprite( matworld, (MySprite_XYZVertexColor*)pSprite );
+    AddSprite( pMatWorld, (MySprite_XYZVertexColor*)pSprite );
 }
 
-void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite_XYZVertexColor* pSprite)
+void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite_XYZVertexColor* pSprite)
 {
     Vertex_XYZUV_RGBA* pSpriteVerts = (Vertex_XYZUV_RGBA*)pSprite->GetVerts( false );
     //MyMatrix spriteTransform = pSprite->GetPosition();
@@ -71,7 +71,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite_XYZVerte
         Vertex_XYZUV_RGBA* vertorig = &pBatchVerts[m_NumSprites*4 + i];
         Vector3 vertcopy = Vector3( vertorig->x, vertorig->y, vertorig->z );
 
-        Vector3 rotatedvert = *matworld * vertcopy;
+        Vector3 rotatedvert = *pMatWorld * vertcopy;
 
         pBatchVerts[m_NumSprites*4 + i].x = rotatedvert.x;
         pBatchVerts[m_NumSprites*4 + i].y = rotatedvert.y;
@@ -93,7 +93,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* matworld, MySprite_XYZVerte
     m_NumSprites++;
 }
 
-void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
+void SpriteBatch_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->GetTextureID() == 0 ||
         m_pMaterial->GetShader() == 0 || m_NumSprites == 0 )
@@ -132,7 +132,7 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* matviewproj)
     // Draw the contents of the buffers.
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &pos, m_pMaterial ) )
+            pMatProj, pMatView, &pos, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( m_NumSprites*6, 0, 0 );

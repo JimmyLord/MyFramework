@@ -409,7 +409,7 @@ void MySprite::FlipX()
 //    m_pMaterial = pMaterial;
 //}
 
-bool MySprite::Setup(MyMatrix* matworld, MyMatrix* matviewproj)
+bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
     if( m_pMaterial == 0 )
         return false;
@@ -440,7 +440,7 @@ bool MySprite::Setup(MyMatrix* matworld, MyMatrix* matviewproj)
 
     bool activated = pShader->ActivateAndProgramShader(
                         m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                        matviewproj, matworld, m_pMaterial );
+                        pMatProj, pMatView, pMatWorld, m_pMaterial );
 
     // Our VBO doesn't have normals, so set normals to face forward.
     glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
@@ -476,12 +476,12 @@ void MySprite::DeactivateShader()
     pShader->DeactivateShader( m_pVertexBuffer, true );
 }
 
-void MySprite::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
+    Draw( 0, pMatProj, pMatView, pMatWorld, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
 }
 
-void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
         return;
@@ -509,7 +509,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
             return;
 
         pShader->SetupAttributes( m_pVertexBuffer, m_pIndexBuffer, false );
-        pShader->ProgramTransforms( matviewproj, matworld );
+        pShader->ProgramTransforms( pMatProj, pMatView, pMatWorld );
 
         MyMatrix identitymat;
         identitymat.SetIdentity();
@@ -550,7 +550,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Ve
 
         if( pShader->ActivateAndProgramShader(
                 m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-                matviewproj, matworld, m_pMaterial ) )
+                pMatProj, pMatView, pMatWorld, m_pMaterial ) )
         {
             // Our VBO doesn't have normals, so set normals to face forward.
             // TODO: find better way to handle default attributes, ActivateAndProgramShader sets this to 0,1,0

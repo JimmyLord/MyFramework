@@ -65,11 +65,11 @@ public:
     //void SetTint(ColorByte tintcolor);
     virtual void FlipX();
 
-    virtual bool Setup(MyMatrix* matworld, MyMatrix* matviewproj);
+    virtual bool Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
     virtual void DrawNoSetup();
     virtual void DeactivateShader();
-    virtual void Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride = 0, bool hideFromDrawList = false);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
+    virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride = 0, bool hideFromDrawList = false);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
     Vertex_Base* GetVerts(bool markdirty);
 

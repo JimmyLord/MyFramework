@@ -103,15 +103,15 @@ bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 
     return true;
 }
 
-bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatViewProj, MyMatrix* pWorldTransform)
+bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
     Vector3 center = pBounds->GetCenter();
     Vector3 half = pBounds->GetHalfSize();
 
     // create a wvp matrix for pBounds
-    MyMatrix wvp = *pMatViewProj;    
-    if( pWorldTransform )
-        wvp = wvp * *pWorldTransform;
+    MyMatrix wvp = *pMatProj * *pMatView;
+    if( pMatWorld )
+        wvp = wvp * *pMatWorld;
 
     Vector4 clippos[8];
 
@@ -330,7 +330,7 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Octree::Draw()" );
 
@@ -339,15 +339,15 @@ void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawO
         UpdateTree( m_pRootNode );
     }
 
-    DrawNode( m_pRootNode, drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+    DrawNode( m_pRootNode, drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatProj, pMatView, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
 }
 
-void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     // Draw all scene graph objects contained in this node.
 
     // If node is not in frustum, return.
-    if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatViewProj, 0 ) == false )
+    if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, 0 ) == false )
         return;
 
     for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
@@ -367,7 +367,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
         //{
         //    MyAABounds* bounds = pMesh->GetBounds();
 
-        //    if( FitsInFrustum( bounds, pMatViewProj, &worldtransform ) == false )
+        //    if( FitsInFrustum( bounds, pMatProj, pMatView, &worldtransform ) == false )
         //        continue;
         //}
 
@@ -400,7 +400,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 #else
         bool hideFromDrawList = false;
 #endif
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
+        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldtransform, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
 
         checkGlError( "SceneGraph_Octree::Draw() after pSubmesh->Draw()" );
     }
@@ -412,7 +412,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
     {
         if( pOctreeNode->m_pChildNodes[i] != 0 )
         {
-            DrawNode( pOctreeNode->m_pChildNodes[i], drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatViewProj, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
+            DrawNode( pOctreeNode->m_pChildNodes[i], drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatProj, pMatView, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
         }
     }
 }

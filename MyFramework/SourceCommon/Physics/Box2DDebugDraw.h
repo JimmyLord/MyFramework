@@ -14,10 +14,11 @@ class Box2DDebugDraw : public b2Draw
 {
 public:
     MaterialDefinition* m_pMaterial;
-    MyMatrix* m_pMatViewProj;
+    MyMatrix* m_pMatProj;
+    MyMatrix* m_pMatView;
 
 public:
-    Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj);
+    Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView);
     ~Box2DDebugDraw();
 
     virtual void Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype, float pointorlinesize);

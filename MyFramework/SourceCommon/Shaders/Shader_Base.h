@@ -29,6 +29,8 @@ public:
     GLint m_uHandle_World;
     GLint m_uHandle_ViewProj;
     GLint m_uHandle_WorldViewProj;
+    GLint m_uHandle_InverseView;
+    GLint m_uHandle_InverseProj;
 
     GLint m_uHandle_PointSize;
 
@@ -87,11 +89,11 @@ public:
     virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
 
     bool CompileShader();
-    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* matViewProj, MyMatrix* matWorld, MaterialDefinition* pMaterial);
+    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
     bool Activate();
 
     void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
-    void ProgramTransforms(MyMatrix* matViewProj, MyMatrix* matWorld);
+    void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
     void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
     void ProgramTint(ColorByte tint);
     void ProgramPointSize(float pointSize);

@@ -62,10 +62,10 @@ public:
     void SetMaterial(MaterialDefinition* pMaterial);
     unsigned int GetStride();
 
-    virtual bool SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* matWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex);
-    virtual void SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* matWorld, MyMatrix* matInverseWorld, MyMatrix* matViewProj, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP);
+    virtual bool SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex);
+    virtual void SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MyMatrix* matInverseWorld, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP);
     virtual void SetupAttributes(Shader_Base* pShader);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
+    virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
 #if _DEBUG && MYFW_WINDOWS
     void TriggerBreakpointOnNextDraw() { m_TriggerBreakpointOnNextDraw = true; }
@@ -172,7 +172,7 @@ public:
     //void SetPosition(float x, float y, float z);
     //void SetTransform(MyMatrix& matrix);
     virtual void PreDraw() {}
-    void Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+    void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
 
     void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
     void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);

@@ -23,9 +23,9 @@ public:
     virtual ~SpriteBatch_XYZVertexColor();
 
     virtual void AllocateVertices(int numsprites);
-    virtual void AddSprite(MyMatrix* matworld, MySprite* pSprite);
-    void AddSprite(MyMatrix* matworld, MySprite_XYZVertexColor* pSprite);
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void AddSprite(MyMatrix* pMatWorld, MySprite* pSprite);
+    void AddSprite(MyMatrix* pMatWorld, MySprite_XYZVertexColor* pSprite);
+    virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);
 };
 
 #endif //__SpriteBatch_XYZVertexColor_H__

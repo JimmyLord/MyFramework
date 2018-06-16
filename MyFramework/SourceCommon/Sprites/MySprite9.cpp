@@ -152,7 +152,7 @@ void MySprite9::SetTint(ColorByte tintcolor)
     m_pMaterial->m_ColorDiffuse = tintcolor;
 }
 
-void MySprite9::Draw(MyMatrix* matviewproj)
+void MySprite9::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
 
@@ -177,7 +177,7 @@ void MySprite9::Draw(MyMatrix* matviewproj)
 
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
-            matviewproj, &m_Position, m_pMaterial ) )
+            pMatProj, pMatView, &m_Position, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( 6, 0, 0 );

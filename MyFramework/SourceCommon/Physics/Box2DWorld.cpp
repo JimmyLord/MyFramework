@@ -12,14 +12,14 @@
 #include "Box2DWorld.h"
 #include "Box2DDebugDraw.h"
 
-Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
+Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener)
 {
     m_pWorld = 0;
     m_pDebugDraw = 0;
     m_pContactListener = 0;
     m_pGround = 0;
 
-    CreateWorld( debugdrawmaterial, matviewproj, pContactListener );
+    CreateWorld( debugdrawmaterial, pMatProj, pMatView, pContactListener );
 }
 
 Box2DWorld::~Box2DWorld()
@@ -27,7 +27,7 @@ Box2DWorld::~Box2DWorld()
     Cleanup();
 }
 
-void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener)
+void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener)
 {
     MyAssert( m_pWorld == 0 );
     m_pWorld = MyNew b2World( b2Vec2( 0, -10 ) );
@@ -35,7 +35,7 @@ void Box2DWorld::CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* ma
     // Setup debug draw object.
     if( debugdrawmaterial != 0 )
     {
-        m_pDebugDraw = MyNew Box2DDebugDraw( debugdrawmaterial, matviewproj );
+        m_pDebugDraw = MyNew Box2DDebugDraw( debugdrawmaterial, pMatProj, pMatView );
         m_pWorld->SetDebugDraw( m_pDebugDraw );
 
         uint32 flags = b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit | b2Draw::e_aabbBit | b2Draw::e_pairBit;

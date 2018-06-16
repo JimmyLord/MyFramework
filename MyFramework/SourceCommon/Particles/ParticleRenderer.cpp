@@ -228,12 +228,12 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
 //    //m_pMaterial = pMaterial;
 //}
 
-void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void ParticleRenderer::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    DrawParticles( *campos, *camrot, matviewproj, pShaderOverride );
+    DrawParticles( *campos, *camrot, pMatProj, pMatView, pShaderOverride );
 }
 
-void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* pMatProj, MyMatrix* pMatView, ShaderGroup* pShaderOverride)
 {
 #if MY_SHITTY_LAPTOP
     //return;
@@ -299,7 +299,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* m
 #if USE_INDEXED_TRIANGLES
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, 0, m_pMaterial ) )
+            pMatProj, pMatView, 0, m_pMaterial ) )
     {
         MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0, false );
         pShader->DeactivateShader( m_pVertexBuffer, true );
@@ -308,7 +308,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* m
     // not supporting point sprites anymore.
     MyAssert( false );
     //if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
-    //    matviewproj, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
+    //    pMatProj, pMatView, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
     //{
     //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
     //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer, true );

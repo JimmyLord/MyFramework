@@ -479,10 +479,10 @@ MySprite* AnimatedSpriteInstance::SetupSpriteForDrawing(MySprite* overridesprite
     return pSprite;
 }
 
-void AnimatedSpriteInstance::Draw(MyMatrix* matviewproj)
+void AnimatedSpriteInstance::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 {
     MySprite* pSprite = SetupSpriteForDrawing( 0 );
-    pSprite->Draw( &m_WorldTransform, matviewproj );
+    pSprite->Draw( pMatProj, pMatView, &m_WorldTransform );
 }
 
 void AnimatedSpriteInstance::SetTime(double time)

@@ -167,12 +167,12 @@ void MySprite_XYZVertexColor::FlipX()
     m_pVertexBuffer->m_Dirty = true;
 }
 
-void MySprite_XYZVertexColor::Draw(MyMatrix* matworld, MyMatrix* matviewproj, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, matworld, matviewproj, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
+    Draw( 0, pMatProj, pMatView, pMatWorld, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
 }
 
-void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     MyAssert( pShaderOverride == 0 ); // TODO: support overriding shaders
 
@@ -205,7 +205,7 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* matworld, MyMatrix* 
 
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, matworld, m_pMaterial ) )
+            pMatProj, pMatView, pMatWorld, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( 6, 0, 0 );

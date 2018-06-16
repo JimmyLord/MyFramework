@@ -24,10 +24,10 @@ public:
     b2Body* m_pGround;
 
 public:
-    Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener);
+    Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener);
     ~Box2DWorld();
 
-    void CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj, Box2DContactListener* pContactListener);
+    void CreateWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener);
     void PhysicsStep();
     void Cleanup();
 };

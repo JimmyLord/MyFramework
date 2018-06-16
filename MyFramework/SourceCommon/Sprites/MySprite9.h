@@ -48,10 +48,10 @@ public:
     void SetTint(ColorByte tintcolor);
     //virtual void FlipX();
 
-    //virtual bool Setup(MyMatrix* matviewproj);
+    //virtual bool Setup(MyMatrix* pMatProj, MyMatrix* pMatView);
     //virtual void DrawNoSetup();
     //virtual void DeactivateShader();
-    virtual void Draw(MyMatrix* matviewproj);
+    virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);
 
     //Vertex_Base* GetVerts(bool markdirty);
 

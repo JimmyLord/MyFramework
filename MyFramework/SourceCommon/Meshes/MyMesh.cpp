@@ -56,7 +56,7 @@ unsigned int MySubmesh::GetStride()
     return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
 }
 
-bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* matWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex)
+bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex)
 {
     MaterialDefinition* pMaterial = m_pMaterial;
     int PrimitiveType = m_PrimitiveType;
@@ -117,16 +117,16 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* matWo
     return true; // No errors.
 }
 
-void MySubmesh::SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* matWorld, MyMatrix* matInverseWorld, MyMatrix* matViewProj, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP)
+void MySubmesh::SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MyMatrix* matInverseWorld, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP)
 {
     pShader->ProgramLights( pLightPtrs, numLights, matInverseWorld );
-    pShader->ProgramTransforms( matViewProj, matWorld );
+    pShader->ProgramTransforms( pMatProj, pMatView, pMatWorld );
     pShader->ProgramLocalSpaceCamera( pCamPos, matInverseWorld );
 
     if( shadowLightVP )
     {
         MyMatrix textureoffsetmat( 0.5f,0,0,0,  0,0.5f,0,0,  0,0,0.5f,0,  0.5f,0.5f,0.5f,1 );
-        MyMatrix shadowWVPT = textureoffsetmat * *shadowLightVP * *matWorld; //m_Transform;
+        MyMatrix shadowWVPT = textureoffsetmat * *shadowLightVP * *pMatWorld;
         pShader->ProgramShadowLightTransform( &shadowWVPT );
     }
 
@@ -155,7 +155,7 @@ void MySubmesh::SetupAttributes(Shader_Base* pShader)
     checkGlError( "SetupAttributes" );
 }
 
-void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
     checkGlError( "Start of MySubmesh::Draw()" );
 
@@ -199,10 +199,10 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, V
     }
 
     MyMatrix identity;
-    if( matWorld == 0 )
+    if( pMatWorld == 0 )
     {
         identity.SetIdentity();
-        matWorld = &identity;
+        pMatWorld = &identity;
     }
 
     MyAssert( pVertexBuffer );
@@ -246,7 +246,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, V
         //       and bone 0 transform uniform is set to identity.
         Shader_Base* pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
         pShader->SetupAttributes( pVertexBuffer, pIndexBuffer, false );
-        pShader->ProgramTransforms( matViewProj, matWorld );
+        pShader->ProgramTransforms( pMatProj, pMatView, pMatWorld );
 
         if( pMesh->m_BoneFinalMatrices.Count() > 0 )
         {
@@ -300,17 +300,17 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* matWorld, MyMatrix* matViewProj, V
         Shader_Base* pShader = (Shader_Base*)pMaterial->GetShader()->GlobalPass( numpointlights, numboneinfluences );
         if( pShader )
         {
-            bool initialized = SetupShader( pShader, pMesh, matWorld, pCamPos, pCamRot, pShadowTex, pLightmapTex );
+            bool initialized = SetupShader( pShader, pMesh, pMatWorld, pCamPos, pCamRot, pShadowTex, pLightmapTex );
             if( initialized )
             {
-                MyMatrix matInverseWorld = *matWorld;
+                MyMatrix matInverseWorld = *pMatWorld;
                 matInverseWorld.Inverse();
                 //bool didinverse = matInverseWorld.Inverse();
                 //if( didinverse == false )
                 //    LOGError( LOGTag, "Matrix inverse failed\n" );
 
                 SetupAttributes( pShader );
-                SetupMeshSpecificShaderUniforms( pShader, matWorld, &matInverseWorld, matViewProj, pCamPos, pLightPtrs, numLights, shadowLightVP );
+                SetupMeshSpecificShaderUniforms( pShader, pMatProj, pMatView, pMatWorld, &matInverseWorld, pCamPos, pLightPtrs, numLights, shadowLightVP );
 
                 int indexbuffertype = GL_UNSIGNED_BYTE;
                 if( pIndexBuffer != 0 )
@@ -2236,13 +2236,13 @@ void MyMesh::RebuildIndices()
         m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
 }
 
-void MyMesh::Draw(MyMatrix* matworld, MyMatrix* matviewproj, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
+void MyMesh::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride)
 {
     checkGlError( "start of MyMesh::Draw()" );
 
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        m_SubmeshList[meshindex]->Draw( this, matworld, matviewproj, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
+        m_SubmeshList[meshindex]->Draw( this, pMatProj, pMatView, pMatWorld, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
     }
 
     checkGlError( "end of MyMesh::Draw()" );

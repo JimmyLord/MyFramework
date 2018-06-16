@@ -64,10 +64,10 @@ void SpriteBatch::AllocateVertices(int numsprites)
     m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch", "Indices" );
 }
 
-void SpriteBatch::AddSprite(MyMatrix* matworld, MySprite* pSprite)
+void SpriteBatch::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
 {
     Vertex_Sprite* pSpriteVerts = (Vertex_Sprite*)pSprite->GetVerts( false );
-    MyMatrix spriteTransform = *matworld; //pSprite->GetPosition();
+    MyMatrix spriteTransform = *pMatWorld; //pSprite->GetPosition();
     Vertex_Sprite* pBatchVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
 
     MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
@@ -92,7 +92,7 @@ void SpriteBatch::AddSprite(MyMatrix* matworld, MySprite* pSprite)
     m_NumSprites++;
 }
 
-void SpriteBatch::Draw(MyMatrix* matviewproj)
+void SpriteBatch::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 {
     if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->GetTextureID() == 0 ||
         m_pMaterial->GetShader() == 0 || m_NumSprites == 0 )
@@ -126,7 +126,7 @@ void SpriteBatch::Draw(MyMatrix* matviewproj)
     // Draw the contents of the buffers.
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, &pos, m_pMaterial ) )
+            pMatProj, pMatView, &pos, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( m_NumSprites*6, 0, 0 );

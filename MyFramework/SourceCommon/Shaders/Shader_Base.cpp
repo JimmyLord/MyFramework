@@ -36,6 +36,8 @@ void Shader_Base::Init_Shader_Base()
     m_uHandle_World = -1;
     m_uHandle_ViewProj = -1;
     m_uHandle_WorldViewProj = -1;
+    m_uHandle_InverseView = -1;
+    m_uHandle_InverseProj = -1;
 
     m_uHandle_PointSize = -1;
 
@@ -121,6 +123,8 @@ bool Shader_Base::LoadAndCompile(GLuint premadeProgramHandle)
     m_uHandle_World =         GetUniformLocation( m_ProgramHandle, "u_World" );
     m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );
     m_uHandle_WorldViewProj = GetUniformLocation( m_ProgramHandle, "u_WorldViewProj" );
+    m_uHandle_InverseView =   GetUniformLocation( m_ProgramHandle, "u_InverseView" );
+    m_uHandle_InverseProj =   GetUniformLocation( m_ProgramHandle, "u_InverseProj" );
 
     m_uHandle_PointSize =     GetUniformLocation( m_ProgramHandle, "u_PointSize" );
 
@@ -501,7 +505,7 @@ bool Shader_Base::CompileShader()
     return true;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* matViewProj, MyMatrix* matWorld, MaterialDefinition* pMaterial)
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial)
 {
     MyAssert( pMaterial );
 
@@ -527,7 +531,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinit
     checkGlError( "SetupAttributes" );
 
     ProgramMaterialProperties( pMaterial->GetTextureColor(), pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
-    ProgramTransforms( matViewProj, matWorld );
+    ProgramTransforms( pMatProj, pMatView, pMatWorld );
 
     ProgramUVScaleAndOffset( pMaterial->m_UVScale, pMaterial->m_UVOffset );
 
@@ -590,13 +594,13 @@ void Shader_Base::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO
     }
 }
 
-void Shader_Base::ProgramTransforms(MyMatrix* matViewProj, MyMatrix* matWorld)
+void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
     if( m_uHandle_World != -1 )
     {
-        if( matWorld )
+        if( pMatWorld )
         {
-            glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&matWorld->m11 );
+            glUniformMatrix4fv( m_uHandle_World, 1, false, (GLfloat*)&pMatWorld->m11 );
         }
         else
         {
@@ -606,27 +610,54 @@ void Shader_Base::ProgramTransforms(MyMatrix* matViewProj, MyMatrix* matWorld)
         }
     }
 
+    MyMatrix* pMatViewProj = 0;
+    MyMatrix temp;
+
+    if( pMatProj && pMatView )
+    {
+        pMatViewProj = &temp;
+        *pMatViewProj = *pMatProj * *pMatView;
+    }
+
     if( m_uHandle_ViewProj != -1 )
-        glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&matViewProj->m11 );
+    {
+        glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&pMatViewProj->m11 );
+    }
 
     if( m_uHandle_WorldViewProj != -1 )
     {
         MyMatrix temp;
-        if( matWorld )
+        if( pMatWorld )
         {
-            temp = *matWorld;
-            if( matViewProj )
-                temp = *matViewProj * temp;
+            temp = *pMatWorld;
+            if( pMatViewProj )
+                temp = *pMatViewProj * temp;
         }
         else
         {
-            if( matViewProj )
-                temp = *matViewProj;
+            if( pMatViewProj )
+                temp = *pMatViewProj;
             else
                 temp.SetIdentity();
         }
 
         glUniformMatrix4fv( m_uHandle_WorldViewProj, 1, false, (GLfloat*)&temp.m11 );
+    }
+
+    if( m_uHandle_InverseView != -1 && pMatView )
+    {
+        MyMatrix temp;
+        temp = *pMatView;
+        temp.Inverse();
+        glUniformMatrix4fv( m_uHandle_InverseView, 1, false, (GLfloat*)&temp.m11 );
+    }
+
+    if( m_uHandle_InverseProj != -1 && pMatProj )
+    {
+        MyMatrix temp;
+        temp = *pMatProj;
+        temp.Inverse();
+        glUniformMatrix4fv( m_uHandle_InverseProj, 1, false, (GLfloat*)&temp.m11 );
     }
 }
 
@@ -636,7 +667,7 @@ void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorBy
 
 #if USE_D3D
     MyAssert( 0 );
-    //MyMatrix temp = *matWorld;
+    //MyMatrix temp = *pMatWorld;
     //temp.Multiply( matViewProj );
 
     //m_ShaderConstants.mvp = temp;

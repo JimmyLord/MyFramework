@@ -53,7 +53,7 @@ public:
 
     //virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj, ShaderGroup* pShaderOverride);
+    virtual void DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* pMatProj, MyMatrix* pMatView, ShaderGroup* pShaderOverride);
 
     //Vertex_PointSprite* GetVerts() { return pVerts; }
 };

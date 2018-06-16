@@ -79,9 +79,14 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatViewProj, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Flat::Draw()" );
+
+    MyAssert( pMatProj != 0 );
+    MyAssert( pMatView != 0 );
+
+    MyMatrix matViewProj = *pMatProj * *pMatView;
 
     for( CPPListNode* pNode = m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
     {
@@ -103,7 +108,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
             Vector3 center = bounds->GetCenter();
             Vector3 half = bounds->GetHalfSize();
 
-            MyMatrix wvp = *pMatViewProj * worldtransform;
+            MyMatrix wvp = matViewProj * worldtransform;
 
             Vector4 clippos[8];
 
@@ -179,7 +184,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 #else
         bool hideFromDrawList = false;
 #endif
-        pSubmesh->Draw( pMesh, &worldtransform, pMatViewProj, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
+        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldtransform, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
 
         checkGlError( "SceneGraph_Flat::Draw() after pSubmesh->Draw()" );
     }

@@ -116,7 +116,7 @@ void ParticleRendererInstanced::AddPoint(Vector3 pos, float rot, ColorByte color
     }
 }
 
-void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* matviewproj, ShaderGroup* pShaderOverride)
+void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* pMatProj, MyMatrix* pMatView, ShaderGroup* pShaderOverride)
 {
     // Shader override is only used by mouse picker ATM, don't draw particles into mouse picker frame (or fix).
     if( pShaderOverride )
@@ -160,7 +160,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
 
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
-            matviewproj, 0, m_pMaterial ) )
+            pMatProj, pMatView, 0, m_pMaterial ) )
     {
         GLint aiposloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Position" );
         GLint aiscaleloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Scale" );

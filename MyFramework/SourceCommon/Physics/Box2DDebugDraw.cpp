@@ -11,9 +11,10 @@
 
 #include "Box2DDebugDraw.h"
 
-Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* matviewproj)
+Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView)
 {
-    m_pMatViewProj = matviewproj;
+    m_pMatProj = pMatProj;
+    m_pMatView = pMatView;
 
     m_pMaterial = debugdrawmaterial;
     if( m_pMaterial )
@@ -42,7 +43,7 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
 
     // Setup uniforms, mainly viewproj and tint.
     pShader->ProgramMaterialProperties( 0, m_pMaterial->m_ColorDiffuse, m_pMaterial->m_ColorSpecular, m_pMaterial->m_Shininess );
-    pShader->ProgramTransforms( m_pMatViewProj, 0 );
+    pShader->ProgramTransforms( m_pMatProj, m_pMatView, 0 );
 
     glLineWidth( pointorlinesize );
 #ifndef MYFW_OPENGLES2
