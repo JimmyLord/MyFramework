@@ -27,8 +27,11 @@ public:
     GLint m_aHandle_BoneWeight;
 
     GLint m_uHandle_World;
-    GLint m_uHandle_ViewProj;
+    GLint m_uHandle_WorldView;
     GLint m_uHandle_WorldViewProj;
+    GLint m_uHandle_View;
+    GLint m_uHandle_ViewProj;
+    GLint m_uHandle_Proj;
     GLint m_uHandle_InverseView;
     GLint m_uHandle_InverseProj;
 

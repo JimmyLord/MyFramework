@@ -121,8 +121,11 @@ bool Shader_Base::LoadAndCompile(GLuint premadeProgramHandle)
     m_aHandle_BoneWeight =  6; //GetAttributeLocation( m_ProgramHandle, "a_BoneWeight" );
 
     m_uHandle_World =         GetUniformLocation( m_ProgramHandle, "u_World" );
-    m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );
+    m_uHandle_WorldView =     GetUniformLocation( m_ProgramHandle, "u_WorldView" );
     m_uHandle_WorldViewProj = GetUniformLocation( m_ProgramHandle, "u_WorldViewProj" );
+    m_uHandle_View =          GetUniformLocation( m_ProgramHandle, "u_View" );
+    m_uHandle_ViewProj =      GetUniformLocation( m_ProgramHandle, "u_ViewProj" );
+    m_uHandle_Proj =          GetUniformLocation( m_ProgramHandle, "u_Proj" );
     m_uHandle_InverseView =   GetUniformLocation( m_ProgramHandle, "u_InverseView" );
     m_uHandle_InverseProj =   GetUniformLocation( m_ProgramHandle, "u_InverseProj" );
 
@@ -610,6 +613,19 @@ void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
         }
     }
 
+    if( m_uHandle_WorldView != -1 )
+    {
+        if( pMatWorld )
+        {
+            MyMatrix matWorldView = *pMatView * *pMatWorld;
+            glUniformMatrix4fv( m_uHandle_WorldView, 1, false, (GLfloat*)&matWorldView.m11 );
+        }
+        else
+        {
+            glUniformMatrix4fv( m_uHandle_WorldView, 1, false, (GLfloat*)&pMatView->m11 );
+        }
+    }
+
     MyMatrix* pMatViewProj = 0;
     MyMatrix temp;
 
@@ -617,11 +633,6 @@ void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     {
         pMatViewProj = &temp;
         *pMatViewProj = *pMatProj * *pMatView;
-    }
-
-    if( m_uHandle_ViewProj != -1 )
-    {
-        glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&pMatViewProj->m11 );
     }
 
     if( m_uHandle_WorldViewProj != -1 )
@@ -642,6 +653,21 @@ void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
         }
 
         glUniformMatrix4fv( m_uHandle_WorldViewProj, 1, false, (GLfloat*)&temp.m11 );
+    }
+
+    if( m_uHandle_View != -1 )
+    {
+        glUniformMatrix4fv( m_uHandle_View, 1, false, (GLfloat*)&pMatView->m11 );
+    }
+
+    if( m_uHandle_ViewProj != -1 )
+    {
+        glUniformMatrix4fv( m_uHandle_ViewProj, 1, false, (GLfloat*)&pMatViewProj->m11 );
+    }
+
+    if( m_uHandle_Proj != -1 )
+    {
+        glUniformMatrix4fv( m_uHandle_Proj, 1, false, (GLfloat*)&pMatProj->m11 );
     }
 
     if( m_uHandle_InverseView != -1 && pMatView )
