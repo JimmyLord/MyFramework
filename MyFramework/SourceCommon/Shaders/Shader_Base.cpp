@@ -34,8 +34,11 @@ void Shader_Base::Init_Shader_Base()
     m_aHandle_BoneWeight = -1;
 
     m_uHandle_World = -1;
-    m_uHandle_ViewProj = -1;
+    m_uHandle_WorldView = -1;
     m_uHandle_WorldViewProj = -1;
+    m_uHandle_View = -1;
+    m_uHandle_ViewProj = -1;
+    m_uHandle_Proj = -1;
     m_uHandle_InverseView = -1;
     m_uHandle_InverseProj = -1;
 
