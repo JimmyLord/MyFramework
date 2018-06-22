@@ -111,14 +111,14 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
     {
         if( m_pColorTextures[i] )
         {
-            m_pColorTextures[i]->m_Width = width;
-            m_pColorTextures[i]->m_Height = width;
+            m_pColorTextures[i]->m_Width = m_TextureWidth;
+            m_pColorTextures[i]->m_Height = m_TextureHeight;
         }
     }
     if( m_pDepthTexture )
     {
-        m_pDepthTexture->m_Width = width;
-        m_pDepthTexture->m_Height = width;
+        m_pDepthTexture->m_Width = m_TextureWidth;
+        m_pDepthTexture->m_Height = m_TextureHeight;
     }
 
     for( int i=0; i<MAX_COLOR_TEXTURES; i++ )

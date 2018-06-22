@@ -54,6 +54,7 @@ void Shader_Base::Init_Shader_Base()
     m_uHandle_TextureColor = -1;
     m_uHandle_TextureColorWidth = -1;
     m_uHandle_TextureColorHeight = -1;
+    m_uHandle_TextureColorTexelSize = -1;
     m_uHandle_TextureDepth = -1;
     m_uHandle_TextureLightmap = -1;
     m_uHandle_TextureTintColor = -1;
@@ -141,14 +142,15 @@ bool Shader_Base::LoadAndCompile(GLuint premadeProgramHandle)
     m_uHandle_ShadowLightWVPT = GetUniformLocation( m_ProgramHandle, "u_ShadowLightWVPT" );
     m_uHandle_ShadowTexture =   GetUniformLocation( m_ProgramHandle, "u_ShadowTexture" );
 
-    m_uHandle_TextureColor =        GetUniformLocation( m_ProgramHandle, "u_TextureColor" );
-    m_uHandle_TextureColorWidth =   GetUniformLocation( m_ProgramHandle, "u_TextureColorWidth" );
-    m_uHandle_TextureColorHeight =  GetUniformLocation( m_ProgramHandle, "u_TextureColorHeight" );
-    m_uHandle_TextureDepth =        GetUniformLocation( m_ProgramHandle, "u_TextureDepth" );
-    m_uHandle_TextureLightmap =     GetUniformLocation( m_ProgramHandle, "u_TextureLightmap" );
-    m_uHandle_TextureTintColor =    GetUniformLocation( m_ProgramHandle, "u_TextureTintColor" );
-    m_uHandle_TextureSpecColor =    GetUniformLocation( m_ProgramHandle, "u_TextureSpecColor" );
-    m_uHandle_Shininess =           GetUniformLocation( m_ProgramHandle, "u_Shininess" );
+    m_uHandle_TextureColor =          GetUniformLocation( m_ProgramHandle, "u_TextureColor" );
+    m_uHandle_TextureColorWidth =     GetUniformLocation( m_ProgramHandle, "u_TextureColorWidth" );
+    m_uHandle_TextureColorHeight =    GetUniformLocation( m_ProgramHandle, "u_TextureColorHeight" );
+    m_uHandle_TextureColorTexelSize = GetUniformLocation( m_ProgramHandle, "u_TextureColorTexelSize" );
+    m_uHandle_TextureDepth =          GetUniformLocation( m_ProgramHandle, "u_TextureDepth" );
+    m_uHandle_TextureLightmap =       GetUniformLocation( m_ProgramHandle, "u_TextureLightmap" );
+    m_uHandle_TextureTintColor =      GetUniformLocation( m_ProgramHandle, "u_TextureTintColor" );
+    m_uHandle_TextureSpecColor =      GetUniformLocation( m_ProgramHandle, "u_TextureSpecColor" );
+    m_uHandle_Shininess =             GetUniformLocation( m_ProgramHandle, "u_Shininess" );
 
     m_uHandle_BoneTransforms =      GetUniformLocation( m_ProgramHandle, "u_BoneTransforms" );
 
@@ -727,6 +729,11 @@ void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorBy
         if( m_uHandle_TextureColorHeight != -1 )
         {
             glUniform1f( m_uHandle_TextureColorHeight, (float)pTexture->GetHeight() );
+        }
+
+        if( m_uHandle_TextureColorTexelSize != -1 )
+        {
+            glUniform2f( m_uHandle_TextureColorTexelSize, 1.0f/(float)pTexture->GetWidth(), 1.0f/(float)pTexture->GetHeight() );
         }
     }
 

@@ -411,6 +411,8 @@ void MySprite::FlipX()
 
 bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
+    checkGlError( "start of MySprite::Setup()" );
+
     if( m_pMaterial == 0 )
         return false;
 
@@ -421,8 +423,6 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
     if( m_pIndexBuffer->m_Dirty )
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
-
-    //TextureDefinition* pTexture = GetTexture();
 
     if( m_pMaterial->GetShader() == 0 )
         return false;
@@ -443,10 +443,15 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
                         pMatProj, pMatView, pMatWorld, m_pMaterial );
 
     // Our VBO doesn't have normals, so set normals to face forward.
-    glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
+    if( pShader->m_aHandle_Normal != -1 )
+    {
+        glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
+    }
 
     // always disable blending
     glDisable( GL_BLEND );
+
+    checkGlError( "end of MySprite::Setup()" );
 
     return activated;
 }

@@ -47,6 +47,7 @@ public:
     GLint m_uHandle_TextureColor;
     GLint m_uHandle_TextureColorWidth;
     GLint m_uHandle_TextureColorHeight;
+    GLint m_uHandle_TextureColorTexelSize;
     GLint m_uHandle_TextureDepth;
     GLint m_uHandle_TextureLightmap;
     GLint m_uHandle_TextureTintColor;
