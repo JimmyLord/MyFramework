@@ -60,6 +60,7 @@ public:
 
     MaterialDefinition* Editor_GetFirstMaterialLoaded()       { return (MaterialDefinition*)m_Materials.GetHead(); }
     MaterialDefinition* Editor_GetFirstMaterialStillLoading() { return (MaterialDefinition*)m_MaterialsStillLoading.GetHead(); }
+    void Editor_MoveMaterialToFrontOfLoadedList(MaterialDefinition* pMaterial);
     MaterialDefinition* GetDefaultEditorMaterial();
 #endif
 

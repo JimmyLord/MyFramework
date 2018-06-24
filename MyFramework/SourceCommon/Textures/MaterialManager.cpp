@@ -132,6 +132,14 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
     }
 }
 
+void MaterialManager::Editor_MoveMaterialToFrontOfLoadedList(MaterialDefinition* pMaterial)
+{
+    MyAssert( pMaterial->IsFullyLoaded() );
+    MyAssert( pMaterial->GetPrev() );
+
+    m_Materials.MoveHead( pMaterial );
+}
+
 MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 {
     if( m_pDefaultEditorMaterial == 0 )
