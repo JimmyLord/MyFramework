@@ -24,16 +24,18 @@
 #define nullptr 0
 #endif
 
+#define isfinite(x) _finite(x) ? true : false
+
 #endif //__cplusplus < 201103L
 
 // Include the real b2Settings.h
 #if !_DEBUG && !defined(NDEBUG)
 // In release mode temporarily define NDEBUG, the real b2Settings.h has a check for it.
 #define NDEBUG
-#include "../../../Box2D/Box2D/Box2D/Common/b2Settings.h"
+#include "../../../Box2D/Box2D/Common/b2Settings.h"
 #undef NDEBUG
 #else
-#include "../../../Box2D/Box2D/Box2D/Common/b2Settings.h"
+#include "../../../Box2D/Box2D/Common/b2Settings.h"
 #endif
 
 #endif //__NotTheRealB2Settings_H__

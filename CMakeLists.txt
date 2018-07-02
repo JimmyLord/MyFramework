@@ -7,7 +7,7 @@ project( MyFramework_Project VERSION 0.1 LANGUAGES CXX )
 file( GLOB_RECURSE sourcefiles
     "MyFramework/SourceCommon/*.cpp"
     "MyFramework/SourceLinux/*.cpp"
-    "Libraries/Box2D/Box2D/Box2D/*.cpp"
+    "Libraries/Box2D/Box2D/*.cpp"
     "Libraries/cJSON/*.cpp"
     "Libraries/LodePNG/*.cpp"
 )
@@ -30,7 +30,7 @@ target_include_directories( MyFramework PUBLIC
     "MyFramework/SourceCommon"
     "MyFramework/SourceLinux"
     "MyFramework/SourceWidgets"
-    "Libraries/Box2D/Box2D"
+    "Libraries/Box2D"
     "Libraries/cJSON"
     "Libraries/LodePNG"
     "Libraries/wxWidgets/include"

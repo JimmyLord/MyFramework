@@ -645,7 +645,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>false</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -664,7 +664,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -685,7 +685,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;WIN32;_UNICODE;UNICODE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
@@ -703,7 +703,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_UNICODE;UNICODE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -724,7 +724,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;MYFW_EDITOR;MYFW_USING_WX;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -742,7 +742,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;MYFW_EDITOR;MYFW_USING_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -760,7 +760,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;MYFW_EDITOR;MYFW_USING_WX;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -781,7 +781,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_WINDOWS;_DEBUG;MYFW_USING_WX;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -802,7 +802,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_NACL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -820,7 +820,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_NACL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -838,7 +838,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_NACL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -856,7 +856,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_NACL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -875,7 +875,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_ANDROID;MYFW_OPENGLES2;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <GccExceptionHandling>true</GccExceptionHandling>
     </ClCompile>
@@ -899,7 +899,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_ANDROID;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -921,7 +921,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_ANDROID;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -943,7 +943,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MYFW_ANDROID;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -966,7 +966,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -991,7 +991,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_EDITOR;MYFW_USING_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -1016,7 +1016,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -1042,7 +1042,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_EDITOR;MYFW_USING_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -1068,7 +1068,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_EDITOR;MYFW_USING_WX;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>
@@ -1092,7 +1092,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_WINDOWS;MYFW_EDITOR;MYFW_USING_WX;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;../Libraries/OpenAL/include;../glfw-2.7.2/include;../glew-1.7.0/include;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D;SourceWindows/SDL-1.2.15/include;$(DXSDK_DIR)Include;$(ProjectDir)../Libraries/wxWidgets/include/msvc;$(ProjectDir)../Libraries/wxWidgets/include;$(OculusSDK)/LibOVR/Include;$(OculusSDK)/LibOVR/Src</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -1118,7 +1118,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_NACL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -1140,7 +1140,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_NACL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -1162,7 +1162,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_NACL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>CommonHeader.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -1185,7 +1185,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_ANDROID;MYFW_OPENGLES2;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
@@ -1210,7 +1210,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_ANDROID;MYFW_OPENGLES2;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
@@ -1235,7 +1235,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MYFW_ANDROID;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;$(ProjectDir)../Libraries/Box2D</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1252,7 +1252,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">
     <ClCompile>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MYFW_EMSCRIPTEN;_DEBUG</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -1276,14 +1276,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">
     <ClCompile>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MYFW_EMSCRIPTEN;NDEBUG</PreprocessorDefinitions>
       <OptimizationLevel>O0</OptimizationLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">
     <ClCompile>
-      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D/Box2D</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>SourceCommon;$(ProjectDir)../Libraries/b2Settings;../Libraries/Box2D</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MYFW_EMSCRIPTEN;NDEBUG</PreprocessorDefinitions>
       <OptimizationLevel>O0</OptimizationLevel>
     </ClCompile>
