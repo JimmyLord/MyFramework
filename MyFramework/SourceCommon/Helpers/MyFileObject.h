@@ -91,6 +91,7 @@ public:
 
     bool IsFinishedLoading();
     const char* GetFullPath() { return m_FullPath; }
+    const char* GetFilename();
     const char* GetFilenameWithoutExtension() { return m_FilenameWithoutExtension; }
     const char* GetExtensionWithDot() { return m_ExtensionWithDot; } // will be "." if no extension
     FileLoadStatus GetFileLoadStatus() { return m_FileLoadStatus; }

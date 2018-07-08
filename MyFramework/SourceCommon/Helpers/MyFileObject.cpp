@@ -245,6 +245,22 @@ bool MyFileObject::IsFinishedLoading()
     return true;
 }
 
+const char* MyFileObject::GetFilename()
+{
+    if( m_FullPath && m_FullPath[0] != 0 )
+    {
+        int i;
+        for( i=(int)strlen(m_FullPath)-1; i>=0; i-- )
+        {
+            if( m_FullPath[i] == '\\' || m_FullPath[i] == '/' )
+                break;
+        }
+        return &m_FullPath[i+1];
+    }
+
+    return 0;
+}
+
 void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
 {
     MyAssert( pCallback != 0 );
