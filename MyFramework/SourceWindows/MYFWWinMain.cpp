@@ -129,7 +129,9 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
             {
                 if( g_SystemMouseIsLocked )
                 {
+#if !MYFW_USING_WX
                     UnlockSystemMouse();
+#endif
                 }
                 else
                 {

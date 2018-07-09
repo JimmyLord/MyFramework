@@ -116,7 +116,7 @@ void MyActiveTexture(GLenum texture)
 void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, bool hideFromDrawList)
 {
 #if MYFW_USING_WX
-    if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
 #elif MYFW_USING_IMGUI
     bool draw = true;
     
@@ -168,7 +168,7 @@ void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
 void MyDrawArrays(GLenum mode, GLint first, GLsizei count, bool hideFromDrawList)
 {
 #if MYFW_USING_WX
-    if( g_pPanelMemory->m_DrawCallLimit_Index == -1 || g_pPanelMemory->m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
 #elif MYFW_USING_IMGUI
     bool draw = true;
     
