@@ -1722,13 +1722,16 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
         m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
 
+    VertexFormats vertexFormat = VertexFormat_XYZUVNorm;
+    uint32 vertexSize = sizeof(Vertex_XYZUVNorm);
+
     // delete the old buffers, if we want an icosphere with more.
-    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( vertexSize*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
-        Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Icosphere", "Verts" );
+        m_SubmeshList[0]->m_VertexFormat = vertexFormat;
+        Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, vertexSize*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, vertexFormat, 0, "MyMesh_Icosphere", "Verts" );
     }
 
     if( bytesperindex*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
@@ -1740,7 +1743,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
 
     m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
 
-    Vertex_XYZUV_Alt* pVerts = (Vertex_XYZUV_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
 
     unsigned char* pIndices = 0;
@@ -1766,7 +1769,10 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
     pVerts[11].pos.Set( -t,  0,  1 );
 
     for( int i=0; i<12; i++ )
+    {
         pVerts[i].pos *= radius;
+        pVerts[i].normal = pVerts[i].pos.GetNormalized();
+    }
 
     // create 20 triangles of the icosahedron
     unsigned char indexlist[] =
