@@ -86,6 +86,26 @@ void cJSONExt_AddIntArrayToObject(cJSON* object, const char* name, int* vars, in
     cJSON_AddItemToObject( object, name, jsonarray );
 }
 
+void cJSONExt_AddUnsignedIntArrayToObject(cJSON* object, const char* name, uint32* vars, int numinarray)
+{
+    int i;
+    cJSON *n=0,*p=0,*a=cJSON_CreateArray();
+    for(i=0;a && i<numinarray;i++)
+    {
+        n=cJSON_CreateNumber(vars[i]);
+        if(!i)
+            a->child=n;
+        else
+        {
+            p->next=n;
+            n->prev=p;
+        }
+        p=n;
+    }
+
+    cJSON_AddItemToObject( object, name, a );
+}
+
 void cJSONExt_AddFloatArrayToObject(cJSON* object, const char* name, float* vars, int numinarray)
 {
     cJSON* jsonarray = cJSON_CreateFloatArray( vars, numinarray );
