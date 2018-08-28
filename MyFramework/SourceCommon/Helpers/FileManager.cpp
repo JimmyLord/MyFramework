@@ -86,6 +86,8 @@ void* FileManager::Thread_FileIO(void* obj)
                 pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Tick();
             }
 
+            // Remove the ref that was preventing this file from being unloaded while in the load thread.
+            pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Release();
             pthis->m_pFileThisFileIOThreadIsLoading[threadid] = 0;
         }
 
@@ -338,6 +340,10 @@ void FileManager::Tick()
                 // release the mutex so the fileio thread can load the file we want.
                 m_pLastFileLoadedByThread[threadindex] = pFile;
                 m_pFileThisFileIOThreadIsLoading[threadindex] = pFile;
+                
+                // Add a ref to prevent the file from being unloaded while in the load thread.
+                m_pFileThisFileIOThreadIsLoading[threadindex]->AddRef();
+                
                 pthread_mutex_unlock( &m_FileIOThreadLocks[threadindex] );
                 m_FileIOThreadIsLocked[threadindex] = false;
 #else
