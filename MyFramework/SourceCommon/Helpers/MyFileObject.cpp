@@ -192,7 +192,7 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
             if( m_FullPath[i] == '/' )
                 i++;
             int namelen = folderstartlocation-i;
-            strncpy_s( g_FolderName, namelen+1, &m_FullPath[i], namelen );
+            strncpy_s( g_FolderName, MAX_PATH, &m_FullPath[i], namelen );
             g_FolderName[namelen] = 0;
             return g_FolderName;
         }

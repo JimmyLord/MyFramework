@@ -15,7 +15,8 @@
 
 // TODONACLUPDATE: try to unignore UPDSocket, webrequest and stunclient.
 
-#if !MYFW_WINDOWS && !MYFW_WP8
+#if !MYFW_WINDOWS && !MYFW_WP8 && !defined(WSAGetLastErrorDefined)
+#define WSAGetLastErrorDefined 1 // Used in Android "unity" build.
 static int WSAGetLastError() { return errno; }
 #endif
 

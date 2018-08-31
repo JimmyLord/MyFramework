@@ -266,6 +266,7 @@ bool FBODefinition::Create()
                 type = GL_UNSIGNED_BYTE;
                 break;
 
+#if !MYFW_OPENGLES2
             case FBOColorFormat_RGBA_Float16:
                 internalformat = GL_RGBA16F;
                 format = GL_RGBA;
@@ -277,6 +278,7 @@ bool FBODefinition::Create()
                 format = GL_RGB;
                 type = GL_FLOAT;
                 break;
+#endif
 
             case FBOColorFormat_None:
                 assert( false );
@@ -372,9 +374,11 @@ bool FBODefinition::Create()
             return false;
         }
 
+#if !MYFW_OPENGLES2
         // Set up the textures for GL to write to.
         GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
         glDrawBuffers( m_NumColorTextures, buffers );
+#endif
 
         //LOGInfo( LOGTag, "FBO: created successfully\n" );
 

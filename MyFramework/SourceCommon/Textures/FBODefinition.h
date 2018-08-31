@@ -21,8 +21,10 @@ public:
     {
         FBOColorFormat_None,
         FBOColorFormat_RGBA_UByte,
+#if !MYFW_OPENGLES2
         FBOColorFormat_RGBA_Float16,
         FBOColorFormat_RGB_Float16,
+#endif
     };
 
 protected:

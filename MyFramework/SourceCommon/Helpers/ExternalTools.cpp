@@ -121,7 +121,7 @@ void LaunchURL(const char* url)
         return;
     }
 
-    LOGInfo( LOGTag, "LaunchURL %s, javaenv %s", url, g_pJavaEnvironment );
+    LOGInfo( LOGTag, "LaunchURL %s, javaenv %s", url, (char*)g_pJavaEnvironment );
 
     jclass cls = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
     LOGInfo( LOGTag, "g_pMainActivity cls %p", cls );

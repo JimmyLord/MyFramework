@@ -18,9 +18,9 @@
 #include <math.h>
 
 #include <GLES2/gl2.h>
-#if !ANDROID_NDK
-#include <GLES2/egl2.h>
-#endif // !ANDROID_NDK
+//#if !ANDROID_NDK
+//#include <GLES2/egl2.h>
+//#endif // !ANDROID_NDK
 
 bool g_Android_ExitOnBackButton = true;
 

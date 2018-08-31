@@ -27,7 +27,7 @@ public:
 
     void Initialize();
 
-    static bool StaticHandleEvent(void* pObjectPtr, MyEvent* pEvent) { ((IAPManager*)pObjectPtr)->HandleEvent( pEvent ); }
+    static bool StaticHandleEvent(void* pObjectPtr, MyEvent* pEvent) { return ((IAPManager*)pObjectPtr)->HandleEvent( pEvent ); }
     bool HandleEvent(MyEvent* pEvent);
 
     void Purchase(const char* IAPProductID);

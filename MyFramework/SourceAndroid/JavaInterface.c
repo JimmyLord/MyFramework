@@ -60,7 +60,7 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobj
     g_pAndroidDeviceName[i] = 0;
     (*env)->ReleaseStringUTFChars( env, devicename, devicenamechar );
 
-    const char* launchscenebuffer[260];
+    char launchscenebuffer[260];
     launchscenebuffer[0] = 0;
 
     if( launchscene )
@@ -69,7 +69,7 @@ void Java_com_flathead_MYFWPackage_MYFWActivity_NativeOnCreate(JNIEnv* env, jobj
         strcpy( launchscenebuffer, launchscenechar );
         (*env)->ReleaseStringUTFChars( env, launchscene, launchscenechar );
 
-        __android_log_print( ANDROID_LOG_INFO, "Flathead", launchscenebuffer );
+        __android_log_print( ANDROID_LOG_INFO, "Flathead", "%s", launchscenebuffer );
     }
 
     {

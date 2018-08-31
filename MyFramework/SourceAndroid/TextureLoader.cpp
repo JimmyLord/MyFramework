@@ -148,11 +148,11 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
     LOGInfo( LOGTag, "LoadTexture - version %d", version );
 
     jclass cls = g_pJavaEnvironment->GetObjectClass( g_pBMPFactoryLoader );
-    LOGInfo( LOGTag, "LoadTexture - bmploadercls %d", cls );
+    LOGInfo( LOGTag, "LoadTexture - bmploadercls %p", (void*)&cls );
 
     // Ask the bitmaploader for a bitmap
     jmethodID methodid = g_pJavaEnvironment->GetMethodID( cls, "open", "(Ljava/lang/String;)Landroid/graphics/Bitmap;" );
-    LOGInfo( LOGTag, "LoadTexture - methodid %d", methodid );
+    LOGInfo( LOGTag, "LoadTexture - methodid %p", (void*)&methodid );
 
     if( methodid == 0 )
         return 0;
@@ -160,7 +160,7 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
     jstring name = g_pJavaEnvironment->NewStringUTF( filepath );
     jobject bmp = g_pJavaEnvironment->CallObjectMethod( g_pBMPFactoryLoader, methodid, name );
     g_pJavaEnvironment->DeleteLocalRef( name );
-    LOGInfo( LOGTag, "LoadTexture - bmp object %d", bmp );
+    LOGInfo( LOGTag, "LoadTexture - bmp object %p", (void*)&bmp );
 
     if( bmp == 0 )
         return 0;
@@ -234,7 +234,7 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
 
     // Free image
     methodid = g_pJavaEnvironment->GetMethodID( cls, "close", "(Landroid/graphics/Bitmap;)V" );
-    LOGInfo( LOGTag, "LoadTexture - close methodid %d", methodid );
+    LOGInfo( LOGTag, "LoadTexture - close methodid %p", (void*)&methodid );
 
     g_pJavaEnvironment->CallVoidMethod( g_pBMPFactoryLoader, methodid, bmp );
     LOGInfo( LOGTag, "LoadTexture - close called" );

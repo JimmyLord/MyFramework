@@ -17,7 +17,7 @@
 bool MyAssertFunc(const char* file, unsigned long line)
 {
     LOGInfo( LOGTag, "======================================================\n" );
-    LOGInfo( LOGTag, "%s(%d) - assert failed\n", file, line );
+    LOGInfo( LOGTag, "%s(%lu) - assert failed\n", file, line );
     LOGInfo( LOGTag, "======================================================\n" );
 
 #if MYFW_WINDOWS

@@ -232,9 +232,9 @@ void ParseBlendFactor(const char* buffer, MaterialBlendFactors* pBlendFactorOut)
     const char* endOfBlendFactor = strpbrk( buffer, " \t\n\r" );
     char blendFactor[32];
     if( endOfBlendFactor - buffer > 31 )
-        strncpy_s( blendFactor, buffer, 31 );
+        strncpy_s( blendFactor, 32, buffer, 31 );
     else
-        strncpy_s( blendFactor, buffer, endOfBlendFactor - buffer );
+        strncpy_s( blendFactor, 32, buffer, endOfBlendFactor - buffer );
 
     if( _stricmp( blendFactor, "One" ) == 0 )
     {
