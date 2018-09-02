@@ -9,9 +9,9 @@ file( GLOB_RECURSE sourceFiles
     "Libraries/Box2D/Box2D/*.cpp"
     "Libraries/cJSON/*.cpp"
     "Libraries/LodePNG/*.cpp"
+    "Libraries/OpenSimplexInC/open-simplex-noise.c"
 )
 list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceCommon/GraphicsWrappers/DXWrapper.cpp" )
-list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceLinux/Screenshot.cpp" )
 
 # Extra files specific to Android builds.
 if( NOT ${ANDROID_ABI} STREQUAL "" )
@@ -27,6 +27,7 @@ endif()
 if( CMAKE_BUILD_TYPE MATCHES Linux )
     file( GLOB_RECURSE platformFiles "MyFramework/SourceLinux/*.cpp" )
     set( sourceFiles ${sourceFiles} ${platformFiles} )
+    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceLinux/Screenshot.cpp" )
 endif()
 
 # Extra files specific to WxWidgets builds.
@@ -45,9 +46,11 @@ target_include_directories( MyFramework PUBLIC
     "MyFramework/SourceCommon"
     "MyFramework/SourceLinux"
     "MyFramework/SourceWidgets"
+    "Libraries/b2Settings"
     "Libraries/Box2D"
     "Libraries/cJSON"
     "Libraries/LodePNG"
+    "Libraries/OpenSimplexInC"
     "Libraries/wxWidgets/include"
     "Libraries/wxWidgets/gtk-build-debug/lib/wx/include/gtk3-unicode-static-3.1"
 )
