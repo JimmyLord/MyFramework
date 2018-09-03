@@ -1,7 +1,8 @@
 cmake_minimum_required( VERSION 3.4.1 )
 
-# Project
-#project( MyFramework_Project VERSION 0.1 LANGUAGES C CXX )
+###############################################################################
+# Source code file list.
+###############################################################################
 
 # Framework source files.
 file( GLOB_RECURSE sourceFiles
@@ -13,33 +14,43 @@ file( GLOB_RECURSE sourceFiles
 )
 list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceCommon/GraphicsWrappers/DXWrapper.cpp" )
 
-# Extra files specific to Android builds.
-if( NOT ${ANDROID_ABI} STREQUAL "" )
-    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceCommon/Sound/SoundPlayerOpenAL.cpp" )
+# Android specific source files.
+if( CMAKE_SYSTEM_NAME MATCHES Android )
     file( GLOB_RECURSE platformFiles "MyFramework/SourceAndroid/*.cpp" )
-    list( REMOVE_ITEM platformFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceAndroid/SoundPlayer.cpp" )
     set( sourceFiles ${sourceFiles} ${platformFiles} )
     file( GLOB_RECURSE platformFiles "MyFramework/SourceAndroid/*.c" )
     set( sourceFiles ${sourceFiles} ${platformFiles} )
+    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceCommon/Sound/SoundPlayerOpenAL.cpp" )
+    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceAndroid/SoundPlayer.cpp" )
 endif()
 
-# Extra files specific to Linux builds.
-if( CMAKE_BUILD_TYPE MATCHES Linux )
+# Linux specific source files.
+if( CMAKE_SYSTEM_NAME MATCHES Linux )
     file( GLOB_RECURSE platformFiles "MyFramework/SourceLinux/*.cpp" )
     set( sourceFiles ${sourceFiles} ${platformFiles} )
     list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceLinux/Screenshot.cpp" )
 endif()
 
-# Extra files specific to WxWidgets builds.
+# Windows/VisualStudio specific source files.
+if( CMAKE_SYSTEM_NAME MATCHES Windows )
+    file( GLOB_RECURSE platformFiles "MyFramework/SourceWindows/*.cpp" )
+    set( sourceFiles ${sourceFiles} ${platformFiles} )
+    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceCommon/Sound/SoundPlayerOpenAL.cpp" )
+    list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceWindows/SoundPlayerSDL.cpp" )
+endif()
+
+# WxWidgets specific source files.
 if( CMAKE_BUILD_TYPE MATCHES wxDebug OR CMAKE_BUILD_TYPE MATCHES wxRelease )
     file( GLOB_RECURSE widgetfiles "MyFramework/SourceWidgets/*.cpp" )
     set( sourceFiles ${sourceFiles} ${widgetfiles} )
 endif()
 
+###############################################################################
+# Library setup.
+###############################################################################
+
 # Library
 add_library( MyFramework STATIC ${sourceFiles} )
-
-#set_property( GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time" )
 
 # Framework include directories.
 target_include_directories( MyFramework PUBLIC
@@ -55,28 +66,29 @@ target_include_directories( MyFramework PUBLIC
     "Libraries/wxWidgets/gtk-build-debug/lib/wx/include/gtk3-unicode-static-3.1"
 )
 
-#############
-# Preprocessor defines.
-#############
+###############################################################################
+# Platform specific settings.
+###############################################################################
 
 # Android defines.
-if( NOT ${ANDROID_ABI} STREQUAL "" )
+if( CMAKE_SYSTEM_NAME MATCHES Android )
     target_compile_definitions( MyFramework PRIVATE MYFW_ANDROID=1 )
     #target_link_libraries( MyFramework android log GLESv2 OpenSLES EGL ) #c m gcc )
 endif()
 
 # Linux defines.
-if( CMAKE_BUILD_TYPE MATCHES Linux )
+if( CMAKE_SYSTEM_NAME MATCHES Linux )
     target_compile_definitions( MyFramework PRIVATE MYFW_LINUX=1 )
 endif()
 
-if( CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES wxDebug )
-    target_compile_definitions( MyFramework PRIVATE _DEBUG=1 )
+# Windows/VisualStudio defines.
+if( CMAKE_SYSTEM_NAME MATCHES Windows )
+    target_compile_definitions( MyFramework PRIVATE MYFW_WINDOWS=1 )
+	add_definitions( -DUNICODE -D_UNICODE )
 endif()
 
 # WxWidgets specific settings.
 if( CMAKE_BUILD_TYPE MATCHES wxDebug OR CMAKE_BUILD_TYPE MATCHES wxRelease )
-
     # Preprocessor defines.
     target_compile_definitions( MyFramework PRIVATE MYFW_USING_WX=1 _FILE_OFFSET_BITS=64 __WXGTK__ )
 
@@ -86,7 +98,11 @@ if( CMAKE_BUILD_TYPE MATCHES wxDebug OR CMAKE_BUILD_TYPE MATCHES wxRelease )
     elseif( CMAKE_BUILD_TYPE MATCHES wxRelease )
         set( CMAKE_BUILD_TYPE Release )
     endif()
+endif()
 
+# Set debug preprocessor define.
+if( CMAKE_BUILD_TYPE MATCHES Debug )
+    target_compile_definitions( MyFramework PRIVATE _DEBUG=1 )
 endif()
 
 # cotire (Compile time reducer)
