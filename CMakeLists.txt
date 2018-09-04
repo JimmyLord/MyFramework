@@ -39,10 +39,10 @@ if( CMAKE_SYSTEM_NAME MATCHES Windows )
     list( REMOVE_ITEM sourceFiles "${CMAKE_CURRENT_SOURCE_DIR}/MyFramework/SourceWindows/SoundPlayerSDL.cpp" )
 endif()
 
-# WxWidgets specific source files.
-if( CMAKE_BUILD_TYPE MATCHES wxDebug OR CMAKE_BUILD_TYPE MATCHES wxRelease )
-    file( GLOB_RECURSE widgetfiles "MyFramework/SourceWidgets/*.cpp" )
-    set( sourceFiles ${sourceFiles} ${widgetfiles} )
+# Editor specific source files.
+if( CMAKE_BUILD_TYPE MATCHES EditorDebug OR CMAKE_BUILD_TYPE MATCHES EditorRelease )
+    file( GLOB_RECURSE editorfiles "MyFramework/SourceEditor/*.cpp" )
+    set( sourceFiles ${sourceFiles} ${editorfiles} )
 endif()
 
 ###############################################################################
@@ -55,15 +55,13 @@ add_library( MyFramework STATIC ${sourceFiles} )
 # Framework include directories.
 target_include_directories( MyFramework PUBLIC
     "MyFramework/SourceCommon"
+	"MyFramework/SourceEditor"
     "MyFramework/SourceLinux"
-    "MyFramework/SourceWidgets"
     "Libraries/b2Settings"
     "Libraries/Box2D"
     "Libraries/cJSON"
     "Libraries/LodePNG"
     "Libraries/OpenSimplexInC"
-    "Libraries/wxWidgets/include"
-    "Libraries/wxWidgets/gtk-build-debug/lib/wx/include/gtk3-unicode-static-3.1"
 )
 
 ###############################################################################
@@ -87,20 +85,19 @@ if( CMAKE_SYSTEM_NAME MATCHES Windows )
 	add_definitions( -DUNICODE -D_UNICODE )
 endif()
 
-# WxWidgets specific settings.
-if( CMAKE_BUILD_TYPE MATCHES wxDebug OR CMAKE_BUILD_TYPE MATCHES wxRelease )
-    # Preprocessor defines.
-    target_compile_definitions( MyFramework PRIVATE MYFW_USING_WX=1 _FILE_OFFSET_BITS=64 __WXGTK__ )
+# Editor settings.
+if( CMAKE_BUILD_TYPE MATCHES EditorDebug OR CMAKE_BUILD_TYPE MATCHES EditorRelease )
+    target_compile_definitions( MyFramework PRIVATE MYFW_USING_IMGUI=1 MYFW_EDITOR=1 )
 
     # Set base CMake build type to debug or release.
-    if( CMAKE_BUILD_TYPE MATCHES wxDebug )
+    if( CMAKE_BUILD_TYPE MATCHES EditorDebug )
         set( CMAKE_BUILD_TYPE Debug )
-    elseif( CMAKE_BUILD_TYPE MATCHES wxRelease )
+    elseif( CMAKE_BUILD_TYPE MATCHES EditorRelease )
         set( CMAKE_BUILD_TYPE Release )
     endif()
 endif()
 
-# Set debug preprocessor define.
+# Debug settings.
 if( CMAKE_BUILD_TYPE MATCHES Debug )
     target_compile_definitions( MyFramework PRIVATE _DEBUG=1 )
 endif()
