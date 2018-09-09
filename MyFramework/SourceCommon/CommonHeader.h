@@ -50,7 +50,7 @@
 #pragma warning( 3 : 4263 ) // member function does not override any base class virtual member function
 #pragma warning( 3 : 4264 ) // no override available for virtual member function from base 'class'; function is hidden
 #pragma warning( 3 : 4265 ) // class has virtual functions, but destructor is not virtual
-#pragma warning( 3 : 4266 ) // no override available for virtual member function from base 'type'; function is hidden
+//#pragma warning( 3 : 4266 ) // no override available for virtual member function from base 'type'; function is hidden
 #pragma warning( 3 : 4287 ) // 'operator': unsigned/negative constant mismatch
 #pragma warning( 3 : 4289 ) // nonstandard extension used : 'var' : loop control variable declared in the for-loop is used outside the for-loop scope
 #pragma warning( 3 : 4296 ) // 'operator': expression is always false
