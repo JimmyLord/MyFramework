@@ -76,6 +76,8 @@ PFNGLBUFFERDATAPROC                 glBufferData = 0;
 PFNGLBUFFERSUBDATAPROC              glBufferSubData = 0;
 PFNGLDELETEBUFFERSPROC              glDeleteBuffers = 0;
 
+PFNGLBLENDEQUATIONPROC              glBlendEquation = 0;
+PFNGLBLENDEQUATIONSEPARATEPROC      glBlendEquationSeparate = 0;
 PFNGLBLENDFUNCSEPARATEPROC          glBlendFuncSeparate = 0;
 PFNGLBLENDCOLORPROC                 glBlendColor = 0;
 
@@ -169,6 +171,8 @@ void OpenGL_InitExtensions()
     glBufferSubData                 = (PFNGLBUFFERSUBDATAPROC)              wglGetProcAddress( "glBufferSubData" );
     glDeleteBuffers                 = (PFNGLDELETEBUFFERSPROC)              wglGetProcAddress( "glDeleteBuffers" );
 
+    glBlendEquation                 = (PFNGLBLENDEQUATIONPROC)              wglGetProcAddress( "glBlendEquation" );
+    glBlendEquationSeparate         = (PFNGLBLENDEQUATIONSEPARATEPROC)      wglGetProcAddress( "glBlendEquationSeparate" );
     glBlendFuncSeparate             = (PFNGLBLENDFUNCSEPARATEPROC)          wglGetProcAddress( "glBlendFuncSeparate" );
     glBlendColor                    = (PFNGLBLENDCOLORPROC)                 wglGetProcAddress( "glBlendColor" );
 

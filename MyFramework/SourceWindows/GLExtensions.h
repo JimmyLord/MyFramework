@@ -79,6 +79,8 @@ extern PFNGLBUFFERDATAPROC                  glBufferData;
 extern PFNGLBUFFERSUBDATAPROC               glBufferSubData;
 extern PFNGLDELETEBUFFERSPROC               glDeleteBuffers;
 
+extern PFNGLBLENDEQUATIONPROC               glBlendEquation;
+extern PFNGLBLENDEQUATIONSEPARATEPROC       glBlendEquationSeparate;
 extern PFNGLBLENDFUNCSEPARATEPROC           glBlendFuncSeparate;
 extern PFNGLBLENDCOLORPROC                  glBlendColor;
 
