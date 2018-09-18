@@ -65,7 +65,7 @@ public:
 #endif
 
     MaterialDefinition* CreateMaterial(MyFileObject* pFile);
-    MaterialDefinition* CreateMaterial(const char* name = 0);
+    MaterialDefinition* CreateMaterial(const char* name = 0, const char* relativePath = 0);
     MaterialDefinition* LoadMaterial(const char* fullpath);
     void ReloadMaterial(MaterialDefinition* pMaterial); // can only be called if file on disk changed and is being reloaded.
     MaterialDefinition* GetFirstMaterial();

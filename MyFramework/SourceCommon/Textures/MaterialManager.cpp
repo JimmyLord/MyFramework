@@ -176,7 +176,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
     return pMaterial;
 }
 
-MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
+MaterialDefinition* MaterialManager::CreateMaterial(const char* name, const char* relativePath)
 {
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
@@ -186,6 +186,12 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name)
     {
         pMaterial->m_UnsavedChanges = true;
         strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
+    }
+
+    if( relativePath != 0 )
+    {
+        pMaterial->SaveMaterial( relativePath );
+        CallMaterialCreatedCallbacks( pMaterial );
     }
 
 #if MYFW_USING_WX
