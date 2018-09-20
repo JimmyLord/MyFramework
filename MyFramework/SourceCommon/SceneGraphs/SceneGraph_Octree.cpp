@@ -346,8 +346,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 {
     // Draw all scene graph objects contained in this node.
 
-    // If node is not in frustum, return.
-    if( FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, 0 ) == false )
+    // If node is not in frustum and it's not the root node, return.
+    if( pOctreeNode != m_pRootNode && FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, 0 ) == false )
         return;
 
     for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
