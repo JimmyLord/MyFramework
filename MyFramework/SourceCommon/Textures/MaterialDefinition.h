@@ -91,6 +91,9 @@ public:
 
     MaterialDefinition& operator=(const MaterialDefinition& other);
 
+    // Seemingly useless wrapper of release to allow Lua to call release and avoid issues with multiple inheritance.
+    void Lua_Release() { Release(); }
+
     void ImportFromFile();
     void MoveAssociatedFilesToFrontOfFileList();
 
