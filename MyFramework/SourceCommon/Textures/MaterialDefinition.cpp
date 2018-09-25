@@ -440,11 +440,6 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
     //     which will reimport saved exposed uniform values.
     InitializeExposedUniformValues( true );
     
-    if( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
-    {
-        ImportFromFile();
-    }
-
 #if MYFW_USING_WX
     g_pPanelWatch->SetNeedsRefresh();
 #endif

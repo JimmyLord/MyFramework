@@ -45,6 +45,9 @@ public:
     TextureDefinition(bool freeonceloaded = false);
     virtual ~TextureDefinition();
 
+    // Seemingly useless wrapper of release to allow Lua to call release and avoid issues with multiple inheritance.
+    void Lua_Release() { Release(); }
+
     // TextureDefinition Getters
     bool IsFullyLoaded() { return m_FullyLoaded; }
 

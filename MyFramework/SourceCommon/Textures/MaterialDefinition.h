@@ -115,24 +115,31 @@ public:
     void ImportExposedUniformValues(cJSON* jMaterial);
     void ExportExposedUniformValues(cJSON* jMaterial);
 
-    void SetShader(ShaderGroup* pShader);
+    // Material Property Getters
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
-
-    void SetShaderInstanced(ShaderGroup* pShader);
     ShaderGroup* GetShaderInstanced() const { return m_pShaderGroupInstanced; }    
-
-    void SetTextureColor(TextureDefinition* pTexture);
     TextureDefinition* GetTextureColor() const { return m_pTextureColor; }
+    MaterialBlendType GetBlendType() { return m_BlendType; }
+
+    ColorByte GetColorAmbient() { return m_ColorAmbient; }
+    ColorByte GetColorDiffuse() { return m_ColorDiffuse; }
+    ColorByte GetColorSpecular() { return m_ColorSpecular; }
+    Vector2 GetUVScale() { return m_UVScale; }
+    Vector2 GetUVOffset() { return m_UVOffset; }
+
+    // Material Property Setters
+    void SetShader(ShaderGroup* pShader);
+    void SetShaderInstanced(ShaderGroup* pShader);
+    void SetTextureColor(TextureDefinition* pTexture);
+    void SetBlendType(MaterialBlendType transparenttype) { m_BlendType = transparenttype; }
 
     void SetColorAmbient(ColorByte color) { m_ColorAmbient = color; }
-    ColorByte GetColorAmbient() { return m_ColorAmbient; }
     void SetColorDiffuse(ColorByte color) { m_ColorDiffuse = color; }
-    ColorByte GetColorDiffuse() { return m_ColorDiffuse; }
     void SetColorSpecular(ColorByte color) { m_ColorSpecular = color; }
-    ColorByte GetColorSpecular() { return m_ColorSpecular; }
+    void SetUVScale(Vector2 scale) { m_UVScale = scale; }
+    void SetUVOffset(Vector2 offset) { m_UVOffset = offset; }
 
-    void SetBlendType(MaterialBlendType transparenttype) { m_BlendType = transparenttype; }
-    MaterialBlendType GetBlendType() { return m_BlendType; }
+    // Shader Property Getters
     bool IsTransparent(BaseShader* pShader);
     bool IsTransparent();
     bool IsEmissive(BaseShader* pShader);

@@ -190,8 +190,10 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name, const char
 
     if( relativePath != 0 )
     {
+#if MYFW_EDITOR
         pMaterial->SaveMaterial( relativePath );
         CallMaterialCreatedCallbacks( pMaterial );
+#endif
     }
 
 #if MYFW_USING_WX
