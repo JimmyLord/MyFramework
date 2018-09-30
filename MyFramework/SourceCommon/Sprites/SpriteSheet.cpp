@@ -43,7 +43,7 @@ SpriteSheet::~SpriteSheet()
     SAFE_DELETE_ARRAY( m_pSpriteNames );
     SAFE_DELETE_ARRAY( m_pSpriteUVs );
 
-    for( int i=0; i<m_NumSprites; i++ )
+    for( uint32 i=0; i<m_NumSprites; i++ )
     {
         if( m_pSprites && m_pSprites[i] )
         {
@@ -122,15 +122,22 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     m_CreateMaterials = creatematerials;
 
     pFile->Release();
+
+    if( pFile->IsFinishedLoading() )
+    {
+        FinishLoadingFile();
+    }
 }
 
-void SpriteSheet::Tick(float deltaTime)
+void SpriteSheet::FinishLoadingFile()
 {
     if( m_FullyLoaded )
+    {
         return;
+    }
 
     // parse json and create array of sprites.
-    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success && m_pMaterial->GetTextureColor()->IsFullyLoaded() )
+    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success )// && m_pMaterial->GetTextureColor()->IsFullyLoaded() )
     {
         cJSON* root = cJSON_Parse( m_pJSONFile->GetBuffer() );
 
@@ -391,6 +398,19 @@ void SpriteSheet::Tick(float deltaTime)
     }
 }
 
+void SpriteSheet::Tick(float deltaTime)
+{
+    if( m_FullyLoaded )
+    {
+        return;
+    }
+
+    if( m_pJSONFile->IsFinishedLoading() )
+    {
+        FinishLoadingFile();
+    }
+}
+
 void SpriteSheet::CreateSprites()
 {
     if( m_CreateSprites == false )
@@ -399,7 +419,7 @@ void SpriteSheet::CreateSprites()
     MyAssert( m_pSprites == 0 );
 
     m_pSprites = MyNew MySprite*[m_NumSprites];
-    for( int i=0; i<m_NumSprites; i++ )
+    for( uint32 i=0; i<m_NumSprites; i++ )
     {
         m_pSprites[i] = MyNew MySprite( false );
         m_pSprites[i]->SetMaterial( m_pMaterial );
@@ -417,7 +437,7 @@ void SpriteSheet::CreateMaterials(bool creatematerials)
 
     if( creatematerials )
     {
-        for( int i=0; i<m_NumSprites; i++ )
+        for( uint32 i=0; i<m_NumSprites; i++ )
         {
             m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( "SpriteSheet" );
             *m_pMaterialList[i] = *m_pMaterial;
@@ -425,7 +445,7 @@ void SpriteSheet::CreateMaterials(bool creatematerials)
     }
 }
 
-int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
+uint32 SpriteSheet::GetSpriteIndexByName(const char* name, ...)
 {
     MyAssert( name );
     if( name == 0 )
@@ -439,7 +459,7 @@ int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
     va_end(arg);
     buffer[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
 
-    for( int i=0; i<m_NumSprites; i++ )
+    for( uint32 i=0; i<m_NumSprites; i++ )
     {
         if( strcmp( &m_pSpriteNames[i*64], buffer ) == 0 )
         {
@@ -449,9 +469,9 @@ int SpriteSheet::GetSpriteIndexByName(const char* name, ...)
     return -1;
 }
 
-MySprite* SpriteSheet::GetSpriteByIndex(int index)
+MySprite* SpriteSheet::GetSpriteByIndex(uint32 index)
 {
-    MyAssert( index >= 0 && index < m_NumSprites );
+    MyAssert( index < m_NumSprites );
 
     return m_pSprites[index];
 }
@@ -470,7 +490,7 @@ MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
     va_end(arg);
     buffer[MAX_MESSAGE-1] = 0; // vsnprintf_s might do this, but docs are unclear
 
-    int index = GetSpriteIndexByName( buffer );
+    uint32 index = GetSpriteIndexByName( buffer );
     MyAssert( index != -1 );
 
     if( index == -1 )
@@ -503,4 +523,9 @@ void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float
 
     // actually create the sprites... everything should be loaded, so one tick should be enough.
     Tick( 0 );
+}
+
+const char* SpriteSheet::GetSpriteNameByIndex(uint32 index)
+{
+    return &m_pSpriteNames[index*64];
 }

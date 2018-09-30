@@ -25,7 +25,7 @@ protected:
 
     char* m_pSpriteNames;
     Vector4* m_pSpriteUVs;
-    int m_NumSprites;
+    uint32 m_NumSprites;
     MyFileObject* m_pJSONFile;
     MaterialDefinition* m_pMaterial;
 
@@ -51,21 +51,23 @@ public:
     void SetScale(float scale) { m_SpriteScale = scale; }
     virtual void Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
     virtual void Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials);
+    virtual void FinishLoadingFile();
     //virtual void Create(MaterialDefinition* pMaterial, bool createsprites, bool creatematerials);
     virtual void Tick(float deltaTime);
 
-    int GetNumSprites() { return m_NumSprites; }
+    uint32 GetNumSprites() { return m_NumSprites; }
 
-    int GetSpriteIndexByName(const char* name, ...);
-    MySprite* GetSpriteByIndex(int index);
+    uint32 GetSpriteIndexByName(const char* name, ...);
+    MySprite* GetSpriteByIndex(uint32 index);
     MySprite* GetSpriteByName(const char* name, ...);
 
     void CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float sx, float ex, float sy, float ey);
 
-    Vector4* GetSpriteUVs(int index) const { return &m_pSpriteUVs[index]; }
+    Vector4* GetSpriteUVs(uint32 index) const { return &m_pSpriteUVs[index]; }
 
     MaterialDefinition* GetSheetMaterial() { return m_pMaterial; }
-    MaterialDefinition* GetSpriteMaterial(int index) { MyAssert( m_pMaterialList ); return m_pMaterialList[index]; }
+    MaterialDefinition* GetSpriteMaterial(uint32 index) { MyAssert( m_pMaterialList ); return m_pMaterialList[index]; }
+    const char* GetSpriteNameByIndex(uint32 index);
 
     bool IsFullyLoaded() { return m_FullyLoaded; }
 };

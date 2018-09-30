@@ -73,6 +73,9 @@ public:
 
     void SetSourceFile(MyFileObject* pSourceFile);
 
+    void LoadAnimationControlFile(const char* buffer);
+    void LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration);
+
 #if MYFW_USING_WX
     enum RightClickOptions
     {
@@ -107,8 +110,6 @@ public:
 
     void SaveAnimationControlFile();
 #endif
-
-    void LoadAnimationControlFile(const char* buffer);
 };
 
 #endif //__My2DAnimInfo_H__

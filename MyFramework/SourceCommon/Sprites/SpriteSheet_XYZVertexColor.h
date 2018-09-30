@@ -30,7 +30,7 @@ public:
     virtual void CreateSprites()
     {
         m_pSprites = (MySpritePtr*)MyNew MySprite_XYZVertexColorPtr[m_NumSprites];
-        for( int i=0; i<m_NumSprites; i++ )
+        for( uint32 i=0; i<m_NumSprites; i++ )
         {
             m_pSprites[i] = MyNew MySprite_XYZVertexColor( false );
             m_pSprites[i]->SetMaterial( m_pMaterial );

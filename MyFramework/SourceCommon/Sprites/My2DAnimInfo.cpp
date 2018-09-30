@@ -111,6 +111,120 @@ void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
 #endif
 }
 
+void My2DAnimInfo::LoadAnimationControlFile(const char* buffer)
+{
+    MyAssert( buffer != 0 );
+    MyAssert( m_Animations.Count() == 0 );
+
+    // if the file doesn't exist, do nothing for now.
+    if( buffer == 0 )
+    {
+        MyAssert( m_Animations.Count() == 0 );
+    }
+    else
+    {
+        cJSON* jRoot = cJSON_Parse( buffer );
+
+        if( jRoot )
+        {
+            cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
+
+            int numanims = cJSON_GetArraySize( jAnimArray );
+#if MYFW_USING_WX
+            m_Animations.AllocateObjects( numanims > MAX_ANIMATIONS ? numanims : MAX_ANIMATIONS );
+#else
+            m_Animations.AllocateObjects( numanims );
+#endif
+            for( int i=0; i<numanims; i++ )
+            {
+                cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );
+
+                My2DAnimation* pAnim = MyNew My2DAnimation;
+                m_Animations.Add( pAnim );
+
+                cJSON* jName = cJSON_GetObjectItem( jAnim, "Name" );
+                if( jName )
+                {
+                    pAnim->SetName( jName->valuestring );
+                }
+
+                cJSON* jFrameArray = cJSON_GetObjectItem( jAnim, "Frames" );
+
+                int numframes = cJSON_GetArraySize( jFrameArray );
+#if MYFW_USING_WX
+                pAnim->m_Frames.AllocateObjects( numframes > MAX_FRAMES_IN_ANIMATION ? numframes : MAX_FRAMES_IN_ANIMATION );
+#else
+                pAnim->m_Frames.AllocateObjects( numframes );
+#endif
+                for( int i=0; i<numframes; i++ )
+                {
+                    cJSON* jFrame = cJSON_GetArrayItem( jFrameArray, i );
+
+                    My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame();
+                    pAnim->m_Frames.Add( pFrame );
+
+                    cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
+                    if( jMatName )
+                    {
+                        MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
+                        if( pMaterial )
+                        {
+                            pFrame->SetMaterial( pMaterial );
+                            pMaterial->Release();
+                        }
+                    }
+
+                    cJSONExt_GetFloat( jFrame, "Duration", &pFrame->m_Duration );
+                }
+            }
+        }
+
+        cJSON_Delete( jRoot );
+    }
+}
+
+void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration)
+{
+    MyAssert( pSpriteSheet != 0 );
+    MyAssert( pSpriteSheet->GetNumSprites() != 0 );
+    MyAssert( m_Animations.Count() == 0 );
+
+    int numanims = 0;
+
+    for( uint32 i=0; i<pSpriteSheet->GetNumSprites(); i++ )
+    {
+        // TODO: Calculate number of animations.
+        numanims = pSpriteSheet->GetNumSprites(); // plug
+    }
+
+    m_Animations.AllocateObjects( numanims );
+    for( int i=0; i<numanims; i++ )
+    {
+        unsigned int spriteIndex = 0; // plug
+
+        My2DAnimation* pAnim = MyNew My2DAnimation;
+        m_Animations.Add( pAnim );
+
+        // TODO: Determine name of animation.
+        const char* pName = pSpriteSheet->GetSpriteNameByIndex( spriteIndex );
+        pAnim->SetName( pName );
+
+        // TODO: Count frames in animation.
+        int numframes = 1; // plug
+
+        pAnim->m_Frames.AllocateObjects( numframes );
+
+        for( int frame=0; frame<numframes; frame++ )
+        {
+            My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame();
+            pAnim->m_Frames.Add( pFrame );
+            MaterialDefinition* pMaterial = pSpriteSheet->GetSpriteMaterial( frame );
+            pFrame->SetMaterial( pMaterial );
+            pFrame->m_Duration = duration;
+        }
+    }
+}
+
 #if MYFW_USING_WX
 void My2DAnimInfo::RefreshWatchWindow()
 {
@@ -324,75 +438,3 @@ void My2DAnimInfo::SaveAnimationControlFile()
     cJSONExt_free( jsonstr );
 }
 #endif
-
-void My2DAnimInfo::LoadAnimationControlFile(const char* buffer)
-{
-    MyAssert( buffer != 0 );
-    MyAssert( m_Animations.Count() == 0 );
-
-    // if the file doesn't exist, do nothing for now.
-    if( buffer == 0 )
-    {
-        MyAssert( m_Animations.Count() == 0 );
-    }
-    else
-    {
-        cJSON* jRoot = cJSON_Parse( buffer );
-
-        if( jRoot )
-        {
-            cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
-
-            int numanims = cJSON_GetArraySize( jAnimArray );
-#if MYFW_USING_WX
-            m_Animations.AllocateObjects( numanims > MAX_ANIMATIONS ? numanims : MAX_ANIMATIONS );
-#else
-            m_Animations.AllocateObjects( numanims );
-#endif
-            for( int i=0; i<numanims; i++ )
-            {
-                cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );
-
-                My2DAnimation* pAnim = MyNew My2DAnimation;
-                m_Animations.Add( pAnim );
-
-                cJSON* jName = cJSON_GetObjectItem( jAnim, "Name" );
-                if( jName )
-                {
-                    pAnim->SetName( jName->valuestring );
-                }
-
-                cJSON* jFrameArray = cJSON_GetObjectItem( jAnim, "Frames" );
-
-                int numframes = cJSON_GetArraySize( jFrameArray );
-#if MYFW_USING_WX
-                pAnim->m_Frames.AllocateObjects( numframes > MAX_FRAMES_IN_ANIMATION ? numframes : MAX_FRAMES_IN_ANIMATION );
-#else
-                pAnim->m_Frames.AllocateObjects( numframes );
-#endif
-                for( int i=0; i<numframes; i++ )
-                {
-                    cJSON* jFrame = cJSON_GetArrayItem( jFrameArray, i );
-
-                    My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame();
-                    pAnim->m_Frames.Add( pFrame );
-
-                    cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
-                    if( jMatName )
-                    {
-                        MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
-                        if( pMaterial )
-                        {
-                            pFrame->SetMaterial( pMaterial );
-                            pMaterial->Release();
-                        }
-                    }
-
-                    cJSONExt_GetFloat( jFrame, "Duration", &pFrame->m_Duration );
-                }
-            }
-        }
-
-        cJSON_Delete( jRoot );
-    }
-}
