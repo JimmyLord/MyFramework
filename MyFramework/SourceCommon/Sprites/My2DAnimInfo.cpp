@@ -183,47 +183,70 @@ void My2DAnimInfo::LoadAnimationControlFile(const char* buffer)
     }
 }
 
+#if MYFW_EDITOR
+struct spriteSheetAnimData
+{
+    std::string name;
+    int numFrames;
+    int spriteIndexOfFirstFrame;
+
+    spriteSheetAnimData(std::string n, int nf, int si) { name = n; numFrames = nf; spriteIndexOfFirstFrame = si; }
+};
+
 void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration)
 {
     MyAssert( pSpriteSheet != 0 );
     MyAssert( pSpriteSheet->GetNumSprites() != 0 );
     MyAssert( m_Animations.Count() == 0 );
 
-    int numanims = 0;
+    std::vector<spriteSheetAnimData> animations;
 
     for( uint32 i=0; i<pSpriteSheet->GetNumSprites(); i++ )
     {
-        // TODO: Calculate number of animations.
-        numanims = pSpriteSheet->GetNumSprites(); // plug
+        // Calculate number of animations.  Assumes filenames in json file are stored alphabetically.
+        std::string fullname = pSpriteSheet->GetSpriteNameByIndex( i );
+        size_t pos = fullname.find_last_of( '.' );
+        std::string fullnameWithoutExtension = fullname.substr( 0, pos );
+        pos = fullnameWithoutExtension.find_last_of( '_' );
+        std::string name = fullnameWithoutExtension.substr( 0, pos );
+        std::string number = fullnameWithoutExtension.substr( pos+1 );
+
+        int frame = atoi( number.c_str() );
+        if( frame == 0 || frame == 1 )
+        {
+            animations.push_back( spriteSheetAnimData( name, 1, i ) );
+        }
+        else
+        {
+            animations.back().numFrames = frame;
+        }
     }
 
-    m_Animations.AllocateObjects( numanims );
-    for( int i=0; i<numanims; i++ )
+    uint32 numAnims = animations.size();
+
+    m_Animations.AllocateObjects( numAnims );
+    for( uint32 i=0; i<numAnims; i++ )
     {
-        unsigned int spriteIndex = 0; // plug
+        int numframes = animations[i].numFrames;
+        unsigned int spriteIndex = animations[i].spriteIndexOfFirstFrame;
 
         My2DAnimation* pAnim = MyNew My2DAnimation;
         m_Animations.Add( pAnim );
 
-        // TODO: Determine name of animation.
-        const char* pName = pSpriteSheet->GetSpriteNameByIndex( spriteIndex );
-        pAnim->SetName( pName );
-
-        // TODO: Count frames in animation.
-        int numframes = 1; // plug
-
+        pAnim->SetName( animations[i].name.c_str() );
         pAnim->m_Frames.AllocateObjects( numframes );
 
         for( int frame=0; frame<numframes; frame++ )
         {
             My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame();
             pAnim->m_Frames.Add( pFrame );
-            MaterialDefinition* pMaterial = pSpriteSheet->GetSpriteMaterial( frame );
+            MaterialDefinition* pMaterial = pSpriteSheet->GetSpriteMaterial( spriteIndex + frame );
             pFrame->SetMaterial( pMaterial );
             pFrame->m_Duration = duration;
         }
     }
 }
+#endif //MYFW_EDITOR
 
 #if MYFW_USING_WX
 void My2DAnimInfo::RefreshWatchWindow()

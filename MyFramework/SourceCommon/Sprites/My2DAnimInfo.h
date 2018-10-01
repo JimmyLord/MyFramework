@@ -74,7 +74,10 @@ public:
     void SetSourceFile(MyFileObject* pSourceFile);
 
     void LoadAnimationControlFile(const char* buffer);
+
+#if MYFW_EDITOR
     void LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration);
+#endif
 
 #if MYFW_USING_WX
     enum RightClickOptions
