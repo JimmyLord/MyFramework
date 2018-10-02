@@ -73,10 +73,11 @@ public:
 
     void SetSourceFile(MyFileObject* pSourceFile);
 
-    void LoadAnimationControlFile(const char* buffer);
+    void LoadAnimationControlFile();
 
 #if MYFW_EDITOR
     void LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration);
+    void SaveAnimationControlFile();
 #endif
 
 #if MYFW_USING_WX
@@ -110,8 +111,6 @@ public:
     // Watch panel callbacks.
     static void StaticOnDropMaterial(void* pObjectPtr, int controlid, int x, int y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }
     void OnDropMaterial(int controlid, int x, int y);
-
-    void SaveAnimationControlFile();
 #endif
 };
 

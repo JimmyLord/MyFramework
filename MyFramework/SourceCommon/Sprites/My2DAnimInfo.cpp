@@ -111,8 +111,10 @@ void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
 #endif
 }
 
-void My2DAnimInfo::LoadAnimationControlFile(const char* buffer)
+void My2DAnimInfo::LoadAnimationControlFile()
 {
+    const char* buffer = m_pSourceFile->GetBuffer();
+
     MyAssert( buffer != 0 );
     MyAssert( m_Animations.Count() == 0 );
 
@@ -245,6 +247,59 @@ void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration
             pFrame->m_Duration = duration;
         }
     }
+}
+
+void My2DAnimInfo::SaveAnimationControlFile()
+{
+    //char filename[MAX_PATH];
+    //m_pSourceFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".my2daniminfo", filename, MAX_PATH );
+    const char* filename = m_pSourceFile->GetFullPath();
+
+    cJSON* jRoot = cJSON_CreateObject();
+
+    cJSON* jAnimArray = cJSON_CreateArray();
+    cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
+
+    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
+    {
+        My2DAnimation* pAnim = m_Animations[animindex];
+
+        cJSON* jAnim = cJSON_CreateObject();
+        cJSON_AddItemToArray( jAnimArray, jAnim );
+
+        cJSON_AddStringToObject( jAnim, "Name", pAnim->m_Name );
+
+        // write out frame info
+        cJSON* jFrameArray = cJSON_CreateArray();
+        cJSON_AddItemToObject( jAnim, "Frames", jFrameArray );
+
+        for( unsigned int frameindex=0; frameindex<pAnim->m_Frames.Count(); frameindex++ )
+        {
+            My2DAnimationFrame* pFrame = pAnim->m_Frames[frameindex];
+
+            cJSON* jFrame = cJSON_CreateObject();
+            cJSON_AddItemToArray( jFrameArray, jFrame );
+
+            if( pFrame->GetMaterial() )
+                cJSON_AddStringToObject( jFrame, "Material", pFrame->GetMaterial()->GetMaterialDescription() );
+            cJSON_AddNumberToObject( jFrame, "Duration", pFrame->m_Duration );
+        }
+    }
+
+    // dump animarray to disk
+    char* jsonstr = cJSON_Print( jRoot );
+    cJSON_Delete( jRoot );
+
+    FILE* pFile;
+#if MYFW_WINDOWS
+    fopen_s( &pFile, filename, "wb" );
+#else
+    pFile = fopen( filename, "wb" );
+#endif
+    fprintf( pFile, "%s", jsonstr );
+    fclose( pFile );
+
+    cJSONExt_free( jsonstr );
 }
 #endif //MYFW_EDITOR
 
@@ -407,57 +462,5 @@ void My2DAnimInfo::OnDropMaterial(int controlid, int x, int y)
             }
         }
     }
-}
-
-void My2DAnimInfo::SaveAnimationControlFile()
-{
-    char filename[MAX_PATH];
-    m_pSourceFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".my2daniminfo", filename, MAX_PATH );
-
-    cJSON* jRoot = cJSON_CreateObject();
-
-    cJSON* jAnimArray = cJSON_CreateArray();
-    cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
-
-    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
-    {
-        My2DAnimation* pAnim = m_Animations[animindex];
-
-        cJSON* jAnim = cJSON_CreateObject();
-        cJSON_AddItemToArray( jAnimArray, jAnim );
-
-        cJSON_AddStringToObject( jAnim, "Name", pAnim->m_Name );
-
-        // write out frame info
-        cJSON* jFrameArray = cJSON_CreateArray();
-        cJSON_AddItemToObject( jAnim, "Frames", jFrameArray );
-
-        for( unsigned int frameindex=0; frameindex<pAnim->m_Frames.Count(); frameindex++ )
-        {
-            My2DAnimationFrame* pFrame = pAnim->m_Frames[frameindex];
-
-            cJSON* jFrame = cJSON_CreateObject();
-            cJSON_AddItemToArray( jFrameArray, jFrame );
-
-            if( pFrame->GetMaterial() )
-                cJSON_AddStringToObject( jFrame, "Material", pFrame->GetMaterial()->GetMaterialDescription() );
-            cJSON_AddNumberToObject( jFrame, "Duration", pFrame->m_Duration );
-        }
-    }
-
-    // dump animarray to disk
-    char* jsonstr = cJSON_Print( jRoot );
-    cJSON_Delete( jRoot );
-
-    FILE* pFile;
-#if MYFW_WINDOWS
-    fopen_s( &pFile, filename, "wb" );
-#else
-    pFile = fopen( filename, "wb" );
-#endif
-    fprintf( pFile, "%s", jsonstr );
-    fclose( pFile );
-
-    cJSONExt_free( jsonstr );
 }
 #endif
