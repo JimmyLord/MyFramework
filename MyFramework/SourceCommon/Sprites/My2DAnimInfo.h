@@ -14,6 +14,7 @@ class My2DAnimationFrame
 {
     friend class My2DAnimation;
     friend class My2DAnimInfo;
+    friend class EditorMainFrame_ImGui;
 
 protected:
     MaterialDefinition* m_pMaterial;
@@ -36,6 +37,7 @@ public:
 class My2DAnimation
 {
     friend class My2DAnimInfo;
+    friend class EditorMainFrame_ImGui;
 
 protected:
     static const int MAX_ANIMATION_NAME_LEN = 32;
@@ -44,6 +46,7 @@ protected:
     MyList<My2DAnimationFrame*> m_Frames;
 
 public:
+    const char* GetName() { return m_Name; }
     void SetName(const char* name);
 
     uint32 GetFrameCount();
@@ -56,6 +59,9 @@ class My2DAnimInfo
 : public wxEvtHandler
 #endif
 {
+    friend class EditorMainFrame_ImGui;
+
+public:
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
     static const unsigned int MAX_FRAMES_IN_ANIMATION = 10; // TODO: fix this hardcodedness
 
@@ -71,6 +77,7 @@ public:
     My2DAnimation* GetAnimationByIndex(uint32 animindex);
     My2DAnimation* GetAnimationByIndexClamped(uint32 animindex);
 
+    MyFileObject* GetSourceFile() { return m_pSourceFile; }
     void SetSourceFile(MyFileObject* pSourceFile);
 
     void LoadAnimationControlFile();

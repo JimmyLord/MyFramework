@@ -275,11 +275,13 @@ void SpriteSheet::FinishLoadingFile()
                                 // Load the existing material if it exists
                                 m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
 #endif
-
-                                *m_pMaterialList[i] = *m_pMaterial;
-
                                 MyAssert( m_pMaterialList[i] );
 
+                                // Copy all base material properties into material for each sprite. This doesn't affect file info stored in material.
+                                // TODO: Don't use the equal operator for this...
+                                *m_pMaterialList[i] = *m_pMaterial;
+
+                                // Update uv offset and scale for each sprite.
                                 Vector4 uvs = m_pSpriteUVs[i];
                                 m_pMaterialList[i]->m_UVScale.Set( uvs.y - uvs.x, uvs.w - uvs.z );
                                 m_pMaterialList[i]->m_UVOffset.Set( uvs.x, uvs.z );
