@@ -18,17 +18,19 @@ FileManager* g_pFileManager = 0;
 FileManager::FileManager()
 {
 #if USE_PTHREAD && !MYFW_NACL
-    for( int threadid=0; threadid<1; threadid++ )
+    for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        pthread_mutex_init( &m_FileIOThreadLocks[threadid], 0 );
-        pthread_mutex_lock( &m_FileIOThreadLocks[threadid] );
-        m_FileIOThreadIsLocked[threadid] = true;
+        ThreadObject* pThread = &m_Threads[threadIndex];
 
-        pthread_create( &m_FileIOThreads[threadid], 0, &Thread_FileIO, this );
+        pthread_mutex_init( &pThread->m_FileIOThreadLocks, 0 );
+        pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
+        pThread->m_FileIOThreadIsLocked = true;
 
-        m_KillFileIOThread[threadid] = 0;
-        m_pLastFileLoadedByThread[threadid] = 0;
-        m_pFileThisFileIOThreadIsLoading[threadid] = 0;
+        pthread_create( &pThread->m_FileIOThreads, 0, &Thread_FileIO, this );
+
+        pThread->m_KillFileIOThread = 0;
+        pThread->m_pLastFileLoadedByThread = 0;
+        pThread->m_pFileThisFileIOThreadIsLoading = 0;
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 
@@ -50,20 +52,24 @@ FileManager::~FileManager()
 
 #if USE_PTHREAD && !MYFW_NACL
     // grab the thread mutex... small chance we have to wait for a file to finish loading.
-    for( int threadid=0; threadid<1; threadid++ )
+    for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        if( m_FileIOThreadIsLocked[threadid] == false )
-            pthread_mutex_lock( &m_FileIOThreadLocks[threadid] );
+        ThreadObject* pThread = &m_Threads[threadIndex];
+
+        if( pThread->m_FileIOThreadIsLocked == false )
+            pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
 
         // wait for the thread to end.
-        m_KillFileIOThread[threadid] = true;
-        pthread_mutex_unlock( &m_FileIOThreadLocks[threadid] );
-        pthread_join( m_FileIOThreads[threadid], 0 );
+        pThread->m_KillFileIOThread = true;
+        pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
+        pthread_join( pThread->m_FileIOThreads, 0 );
     }
 
-    for( int threadid=0; threadid<1; threadid++ )
+    for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        pthread_mutex_destroy( &m_FileIOThreadLocks[threadid] );
+        ThreadObject* pThread = &m_Threads[threadIndex];
+
+        pthread_mutex_destroy( &pThread->m_FileIOThreadLocks );
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 }
@@ -73,27 +79,28 @@ void* FileManager::Thread_FileIO(void* obj)
 {
     FileManager* pthis = (FileManager*)obj;
 
-    int threadid = 0; // TODO: have filemanager pass in a proper threadid.
+    int threadIndex = 0; // TODO: have filemanager pass in a proper threadid.
+    ThreadObject* pThread = &pthis->m_Threads[threadIndex];
 
     while( 1 )
     {
-        pthread_mutex_lock( &pthis->m_FileIOThreadLocks[threadid] );
+        pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
 
-        if( pthis->m_pFileThisFileIOThreadIsLoading[threadid] )
+        if( pThread->m_pFileThisFileIOThreadIsLoading )
         {
-            while( pthis->m_pFileThisFileIOThreadIsLoading[threadid]->m_FileLoadStatus == FileLoadStatus_Loading )
+            while( pThread->m_pFileThisFileIOThreadIsLoading->m_FileLoadStatus == FileLoadStatus_Loading )
             {
-                pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Tick();
+                pThread->m_pFileThisFileIOThreadIsLoading->Tick();
             }
 
             // Remove the ref that was preventing this file from being unloaded while in the load thread.
-            pthis->m_pFileThisFileIOThreadIsLoading[threadid]->Release();
-            pthis->m_pFileThisFileIOThreadIsLoading[threadid] = 0;
+            pThread->m_pFileThisFileIOThreadIsLoading->Release();
+            pThread->m_pFileThisFileIOThreadIsLoading = 0;
         }
 
-        pthread_mutex_unlock( &pthis->m_FileIOThreadLocks[threadid] );
+        pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
 
-        if( pthis->m_KillFileIOThread[threadid] )
+        if( pThread->m_KillFileIOThread )
             break;
     }
 
@@ -271,32 +278,33 @@ void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
 void FileManager::Tick()
 {
 #if USE_PTHREAD && !MYFW_NACL
-    int threadindex = 0;
+    int threadIndex = 0;
+    ThreadObject* pThread = &m_Threads[threadIndex];
 
     // if there are no files to load, grab the mutex to lock the loading thread until there are.
-    if( m_pFileThisFileIOThreadIsLoading[threadindex] == 0 )
+    if( pThread->m_pFileThisFileIOThreadIsLoading == 0 )
     {
-        if( m_FileIOThreadIsLocked[threadindex] == false ) // if we don't already have the lock, grab it.
+        if( pThread->m_FileIOThreadIsLocked == false ) // if we don't already have the lock, grab it.
         {
-            pthread_mutex_lock( &m_FileIOThreadLocks[threadindex] );
-            m_FileIOThreadIsLocked[threadindex] = true;
+            pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
+            pThread->m_FileIOThreadIsLocked = true;
         }
     }
 
     // if we don't own the mutex for the fileio thread, then return
-    if( m_FileIOThreadIsLocked[threadindex] == false )
+    if( pThread->m_FileIOThreadIsLocked == false )
         return;
 
     // The previously loading file is now loaded, mark it as successfully loaded, will "FinishSuccessfullyLoadingFile" below
-    if( m_pLastFileLoadedByThread[threadindex] )
+    if( pThread->m_pLastFileLoadedByThread )
     {
         // if the file was successfully loaded by the other thread, then mark it loaded and call it's callbacks.
-        if( m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
+        if( pThread->m_pLastFileLoadedByThread->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
         {
-            m_pLastFileLoadedByThread[threadindex]->m_FileLoadStatus = FileLoadStatus_Success;
+            pThread->m_pLastFileLoadedByThread->m_FileLoadStatus = FileLoadStatus_Success;
         }
 
-        m_pLastFileLoadedByThread[threadindex] = 0;
+        pThread->m_pLastFileLoadedByThread = 0;
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 
@@ -304,7 +312,7 @@ void FileManager::Tick()
     {
 #if USE_PTHREAD && !MYFW_NACL
         // the file being loaded should be 0 if we have the mutex.
-        MyAssert( m_pFileThisFileIOThreadIsLoading[threadindex] == 0 );
+        MyAssert( pThread->m_pFileThisFileIOThreadIsLoading == 0 );
 #endif //USE_PTHREAD && !MYFW_NACL
 
         // continue to tick any files still in the "loading" queue.
@@ -338,14 +346,14 @@ void FileManager::Tick()
             {
 #if USE_PTHREAD && !MYFW_NACL
                 // release the mutex so the fileio thread can load the file we want.
-                m_pLastFileLoadedByThread[threadindex] = pFile;
-                m_pFileThisFileIOThreadIsLoading[threadindex] = pFile;
+                pThread->m_pLastFileLoadedByThread = pFile;
+                pThread->m_pFileThisFileIOThreadIsLoading = pFile;
                 
                 // Add a ref to prevent the file from being unloaded while in the load thread.
-                m_pFileThisFileIOThreadIsLoading[threadindex]->AddRef();
+                pThread->m_pFileThisFileIOThreadIsLoading->AddRef();
                 
-                pthread_mutex_unlock( &m_FileIOThreadLocks[threadindex] );
-                m_FileIOThreadIsLocked[threadindex] = false;
+                pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
+                pThread->m_FileIOThreadIsLocked = false;
 #else
                 {
 #if !MYFW_NACL

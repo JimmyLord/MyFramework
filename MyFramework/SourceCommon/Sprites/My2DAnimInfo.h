@@ -54,9 +54,9 @@ public:
     My2DAnimationFrame* GetFrameByIndexClamped(uint32 frameindex);
 };
 
-class My2DAnimInfo
+class My2DAnimInfo : public RefCount
 #if MYFW_USING_WX
-: public wxEvtHandler
+, public wxEvtHandler
 #endif
 {
     friend class EditorMainFrame_ImGui;

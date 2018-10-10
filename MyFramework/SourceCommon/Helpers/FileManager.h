@@ -28,18 +28,24 @@ typedef void (*FileManager_Editor_OnFindAllReferences_CallbackFunction)(void* pO
 
 class FileManager
 {
+    struct ThreadObject
+    {
+        pthread_t m_FileIOThreads;
+        pthread_mutex_t m_FileIOThreadLocks;
+        bool m_FileIOThreadIsLocked;
+        bool m_KillFileIOThread;
+
+        MyFileObject* m_pLastFileLoadedByThread;
+        MyFileObject* m_pFileThisFileIOThreadIsLoading;
+    };
+
 protected:
     CPPListHead m_FilesLoaded;
     CPPListHead m_FilesStillLoading;
 
 protected:
 #if USE_PTHREAD
-    pthread_t m_FileIOThreads[1]; // TODO: there should be one of these for each file system in use.
-    pthread_mutex_t m_FileIOThreadLocks[1];
-    bool m_FileIOThreadIsLocked[1];
-    bool m_KillFileIOThread[1];
-    MyFileObject* m_pLastFileLoadedByThread[1];
-    MyFileObject* m_pFileThisFileIOThreadIsLoading[1];
+    ThreadObject m_Threads[1]; // TODO: there should be one of these for each file system in use.
 
     static void* Thread_FileIO(void* obj);
 #endif //USE_PTHREAD
