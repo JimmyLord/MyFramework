@@ -28,15 +28,19 @@ typedef void (*FileManager_Editor_OnFindAllReferences_CallbackFunction)(void* pO
 
 class FileManager
 {
-    struct ThreadObject
+    struct FileIOThreadObject
     {
-        pthread_t m_FileIOThreads;
-        pthread_mutex_t m_FileIOThreadLocks;
-        bool m_FileIOThreadIsLocked;
+        // Thread object.
+        pthread_t m_FileIOThread;
+
+        // General thread control.  The mutex will be owned by the thread when it's loading a file.
+        pthread_mutex_t m_Mutex_FileLoading;
         bool m_KillFileIOThread;
 
-        MyFileObject* m_pLastFileLoadedByThread;
-        MyFileObject* m_pFileThisFileIOThreadIsLoading;
+        // Lists of files used to communicate between main thread and file io thread.
+        pthread_mutex_t m_Mutex_FileLists;
+        CPPListHead m_FilesToLoad;
+        CPPListHead m_FilesFinishedLoading;
     };
 
 protected:
@@ -45,7 +49,7 @@ protected:
 
 protected:
 #if USE_PTHREAD
-    ThreadObject m_Threads[1]; // TODO: there should be one of these for each file system in use.
+    FileIOThreadObject m_Threads[1]; // TODO: there should be one of these for each file system in use.
 
     static void* Thread_FileIO(void* obj);
 #endif //USE_PTHREAD

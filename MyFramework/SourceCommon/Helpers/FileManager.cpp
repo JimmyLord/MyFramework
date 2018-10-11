@@ -20,17 +20,14 @@ FileManager::FileManager()
 #if USE_PTHREAD && !MYFW_NACL
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        ThreadObject* pThread = &m_Threads[threadIndex];
+        FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-        pthread_mutex_init( &pThread->m_FileIOThreadLocks, 0 );
-        pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
-        pThread->m_FileIOThreadIsLocked = true;
+        pthread_mutex_init( &pThread->m_Mutex_FileLoading, 0 );
+        pthread_mutex_init( &pThread->m_Mutex_FileLists, 0 );
 
-        pthread_create( &pThread->m_FileIOThreads, 0, &Thread_FileIO, this );
+        pthread_create( &pThread->m_FileIOThread, 0, &Thread_FileIO, this );
 
-        pThread->m_KillFileIOThread = 0;
-        pThread->m_pLastFileLoadedByThread = 0;
-        pThread->m_pFileThisFileIOThreadIsLoading = 0;
+        pThread->m_KillFileIOThread = false;
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 
@@ -48,28 +45,26 @@ FileManager::~FileManager()
     PrintListOfOpenFiles();
     MyAssert( m_FilesLoaded.GetHead() == 0 );
     MyAssert( m_FilesStillLoading.GetHead() == 0 );
-    //FreeAllFiles();
 
 #if USE_PTHREAD && !MYFW_NACL
-    // grab the thread mutex... small chance we have to wait for a file to finish loading.
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        ThreadObject* pThread = &m_Threads[threadIndex];
+        FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-        if( pThread->m_FileIOThreadIsLocked == false )
-            pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
+        // Grab the thread mutex.  There's a chance we have to wait for a file to finish loading.
+        pthread_mutex_lock( &pThread->m_Mutex_FileLoading );
 
-        // wait for the thread to end.
+        // Wait for the thread to end.
         pThread->m_KillFileIOThread = true;
-        pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
-        pthread_join( pThread->m_FileIOThreads, 0 );
+        pthread_mutex_unlock( &pThread->m_Mutex_FileLoading );
+        pthread_join( pThread->m_FileIOThread, 0 );
     }
 
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
-        ThreadObject* pThread = &m_Threads[threadIndex];
+        FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-        pthread_mutex_destroy( &pThread->m_FileIOThreadLocks );
+        pthread_mutex_destroy( &pThread->m_Mutex_FileLoading );
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 }
@@ -80,25 +75,32 @@ void* FileManager::Thread_FileIO(void* obj)
     FileManager* pthis = (FileManager*)obj;
 
     int threadIndex = 0; // TODO: have filemanager pass in a proper threadid.
-    ThreadObject* pThread = &pthis->m_Threads[threadIndex];
+    FileIOThreadObject* pThread = &pthis->m_Threads[threadIndex];
 
     while( 1 )
     {
-        pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
+        pthread_mutex_lock( &pThread->m_Mutex_FileLists );
+        MyFileObject* pFileLoading = (MyFileObject*)pThread->m_FilesToLoad.GetHead();
+        pthread_mutex_unlock( &pThread->m_Mutex_FileLists );
 
-        if( pThread->m_pFileThisFileIOThreadIsLoading )
+        if( pFileLoading )
         {
-            while( pThread->m_pFileThisFileIOThreadIsLoading->m_FileLoadStatus == FileLoadStatus_Loading )
+            pthread_mutex_lock( &pThread->m_Mutex_FileLoading );
+        
+            while( pFileLoading->m_FileLoadStatus == FileLoadStatus_Loading )
             {
-                pThread->m_pFileThisFileIOThreadIsLoading->Tick();
+                pFileLoading->Tick();
             }
 
-            // Remove the ref that was preventing this file from being unloaded while in the load thread.
-            pThread->m_pFileThisFileIOThreadIsLoading->Release();
-            pThread->m_pFileThisFileIOThreadIsLoading = 0;
-        }
+            pthread_mutex_lock( &pThread->m_Mutex_FileLists );
+            pThread->m_FilesFinishedLoading.MoveTail( pFileLoading );
+            pthread_mutex_unlock( &pThread->m_Mutex_FileLists );
 
-        pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
+            // Remove the ref that was preventing this file from being unloaded while in the load thread.
+            pFileLoading->Release();
+
+            pthread_mutex_unlock( &pThread->m_Mutex_FileLoading );
+        }
 
         if( pThread->m_KillFileIOThread )
             break;
@@ -128,13 +130,6 @@ void FileManager::FreeFile(MyFileObject* pFile)
     MyAssert( pFile );
     pFile->Release(); // file's are refcounted, so release a reference to it.
 }
-
-//void FileManager::FreeAllFiles()
-//{
-//    // TODO: remove this function... why did I put this here..
-//    MyAssert( m_FilesLoaded.GetHead() == 0 );
-//    MyAssert( m_FilesStillLoading.GetHead() == 0 );
-//}
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 {
@@ -279,42 +274,31 @@ void FileManager::Tick()
 {
 #if USE_PTHREAD && !MYFW_NACL
     int threadIndex = 0;
-    ThreadObject* pThread = &m_Threads[threadIndex];
+    FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-    // if there are no files to load, grab the mutex to lock the loading thread until there are.
-    if( pThread->m_pFileThisFileIOThreadIsLoading == 0 )
+    // Finish loading files.
+    pthread_mutex_lock( &pThread->m_Mutex_FileLists );
+    MyFileObject* pFile = (MyFileObject*)pThread->m_FilesFinishedLoading.GetHead();
+
+    while( pFile )
     {
-        if( pThread->m_FileIOThreadIsLocked == false ) // if we don't already have the lock, grab it.
-        {
-            pthread_mutex_lock( &pThread->m_FileIOThreadLocks );
-            pThread->m_FileIOThreadIsLocked = true;
-        }
-    }
+        // The previously loading file is now loaded, mark it as successfully loaded, will "FinishSuccessfullyLoadingFile" below.
+        m_FilesStillLoading.MoveTail( pFile );
 
-    // if we don't own the mutex for the fileio thread, then return
-    if( pThread->m_FileIOThreadIsLocked == false )
-        return;
-
-    // The previously loading file is now loaded, mark it as successfully loaded, will "FinishSuccessfullyLoadingFile" below
-    if( pThread->m_pLastFileLoadedByThread )
-    {
-        // if the file was successfully loaded by the other thread, then mark it loaded and call it's callbacks.
-        if( pThread->m_pLastFileLoadedByThread->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
+        // If the file was successfully loaded by the other thread, then mark it loaded and call it's callbacks.
+        if( pFile->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
         {
-            pThread->m_pLastFileLoadedByThread->m_FileLoadStatus = FileLoadStatus_Success;
+            pFile->m_FileLoadStatus = FileLoadStatus_Success;
         }
 
-        pThread->m_pLastFileLoadedByThread = 0;
+        // Get the next file from the list.
+        pFile = (MyFileObject*)pThread->m_FilesFinishedLoading.GetHead();
     }
+    pthread_mutex_unlock( &pThread->m_Mutex_FileLists );
 #endif //USE_PTHREAD && !MYFW_NACL
 
     // check if there are more files to load.
     {
-#if USE_PTHREAD && !MYFW_NACL
-        // the file being loaded should be 0 if we have the mutex.
-        MyAssert( pThread->m_pFileThisFileIOThreadIsLoading == 0 );
-#endif //USE_PTHREAD && !MYFW_NACL
-
         // continue to tick any files still in the "loading" queue.
         MyFileObject* pNextFile;
         for( MyFileObject* pFile = (MyFileObject*)m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
@@ -345,15 +329,12 @@ void FileManager::Tick()
             else
             {
 #if USE_PTHREAD && !MYFW_NACL
-                // release the mutex so the fileio thread can load the file we want.
-                pThread->m_pLastFileLoadedByThread = pFile;
-                pThread->m_pFileThisFileIOThreadIsLoading = pFile;
-                
                 // Add a ref to prevent the file from being unloaded while in the load thread.
-                pThread->m_pFileThisFileIOThreadIsLoading->AddRef();
-                
-                pthread_mutex_unlock( &pThread->m_FileIOThreadLocks );
-                pThread->m_FileIOThreadIsLocked = false;
+                pFile->AddRef();
+
+                pthread_mutex_lock( &pThread->m_Mutex_FileLists );
+                pThread->m_FilesToLoad.MoveTail( pFile );
+                pthread_mutex_unlock( &pThread->m_Mutex_FileLists );
 #else
                 {
 #if !MYFW_NACL
