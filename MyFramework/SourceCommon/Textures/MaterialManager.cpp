@@ -42,8 +42,11 @@ MaterialManager::~MaterialManager()
 void MaterialManager::Tick()
 {
     // TODO: free file once the material is loaded... or not and check for updates on alt-tab
-    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    CPPListNode* pNextNode;
+    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNextNode )
     {
+        pNextNode = pNode->GetNext();
+
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
         MyAssert( pMaterial->m_pFile );
