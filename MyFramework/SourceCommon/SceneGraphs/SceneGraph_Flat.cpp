@@ -79,6 +79,10 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
+void SceneGraph_Flat::ObjectMoved(SceneGraphObject* pObject)
+{
+}
+
 void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
     checkGlError( "Start of SceneGraph_Flat::Draw()" );

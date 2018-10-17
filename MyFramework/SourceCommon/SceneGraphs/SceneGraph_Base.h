@@ -60,6 +60,8 @@ public:
 
     void Clear();
 
+    void ObjectMoved();
+
     // Getters
     SceneGraphFlags GetFlags() { return m_Flags; }
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
@@ -87,6 +89,8 @@ public:
     virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, unsigned int layers, void* pUserData);
     virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
+
+    virtual void ObjectMoved(SceneGraphObject* pObject) = 0;
 
     bool ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender);
     virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc) = 0;

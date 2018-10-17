@@ -142,7 +142,7 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
         if( visible == false ) // all points are on outside of plane, don't draw object
             break;
 
-        // check if all 8 points are greater than the -w extent of it's axis
+        // check if all 8 points are greater than the w extent of it's axis
         visible = false;
         for( int i=0; i<8; i++ )
         {
@@ -328,6 +328,13 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
 
     pObject->Clear();
     m_pObjectPool.ReturnObjectToPool( pObject );
+}
+
+void SceneGraph_Octree::ObjectMoved(SceneGraphObject* pObject)
+{
+    // Move any object that moves to the root of the octree.
+    // TODO: Better.
+    m_pRootNode->m_Renderables.MoveTail( pObject );
 }
 
 void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
