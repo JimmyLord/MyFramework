@@ -121,7 +121,7 @@ char* MyStrIStr(const char* haystack, const char* needle, unsigned char extraNee
     {
         const char* h = haystack;
         const char* n = needle;
-        while( tolower( (unsigned char)*h ) == tolower( (unsigned char)*n ) && n != 0 && *n != extraNeedleTerminator )
+        while( tolower( (unsigned char)*h ) == tolower( (unsigned char)*n ) && *n != 0 && *n != extraNeedleTerminator )
         {
             h++;
             n++;
