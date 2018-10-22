@@ -131,13 +131,15 @@ public:
     void SetShader(ShaderGroup* pShader);
     void SetShaderInstanced(ShaderGroup* pShader);
     void SetTextureColor(TextureDefinition* pTexture);
-    void SetBlendType(MaterialBlendType transparenttype) { m_BlendType = transparenttype; }
+    void SetBlendType(MaterialBlendType transparenttype);
 
-    void SetColorAmbient(ColorByte color) { m_ColorAmbient = color; }
-    void SetColorDiffuse(ColorByte color) { m_ColorDiffuse = color; }
-    void SetColorSpecular(ColorByte color) { m_ColorSpecular = color; }
-    void SetUVScale(Vector2 scale) { m_UVScale = scale; }
-    void SetUVOffset(Vector2 offset) { m_UVOffset = offset; }
+    void SetColorAmbient(ColorByte color);
+    void SetColorDiffuse(ColorByte color);
+    void SetColorSpecular(ColorByte color);
+    void SetUVScale(Vector2 scale);
+    void SetUVOffset(Vector2 offset);
+
+    void MarkDirty() { m_UnsavedChanges = true; }
 
     // Shader Property Getters
     bool IsTransparent(BaseShader* pShader);

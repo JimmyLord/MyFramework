@@ -78,6 +78,8 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiff
     SetShader( pShader );
 
     m_ColorDiffuse = colordiffuse;
+
+    m_UnsavedChanges = false;
 }
 
 void MaterialDefinition::Init()
@@ -291,6 +293,8 @@ void MaterialDefinition::ImportFromFile()
     }
 
     cJSON_Delete( jRoot );
+
+    m_UnsavedChanges = false;
 }
 
 void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
@@ -393,6 +397,8 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
 {
     if( pShader == m_pShaderGroup )
         return;
+
+    m_UnsavedChanges = true;
 
     if( pShader )
         pShader->AddRef();
@@ -648,6 +654,8 @@ void MaterialDefinition::ExportExposedUniformValues(cJSON* jMaterial)
 
 void MaterialDefinition::SetShaderInstanced(ShaderGroup* pShader)
 {
+    m_UnsavedChanges = true;
+
     if( pShader )
         pShader->AddRef();
     SAFE_RELEASE( m_pShaderGroupInstanced );
@@ -656,10 +664,48 @@ void MaterialDefinition::SetShaderInstanced(ShaderGroup* pShader)
 
 void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
 {
+    m_UnsavedChanges = true;
+
     if( pTexture )
         pTexture->AddRef();
     SAFE_RELEASE( m_pTextureColor );
     m_pTextureColor = pTexture;
+}
+
+void MaterialDefinition::SetBlendType(MaterialBlendType transparenttype)
+{
+    m_UnsavedChanges = true;
+    m_BlendType = transparenttype;
+}
+
+void MaterialDefinition::SetColorAmbient(ColorByte color)
+{
+    m_UnsavedChanges = true;
+    m_ColorAmbient = color;
+}
+
+void MaterialDefinition::SetColorDiffuse(ColorByte color)
+{
+    m_UnsavedChanges = true;
+    m_ColorDiffuse = color;
+}
+
+void MaterialDefinition::SetColorSpecular(ColorByte color)
+{
+    m_UnsavedChanges = true;
+    m_ColorSpecular = color;
+}
+
+void MaterialDefinition::SetUVScale(Vector2 scale)
+{
+    m_UnsavedChanges = true;
+    m_UVScale = scale;
+}
+
+void MaterialDefinition::SetUVOffset(Vector2 offset)
+{
+    m_UnsavedChanges = true;
+    m_UVOffset = offset;
 }
 
 bool MaterialDefinition::IsTransparent(BaseShader* pShader)
@@ -1278,5 +1324,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
             m_pFile->UpdateTimestamp();
         }
     }
+
+    m_UnsavedChanges = false;
 }
 #endif //MYFW_EDITOR

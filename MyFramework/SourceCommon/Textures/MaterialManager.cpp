@@ -128,7 +128,7 @@ void MaterialManager::SaveAllMaterials(bool saveunchanged)
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        //if( pMaterial->m_UnsavedChanges || saveunchanged )
+        if( pMaterial->m_UnsavedChanges || saveunchanged )
         {
             pMaterial->SaveMaterial( 0 );
         }
