@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -76,10 +76,11 @@ void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocat
         // Pointer to allocation not freed: ((char*)obj)+sizeof(MemObject)
 
         LOGInfo( LOGTag, "%s(%d):(%d) %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
-        if( AssertOnAnyAllocation )
-            MyAssert( false );
     }
     LOGInfo( LOGTag, "End dumping unfreed memory allocations.\n" );
+
+    if( AssertOnAnyAllocation && pList->m_Allocations.GetHead() != 0 )
+        MyAssert( false );
 
     pthread_mutex_unlock( &g_AllocationMutex );
 #endif
@@ -199,7 +200,7 @@ void* operator new(size_t size, char* file, unsigned long line)
         mo->Prev = 0;
     }
     else
-        g_pAllocationList->m_Allocations.AddHead( mo );
+        g_pAllocationList->m_Allocations.AddTail( mo );
 
     if( mo->m_file == 0 )
     {
@@ -255,7 +256,7 @@ void* operator new[](size_t size, char* file, unsigned long line)
         mo->Prev = 0;
     }
     else
-        g_pAllocationList->m_Allocations.AddHead( mo );
+        g_pAllocationList->m_Allocations.AddTail( mo );
 
     if( mo->m_file == 0 )
     {
@@ -313,7 +314,7 @@ void* operator new(size_t size)
         mo->Prev = 0;
     }
     else
-        g_pAllocationList->m_Allocations.AddHead( mo );
+        g_pAllocationList->m_Allocations.AddTail( mo );
 
     if( mo->m_file == 0 )
     {
@@ -414,7 +415,7 @@ void* operator new[](size_t size)
         mo->Prev = 0;
     }
     else
-        g_pAllocationList->m_Allocations.AddHead( mo );
+        g_pAllocationList->m_Allocations.AddTail( mo );
 
     if( mo->m_file == 0 )
     {
