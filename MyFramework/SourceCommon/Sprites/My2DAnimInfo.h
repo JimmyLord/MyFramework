@@ -85,6 +85,11 @@ public:
 #if MYFW_EDITOR
     void LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration);
     void SaveAnimationControlFile();
+
+    void OnAddAnimationPressed();
+    void OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex);
+    void OnAddFramePressed(int animindex);
+    void OnSaveAnimationsPressed();
 #endif
 
 #if MYFW_USING_WX
@@ -103,17 +108,11 @@ public:
     void OnRightClick();
     void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
 
-    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed( buttonid ); }
-    void OnAddAnimationPressed(int buttonid);
-
+    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed(); }
     static void StaticOnRemoveFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnRemoveFramePressed( buttonid ); }
     void OnRemoveFramePressed(int buttonid);
-
     static void StaticOnAddFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed( buttonid ); }
-    void OnAddFramePressed(int buttonid);
-
-    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed( buttonid ); }
-    void OnSaveAnimationsPressed(int buttonid);
+    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed(); }
 
     // Watch panel callbacks.
     static void StaticOnDropMaterial(void* pObjectPtr, int controlid, int x, int y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }

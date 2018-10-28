@@ -301,6 +301,61 @@ void My2DAnimInfo::SaveAnimationControlFile()
 
     cJSONExt_free( jsonstr );
 }
+
+void My2DAnimInfo::OnAddAnimationPressed()
+{
+    if( m_Animations.Count() >= MAX_ANIMATIONS )
+        return;
+
+    My2DAnimation* pAnim = MyNew My2DAnimation;
+
+    pAnim->SetName( "New" );
+    pAnim->m_Frames.AllocateObjects( MAX_FRAMES_IN_ANIMATION );
+
+    m_Animations.Add( pAnim );
+
+#if MYFW_USING_WX
+    g_pPanelWatch->SetNeedsRefresh();
+#endif
+}
+
+void My2DAnimInfo::OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex)
+{
+    if( animIndex >= m_Animations.Count() )
+        return;
+    if( frameIndex >= m_Animations[animIndex]->m_Frames.Count() )
+        return;
+
+    My2DAnimationFrame* pFrame = m_Animations[animIndex]->m_Frames.RemoveIndex_MaintainOrder( frameIndex );
+    delete pFrame;
+
+#if MYFW_USING_WX
+    g_pPanelWatch->SetNeedsRefresh();
+#endif
+}
+
+void My2DAnimInfo::OnAddFramePressed(int animindex)
+{
+    if( m_Animations[animindex]->m_Frames.Count() >= MAX_FRAMES_IN_ANIMATION )
+        return;
+
+    My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame;
+
+    //pFrame->SetMaterial( 0 );
+    pFrame->m_Duration = 0.2f;
+
+    m_Animations[animindex]->m_Frames.Add( pFrame );
+
+#if MYFW_USING_WX
+    g_pPanelWatch->SetNeedsRefresh();
+#endif
+}
+
+void My2DAnimInfo::OnSaveAnimationsPressed()
+{
+    SaveAnimationControlFile();
+}
+
 #endif //MYFW_EDITOR
 
 #if MYFW_USING_WX
@@ -380,55 +435,10 @@ void My2DAnimInfo::OnPopupClick(wxEvent &evt)
     }
 }
 
-void My2DAnimInfo::OnAddAnimationPressed(int buttonid)
-{
-    if( m_Animations.Count() >= MAX_ANIMATIONS )
-        return;
-
-    My2DAnimation* pAnim = MyNew My2DAnimation;
-
-    pAnim->SetName( "New" );
-    pAnim->m_Frames.AllocateObjects( MAX_FRAMES_IN_ANIMATION );
-
-    m_Animations.Add( pAnim );
-
-    g_pPanelWatch->SetNeedsRefresh();
-}
-
 void My2DAnimInfo::OnRemoveFramePressed(int buttonid)
 {
     unsigned int animindex = buttonid / 1000;
     unsigned int frameindex = buttonid % 1000;
-
-    if( animindex >= m_Animations.Count() )
-        return;
-    if( frameindex >= m_Animations[animindex]->m_Frames.Count() )
-        return;
-
-    My2DAnimationFrame* pFrame = m_Animations[animindex]->m_Frames.RemoveIndex_MaintainOrder( frameindex );
-    delete pFrame;
-
-    g_pPanelWatch->SetNeedsRefresh();
-}
-
-void My2DAnimInfo::OnAddFramePressed(int animindex)
-{
-    if( m_Animations[animindex]->m_Frames.Count() >= MAX_FRAMES_IN_ANIMATION )
-        return;
-
-    My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame;
-
-    //pFrame->SetMaterial( 0 );
-    pFrame->m_Duration = 0.2f;
-
-    m_Animations[animindex]->m_Frames.Add( pFrame );
-
-    g_pPanelWatch->SetNeedsRefresh();
-}
-
-void My2DAnimInfo::OnSaveAnimationsPressed(int buttonid)
-{
-    SaveAnimationControlFile();
 }
 
 void My2DAnimInfo::OnDropMaterial(int controlid, int x, int y)
