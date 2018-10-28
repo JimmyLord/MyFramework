@@ -87,6 +87,7 @@ public:
     void SaveAnimationControlFile();
 
     void OnAddAnimationPressed();
+    void OnRemoveAnimationPressed(unsigned int animIndex);
     void OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex);
     void OnAddFramePressed(int animindex);
     void OnSaveAnimationsPressed();

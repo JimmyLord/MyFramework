@@ -319,6 +319,13 @@ void My2DAnimInfo::OnAddAnimationPressed()
 #endif
 }
 
+void My2DAnimInfo::OnRemoveAnimationPressed(unsigned int animIndex)
+{
+    My2DAnimation* pAnim = m_Animations[animIndex];
+    m_Animations.RemoveIndex_MaintainOrder( animIndex );
+    delete pAnim;
+}
+
 void My2DAnimInfo::OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex)
 {
     if( animIndex >= m_Animations.Count() )
