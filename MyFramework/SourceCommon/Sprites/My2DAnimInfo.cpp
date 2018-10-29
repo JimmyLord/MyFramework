@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -8,6 +8,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+
+//====================================================================================================
+// My2DAnimationFrame
+//====================================================================================================
 
 My2DAnimationFrame::My2DAnimationFrame()
 {
@@ -30,12 +34,9 @@ void My2DAnimationFrame::SetMaterial(MaterialDefinition* pMaterial)
         m_pMaterial->AddRef();
 }
 
-void My2DAnimation::SetName(const char* name)
-{
-    if( strlen(name) > (unsigned int)MAX_ANIMATION_NAME_LEN )
-        LOGInfo( LOGTag, "Warning: name longer than 32 characters - %s - truncating\n", name );
-    strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
-}
+//====================================================================================================
+// My2DAnimation
+//====================================================================================================
 
 uint32 My2DAnimation::GetFrameCount()
 {
@@ -56,8 +57,20 @@ My2DAnimationFrame* My2DAnimation::GetFrameByIndexClamped(uint32 frameindex)
     return m_Frames[frameindex];
 }
 
+void My2DAnimation::SetName(const char* name)
+{
+    if( strlen(name) > (unsigned int)MAX_ANIMATION_NAME_LEN )
+        LOGInfo( LOGTag, "Warning: name longer than 32 characters - %s - truncating\n", name );
+    strncpy_s( m_Name, MAX_ANIMATION_NAME_LEN+1, name, MAX_ANIMATION_NAME_LEN );
+}
+
+//====================================================================================================
+// My2DAnimInfo
+//====================================================================================================
+
 My2DAnimInfo::My2DAnimInfo()
 {
+    m_AnimationFileLoaded = false;
     m_pSourceFile = 0;
 }
 
@@ -76,49 +89,20 @@ My2DAnimInfo::~My2DAnimInfo()
     SAFE_RELEASE( m_pSourceFile );
 }
 
-uint32 My2DAnimInfo::GetNumberOfAnimations()
-{
-    return m_Animations.Count();
-}
-
-My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 animindex)
-{
-    MyAssert( animindex < m_Animations.Count() );
-
-    return m_Animations[animindex];
-}
-
-My2DAnimation* My2DAnimInfo::GetAnimationByIndexClamped(uint32 animindex)
-{
-    MyClamp( animindex, (uint32)0, GetNumberOfAnimations()-1 );
-
-    return m_Animations[animindex];
-}
-
-void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
-{
-    if( m_pSourceFile == pSourceFile )
-        return;
-
-    SAFE_RELEASE( m_pSourceFile );
-    m_pSourceFile = pSourceFile;
-    m_pSourceFile->AddRef();
-
-#if MYFW_USING_WX
-    wxTreeItemId treeid = g_pPanelMemory->FindFile( m_pSourceFile );
-    if( treeid.IsOk() )
-        g_pPanelMemory->SetFilePanelCallbacks( treeid, this, MyFileObject::StaticOnLeftClick, My2DAnimInfo::StaticOnRightClick, MyFileObject::StaticOnDrag );
-#endif
-}
-
 void My2DAnimInfo::LoadAnimationControlFile()
 {
+    if( m_pSourceFile == 0 || m_pSourceFile->GetFileLoadStatus() != FileLoadStatus_Success )
+        return;
+
+    if( m_AnimationFileLoaded == true )
+        return;
+
     const char* buffer = m_pSourceFile->GetBuffer();
 
     MyAssert( buffer != 0 );
     MyAssert( m_Animations.Count() == 0 );
 
-    // if the file doesn't exist, do nothing for now.
+    // If the file doesn't exist, do nothing for now.
     if( buffer == 0 )
     {
         MyAssert( m_Animations.Count() == 0 );
@@ -183,16 +167,56 @@ void My2DAnimInfo::LoadAnimationControlFile()
 
         cJSON_Delete( jRoot );
     }
+
+    m_AnimationFileLoaded = true;
+}
+
+uint32 My2DAnimInfo::GetNumberOfAnimations()
+{
+    return m_Animations.Count();
+}
+
+My2DAnimation* My2DAnimInfo::GetAnimationByIndex(uint32 animIndex)
+{
+    MyAssert( animIndex < m_Animations.Count() );
+
+    return m_Animations[animIndex];
+}
+
+My2DAnimation* My2DAnimInfo::GetAnimationByIndexClamped(uint32 animIndex)
+{
+    MyClamp( animIndex, (uint32)0, GetNumberOfAnimations()-1 );
+
+    return m_Animations[animIndex];
+}
+
+void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
+{
+    // This class currently doesn't support changing the source file.
+    MyAssert( m_pSourceFile == 0 );
+
+    if( m_pSourceFile == pSourceFile )
+        return;
+
+    SAFE_RELEASE( m_pSourceFile );
+    m_pSourceFile = pSourceFile;
+    m_pSourceFile->AddRef();
+
+#if MYFW_USING_WX
+    wxTreeItemId treeid = g_pPanelMemory->FindFile( m_pSourceFile );
+    if( treeid.IsOk() )
+        g_pPanelMemory->SetFilePanelCallbacks( treeid, this, MyFileObject::StaticOnLeftClick, My2DAnimInfo::StaticOnRightClick, MyFileObject::StaticOnDrag );
+#endif
 }
 
 #if MYFW_EDITOR
-struct spriteSheetAnimData
+struct SpriteSheetAnimData
 {
     std::string name;
     int numFrames;
     int spriteIndexOfFirstFrame;
 
-    spriteSheetAnimData(std::string n, int nf, int si) { name = n; numFrames = nf; spriteIndexOfFirstFrame = si; }
+    SpriteSheetAnimData(std::string n, int nf, int si) { name = n; numFrames = nf; spriteIndexOfFirstFrame = si; }
 };
 
 void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration)
@@ -201,7 +225,7 @@ void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration
     MyAssert( pSpriteSheet->GetNumSprites() != 0 );
     MyAssert( m_Animations.Count() == 0 );
 
-    std::vector<spriteSheetAnimData> animations;
+    std::vector<SpriteSheetAnimData> animations;
 
     for( uint32 i=0; i<pSpriteSheet->GetNumSprites(); i++ )
     {
@@ -216,7 +240,7 @@ void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration
         int frame = atoi( number.c_str() );
         if( frame == 0 || frame == 1 )
         {
-            animations.push_back( spriteSheetAnimData( name, 1, i ) );
+            animations.push_back( SpriteSheetAnimData( name, 1, i ) );
         }
         else
         {
@@ -260,9 +284,9 @@ void My2DAnimInfo::SaveAnimationControlFile()
     cJSON* jAnimArray = cJSON_CreateArray();
     cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
 
-    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
+    for( unsigned int animIndex=0; animIndex<m_Animations.Count(); animIndex++ )
     {
-        My2DAnimation* pAnim = m_Animations[animindex];
+        My2DAnimation* pAnim = m_Animations[animIndex];
 
         cJSON* jAnim = cJSON_CreateObject();
         cJSON_AddItemToArray( jAnimArray, jAnim );
@@ -341,9 +365,9 @@ void My2DAnimInfo::OnRemoveFramePressed(unsigned int animIndex, unsigned int fra
 #endif
 }
 
-void My2DAnimInfo::OnAddFramePressed(int animindex)
+void My2DAnimInfo::OnAddFramePressed(int animIndex)
 {
-    if( m_Animations[animindex]->m_Frames.Count() >= MAX_FRAMES_IN_ANIMATION )
+    if( m_Animations[animIndex]->m_Frames.Count() >= MAX_FRAMES_IN_ANIMATION )
         return;
 
     My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame;
@@ -351,7 +375,7 @@ void My2DAnimInfo::OnAddFramePressed(int animindex)
     //pFrame->SetMaterial( 0 );
     pFrame->m_Duration = 0.2f;
 
-    m_Animations[animindex]->m_Frames.Add( pFrame );
+    m_Animations[animIndex]->m_Frames.Add( pFrame );
 
 #if MYFW_USING_WX
     g_pPanelWatch->SetNeedsRefresh();

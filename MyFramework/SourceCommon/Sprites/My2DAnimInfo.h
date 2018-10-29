@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,6 +9,10 @@
 
 #ifndef __My2DAnimInfo_H__
 #define __My2DAnimInfo_H__
+
+//====================================================================================================
+// My2DAnimationFrame
+//====================================================================================================
 
 class My2DAnimationFrame
 {
@@ -24,15 +28,22 @@ public:
     My2DAnimationFrame();
     ~My2DAnimationFrame();
 
+    // Getters
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     float GetDuration() { return m_Duration; }
 
+    // Setters
     void SetMaterial(MaterialDefinition* pMaterial);
+    void SetDuration(float duration) { m_Duration = duration; }
 
 #if MYFW_USING_WX
     int m_ControlID_Material;
 #endif
 };
+
+//====================================================================================================
+// My2DAnimation
+//====================================================================================================
 
 class My2DAnimation
 {
@@ -46,13 +57,19 @@ protected:
     MyList<My2DAnimationFrame*> m_Frames;
 
 public:
+    // Getters
     const char* GetName() { return m_Name; }
-    void SetName(const char* name);
-
     uint32 GetFrameCount();
     My2DAnimationFrame* GetFrameByIndex(uint32 frameindex);
     My2DAnimationFrame* GetFrameByIndexClamped(uint32 frameindex);
+
+    // Setters
+    void SetName(const char* name);
 };
+
+//====================================================================================================
+// My2DAnimInfo
+//====================================================================================================
 
 class My2DAnimInfo : public RefCount
 #if MYFW_USING_WX
@@ -66,6 +83,7 @@ public:
     static const unsigned int MAX_FRAMES_IN_ANIMATION = 10; // TODO: fix this hardcodedness
 
 protected:
+    bool m_AnimationFileLoaded;
     MyFileObject* m_pSourceFile;
     MyList<My2DAnimation*> m_Animations;
 
@@ -73,14 +91,16 @@ public:
     My2DAnimInfo();
     virtual ~My2DAnimInfo();
 
-    uint32 GetNumberOfAnimations();
-    My2DAnimation* GetAnimationByIndex(uint32 animindex);
-    My2DAnimation* GetAnimationByIndexClamped(uint32 animindex);
-
-    MyFileObject* GetSourceFile() { return m_pSourceFile; }
-    void SetSourceFile(MyFileObject* pSourceFile);
-
     void LoadAnimationControlFile();
+
+    // Getters
+    uint32 GetNumberOfAnimations();
+    My2DAnimation* GetAnimationByIndex(uint32 animIndex);
+    My2DAnimation* GetAnimationByIndexClamped(uint32 animIndex);
+    MyFileObject* GetSourceFile() { return m_pSourceFile; }
+
+    // Setters
+    void SetSourceFile(MyFileObject* pSourceFile);
 
 #if MYFW_EDITOR
     void LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration);
@@ -89,7 +109,7 @@ public:
     void OnAddAnimationPressed();
     void OnRemoveAnimationPressed(unsigned int animIndex);
     void OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex);
-    void OnAddFramePressed(int animindex);
+    void OnAddFramePressed(int animIndex);
     void OnSaveAnimationsPressed();
 #endif
 
