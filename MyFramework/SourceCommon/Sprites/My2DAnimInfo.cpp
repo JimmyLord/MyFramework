@@ -171,6 +171,29 @@ void My2DAnimInfo::LoadAnimationControlFile()
     m_AnimationFileLoaded = true;
 }
 
+My2DAnimation* My2DAnimInfo::GetAnimationByName(const char* name)
+{
+    for( uint32 i=0; i<m_Animations.Count(); i++ )
+    {
+        if( strcmp( m_Animations[i]->GetName(), name ) == 0 )
+            return m_Animations[i];
+    }
+
+    return 0;
+}
+
+uint32 My2DAnimInfo::GetAnimationIndexByName(const char* name)
+{
+    for( uint32 i=0; i<m_Animations.Count(); i++ )
+    {
+        if( strcmp( m_Animations[i]->GetName(), name ) == 0 )
+            return i;
+    }
+
+    LOGInfo( LOGTag, "Warning: GetAnimationIndexByName: Animation not found - %s\n", name );
+    return 0;
+}
+
 uint32 My2DAnimInfo::GetNumberOfAnimations()
 {
     return m_Animations.Count();

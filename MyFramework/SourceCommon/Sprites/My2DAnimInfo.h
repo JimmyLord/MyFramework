@@ -95,6 +95,8 @@ public:
 
     // Getters
     uint32 GetNumberOfAnimations();
+    My2DAnimation* GetAnimationByName(const char* name);
+    uint32 GetAnimationIndexByName(const char* name);
     My2DAnimation* GetAnimationByIndex(uint32 animIndex);
     My2DAnimation* GetAnimationByIndexClamped(uint32 animIndex);
     MyFileObject* GetSourceFile() { return m_pSourceFile; }
