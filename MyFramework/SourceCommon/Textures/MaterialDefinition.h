@@ -155,8 +155,8 @@ public:
     GLenum GetShaderBlendFactorDest_OpenGL();
     GLenum GetShaderBlendFactorDest_OpenGL(BaseShader* pShader);
 
-public:
 #if MYFW_EDITOR
+public:
     enum RightClickOptions
     {
         RightClick_ViewInWatchWindow = 1000,
@@ -164,9 +164,26 @@ public:
         RightClick_FindAllReferences,
     };
 
+    enum PreviewType
+    {
+        PreviewType_Sphere,
+        PreviewType_Flat,
+    };
+
+protected:
+    PreviewType m_PreviewType;
+
+public:
     void OnPopupClick(MaterialDefinition* pMaterial, int id);
 
+    // Getters
+    PreviewType GetPreviewType() { return m_PreviewType; }
+    
+    // Setters
+    void SetPreviewType(PreviewType type) { m_PreviewType = type; }
+
 #if MYFW_USING_WX
+public:
     int m_ControlID_Shader;
     int m_ControlID_ShaderInstanced;
 

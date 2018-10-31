@@ -106,6 +106,8 @@ void MaterialDefinition::Init()
     m_UVOffset.Set( 0, 0 );
 
 #if MYFW_EDITOR
+    m_PreviewType = PreviewType_Sphere;
+
     for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
     {
 #if MYFW_USING_WX
