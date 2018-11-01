@@ -168,6 +168,7 @@ public:
     {
         PreviewType_Sphere,
         PreviewType_Flat,
+        PreviewType_NumTypes,
     };
 
 protected:

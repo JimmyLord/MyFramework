@@ -286,6 +286,8 @@ void MaterialDefinition::ImportFromFile()
         cJSONExt_GetFloatArray( jMaterial, "UVScale", &m_UVScale.x, 2 );
         cJSONExt_GetFloatArray( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
 
+        cJSONExt_GetInt( jMaterial, "PreviewType", (int*)&m_PreviewType );        
+
         if( m_pShaderGroup && m_pShaderGroup->GetFile() && m_pShaderGroup->GetFile()->IsFinishedLoading() )
         {
             ImportExposedUniformValues( jMaterial );
@@ -1289,6 +1291,8 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
         cJSONExt_AddFloatArrayToObject( jMaterial, "UVScale", &m_UVScale.x, 2 );
         cJSONExt_AddFloatArrayToObject( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
+
+        cJSON_AddNumberToObject( jMaterial, "PreviewType", m_PreviewType );        
 
         ExportExposedUniformValues( jMaterial );
 
