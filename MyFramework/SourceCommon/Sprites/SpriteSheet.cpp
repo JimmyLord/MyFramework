@@ -114,6 +114,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_pMaterial->SetTextureColor( pTextureDef );
     m_pMaterial->SetShader( pShader );
+    m_pMaterial->SetPreviewType( MaterialDefinition::PreviewType_Flat );
     
     pTextureDef->Release();
     pTextureFile->Release();

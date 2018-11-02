@@ -183,6 +183,10 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
 
     // TODO: Copy the exposed uniform values.
 
+#if MYFW_EDITOR
+    this->m_PreviewType = other.m_PreviewType;
+#endif
+
     return *this;
 }
 
