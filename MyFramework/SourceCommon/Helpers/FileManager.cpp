@@ -446,7 +446,8 @@ bool FileManager::DoesFileExist(const char* fullpath)
 
 MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 {
-    MyAssert( DoesFileExist( fullpath ) );
+    if( DoesFileExist( fullpath ) == false )
+        return 0;
 
     MyFileObject* pFile = RequestFile( fullpath );
 
