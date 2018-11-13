@@ -15,6 +15,7 @@ void cJSONExt_free(void* ptr);
 
 unsigned int cJSONExt_GetDirectChildCount(cJSON* object);
 
+void cJSONExt_AddBoolArrayToObject(cJSON* object, const char* name, bool* vars, int numinarray);
 void cJSONExt_AddIntArrayToObject(cJSON* object, const char* name, int* vars, int numinarray);
 void cJSONExt_AddUnsignedIntArrayToObject(cJSON* object, const char* name, uint32* vars, int numinarray);
 void cJSONExt_AddFloatArrayToObject(cJSON* object, const char* name, float* vars, int numinarray);
@@ -28,6 +29,7 @@ template <typename Type> void cJSONExt_AddNumberToObjectIfDiffers(cJSON* object,
         cJSON_AddNumberToObject( object, name, number );
 }
 
+void cJSONExt_GetBoolArray(cJSON* object, const char* name, bool* vars, int numinarray);
 void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numinarray);
 void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray);
 void cJSONExt_GetFloatArrayFromArray(cJSON* arrayobject, unsigned int index, float* vars, int numinarray);
