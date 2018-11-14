@@ -89,13 +89,13 @@ My2DAnimInfo::~My2DAnimInfo()
     SAFE_RELEASE( m_pSourceFile );
 }
 
-void My2DAnimInfo::LoadAnimationControlFile()
+bool My2DAnimInfo::LoadAnimationControlFile()
 {
     if( m_pSourceFile == 0 || m_pSourceFile->GetFileLoadStatus() != FileLoadStatus_Success )
-        return;
+        return false;
 
     if( m_AnimationFileLoaded == true )
-        return;
+        return false;
 
     const char* buffer = m_pSourceFile->GetBuffer();
 
@@ -169,6 +169,8 @@ void My2DAnimInfo::LoadAnimationControlFile()
     }
 
     m_AnimationFileLoaded = true;
+
+    return true;
 }
 
 My2DAnimation* My2DAnimInfo::GetAnimationByName(const char* name)

@@ -91,7 +91,7 @@ public:
     My2DAnimInfo();
     virtual ~My2DAnimInfo();
 
-    void LoadAnimationControlFile();
+    bool LoadAnimationControlFile();
 
     // Getters
     uint32 GetNumberOfAnimations();
