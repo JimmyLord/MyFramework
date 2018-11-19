@@ -141,9 +141,9 @@ void LaunchURL(const char* url)
 #elif MYFW_IOS
     IOSLaunchURL( url );
 #elif MYFW_WINDOWS
-    wchar_t urlwide[512];
-    mbstowcs_s( 0, urlwide, url, 512 );
-    ShellExecute( NULL, L"open", urlwide, NULL, NULL, SW_SHOWNORMAL );
+    //wchar_t urlwide[512];
+    //mbstowcs_s( 0, urlwide, url, 512 );
+    ShellExecute( NULL, "open", url, NULL, NULL, SW_SHOWNORMAL );
 #elif MYFW_BLACKBERRY
     navigator_invoke( url, 0 );
 #elif MYFW_WP8
@@ -177,17 +177,17 @@ void LaunchURL(const char* url)
 void LaunchApplication(const char* appname, const char* arguments)
 {
 #if MYFW_WINDOWS
-    wchar_t exewide[512];
-    mbstowcs_s( 0, exewide, appname, 512 );
-    wchar_t argswide[512];
+    //wchar_t appnameWide[512];
+    //mbstowcs_s( 0, appnameWide, appname, 512 );
+    //wchar_t argumentsWide[512];
     if( arguments != 0 )
     {
-        mbstowcs_s( 0, argswide, arguments, 512 );
-        ShellExecute( NULL, L"open", exewide, argswide, 0, SW_SHOWNORMAL );
+        //mbstowcs_s( 0, argumentsWide, arguments, 512 );
+        ShellExecute( NULL, "open", appname, arguments, 0, SW_SHOWNORMAL );
     }
     else
     {
-        ShellExecute( NULL, L"open", exewide, 0, 0, SW_SHOWNORMAL );
+        ShellExecute( NULL, "open", appname, 0, 0, SW_SHOWNORMAL );
     }
 #elif MYFW_OSX
     // TODO: pass arguments to process.
