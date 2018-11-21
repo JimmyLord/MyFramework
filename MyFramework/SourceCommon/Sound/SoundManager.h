@@ -170,7 +170,11 @@ public:
 
     int PlayCue(SoundCue* pCue);
 
-    // Callbacks
+    // Getters.
+    SoundCue* GetCues() { return (SoundCue*)m_Cues.GetHead(); }
+    SoundCue* GetCuesStillLoading() { return (SoundCue*)m_CuesStillLoading.GetHead(); }
+
+    // Callbacks.
     void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback);
     void RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback);
 
