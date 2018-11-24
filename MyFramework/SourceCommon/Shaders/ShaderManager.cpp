@@ -316,7 +316,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                 }
 
                 char blendFuncStr[] = "#define BLENDFUNC";
-                int blendFuncStrLen = strlen( blendFuncStr );
+                int blendFuncStrLen = (int)strlen( blendFuncStr );
                 if( i + blendFuncStrLen < m_pFile->GetFileLength() &&
                     strncmp( &buffer[i], blendFuncStr, blendFuncStrLen ) == 0 )
                 {

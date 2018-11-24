@@ -253,24 +253,6 @@ typedef int socklen_t;
 // Platform specific includes
 //============================================================================================================
 
-#if MYFW_USING_WX
-#pragma warning( push )
-#pragma warning( disable : 4191 )
-#pragma warning( disable : 4265 )
-#pragma warning( disable : 4574 )
-#pragma warning( disable : 4996 )
-#include "wx/wxprec.h"
-//#include "wx/wx.h"
-#include "wx/aui/aui.h"
-#include "wx/listctrl.h"
-#include "wx/treectrl.h"
-#include "wx/clrpicker.h"
-#include "wx/dnd.h"
-#include "wx/menu.h"
-#include "wx/artprov.h"
-#pragma warning( pop )
-#endif
-
 #if MYFW_EDITOR
 #include "../SourceEditor/EditorViewTypes.h"
 #if MYFW_WINDOWS && MYFW_USING_IMGUI

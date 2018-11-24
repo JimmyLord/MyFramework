@@ -273,7 +273,7 @@ void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration
         }
     }
 
-    uint32 numAnims = animations.size();
+    uint32 numAnims = (uint32)animations.size();
 
     m_Animations.AllocateObjects( numAnims );
     for( uint32 i=0; i<numAnims; i++ )

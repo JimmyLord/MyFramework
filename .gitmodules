@@ -1,9 +1,6 @@
 [submodule "Libraries/Box2D"]
 	path = Libraries/Box2D
 	url = https://github.com/erincatto/Box2D.git
-[submodule "Libraries/wxWidgets"]
-	path = Libraries/wxWidgets
-	url = https://github.com/wxWidgets/wxWidgets.git
 [submodule "Libraries/Cotire"]
 	path = Libraries/Cotire
 	url = https://github.com/sakra/cotire.git
