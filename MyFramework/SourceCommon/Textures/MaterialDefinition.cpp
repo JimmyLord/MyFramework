@@ -290,7 +290,9 @@ void MaterialDefinition::ImportFromFile()
         cJSONExt_GetFloatArray( jMaterial, "UVScale", &m_UVScale.x, 2 );
         cJSONExt_GetFloatArray( jMaterial, "UVOffset", &m_UVOffset.x, 2 );
 
-        cJSONExt_GetInt( jMaterial, "PreviewType", (int*)&m_PreviewType );        
+#if MYFW_EDITOR
+        cJSONExt_GetInt( jMaterial, "PreviewType", (int*)&m_PreviewType );
+#endif //MYFW_EDITOR
 
         if( m_pShaderGroup && m_pShaderGroup->GetFile() && m_pShaderGroup->GetFile()->IsFinishedLoading() )
         {

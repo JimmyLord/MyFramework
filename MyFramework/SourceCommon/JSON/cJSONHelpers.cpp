@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,11 +10,6 @@
 #include "CommonHeader.h"
 
 static bool OverrodeJSONMemoryAllocation = false;
-
-// To get access to these funcs/vars from cjson, I had to make the not-static in cJSON.cpp
-extern void *(*cJSON_malloc)(size_t sz);
-extern void (*cJSON_free)(void *ptr);
-extern char* cJSON_strdup(const char* str);
 
 void* MyJSONMalloc(size_t sz)
 {
@@ -336,12 +331,33 @@ size_t cJSONExt_GetStringLength(cJSON* object, const char* name)
     return 0;
 }
 
+char* cJSONExt_strdup(const char* string)
+{
+    size_t length = 0;
+    char* copy = 0;
+
+    if( string == 0 )
+    {
+        return 0;
+    }
+
+    length = strlen( (const char*)string ) + sizeof( "" );
+    copy = (char*)cJSON_malloc( length );
+    if( copy == 0 )
+    {
+        return 0;
+    }
+    memcpy( copy, string, length );
+
+    return copy;
+}
+
 void cJSONExt_ReplaceStringInJSONObject(cJSON* object, const char* newstring)
 {
-    MyAssert( !(object->type&cJSON_IsReference) && object->valuestring );
-    if( !(object->type&cJSON_IsReference) && object->valuestring )
+    MyAssert( !(object->type & cJSON_IsReference) && object->valuestring );
+    if( !(object->type & cJSON_IsReference) && object->valuestring )
     {
         cJSON_free( object->valuestring );
-        object->valuestring = cJSON_strdup( newstring );
+        object->valuestring = cJSONExt_strdup( newstring );
     }
 }

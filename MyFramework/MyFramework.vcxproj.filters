@@ -456,9 +456,6 @@
     <ClCompile Include="..\Libraries\LodePNG\lodepng.cpp">
       <Filter>Libraries\LodePNG</Filter>
     </ClCompile>
-    <ClCompile Include="..\Libraries\cJSON\cJSON.cpp">
-      <Filter>Libraries\cJSON</Filter>
-    </ClCompile>
     <ClCompile Include="SourceAndroid\IAPManagerAndroid.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
     </ClCompile>
@@ -518,6 +515,9 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Helpers\GlobalEnums.cpp">
       <Filter>Source\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\cJSON\cJSON.c">
+      <Filter>Libraries\cJSON</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

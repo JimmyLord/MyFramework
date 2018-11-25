@@ -7,3 +7,9 @@
 [submodule "Libraries/OpenSimplexInC"]
 	path = Libraries/OpenSimplexInC
 	url = https://github.com/smcameron/open-simplex-noise-in-c.git
+[submodule "Libraries/cJSON"]
+	path = Libraries/cJSON
+	url = https://github.com/DaveGamble/cJSON
+[submodule "Libraries/LodePNG"]
+	path = Libraries/LodePNG
+	url = https://github.com/lvandeve/lodepng
