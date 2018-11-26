@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,6 +11,7 @@
 #define __NotTheRealB2Settings_H__
 
 // I'm still not using C++11+, so defining override to nothing.
+#if _MSC_VER < 1910 // Only do this pre-VS2017+
 #if __cplusplus < 201103L
 
 // xkeycheck.h in VS2017 doesn't like us redefining keywords,
@@ -27,6 +28,7 @@
 #define isfinite(x) _finite(x) ? true : false
 
 #endif //__cplusplus < 201103L
+#endif // _MSC_VER < 1910
 
 // Include the real b2Settings.h
 #if !_DEBUG && !defined(NDEBUG)
