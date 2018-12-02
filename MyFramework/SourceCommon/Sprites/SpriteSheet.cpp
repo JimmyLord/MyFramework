@@ -139,127 +139,143 @@ void SpriteSheet::FinishLoadingFile()
         return;
     }
 
-    // parse json and create array of sprites.
-    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success )// && m_pMaterial->GetTextureColor()->IsFullyLoaded() )
+    // Parse json and create array of sprites.
+    if( m_pJSONFile->GetFileLoadStatus() == FileLoadStatus_Success )
     {
-        cJSON* root = cJSON_Parse( m_pJSONFile->GetBuffer() );
+        cJSON* jRoot = cJSON_Parse( m_pJSONFile->GetBuffer() );
 
-        if( root == 0 )
+        if( jRoot == 0 )
             return;
     
-        // handle SpriteTool sprite sheets if we find a "file" tag in json
+        // Handle SpriteTool sprite sheets if we find a "SpriteTool" tag in the json file.
 
-        //"SpriteTool": 1
-        //"file": "BlocksEnemies.png",
-        //"width": 1024,
-        //"height": 1024,
-        //"Files": [{
-        //}, {
-        cJSON* versionobj = cJSON_GetObjectItem( root, "SpriteTool" );
-        if( versionobj )
+        //"SpriteTool": 1                   //"SpriteTool": 2
+        //"file": "Sheet.png",              //"Texture": "Sheet.png",
+        //"width": 1024,                    //"Width": 1024,
+        //"height": 1024,                   //"Height": 1024,
+        //"Files": [{                       //"Sprites": [{
+		//  "filename": "Sprite.png",       //  "Name": "Sprite.png",
+		//  "origw": 0,                     //  "X": 0,
+		//  "origh": 0,                     //  "Y": 0,
+		//  "posx": 100,                    //  "W": 100,
+		//  "posy": 100,                    //  "H": 100,
+		//  "trimx": 0,                     //  "TrimX": 0,
+		//  "trimy": 0,                     //  "TrimY": 0,
+		//  "trimw": 100,                   //  "TrimW": 100,
+		//  "trimh": 100                    //  "TrimH": 100
+        //}, {                              //}, {
+        cJSON* jVersion = cJSON_GetObjectItem( jRoot, "SpriteTool" );
+        if( jVersion )
         {
-            float sheetw=0, sheeth=0;
-            cJSON* subobj;
-            subobj = cJSON_GetObjectItem( root, "width" ); if( subobj ) sheetw = (float)subobj->valueint;
-            subobj = cJSON_GetObjectItem( root, "height" ); if( subobj ) sheeth = (float)subobj->valueint;
+            // Keywords to handle both SpriteTool formats.
+            const char* jsonKey_SpriteArray = "Sprites";
+            const char* jsonKey_Sprite_Name = "Name";
+            const char* jsonKey_Sprite_X = "X";
+            const char* jsonKey_Sprite_Y = "Y";
+            const char* jsonKey_Sprite_W = "W";
+            const char* jsonKey_Sprite_H = "H";
 
-            MyAssert( sheetw >= 64 && sheeth >= 64 );
-
-            cJSON* files = cJSON_GetObjectItem( root, "Files" );
-            if( files )
+            if( jVersion->valueint == 1 )
             {
-                int numfiles = cJSON_GetArraySize( files );
-                MyAssert( numfiles > 0 );
-                if( numfiles > 0 )
-                {
-                    m_pSpriteNames = MyNew char[numfiles * 64];
-                    m_pSpriteUVs = MyNew Vector4[numfiles];
+                jsonKey_SpriteArray = "Files";
+                jsonKey_Sprite_Name = "filename";
+                jsonKey_Sprite_X = "posx";
+                jsonKey_Sprite_Y = "posy";
+                jsonKey_Sprite_W = "origw";
+                jsonKey_Sprite_H = "origh";
+            }
 
-                    m_NumSprites = numfiles;
+            int sheetW=0, sheetH=0;
+            cJSONExt_GetInt( jRoot, "Width", &sheetW );
+            cJSONExt_GetInt( jRoot, "Height", &sheetH );
+
+            MyAssert( sheetW >= 64 && sheetH >= 64 );
+
+            cJSON* jSpriteArray = cJSON_GetObjectItem( jRoot, jsonKey_SpriteArray );
+            if( jSpriteArray )
+            {
+                int numSprites = cJSON_GetArraySize( jSpriteArray );
+                MyAssert( numSprites > 0 );
+                if( numSprites > 0 )
+                {
+                    m_pSpriteNames = MyNew char[numSprites * 64];
+                    m_pSpriteUVs = MyNew Vector4[numSprites];
+
+                    m_NumSprites = numSprites;
 
                     CreateSprites();
                     CreateMaterials( false );
 
-                    for( int i=0; i<numfiles; i++ )
+                    for( int i=0; i<numSprites; i++ )
                     {
-                        cJSON* file = cJSON_GetArrayItem( files, i );
+                        cJSON* jSprite = cJSON_GetArrayItem( jSpriteArray, i );
 
-                        MyAssert( file );
-                        if( file )
+                        MyAssert( jSprite );
+                        if( jSprite )
                         {
-                            // "filename": "ChestClosed.png",
-                            // "origw": 150,
-                            // "origh": 150,
-                            // "posx": 0,
-                            // "posy": 0,
-                            // "trimx": 0,
-                            // "trimy": 43,
-                            // "trimw": 137,
-                            // "trimh": 105
-                            cJSON* jFilename = cJSON_GetObjectItem( file, "filename" );
-                            if( jFilename )
+                            cJSON* jSpriteName = cJSON_GetObjectItem( jSprite, jsonKey_Sprite_Name );
+                            if( jSpriteName )
                             {
-                                strcpy_s( &m_pSpriteNames[i*64], 64, jFilename->valuestring );
+                                strcpy_s( &m_pSpriteNames[i*64], 64, jSpriteName->valuestring );
                             }
 
-                            cJSON* subobj;
-                            int origw=0, origh=0, posx=0, posy=0, trimx=0, trimy=0, trimw=0, trimh=0;
+                            int originalW=0, originalH=0, posX=0, posY=0, trimX=0, trimY=0, trimW=0, trimH=0;
                             float offset = 0.5f;
-                            subobj = cJSON_GetObjectItem( file, "origw" ); if( subobj ) origw = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "origh" ); if( subobj ) origh = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "posx" ); if( subobj ) posx = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "posy" ); if( subobj ) posy = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "trimx" ); if( subobj ) trimx = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "trimy" ); if( subobj ) trimy = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "trimw" ); if( subobj ) trimw = subobj->valueint;
-                            subobj = cJSON_GetObjectItem( file, "trimh" ); if( subobj ) trimh = subobj->valueint;
+                            cJSONExt_GetInt( jSprite, jsonKey_Sprite_W, &originalW );
+                            cJSONExt_GetInt( jSprite, jsonKey_Sprite_H, &originalH );
+                            cJSONExt_GetInt( jSprite, jsonKey_Sprite_X, &posX );
+                            cJSONExt_GetInt( jSprite, jsonKey_Sprite_Y, &posY );
+                            cJSONExt_GetInt( jSprite, "TrimX", &trimX );
+                            cJSONExt_GetInt( jSprite, "TrimY", &trimY );
+                            cJSONExt_GetInt( jSprite, "TrimW", &trimW );
+                            cJSONExt_GetInt( jSprite, "TrimH", &trimH );
 
-                            float startu = (posx       + offset)/sheetw;
-                            float endu   = (posx+trimw - offset)/sheetw;
-                            float startv = (posy       + offset)/sheeth;
-                            float endv   = (posy+trimh - offset)/sheeth;
+                            float startU = (posX       + offset)/sheetW;
+                            float endU   = (posX+trimW - offset)/sheetW;
+                            float startV = (posY       + offset)/sheetH;
+                            float endV   = (posY+trimH - offset)/sheetH;
 
-                            float uwidth = endu - startu;
-                            float vheight = endv - startv;
+                            float uWidth = endU - startU;
+                            float vHeight = endV - startV;
 
-                            m_pSpriteUVs[i].x = startu + uwidth * m_SubspriteStartX;
-                            m_pSpriteUVs[i].y = endu - uwidth * (1 - m_SubspriteEndX);
-                            m_pSpriteUVs[i].z = startv + vheight * m_SubspriteStartY;
-                            m_pSpriteUVs[i].w = endv - vheight * (1 - m_SubspriteEndY);
+                            m_pSpriteUVs[i].x = startU + uWidth * m_SubspriteStartX;
+                            m_pSpriteUVs[i].y = endU - uWidth * (1 - m_SubspriteEndX);
+                            m_pSpriteUVs[i].z = startV + vHeight * m_SubspriteStartY;
+                            m_pSpriteUVs[i].w = endV - vHeight * (1 - m_SubspriteEndY);
 
                             if( m_CreateSprites )
                             {
                                 MyAssert( m_pSprites[i] );
 
                                 m_pSprites[i]->CreateSubsection( "SpriteSheet",
-                                                (float)origw * m_SpriteScale, (float)origh * m_SpriteScale,
-                                                (posx-trimx+offset)/sheetw, (posx-trimx+origw-offset)/sheetw,
-                                                (posy-trimy+offset)/sheeth, (posy-trimy+origh-offset)/sheeth,
+                                                (float)originalW * m_SpriteScale, (float)originalH * m_SpriteScale,
+                                                (posX-trimX+offset)/sheetW, (posX-trimX+originalW-offset)/sheetW,
+                                                (posY-trimY+offset)/sheetH, (posY-trimY+originalH-offset)/sheetH,
                                                 Justify_CenterX|Justify_CenterY,
-                                                m_SubspriteStartX > trimx/(float)origw ? m_SubspriteStartX : trimx/(float)origw,
-                                                m_SubspriteEndX < (trimx+trimw)/(float)origw ? m_SubspriteEndX : (trimx+trimw)/(float)origw,
-                                                m_SubspriteStartY > trimy/(float)origh ? m_SubspriteStartY : trimy/(float)origh,
-                                                m_SubspriteEndY < (trimy+trimh)/(float)origh ? m_SubspriteEndY : (trimy+trimh)/(float)origh );
+                                                m_SubspriteStartX > trimX/(float)originalW ? m_SubspriteStartX : trimX/(float)originalW,
+                                                m_SubspriteEndX < (trimX+trimW)/(float)originalW ? m_SubspriteEndX : (trimX+trimW)/(float)originalW,
+                                                m_SubspriteStartY > trimY/(float)originalH ? m_SubspriteStartY : trimY/(float)originalH,
+                                                m_SubspriteEndY < (trimY+trimH)/(float)originalH ? m_SubspriteEndY : (trimY+trimH)/(float)originalH );
                             }
 
                             if( m_CreateMaterials )
                             {
                                 char matname[MaterialDefinition::MAX_MATERIAL_NAME_LEN+1];
                                 sprintf_s( matname, MaterialDefinition::MAX_MATERIAL_NAME_LEN+1, "%s_%s.mymaterial", 
-                                           m_pJSONFile->GetFilenameWithoutExtension(), jFilename->valuestring );
+                                           m_pJSONFile->GetFilenameWithoutExtension(), jSpriteName->valuestring );
                                 char fullpath[MAX_PATH];
                                 m_pJSONFile->GenerateNewFullPathFilenameInSameFolder( matname, fullpath, MAX_PATH );
 
-#if MYFW_USING_WX
-                                // In editor mode, check if the file exists before loading
+#if MYFW_EDITOR
+                                // In editor mode, check if the file exists before loading.
                                 if( g_pFileManager->DoesFileExist( fullpath ) == false )
                                 {
-                                    // the material might not exist on disk but a load was previously attempted, so find that object
+                                    // The material might not exist on disk but a load was previously attempted, so find that object.
                                     m_pMaterialList[i] = g_pMaterialManager->FindMaterialByFilename( fullpath );
                                     if( m_pMaterialList[i] )
                                         m_pMaterialList[i]->AddRef();
 
-                                    // if the material still isn't there, create a new one along with a file for it.
+                                    // If the material still isn't there, create a new one along with a file for it.
                                     if( m_pMaterialList[i] == 0 )
                                     {
                                         MyFileObject* pFile = g_pFileManager->CreateFileObject( fullpath );
@@ -270,14 +286,12 @@ void SpriteSheet::FinishLoadingFile()
                                     }
                                 }
                                 else
+#endif
                                 {
-                                    // Load the existing material if it exists
+                                    // Load the existing material if it exists.
                                     m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
                                 }
-#else
-                                // Load the existing material if it exists
-                                m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
-#endif
+
                                 MyAssert( m_pMaterialList[i] );
 
                                 // Copy all base material properties into material for each sprite. This doesn't affect file info stored in material.
@@ -295,7 +309,7 @@ void SpriteSheet::FinishLoadingFile()
             }
         }
 
-        // handle TexturePacker sprite sheets if we find a "meta" tag in json
+        // Partially handle TexturePacker sprite sheets if we find a "meta" tag in json.
 
         //"meta": {
         //  "app": "http://www.texturepacker.com",
@@ -306,23 +320,23 @@ void SpriteSheet::FinishLoadingFile()
         //  "scale": "1",
         //  "smartupdate": "$TexturePacker:SmartUpdate:ef29b5217bb797448db9c6c73eb8b6cb$"
         //}
-        cJSON* metadata = cJSON_GetObjectItem( root, "meta" );
-        if( metadata )
+        cJSON* jMetaData = cJSON_GetObjectItem( jRoot, "meta" );
+        if( jMetaData )
         {
-            cJSON* sizeobj = cJSON_GetObjectItem( metadata, "size" );
-            if( sizeobj )
+            cJSON* jSize = cJSON_GetObjectItem( jMetaData, "size" );
+            if( jSize )
             {
                 float sheetw=0, sheeth=0;
                 cJSON* subobj;
-                subobj = cJSON_GetObjectItem( sizeobj, "w" ); if( subobj ) sheetw = (float)subobj->valueint;
-                subobj = cJSON_GetObjectItem( sizeobj, "h" ); if( subobj ) sheeth = (float)subobj->valueint;
+                subobj = cJSON_GetObjectItem( jSize, "w" ); if( subobj ) sheetw = (float)subobj->valueint;
+                subobj = cJSON_GetObjectItem( jSize, "h" ); if( subobj ) sheeth = (float)subobj->valueint;
 
                 MyAssert( sheetw >= 64 && sheeth >= 64 );
 
-                cJSON* frames = cJSON_GetObjectItem( root, "frames" );
-                if( frames )
+                cJSON* jFramesArray = cJSON_GetObjectItem( jRoot, "frames" );
+                if( jFramesArray )
                 {
-                    int numframes = cJSON_GetArraySize( frames );
+                    int numframes = cJSON_GetArraySize( jFramesArray );
                     MyAssert( numframes > 0 );
                     if( numframes > 0 )
                     {
@@ -336,10 +350,10 @@ void SpriteSheet::FinishLoadingFile()
 
                         for( int i=0; i<numframes; i++ )
                         {
-                            cJSON* frame = cJSON_GetArrayItem( frames, i );
+                            cJSON* jFrame = cJSON_GetArrayItem( jFramesArray, i );
 
-                            MyAssert( frame );
-                            if( frame )
+                            MyAssert( jFrame );
+                            if( jFrame )
                             {
                                 // "filename": "Circle.png",
                                 // "frame": {"x":152,"y":116,"w":36,"h":34},
@@ -349,13 +363,13 @@ void SpriteSheet::FinishLoadingFile()
                                 // "sourceSize": {"w":256,"h":256}
                                 cJSON* obj;
 
-                                obj = cJSON_GetObjectItem( frame, "filename" );
+                                obj = cJSON_GetObjectItem( jFrame, "filename" );
                                 if( obj )
                                 {
                                     strcpy_s( &m_pSpriteNames[i*64], 64, obj->valuestring );
                                 }
 
-                                obj = cJSON_GetObjectItem( frame, "frame" );
+                                obj = cJSON_GetObjectItem( jFrame, "frame" );
                                 if( obj )
                                 {
                                     cJSON* subobj;
@@ -397,7 +411,7 @@ void SpriteSheet::FinishLoadingFile()
             }
         }
 
-        cJSON_Delete( root );
+        cJSON_Delete( jRoot );
 
         m_FullyLoaded = true;
     }
