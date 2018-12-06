@@ -3769,6 +3769,7 @@
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\IAPManager.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\MYFWActivity.java" />
     <None Include="SourceAndroid\MYFWsrc\com\flathead\MYFWPackage\SoundPlayer.java" />
+    <None Include="SourceCommon\DataTypes\TCPPList.h" />
     <None Include="SourceIOS\AppController.mm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>
