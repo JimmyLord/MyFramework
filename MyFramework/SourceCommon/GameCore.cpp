@@ -199,7 +199,7 @@ float GameCore::Tick(float deltaTime)
     size_t numbytesallocated = MyMemory_GetNumberOfBytesAllocated();
 #endif
 
-    g_pEventManager->Tick();
+    g_pEventManager->Tick( deltaTime );
     g_pFileManager->Tick();
     g_pTextureManager->Tick();
     g_pMaterialManager->Tick();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,9 +12,10 @@
 // must be in same order as enum EventTypes
 EventTypeInfo g_EngineEventTypeInfo[Event_NumEventTypes] = // ADDING_NEW_EventType
 {
-    { "Undefined",          },  //Event_Undefined,
-    { "MaterialLoaded",     },  //Event_MaterialFinishedLoading,
-    { "ShaderLoaded",       },  //Event_ShaderFinishedLoading,
+    { "Undefined",                  },  //Event_Undefined,
+    { "MaterialLoaded",             },  //Event_MaterialFinishedLoading,
+    { "ShaderLoaded",               },  //Event_ShaderFinishedLoading,
+    { "IAP",                        },  //Event_IAP,
 };
 
 EventTypeManager* g_pEventTypeManager = 0;

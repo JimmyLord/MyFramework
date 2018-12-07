@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -20,16 +20,18 @@ EventManager::EventManager()
     m_pEventArgumentPool.AllocateObjects( MAX_EVENT_ARGUMENTS );
     m_pEventHandlerPool.AllocateObjects( MAX_EVENT_HANDLERS );
 
-    m_NumEvents = 0;
     m_NumEventHandlers = 0;
 }
 
 EventManager::~EventManager()
 {
-    for( unsigned int i=0; i<m_NumEvents; i++ )
+    MyEvent* pNextEvent = 0;
+    for( MyEvent* pEvent = m_pEventQueue.GetHead(); pEvent; pEvent = pNextEvent )
     {
-        m_pEvents[i]->ClearArguments();
-        m_pEventPool.ReturnObjectToPool( m_pEvents[i] );
+        pNextEvent = pEvent->GetNext();
+
+        ReleaseEvent( pEvent );
+        pEvent->Remove();
     }
 
     for( unsigned int i=0; i<m_NumEventHandlers; i++ )
@@ -38,8 +40,22 @@ EventManager::~EventManager()
     }
 }
 
-void EventManager::Tick()
+void EventManager::ReleaseEvent(MyEvent* pEvent)
 {
+    pEvent->ClearArguments();
+    m_pEventPool.ReturnObjectToPool( pEvent );
+}
+
+void EventManager::Tick(float deltaTime)
+{
+    MyEvent* pNextEvent = 0;
+    for( MyEvent* pEvent = m_pEventQueue.GetHead(); pEvent; pEvent = pNextEvent )
+    {
+        pNextEvent = pEvent->GetNext();
+
+        SendEventNow( pEvent );
+        pEvent->Remove();
+    }
 }
 
 MyEvent* EventManager::CreateNewEvent(EventTypes type)
@@ -50,12 +66,6 @@ MyEvent* EventManager::CreateNewEvent(EventTypes type)
     pEvent->SetType( type );
 
     return pEvent;
-}
-
-void EventManager::ReleaseEvent(MyEvent* pEvent)
-{
-    pEvent->ClearArguments();
-    m_pEventPool.ReturnObjectToPool( pEvent );
 }
 
 void EventManager::RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
@@ -95,6 +105,11 @@ void EventManager::UnregisterForEvents(EventTypes type, void* pObject, EventCall
             return;
         }
     }
+}
+
+void EventManager::QueueEvent(MyEvent* pEvent)
+{
+    m_pEventQueue.AddTail( pEvent );
 }
 
 void EventManager::SendEventNow(MyEvent* pEvent)

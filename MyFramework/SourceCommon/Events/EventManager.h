@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -46,24 +46,26 @@ protected:
     MySimplePool<MyEventArgument> m_pEventArgumentPool;
     MySimplePool<MyEventHandler> m_pEventHandlerPool;
 
-    MyEvent* m_pEvents[MAX_EVENTS]; // list of all active events, TODO: make linked list
-    unsigned int m_NumEvents;
+    TCPPListHead<MyEvent*> m_pEventQueue; // list of all active events, TODO: make linked list
 
     MyEventHandler* m_pEventHandlers[MAX_EVENT_HANDLERS]; // list of all active event handlers, TODO: make linked list, one per type?
     unsigned int m_NumEventHandlers;
+
+protected:
+    void ReleaseEvent(MyEvent* pEvent);
 
 public:
     EventManager();
     ~EventManager();
 
-    void Tick();
+    void Tick(float deltaTime);
 
     MyEvent* CreateNewEvent(EventTypes type);
-    void ReleaseEvent(MyEvent* pEvent);
 
     void RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
     void UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
 
+    void QueueEvent(MyEvent* pEvent);
     void SendEventNow(MyEvent* pEvent);
 };
 
