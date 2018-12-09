@@ -36,6 +36,30 @@ void MyEvent::CheckIfArgumentIsAlreadyAttached(const char* name) // Protected
     }
 }
 
+void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected
+{
+    // debug check for duplicate arguments, asserts(in debug) and puts up an error in log.
+    CheckIfArgumentIsAlreadyAttached( pArg->m_NameStr );
+
+    // attach this argument to this event as the first in the list
+    pArg->m_NextArgument = this->m_FirstArgument;
+    this->m_FirstArgument = pArg;
+}
+
+bool MyEvent::IsType(const char* name)
+{
+    EventTypes type = (EventTypes)hash_djb2( name );
+    return IsType( type );
+}
+
+bool MyEvent::IsType(EventTypes type)
+{
+    if( m_Type == type )
+        return true;
+
+    return false;
+}
+
 void MyEvent::ClearArguments()
 {
     MyEventArgument* pArg = m_FirstArgument;
@@ -49,16 +73,6 @@ void MyEvent::ClearArguments()
         pArg = pNextArg;
     }
     m_FirstArgument = 0;
-}
-
-void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected
-{
-    // debug check for duplicate arguments, asserts(in debug) and puts up an error in log.
-    CheckIfArgumentIsAlreadyAttached( pArg->m_NameStr );
-
-    // attach this argument to this event as the first in the list
-    pArg->m_NextArgument = this->m_FirstArgument;
-    this->m_FirstArgument = pArg;
 }
 
 //====================================================================================================

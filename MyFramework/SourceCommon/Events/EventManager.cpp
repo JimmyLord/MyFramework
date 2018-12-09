@@ -58,6 +58,24 @@ void EventManager::Tick(float deltaTime)
     }
 }
 
+MyEvent* EventManager::CreateNewEvent(const char* name)
+{
+    EventTypes type = (EventTypes)hash_djb2( name );
+    return CreateNewEvent( type );
+}
+
+void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
+{
+    EventTypes type = (EventTypes)hash_djb2( name );
+    return RegisterForEvents( type, pObject, pOnEventFunction );
+}
+
+void EventManager::UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
+{
+    uint32 type = hash_djb2( name );
+    return UnregisterForEvents( (EventTypes)type, pObject, pOnEventFunction );
+}
+
 MyEvent* EventManager::CreateNewEvent(EventTypes type)
 {
     MyEvent* pEvent = m_pEventPool.GetObjectFromPool();

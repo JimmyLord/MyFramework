@@ -59,6 +59,9 @@ public:
     void SetType(EventTypes type) { m_Type = type; }
     EventTypes GetType() { return m_Type; }
 
+    bool IsType(const char* name);
+    bool IsType(EventTypes type);
+
     // Arguments
     void ClearArguments();
 

@@ -108,4 +108,6 @@ inline size_t MyOffsetOf(void* pObject, void* pMember)
 char* MyStrIStr(const char* haystack, const char* needle, unsigned char extraNeedleTerminator = 0);
 bool CheckIfMultipleSubstringsAreInString(const char* string, const char* substrings, unsigned char delimiter = ' ');
 
+uint32 hash_djb2(const char* str);
+
 #endif //__Utility_H__

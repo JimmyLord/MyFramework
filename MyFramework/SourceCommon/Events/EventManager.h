@@ -60,8 +60,11 @@ public:
 
     void Tick(float deltaTime);
 
-    MyEvent* CreateNewEvent(EventTypes type);
+    MyEvent* CreateNewEvent(const char* name);
+    void RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
+    void UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
 
+    MyEvent* CreateNewEvent(EventTypes type);
     void RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
     void UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
 

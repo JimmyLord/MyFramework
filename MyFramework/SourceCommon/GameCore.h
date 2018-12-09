@@ -153,8 +153,6 @@ public:
 
     virtual void OnDropFile(const char* filename) {}
 
-    virtual bool OnEvent(MyEvent* pEvent) { return false; }
-
     virtual void SetMouseLock(bool lock);
     virtual bool WasMouseLockRequested();
     virtual bool IsMouseLocked();
