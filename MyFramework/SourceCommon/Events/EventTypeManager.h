@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -26,23 +26,29 @@ enum EventTypes // ADDING_NEW_EventType
 
 struct EventTypeInfo
 {
+    uint32 type;
     const char* name;
 };
 
 class EventTypeManager
 {
 protected:
+#if MYFW_EDITOR
+    std::vector<EventTypeInfo> m_RegisteredEvents;
+#endif
 
 public:
     EventTypeManager();
     virtual ~EventTypeManager();
 
-    virtual unsigned int GetNumberOfEventTypes();
+    virtual uint32 GetNumberOfEventTypes();
 
-    virtual const char* GetTypeCategory(int type);
-    virtual const char* GetTypeName(int type);
+    virtual const char* GetTypeCategory(uint32 type);
+    virtual const char* GetTypeName(uint32 type);
 
-    virtual int GetTypeByName(const char* name);
+    virtual uint32 GetTypeByName(const char* name);
+
+    void RegisterEventType(const char* name, bool assertIfDuplicate);
 };
 
 #endif //__EventTypeManager_H__

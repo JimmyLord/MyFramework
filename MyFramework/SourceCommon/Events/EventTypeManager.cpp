@@ -12,10 +12,10 @@
 // must be in same order as enum EventTypes
 EventTypeInfo g_EngineEventTypeInfo[Event_NumEventTypes] = // ADDING_NEW_EventType
 {
-    { "Undefined",                  },  //Event_Undefined,
-    { "MaterialLoaded",             },  //Event_MaterialFinishedLoading,
-    { "ShaderLoaded",               },  //Event_ShaderFinishedLoading,
-    { "IAP",                        },  //Event_IAP,
+    { Event_Undefined,                  "Undefined",                  },  //Event_Undefined,
+    { Event_MaterialFinishedLoading,    "MaterialLoaded",             },  //Event_MaterialFinishedLoading,
+    { Event_ShaderFinishedLoading,      "ShaderLoaded",               },  //Event_ShaderFinishedLoading,
+    { Event_IAP,                        "IAP",                        },  //Event_IAP,
 };
 
 EventTypeManager* g_pEventTypeManager = 0;
@@ -29,22 +29,59 @@ EventTypeManager::~EventTypeManager()
 {
 }
 
-unsigned int EventTypeManager::GetNumberOfEventTypes()
+uint32 EventTypeManager::GetNumberOfEventTypes()
 {
     return 0;
 }
 
-const char* EventTypeManager::GetTypeCategory(int type)
+const char* EventTypeManager::GetTypeCategory(uint32 type)
 {
     return 0;
 }
 
-const char* EventTypeManager::GetTypeName(int type)
+const char* EventTypeManager::GetTypeName(uint32 type)
 {
     return 0;
 }
 
-int EventTypeManager::GetTypeByName(const char* name)
+uint32 EventTypeManager::GetTypeByName(const char* name)
 {
     return 0;
+}
+
+void EventTypeManager::RegisterEventType(const char* name, bool assertIfDuplicate)
+{
+#if MYFW_EDITOR
+    // Create a new event type.
+    EventTypeInfo newInfo;
+    newInfo.type = hash_djb2( name );
+    newInfo.name = name;
+
+    // Check for hash collisions.
+    bool eventTypeHashCollision = false;
+
+    if( newInfo.type < Event_NumEventTypes )
+    {
+        eventTypeHashCollision = true;
+        LOGError( LOGTag, "EventType Hash Collision: %s produces a duplicate hash (%d)\n", newInfo.name, newInfo.type );
+        LOGError( LOGTag, "EventType Hash Collision: old string is %s\n", g_EngineEventTypeInfo[newInfo.type].name );
+        MyAssert( assertIfDuplicate == false );
+        return;
+    }
+
+    for( unsigned int i=0; i<m_RegisteredEvents.size(); i++ )
+    {
+        if( m_RegisteredEvents[i].type == newInfo.type )
+        {
+            eventTypeHashCollision = true;
+            LOGError( LOGTag, "EventType Hash Collision: %s produces a duplicate hash (%d)\n", newInfo.name, newInfo.type );
+            LOGError( LOGTag, "EventType Hash Collision: old string is %s\n", m_RegisteredEvents[i].name );
+            MyAssert( assertIfDuplicate == false );
+            return;
+        }
+    }
+
+    // If no hash collision was found, push this new event type into the vector.
+    m_RegisteredEvents.push_back( newInfo );
+#endif
 }

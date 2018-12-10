@@ -150,6 +150,13 @@
 #include <ctype.h>
 #include <limits.h>
 
+#if MYFW_EDITOR
+#include <vector>
+#include <string>
+#include <map>
+#include <list>
+#endif
+
 #include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
 
 #include "DataTypes/MyTypes.h"
@@ -259,12 +266,8 @@ typedef int socklen_t;
 #if MYFW_WINDOWS && MYFW_USING_IMGUI
 #include <direct.h>
 #include "../SourceWindows/MYFWWinMain.h"
-#endif
-#include <vector>
-#include <string>
-#include <map>
-#include <list>
-#endif
+#endif // MYFW_WINDOWS && MYFW_USING_IMGUI
+#endif // MYFW_EDITOR
 
 #if MYFW_NACL
 #define MYFW_OPENGLES2 1
