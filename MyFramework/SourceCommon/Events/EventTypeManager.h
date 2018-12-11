@@ -37,18 +37,20 @@ protected:
     std::vector<EventTypeInfo> m_RegisteredEvents;
 #endif
 
+    bool CheckForHashCollision(const char* name, bool assertIfDuplicate);
+
 public:
     EventTypeManager();
     virtual ~EventTypeManager();
 
-    virtual uint32 GetNumberOfEventTypes();
+    uint32 GetNumberOfEventTypes();
 
-    virtual const char* GetTypeCategory(uint32 type);
-    virtual const char* GetTypeName(uint32 type);
+    const char* GetTypeCategory(uint32 type);
+    const char* GetTypeName(uint32 type);
 
-    virtual uint32 GetTypeByName(const char* name);
+    bool IsTypeRegistered(const char* name, bool assertIfDuplicate);
 
-    void RegisterEventType(const char* name, bool assertIfDuplicate);
+    uint32 RegisterEventType(const char* name, bool assertIfDuplicate);
 };
 
 #endif //__EventTypeManager_H__

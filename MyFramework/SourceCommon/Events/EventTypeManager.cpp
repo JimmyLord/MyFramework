@@ -29,6 +29,38 @@ EventTypeManager::~EventTypeManager()
 {
 }
 
+bool EventTypeManager::CheckForHashCollision(const char* name, bool assertIfDuplicate)
+{
+#if MYFW_EDITOR
+    uint32 type = hash_djb2( name );
+
+    if( type < Event_NumEventTypes )
+    {
+        if( strcmp( g_EngineEventTypeInfo[type].name, name ) != 0 )
+        {
+            LOGError( LOGTag, "EventType Hash Collision: %s produces a same hash as %s (%d)\n", name, g_EngineEventTypeInfo[type].name, type );
+            MyAssert( assertIfDuplicate == false );
+            return true;
+        }
+    }
+
+    for( unsigned int i=0; i<m_RegisteredEvents.size(); i++ )
+    {
+        if( m_RegisteredEvents[i].type == type )
+        {
+            if( strcmp( m_RegisteredEvents[i].name, name ) != 0 )
+            {
+                LOGError( LOGTag, "EventType Hash Collision: %s produces a same hash as %s (%d)\n", name, m_RegisteredEvents[i].name, type );
+                MyAssert( assertIfDuplicate == false );
+                return true;
+            }
+        }
+    }
+#endif
+
+    return false;
+}
+
 uint32 EventTypeManager::GetNumberOfEventTypes()
 {
     return 0;
@@ -44,12 +76,37 @@ const char* EventTypeManager::GetTypeName(uint32 type)
     return 0;
 }
 
-uint32 EventTypeManager::GetTypeByName(const char* name)
+bool EventTypeManager::IsTypeRegistered(const char* name, bool assertIfDuplicate)
 {
-    return 0;
+#if MYFW_EDITOR
+    uint32 type = hash_djb2( name );
+
+    bool found = false;
+
+    for( unsigned int i=0; i<m_RegisteredEvents.size(); i++ )
+    {
+        if( m_RegisteredEvents[i].type == type )
+        {
+            if( strcmp( m_RegisteredEvents[i].name, name ) == 0 )
+            {
+                found = true;
+            }
+            else
+            {
+                LOGError( LOGTag, "EventType Hash Collision: %s produces a same hash as (%d)\n", name, m_RegisteredEvents[i].name, type );
+                MyAssert( assertIfDuplicate == false );
+            }
+        }
+    }
+
+    return found;
+
+#endif //MYFW_EDITOR
+
+    return false;
 }
 
-void EventTypeManager::RegisterEventType(const char* name, bool assertIfDuplicate)
+uint32 EventTypeManager::RegisterEventType(const char* name, bool assertIfDuplicate)
 {
 #if MYFW_EDITOR
     // Create a new event type.
@@ -57,31 +114,14 @@ void EventTypeManager::RegisterEventType(const char* name, bool assertIfDuplicat
     newInfo.type = hash_djb2( name );
     newInfo.name = name;
 
-    // Check for hash collisions.
-    bool eventTypeHashCollision = false;
-
-    if( newInfo.type < Event_NumEventTypes )
+    if( CheckForHashCollision( name, assertIfDuplicate ) == 0 )
     {
-        eventTypeHashCollision = true;
-        LOGError( LOGTag, "EventType Hash Collision: %s produces a duplicate hash (%d)\n", newInfo.name, newInfo.type );
-        LOGError( LOGTag, "EventType Hash Collision: old string is %s\n", g_EngineEventTypeInfo[newInfo.type].name );
-        MyAssert( assertIfDuplicate == false );
-        return;
+        // If no hash collision was found, push this new event type into the vector.
+        m_RegisteredEvents.push_back( newInfo );
     }
 
-    for( unsigned int i=0; i<m_RegisteredEvents.size(); i++ )
-    {
-        if( m_RegisteredEvents[i].type == newInfo.type )
-        {
-            eventTypeHashCollision = true;
-            LOGError( LOGTag, "EventType Hash Collision: %s produces a duplicate hash (%d)\n", newInfo.name, newInfo.type );
-            LOGError( LOGTag, "EventType Hash Collision: old string is %s\n", m_RegisteredEvents[i].name );
-            MyAssert( assertIfDuplicate == false );
-            return;
-        }
-    }
-
-    // If no hash collision was found, push this new event type into the vector.
-    m_RegisteredEvents.push_back( newInfo );
+    return newInfo.type;
 #endif
+
+    return 0;
 }

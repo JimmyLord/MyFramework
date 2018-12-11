@@ -66,8 +66,16 @@ MyEvent* EventManager::CreateNewEvent(const char* name)
 
 void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
 {
-    EventTypes type = (EventTypes)hash_djb2( name );
-    return RegisterForEvents( type, pObject, pOnEventFunction );
+#if MYFW_EDITOR
+    // Currently a safety check for duplicate hashes, so only done in editor mode.
+    // Check if this event type is registered, if not, register it.
+    if( g_pEventTypeManager->IsTypeRegistered( name, true ) == false )
+    {
+        g_pEventTypeManager->RegisterEventType( name, true );
+    }
+#endif
+
+    return RegisterForEvents( name, pObject, pOnEventFunction );
 }
 
 void EventManager::UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
