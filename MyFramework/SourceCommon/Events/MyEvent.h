@@ -10,6 +10,10 @@
 #ifndef __MyEvent_H__
 #define __MyEvent_H__
 
+#define EventHashType uint32
+typedef EventHashType (*EventTypeHashFunction)(const char* str);
+extern EventTypeHashFunction g_pEventTypeHashFunc;
+
 struct MyEventArgument
 {
     enum ArgumentTypes
@@ -22,12 +26,7 @@ struct MyEventArgument
         Type_Double,
     };
 
-    union
-    {
-        char m_NameStr[8];
-        uint64 m_NameInt;
-    };
-
+    EventHashType m_NameHash;
     ArgumentTypes m_Type;
 
     union
@@ -46,21 +45,21 @@ struct MyEventArgument
 class MyEvent : public TCPPListNode<MyEvent*>
 {
 protected:
-    EventTypes m_Type;
+    EventHashType m_TypeHash; // Either from EventTypes enum or calculated via hash (hash_djb).
     MyEventArgument* m_FirstArgument;
 
-    void CheckIfArgumentIsAlreadyAttached(const char* name);
+    void CheckIfArgumentIsAlreadyAttached(MyEventArgument* pNewArg);
     void AttachArgument(MyEventArgument* pArg);
 
 public:
     MyEvent();
     ~MyEvent();
 
-    void SetType(EventTypes type) { m_Type = type; }
-    EventTypes GetType() { return m_Type; }
+    void SetType(EventHashType hash) { m_TypeHash = hash; }
+    EventHashType GetType() { return m_TypeHash; }
 
     bool IsType(const char* name);
-    bool IsType(EventTypes type);
+    bool IsType(EventHashType hash);
 
     // Arguments
     void ClearArguments();

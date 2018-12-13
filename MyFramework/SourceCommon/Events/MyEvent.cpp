@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,9 +11,11 @@
 
 #include "MyEvent.h"
 
+EventTypeHashFunction g_pEventTypeHashFunc = &hash_djb2;
+
 MyEvent::MyEvent()
 {
-    m_Type = Event_Undefined;
+    m_TypeHash = 0;
     m_FirstArgument = 0;
 }
 
@@ -21,15 +23,15 @@ MyEvent::~MyEvent()
 {
 }
 
-void MyEvent::CheckIfArgumentIsAlreadyAttached(const char* name) // Protected
+void MyEvent::CheckIfArgumentIsAlreadyAttached(MyEventArgument* pNewArg) // Protected
 {
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
     {
-        if( *(uint64*)name == pArg->m_NameInt )
+        if( pNewArg->m_NameHash == pArg->m_NameHash )
         {
             MyAssert( false );
-            LOGError( LOGTag, "Duplicate argument attached to event (%s)\n", name );
+            LOGError( LOGTag, "Duplicate argument attached to event\n" );
         }
 
         pArg = pArg->m_NextArgument;
@@ -38,23 +40,23 @@ void MyEvent::CheckIfArgumentIsAlreadyAttached(const char* name) // Protected
 
 void MyEvent::AttachArgument(MyEventArgument* pArg) // Protected
 {
-    // debug check for duplicate arguments, asserts(in debug) and puts up an error in log.
-    CheckIfArgumentIsAlreadyAttached( pArg->m_NameStr );
+    // Debug check for duplicate arguments, asserts(in debug) and puts up an error in log.
+    CheckIfArgumentIsAlreadyAttached( pArg );
 
-    // attach this argument to this event as the first in the list
+    // Attach this argument to this event as the first in the list.
     pArg->m_NextArgument = this->m_FirstArgument;
     this->m_FirstArgument = pArg;
 }
 
 bool MyEvent::IsType(const char* name)
 {
-    EventTypes type = (EventTypes)hash_djb2( name );
+    EventHashType type = g_pEventTypeHashFunc( name );
     return IsType( type );
 }
 
-bool MyEvent::IsType(EventTypes type)
+bool MyEvent::IsType(EventHashType hash)
 {
-    if( m_Type == type )
+    if( m_TypeHash == hash )
         return true;
 
     return false;
@@ -76,13 +78,13 @@ void MyEvent::ClearArguments()
 }
 
 //====================================================================================================
-// Create a function for each type of argument in ArgumentTypes enum
+// Create a function for each type of argument in ArgumentTypes enum.
 //====================================================================================================
 #define CREATE_ATTACH_ARGUMENT_FUNC(ArgumentName, ArgumentType) \
 void MyEvent::Attach##ArgumentName(const char* name, ArgumentType value) \
 { \
     MyEventArgument* pArg = g_pEventManager->m_pEventArgumentPool.GetObjectFromPool(); \
-    pArg->m_NameInt = *(uint64*)name; \
+    pArg->m_NameHash = g_pEventTypeHashFunc( name ); \
     pArg->m_Type = MyEventArgument::Type_##ArgumentName; \
     pArg->m_##ArgumentName = value; \
     AttachArgument( pArg ); \
@@ -98,10 +100,12 @@ CREATE_ATTACH_ARGUMENT_FUNC( Double, double );
 
 bool MyEvent::IsArgumentAttached(const char* name)
 {
+    EventHashType nameHash = g_pEventTypeHashFunc( name );
+
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
     {
-        if( *(uint64*)name == pArg->m_NameInt )
+        if( nameHash == pArg->m_NameHash )
             return true;
 
         pArg = pArg->m_NextArgument;
@@ -112,10 +116,12 @@ bool MyEvent::IsArgumentAttached(const char* name)
 
 MyEventArgument* MyEvent::GetArgument(const char* name)
 {
+    EventHashType nameHash = g_pEventTypeHashFunc( name );
+
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
     {
-        if( *(uint64*)name == pArg->m_NameInt )
+        if( nameHash == pArg->m_NameHash )
             return pArg;
 
         pArg = pArg->m_NextArgument;

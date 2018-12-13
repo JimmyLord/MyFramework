@@ -60,7 +60,7 @@ void EventManager::Tick(float deltaTime)
 
 MyEvent* EventManager::CreateNewEvent(const char* name)
 {
-    EventTypes type = (EventTypes)hash_djb2( name );
+    EventHashType type = g_pEventTypeHashFunc( name );
     return CreateNewEvent( type );
 }
 
@@ -75,30 +75,31 @@ void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallb
     }
 #endif
 
-    return RegisterForEvents( name, pObject, pOnEventFunction );
+    EventHashType type = g_pEventTypeHashFunc( name );
+    RegisterForEvents( type, pObject, pOnEventFunction );
 }
 
 void EventManager::UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
 {
-    uint32 type = hash_djb2( name );
-    return UnregisterForEvents( (EventTypes)type, pObject, pOnEventFunction );
+    EventHashType type = g_pEventTypeHashFunc( name );
+    return UnregisterForEvents( type, pObject, pOnEventFunction );
 }
 
-MyEvent* EventManager::CreateNewEvent(EventTypes type)
+MyEvent* EventManager::CreateNewEvent(EventHashType hash)
 {
     MyEvent* pEvent = m_pEventPool.GetObjectFromPool();
     MyAssert( pEvent->GetFirstArgument() == 0 );
 
-    pEvent->SetType( type );
+    pEvent->SetType( hash );
 
     return pEvent;
 }
 
-void EventManager::RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction)
 {
     MyEventHandler* pEventHandler = m_pEventHandlerPool.GetObjectFromPool();
     
-    pEventHandler->m_EventType = type;
+    pEventHandler->m_EventTypeHash = hash;
     pEventHandler->m_pObject = pObject;
     pEventHandler->m_pOnEventFunction = pOnEventFunction;
 
@@ -113,13 +114,13 @@ void EventManager::RegisterForEvents(EventTypes type, void* pObject, EventCallba
     }
 }
 
-void EventManager::UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction)
 {
     for( unsigned int i=0; i<m_NumEventHandlers; i++ )
     {
         MyAssert( m_pEventHandlers[i] );
 
-        if( m_pEventHandlers[i]->m_EventType == type &&
+        if( m_pEventHandlers[i]->m_EventTypeHash == hash &&
             m_pEventHandlers[i]->m_pObject == pObject &&
             m_pEventHandlers[i]->m_pOnEventFunction == pOnEventFunction )
         {
@@ -144,7 +145,7 @@ void EventManager::SendEventNow(MyEvent* pEvent)
     {
         MyAssert( m_pEventHandlers[i] );
 
-        if( m_pEventHandlers[i]->m_EventType == pEvent->GetType() )
+        if( m_pEventHandlers[i]->m_EventTypeHash == pEvent->GetType() )
         {
             (m_pEventHandlers[i]->m_pOnEventFunction)( m_pEventHandlers[i]->m_pObject, pEvent );
         }

@@ -19,14 +19,14 @@ typedef bool (*EventCallbackFunc)(void* pObjectPtr, MyEvent* pEvent);
 class MyEventHandler
 {
 public:
-    EventTypes m_EventType;
+    EventHashType m_EventTypeHash; // Either from EventTypes enum or calculated via hash (hash_djb).
     void* m_pObject;
     EventCallbackFunc m_pOnEventFunction;
 
 public:
     MyEventHandler()
     {
-        m_EventType = Event_Undefined;
+        m_EventTypeHash = 0;
 
         m_pObject = 0;
         m_pOnEventFunction = 0;
@@ -64,9 +64,9 @@ public:
     void RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
     void UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
 
-    MyEvent* CreateNewEvent(EventTypes type);
-    void RegisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
-    void UnregisterForEvents(EventTypes type, void* pObject, EventCallbackFunc pOnEventFunction);
+    MyEvent* CreateNewEvent(EventHashType hash);
+    void RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction);
+    void UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction);
 
     void QueueEvent(MyEvent* pEvent);
     void SendEventNow(MyEvent* pEvent);
