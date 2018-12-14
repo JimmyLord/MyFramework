@@ -19,6 +19,7 @@ CPPListHead g_StaticallyAllocatedRam;
 AllocationList* g_pAllocationList = 0;
 unsigned int g_TotalAllocatedRam = 0;
 unsigned int g_AllocatedRamCount = 0;
+unsigned int g_ActiveAllocatedRamCount = 0;
 
 #if USE_PTHREAD
 pthread_mutex_t g_AllocationMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -127,6 +128,11 @@ unsigned int MyMemory_GetNumberOfMemoryAllocations()
     return g_AllocatedRamCount;
 }
 
+unsigned int MyMemory_GetNumberOfActiveMemoryAllocations()
+{
+    return g_ActiveAllocatedRamCount;
+}
+
 void MyMemory_MarkAllExistingAllocationsAsStatic()
 {
     return;
@@ -214,6 +220,7 @@ void* operator new(size_t size, char* file, unsigned long line)
 
     g_TotalAllocatedRam += (int)size;
     g_AllocatedRamCount++;
+    g_ActiveAllocatedRamCount++;
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
@@ -270,6 +277,7 @@ void* operator new[](size_t size, char* file, unsigned long line)
 
     g_TotalAllocatedRam += (int)size;
     g_AllocatedRamCount++;
+    g_ActiveAllocatedRamCount++;
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
@@ -328,6 +336,7 @@ void* operator new(size_t size)
 
     g_TotalAllocatedRam += (int)size;
     g_AllocatedRamCount++;
+    g_ActiveAllocatedRamCount++;
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
@@ -366,6 +375,7 @@ void operator delete(void* m)
     int thisallocationcount = mo->m_allocationcount;
 
     g_TotalAllocatedRam -= (int)size;
+    g_ActiveAllocatedRamCount--;
     free(mo);
 
     pthread_mutex_unlock( &g_AllocationMutex );
@@ -429,6 +439,7 @@ void* operator new[](size_t size)
 
     g_TotalAllocatedRam += (int)size;
     g_AllocatedRamCount++;
+    g_ActiveAllocatedRamCount++;
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
@@ -465,6 +476,7 @@ void operator delete[](void* m)
     int thisallocationcount = mo->m_allocationcount;
 
     g_TotalAllocatedRam -= (int)size;
+    g_ActiveAllocatedRamCount--;
     free(mo);
 
     pthread_mutex_unlock( &g_AllocationMutex );

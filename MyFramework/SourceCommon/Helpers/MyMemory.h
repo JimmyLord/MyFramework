@@ -50,6 +50,7 @@ class AllocationList;
 void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation);
 size_t MyMemory_GetNumberOfBytesAllocated();
 unsigned int MyMemory_GetNumberOfMemoryAllocations();
+unsigned int MyMemory_GetNumberOfActiveMemoryAllocations();
 void MyMemory_MarkAllExistingAllocationsAsStatic();
 
 void* operator new(size_t size, char* file, unsigned long line);
