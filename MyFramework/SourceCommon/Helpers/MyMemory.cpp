@@ -57,6 +57,11 @@ public:
     }
 };
 
+CPPListNode* MyMemory_GetFirstMemObject()
+{
+    return g_pAllocationList->m_Allocations.GetHead();
+}
+
 void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation)
 {
 #if MYFW_WINDOWS && _DEBUG

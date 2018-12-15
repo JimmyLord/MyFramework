@@ -47,6 +47,7 @@ public:
 
 class AllocationList;
 
+CPPListNode* MyMemory_GetFirstMemObject();
 void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation);
 size_t MyMemory_GetNumberOfBytesAllocated();
 unsigned int MyMemory_GetNumberOfMemoryAllocations();
