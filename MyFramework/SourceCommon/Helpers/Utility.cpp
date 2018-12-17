@@ -49,6 +49,27 @@ const char* GetRelativePath(char* fullpath)
     return 0;
 }
 
+const char* GetRelativePath(const char* fullpath)
+{
+#if MYFW_WINDOWS
+    char workingdir[MAX_PATH];
+    GetCurrentDirectoryA( MAX_PATH, workingdir );
+#else
+    char workingdir[PATH_MAX];
+    getcwd( workingdir, PATH_MAX );
+#endif
+
+    unsigned int workingdirpathlen = (unsigned int)strlen( workingdir );
+
+    // Case insensitive string compare.
+    if( _strnicmp( workingdir, fullpath, workingdirpathlen ) == 0 )
+    {
+        return &fullpath[workingdirpathlen+1];
+    }
+
+    return 0;
+}
+
 void GetFullPath(const char* relativepath, char* fullpath, unsigned int maxcharsinfullpatharray)
 {
 #if MYFW_WINDOWS
@@ -165,6 +186,19 @@ bool CheckIfMultipleSubstringsAreInString(const char* string, const char* substr
     }
     
     return true;
+}
+
+uint32 PrintNumberWithCommas(char* pBuffer, uint32 bufferSizeInBytes, unsigned int numberToPrint)
+{
+    if( numberToPrint < 1000 )
+    {
+        return sprintf_s( pBuffer, bufferSizeInBytes, "%d", numberToPrint );
+    }
+
+    int numPrinted = PrintNumberWithCommas( pBuffer, bufferSizeInBytes, numberToPrint/1000 );
+    numPrinted += sprintf_s( pBuffer + numPrinted, bufferSizeInBytes - numPrinted, ",%03d", numberToPrint % 1000 );
+
+    return numPrinted;
 }
 
 uint32 hash_djb2(const char* str)

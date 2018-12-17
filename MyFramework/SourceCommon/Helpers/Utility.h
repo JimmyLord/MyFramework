@@ -14,6 +14,7 @@ const float FEQUALEPSILON = 0.00001f;
 
 void FixSlashesInPath(char* path);
 const char* GetRelativePath(char* fullpath); // will replace backslashes with forward slashes in fullpath
+const char* GetRelativePath(const char* fullpath);
 void GetFullPath(const char* relativepath, char* fullpath, unsigned int maxcharsinfullpatharray);
 void ParseFilename(const char* fullpath, char* outFilename, int sizeFilename, char* outExtension, int sizeExtension);
 
@@ -107,6 +108,7 @@ inline size_t MyOffsetOf(void* pObject, void* pMember)
 
 char* MyStrIStr(const char* haystack, const char* needle, unsigned char extraNeedleTerminator = 0);
 bool CheckIfMultipleSubstringsAreInString(const char* string, const char* substrings, unsigned char delimiter = ' ');
+uint32 PrintNumberWithCommas(char* pBuffer, unsigned int bufferSizeInBytes, unsigned int numberToPrint);
 
 uint32 hash_djb2(const char* str);
 
