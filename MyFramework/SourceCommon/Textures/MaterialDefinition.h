@@ -69,6 +69,8 @@ protected:
 
     MaterialBlendType m_BlendType;
 
+    void SetFile(MyFileObject* pFile);
+
 public:
     ExposedUniformValue m_UniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
@@ -127,7 +129,7 @@ public:
     Vector2 GetUVScale() { return m_UVScale; }
     Vector2 GetUVOffset() { return m_UVOffset; }
 
-    // Material Property Setters
+    // Material Property Setters.
     void SetShader(ShaderGroup* pShader);
     void SetShaderInstanced(ShaderGroup* pShader);
     void SetTextureColor(TextureDefinition* pTexture);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -157,24 +157,14 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 }
 #endif //MYFW_EDITOR
 
-MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pFile)
+MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pMaterialFile)
 {
-    MyAssert( pFile != 0 );
+    MyAssert( pMaterialFile != 0 );
 
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
 
-    pMaterial->m_MaterialFileIsLoaded = true;
-
-    pMaterial->m_UnsavedChanges = true;
-    strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pFile->GetFilenameWithoutExtension() );
-    pMaterial->m_pFile = pFile;
-    pMaterial->m_pFile->AddRef();
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif
+    pMaterial->SetFile( pMaterialFile );
 
     return pMaterial;
 }
@@ -191,19 +181,11 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name, const char
         strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
     }
 
+#if MYFW_EDITOR
     if( relativePath != 0 )
     {
-#if MYFW_EDITOR
         pMaterial->SaveMaterial( relativePath );
         CallMaterialCreatedCallbacks( pMaterial );
-#endif
-    }
-
-#if MYFW_USING_WX
-    if( name != 0 )
-    {
-        g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-        g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
     }
 #endif
 

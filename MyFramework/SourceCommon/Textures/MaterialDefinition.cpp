@@ -82,6 +82,27 @@ MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiff
     m_UnsavedChanges = false;
 }
 
+//============================================================================================================================
+// Protected/Internal methods.
+//============================================================================================================================
+void MaterialDefinition::SetFile(MyFileObject* pFile)
+{
+    // This method should only be used by the Material Manager when initially creating a material from an pre-created file object.
+    // So, make sure this material doesn't already have a file pointer.
+    MyAssert( m_pFile == 0 );
+    MyAssert( m_MaterialFileIsLoaded == false );
+
+    m_pFile = pFile;
+    pFile->AddRef();
+
+    m_MaterialFileIsLoaded = true;
+    m_UnsavedChanges = true;
+    strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, pFile->GetFilenameWithoutExtension() );
+}
+
+//============================================================================================================================
+// Public methods.
+//============================================================================================================================
 void MaterialDefinition::Init()
 {
     m_MaterialFileIsLoaded = false;

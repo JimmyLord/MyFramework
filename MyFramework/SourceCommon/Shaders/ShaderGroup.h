@@ -48,6 +48,7 @@ protected:
 
 public:
     ShaderGroup();
+    ShaderGroup(const char* pFilename);
     ShaderGroup(MyFileObject* pFile);
     ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);
     void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);

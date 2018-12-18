@@ -25,6 +25,13 @@ ShaderGroup::ShaderGroup()
     Create( 0, 0 );
 }
 
+ShaderGroup::ShaderGroup(const char* pFilename)
+{
+    MyFileObject* pShaderFile = RequestFile( pFilename );
+    Create( pShaderFile, 0 );
+    pShaderFile->Release();
+}
+
 ShaderGroup::ShaderGroup(MyFileObject* pFile)
 {
     Create( pFile, 0 );

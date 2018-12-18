@@ -42,7 +42,7 @@ public:
     //    , m13(o.m13), m23(o.m23), m33(o.m33), m43(o.m43)
     //    , m14(o.m14), m24(o.m24), m34(o.m34), m44(o.m44) {}
 
-    // the following function will affect existing values in the matrix
+    // The following functions will affect existing values in the matrix.
     void Scale(float scale);
     void Scale(float sx, float sy, float sz);
     void Scale(Vector3 scale);
@@ -53,7 +53,7 @@ public:
     void Translate(Vector3 pos);
     void Translate(float x, float y, float z);
 
-    // all create/set functions will overright values in the matrix
+    // All create/set functions will overright values in the matrix.
     void SetIdentity();
     void SetAxesView(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos);
     void SetAxesWorld(const Vector3& right, const Vector3& up, const Vector3& at, const Vector3& pos);
@@ -76,7 +76,7 @@ public:
     void CreateLookAtView(const Vector3& eye, const Vector3& up, const Vector3& at);
     void CreateLookAtWorld(const Vector3& eye, const Vector3& up, const Vector3& at);
 
-    // get values from matrix
+    // Get values from matrix.
     Vector3 GetTranslation() { return Vector3( m41, m42, m43 ); }
     Vector3 GetEulerAngles();
     Vector3 GetScale();
@@ -166,7 +166,7 @@ public:
 
     bool Inverse(float tolerance = 0.0001f)
     {
-        // Determinants of 2x2 submatrices
+        // Determinants of 2x2 submatrices.
         float S0 = m11 * m22 - m12 * m21;
         float S1 = m11 * m23 - m13 * m21;
         float S2 = m11 * m24 - m14 * m21;
@@ -181,12 +181,12 @@ public:
         float C1 = m31 * m43 - m33 * m41;
         float C0 = m31 * m42 - m32 * m41;
 
-        // If determinant equals 0, there is no inverse
+        // If determinant equals 0, there is no inverse.
         float det = S0 * C5 - S1 * C4 + S2 * C3 + S3 * C2 - S4 * C1 + S5 * C0;
         if( fabs(det) <= tolerance )
             return false;
 
-        // Compute adjugate matrix
+        // Compute adjugate matrix.
         *this = MyMatrix(
              m22 * C5 - m23 * C4 + m24 * C3, -m12 * C5 + m13 * C4 - m14 * C3,
              m42 * S5 - m43 * S4 + m44 * S3, -m32 * S5 + m33 * S4 - m34 * S3,

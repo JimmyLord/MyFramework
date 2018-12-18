@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -64,10 +64,10 @@ public:
     MaterialDefinition* GetDefaultEditorMaterial();
 #endif
 
-    MaterialDefinition* CreateMaterial(MyFileObject* pFile);
+    MaterialDefinition* CreateMaterial(MyFileObject* pMaterialFile);
     MaterialDefinition* CreateMaterial(const char* name = 0, const char* relativePath = 0);
     MaterialDefinition* LoadMaterial(const char* fullpath);
-    void ReloadMaterial(MaterialDefinition* pMaterial); // can only be called if file on disk changed and is being reloaded.
+    void ReloadMaterial(MaterialDefinition* pMaterial); // Can only be called if file on disk changed and is being reloaded.
     MaterialDefinition* GetFirstMaterial();
     MaterialDefinition* FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor);
     MaterialDefinition* FindMaterialByFilename(const char* fullpath);
