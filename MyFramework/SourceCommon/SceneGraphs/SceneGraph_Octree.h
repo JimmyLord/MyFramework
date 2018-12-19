@@ -57,7 +57,7 @@ public:
 
     void Resize(float minx, float miny, float minz, float maxx, float maxy, float maxz);
 
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
+    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
     virtual void RemoveObject(SceneGraphObject* pObject);
 
     virtual void ObjectMoved(SceneGraphObject* pObject);

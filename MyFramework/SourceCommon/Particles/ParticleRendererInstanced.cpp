@@ -159,7 +159,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     }
 
     if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
             pMatProj, pMatView, 0, m_pMaterial ) )
     {
         GLint aiposloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Position" );

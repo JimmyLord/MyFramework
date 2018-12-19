@@ -19,10 +19,10 @@ public:
 public:
     Plane() {}
 
-    inline void Set(Vector3 n, float d) { m_Normal = n; m_Normal.Normalize(); m_Distance = d; }
-    void Set(Vector3 n, Vector3 p);
+    inline void Set(Vector3 normal, float distance) { m_Normal = normal; m_Normal.Normalize(); m_Distance = distance; }
+    void Set(Vector3 normal, Vector3 point);
 
-    bool IntersectRay(Vector3 raystart, Vector3 raydir, Vector3* result);
+    bool IntersectRay(Vector3 rayStart, Vector3 rayDir, Vector3* pResult);
 };
 
 #endif //__Plane_H__

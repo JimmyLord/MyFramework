@@ -53,7 +53,7 @@ public:
     MySubmesh* m_pSubmesh;
     bool m_Visible;
 
-    int m_GLPrimitiveType;
+    MyRE::PrimitiveTypes m_GLPrimitiveType;
     int m_PointSize;
 
     void* m_pUserData;
@@ -86,8 +86,8 @@ public:
     SceneGraph_Base();
     virtual ~SceneGraph_Base();
 
-    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, unsigned int layers, void* pUserData);
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
+    virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, unsigned int layers, void* pUserData);
+    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData) = 0;
     virtual void RemoveObject(SceneGraphObject* pObject) = 0;
 
     virtual void ObjectMoved(SceneGraphObject* pObject) = 0;

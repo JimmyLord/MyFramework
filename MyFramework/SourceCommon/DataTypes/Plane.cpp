@@ -9,30 +9,32 @@
 
 #include "CommonHeader.h"
 
-void Plane::Set(Vector3 n, Vector3 p)
+void Plane::Set(Vector3 normal, Vector3 point)
 {
-    m_Normal = n;
+    m_Normal = normal;
     m_Normal.Normalize();
     
-    m_Distance = -m_Normal.Dot( p );
+    m_Distance = -m_Normal.Dot( point );
 }
 
-bool Plane::IntersectRay(Vector3 raystart, Vector3 raydir, Vector3* result)
+bool Plane::IntersectRay(Vector3 rayStart, Vector3 rayDir, Vector3* pResult)
 {
+    MyAssert( pResult != 0 );
+
     // t = -(Po dot N + d) / (V dot N)
     // P = Po + tV
 
-    // if ray is parallel to plane, no single intersection.
-    float normdotray = m_Normal.Dot( raydir );
-    if( fequal( normdotray, 0 ) )
+    // If ray is parallel to plane, no single intersection.
+    float normDotRay = m_Normal.Dot( rayDir );
+    if( fequal( normDotRay, 0 ) )
         return false;
 
-    // solve for t
-    float t = -( ( raystart.Dot(m_Normal) + m_Distance ) / normdotray );
+    // Solve for t.
+    float t = -( ( rayStart.Dot(m_Normal) + m_Distance ) / normDotRay );
 
-    // solve for P
-    Vector3 p = raystart + raydir * t;
+    // Solve for P.
+    Vector3 p = rayStart + rayDir * t;
 
-    *result = p;
+    *pResult = p;
     return true;
 }

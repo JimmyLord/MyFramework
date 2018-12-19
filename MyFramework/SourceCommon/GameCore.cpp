@@ -12,6 +12,8 @@
 #include "GameCore.h"
 #include "../SourceCommon/Input/GamepadManager.h"
 #include "../SourceWindows/GamepadManagerXInput.h"
+#include "Renderers/Renderer_Base.h"
+#include "Renderers/OpenGL/Renderer_OpenGL.h"
 
 #if MYFW_EDITOR
 #include "../SourceEditor/CommandStack.h"
@@ -19,7 +21,7 @@
 
 GameCore* g_pGameCore = 0;
 
-GameCore::GameCore()
+GameCore::GameCore(Renderer_Base* pRenderer)
 {
     g_pGameCore = this;
 
@@ -28,7 +30,10 @@ GameCore::GameCore()
     m_OneTimeInitWasCalled = false;
     m_GameConfirmedCloseIsOkay = false;
 
-    m_GLSurfaceIsValid = false;
+    if( pRenderer )
+        m_pRenderer = pRenderer;
+    else
+        m_pRenderer = MyNew Renderer_OpenGL();
 
     m_pSoundPlayer = 0;
     m_pSoundManager = 0;
@@ -41,10 +46,6 @@ GameCore::GameCore()
     g_pIAPManager = MyNew IAPManager;
 #endif
 
-    m_WindowStartX = 0;
-    m_WindowStartY = 0;
-    m_WindowWidth = 0;
-    m_WindowHeight = 0;
     m_HasFocus = true;
     m_Settled = false;
 
@@ -91,7 +92,7 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pGameServiceManager );
     SAFE_DELETE( g_pVertexFormatManager );
 
-    SAFE_DELETE( g_pFileManager ); // will assert if all files aren't free, so delete last.
+    SAFE_DELETE( g_pFileManager ); // Will assert if all files aren't free, so delete last.
 
     SAFE_DELETE( g_pEventManager );
     SAFE_DELETE( g_pEventTypeManager );
@@ -103,6 +104,23 @@ GameCore::~GameCore()
 #if MYFW_IOS
     SAFE_DELETE( g_pIAPManager );
 #endif
+
+    delete m_pRenderer;
+}
+
+bool GameCore::IsGLSurfaceIsValid()
+{
+    return m_pRenderer->IsValid();
+}
+
+float GameCore::GetWindowWidth()
+{
+    return (float)m_pRenderer->GetWindowWidth();
+}
+
+float GameCore::GetWindowHeight()
+{
+    return (float)m_pRenderer->GetWindowHeight();
 }
 
 void GameCore::InitializeManagers()
@@ -182,7 +200,7 @@ void GameCore::OnPrepareToDie()
 
 bool GameCore::IsReadyToRender()
 {
-    if( m_GLSurfaceIsValid == false )
+    if( IsGLSurfaceIsValid() == false )
         return false;
 
     return true;
@@ -260,28 +278,15 @@ void GameCore::OnFocusLost()
 
 void GameCore::OnSurfaceCreated()
 {
-    m_GLSurfaceIsValid = true;
-
-    LOGInfo( LOGTag, "[Flow] onSurfaceCreated()\n" );
-
-//#if !USE_D3D
-//    printGLString( "Version", GL_VERSION );
-//    printGLString( "Vendor", GL_VENDOR );
-//    printGLString( "Renderer", GL_RENDERER );
-//    printGLString( "Extensions", GL_EXTENSIONS );
-//#endif
-//
-//    checkGlError( "OnSurfaceCreated\n" );
+    m_pRenderer->OnSurfaceCreated();
 }
 
 void GameCore::OnSurfaceLost()
 {
-    m_GLSurfaceIsValid = false;
+    m_pRenderer->OnSurfaceCreated();
 
-    LOGInfo( LOGTag, "[Flow] onSurfaceLost()\n" );
-
-    // these calls don't clean out opengl allocations,
-    //     the surface was already lost along with all allocs.
+    // These calls don't clean out opengl allocations,
+    //     The surface was already lost along with all allocs.
     if( g_pShaderManager )
         g_pShaderManager->InvalidateAllShaders( false );
     if( g_pTextureManager )
@@ -292,28 +297,7 @@ void GameCore::OnSurfaceLost()
 
 void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height)
 {
-//#if !MYFW_IOS
-//    if( m_WindowWidth != width || m_WindowHeight != height )
-//    {
-//        LOGInfo( LOGTag, "OnSurfaceChanged(%d, %d)\n", width, height );
-//    }
-//#endif
-
-    m_WindowStartX = (float)startx;
-    m_WindowStartY = (float)starty;
-    m_WindowWidth = (float)width;
-    m_WindowHeight = (float)height;
-
-    // only draw to part of the window, but rest with scissor test and glViewPort.
-    if( startx != 0 || starty != 0 )
-    {
-        // scissor test is really only needed for the glClear call.
-        glEnable( GL_SCISSOR_TEST );
-        glScissor( startx, starty, width, height );
-    }
-
-    glViewport( startx, starty, width, height );
-    checkGlError( "glViewport" );
+    m_pRenderer->OnSurfaceChanged( startx, starty, width, height );
 }
 
 void GameCore::OnDrawFrameStart(unsigned int canvasid)

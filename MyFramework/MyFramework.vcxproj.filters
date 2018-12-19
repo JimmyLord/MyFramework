@@ -40,9 +40,6 @@
     <Filter Include="Source-Platform\Source - Windows">
       <UniqueIdentifier>{002809fd-7be1-4802-a623-186361897913}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Random">
-      <UniqueIdentifier>{51108ed7-eb3b-4c42-b1ca-d1fc8a3fcb33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source-Platform\Source - BlackBerry">
       <UniqueIdentifier>{65fba82d-1d74-4c8b-8eb6-28db9b73f993}</UniqueIdentifier>
     </Filter>
@@ -63,9 +60,6 @@
     </Filter>
     <Filter Include="Source-Platform\Source - WP8">
       <UniqueIdentifier>{eeaedc74-0a54-4f05-a378-aecb28033585}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\GraphicsWrappers">
-      <UniqueIdentifier>{afb726f6-1e25-440d-b168-b8b387910532}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source-Platform\Source - Emscripten">
       <UniqueIdentifier>{487cbf7a-f18a-492d-9487-93fe9873b421}</UniqueIdentifier>
@@ -124,6 +118,21 @@
     <Filter Include="Libraries\OpenSimplexInC">
       <UniqueIdentifier>{ae50c135-b1a5-47d7-8eac-7618130d1030}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libraries\mtrand">
+      <UniqueIdentifier>{6ce22a2f-1958-4ed7-8739-1ddbe862d300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\expr_eval">
+      <UniqueIdentifier>{da87d3d5-0d05-4772-8d01-7b673bd918d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Renderers">
+      <UniqueIdentifier>{afb726f6-1e25-440d-b168-b8b387910532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Renderers\OpenGL">
+      <UniqueIdentifier>{84985293-f29e-467c-846c-321cbf42cb48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Renderers\Old">
+      <UniqueIdentifier>{1c434e93-7927-42d8-9515-c7412b3421eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceAndroid\TextureLoader.cpp">
@@ -179,9 +188,6 @@
     </ClCompile>
     <ClCompile Include="SourceNaCL\NaCLWebRequest.cpp">
       <Filter>Source-Platform\Source - NaCL</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\Random\mtrand.cpp">
-      <Filter>Source\Random</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Helpers\MyTime.cpp">
       <Filter>Source\Helpers</Filter>
@@ -275,12 +281,6 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp">
       <Filter>Source\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.cpp">
-      <Filter>Source\GraphicsWrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\GraphicsWrappers\DXWrapper.cpp">
-      <Filter>Source\GraphicsWrappers</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp">
       <Filter>Source\Shaders</Filter>
@@ -519,6 +519,21 @@
     <ClCompile Include="..\Libraries\cJSON\cJSON.c">
       <Filter>Libraries\cJSON</Filter>
     </ClCompile>
+    <ClCompile Include="..\Libraries\mtrand\mtrand.cpp">
+      <Filter>Libraries\mtrand</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\Old\DXWrapper.cpp">
+      <Filter>Source\Renderers\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\Old\OpenGLWrapper.cpp">
+      <Filter>Source\Renderers\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.cpp">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\Renderer_Base.cpp">
+      <Filter>Source\Renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -583,9 +598,6 @@
     </ClInclude>
     <ClInclude Include="SourceNaCL\NaCLWebRequest.h">
       <Filter>Source-Platform\Source - NaCL</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\Random\mtrand.h">
-      <Filter>Source\Random</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MyTime.h">
       <Filter>Source\Helpers</Filter>
@@ -703,12 +715,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h">
       <Filter>Source\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\GraphicsWrappers\OpenGLWrapper.h">
-      <Filter>Source\GraphicsWrappers</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\GraphicsWrappers\DXWrapper.h">
-      <Filter>Source\GraphicsWrappers</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Shaders\Shader_Base.h">
       <Filter>Source\Shaders</Filter>
@@ -971,14 +977,32 @@
     <ClInclude Include="SourceEditor\EditorCommands.h">
       <Filter>Source-Editor</Filter>
     </ClInclude>
-    <ClInclude Include="SourceEditor\expr_eval.h">
-      <Filter>Source-Editor</Filter>
-    </ClInclude>
     <ClInclude Include="SourceEditor\EditorViewTypes.h">
       <Filter>Source-Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\Libraries\OpenSimplexInC\open-simplex-noise.h">
       <Filter>Libraries\OpenSimplexInC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\mtrand\mtrand.h">
+      <Filter>Libraries\mtrand</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\expr_eval\expr_eval.h">
+      <Filter>Libraries\expr_eval</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\Old\DXWrapper.h">
+      <Filter>Source\Renderers\Old</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\Old\OpenGLWrapper.h">
+      <Filter>Source\Renderers\Old</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.h">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\Renderer_Base.h">
+      <Filter>Source\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\Renderer_Enums.h">
+      <Filter>Source\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1021,6 +1045,9 @@
     <None Include="..\README.md" />
     <None Include="SourceCommon\DataTypes\TCPPList.h">
       <Filter>Source\DataTypes</Filter>
+    </None>
+    <None Include="..\Libraries\mtrand\mtreadme.txt">
+      <Filter>Libraries\mtrand</Filter>
     </None>
   </ItemGroup>
 </Project>

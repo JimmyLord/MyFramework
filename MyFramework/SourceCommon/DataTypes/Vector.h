@@ -22,6 +22,9 @@ public:
     Vector2(float nx, float ny) { x = nx; y = ny; }
     //virtual ~Vector2() {}
 
+    static const Vector2 Right() { return Vector2( 1.0f, 0.0f ); }
+    static const Vector2 Up() { return Vector2( 0.0f, 1.0f ); }
+
     inline void Set(float nx, float ny) { x = nx; y = ny; }
     inline float LengthSquared() const { return x*x + y*y; }
     inline float Length() const { return sqrtf(x*x + y*y); }
@@ -78,6 +81,10 @@ public:
     Vector3(Vector2 v2) { x = v2.x; y = v2.y; z = 0; }
     Vector3(Vector2 v2, float nz) { x = v2.x; y = v2.y; z = nz; }
     //virtual ~Vector3() {}
+
+    static const Vector3 Right() { return Vector3( 1.0f, 0.0f, 0.0f ); }
+    static const Vector3 Up() { return Vector3( 0.0f, 1.0f, 0.0f ); }
+    static const Vector3 In() { return Vector3( 0.0f, 0.0f, 1.0f ); }
 
     inline Vector2 XY() { return Vector2( x, y ); }
 

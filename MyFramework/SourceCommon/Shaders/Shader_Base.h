@@ -93,7 +93,7 @@ public:
     virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
 
     bool CompileShader();
-    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
+    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
     bool Activate();
 
     void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);

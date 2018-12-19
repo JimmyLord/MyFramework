@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 #include "MySprite_XYZVertexColor.h"
 
 MySprite_XYZVertexColor::MySprite_XYZVertexColor(bool creatematerial)
@@ -204,13 +205,13 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* 
     }
 
     if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
             pMatProj, pMatView, pMatWorld, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( 6, 0, 0 );
 #else
-        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
+        g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, 6, MyRE::IndexType_U16, 0, hideFromDrawList );
         //LOGInfo( LOGTag, "Rendering: vbo(%d) ibo(%d)\n", m_pVertexBuffer->m_DataSize, m_pIndexBuffer->m_DataSize );
 #endif
         m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );

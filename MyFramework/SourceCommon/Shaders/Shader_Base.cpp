@@ -513,7 +513,7 @@ bool Shader_Base::CompileShader()
     return true;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, int IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial)
+bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial)
 {
     MyAssert( pMaterial );
 

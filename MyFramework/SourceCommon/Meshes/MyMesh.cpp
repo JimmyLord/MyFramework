@@ -9,6 +9,8 @@
 
 #include "CommonHeader.h"
 #include "MyMesh.h"
+#include "../Renderers/Renderer_Enums.h"
+#include "../Renderers/Renderer_Base.h"
 
 MySubmesh::MySubmesh()
 {
@@ -25,7 +27,7 @@ MySubmesh::MySubmesh()
 
     m_NumVertsToDraw = 0;
     m_NumIndicesToDraw = 0;
-    m_PrimitiveType = GL_TRIANGLES;
+    m_PrimitiveType = MyRE::PrimitiveType_Triangles;
     m_PointSize = 1;
 }
 
@@ -59,7 +61,7 @@ unsigned int MySubmesh::GetStride()
 bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex)
 {
     MaterialDefinition* pMaterial = m_pMaterial;
-    int PrimitiveType = m_PrimitiveType;
+    MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
     int PointSize = m_PointSize;        
 
     if( pShader->Activate() == false )
@@ -78,7 +80,7 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
     pShader->ProgramCamera( pCamPos, pCamRot );
     checkGlError( "Drawing Mesh ProgramCamera()" );
 
-    if( PrimitiveType == GL_POINTS )
+    if( primitiveType == MyRE::PrimitiveType_Points )
         pShader->ProgramPointSize( (float)PointSize );
 
     if( pShadowTex != 0 )
@@ -103,7 +105,7 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
     if( pMaterial->IsTransparent( pShader ) )
     {
         glEnable( GL_BLEND );
-                    
+
         GLenum srcfactor = pShader->GetShaderBlendFactorSrc_OpenGL();
         GLenum destfactor = pShader->GetShaderBlendFactorDest_OpenGL();
         glBlendFunc( srcfactor, destfactor );
@@ -172,7 +174,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     //MaterialDefinition* pMaterial = m_pMaterial;
     int NumVertsToDraw = m_NumVertsToDraw;
     int NumIndicesToDraw = m_NumIndicesToDraw;
-    int PrimitiveType = m_PrimitiveType;
+    MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
     int PointSize = m_PointSize;        
 
 #if MYFW_USING_WX
@@ -225,14 +227,10 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
 
     if( pShaderOverride )
     {
-        int indexbuffertype = GL_UNSIGNED_BYTE;
+        MyRE::IndexTypes IBOType = MyRE::IndexType_Undefined;
         if( pIndexBuffer != 0 )
         {
-            int bytesperindex = pIndexBuffer->m_BytesPerIndex;
-            if( bytesperindex == 2 )
-                indexbuffertype = GL_UNSIGNED_SHORT;
-            else if( bytesperindex == 4 )
-                indexbuffertype = GL_UNSIGNED_INT;
+            IBOType = pIndexBuffer->GetIBOType();
         }
 
         //int numboneinfluences = 0;
@@ -262,9 +260,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
         checkGlError( "MyMesh::Draw() - if( pShaderOverride ) - after SetupAttributes" );
 
         if( pIndexBuffer )
-            MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0, hideFromDrawList );
+            g_pRenderer->DrawElements( primitiveType, NumIndicesToDraw, IBOType, 0, hideFromDrawList );
         else
-            MyDrawArrays( PrimitiveType, 0, NumVertsToDraw, hideFromDrawList );
+            g_pRenderer->DrawArrays( primitiveType, 0, NumVertsToDraw, hideFromDrawList );
 
         // Always disable blending.
         glDisable( GL_BLEND );
@@ -312,20 +310,16 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
                 SetupAttributes( pShader );
                 SetupMeshSpecificShaderUniforms( pShader, pMatProj, pMatView, pMatWorld, &matInverseWorld, pCamPos, pLightPtrs, numLights, shadowLightVP );
 
-                int indexbuffertype = GL_UNSIGNED_BYTE;
+                MyRE::IndexTypes IBOType = MyRE::IndexType_Undefined;
                 if( pIndexBuffer != 0 )
                 {
-                    int bytesperindex = pIndexBuffer->m_BytesPerIndex;
-                    if( bytesperindex == 2 )
-                        indexbuffertype = GL_UNSIGNED_SHORT;
-                    else if( bytesperindex == 4 )
-                        indexbuffertype = GL_UNSIGNED_INT;
+                    IBOType = pIndexBuffer->GetIBOType();
                 }
 
                 if( pIndexBuffer )
-                    MyDrawElements( PrimitiveType, NumIndicesToDraw, indexbuffertype, 0, hideFromDrawList );
+                    g_pRenderer->DrawElements( primitiveType, NumIndicesToDraw, IBOType, 0, hideFromDrawList );
                 else
-                    MyDrawArrays( PrimitiveType, 0, NumVertsToDraw, hideFromDrawList );
+                    g_pRenderer->DrawArrays( primitiveType, 0, NumVertsToDraw, hideFromDrawList );
 
                 checkGlError( "Drawing Mesh MyDrawElements()" );
 
@@ -772,7 +766,7 @@ void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
     unsigned int numindices = 0;
     m_SubmeshList[0]->m_NumVertsToDraw = numverts;
     m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-    m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_STRIP;
+    m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleStrip;
 
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
@@ -1956,7 +1950,7 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberofsegments)
         m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_FAN;
+    m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleFan;
 
     // delete the old buffers, if we want an circle with more verts.
     if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
@@ -2004,7 +1998,7 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
         m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    m_SubmeshList[0]->m_PrimitiveType = GL_TRIANGLE_STRIP;
+    m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleStrip;
 
     // delete the old buffers, if we want an circle with more verts.
     if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
@@ -2151,7 +2145,7 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
         m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
     }
 
-    m_SubmeshList[0]->m_PrimitiveType = GL_LINES;
+    m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Lines;
 
     Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;

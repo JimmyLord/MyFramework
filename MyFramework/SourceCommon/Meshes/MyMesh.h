@@ -51,7 +51,7 @@ public:
 
     unsigned int m_NumVertsToDraw;
     unsigned int m_NumIndicesToDraw;
-    int m_PrimitiveType;
+    MyRE::PrimitiveTypes m_PrimitiveType;
     int m_PointSize;
 
     MySubmesh();

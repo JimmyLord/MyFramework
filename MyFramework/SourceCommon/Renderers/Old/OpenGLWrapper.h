@@ -10,6 +10,8 @@
 #ifndef __OpenGLWrapper_H__
 #define __OpenGLWrapper_H__
 
+#include "../Renderer_Enums.h"
+
 class GLStats
 {
 public:
@@ -57,8 +59,8 @@ extern GLStats g_GLStats;
 void MyBindBuffer(GLenum target, GLuint buffer);
 void MyDeleteBuffers(GLsizei num, GLuint* buffers);
 void MyActiveTexture(GLenum texture);
-void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, bool hideFromDrawList);
-void MyDrawArrays(GLenum mode, GLint first, GLsizei count, bool hideFromDrawList);
+//void MyDrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList);
+//void MyDrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList);
 void MyUseProgram(GLuint program);
 
 void MyEnableVertexAttribArray(GLuint index);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,16 +16,15 @@ template <class MyType> class MyList
 protected:
     MyType* m_Objects;
 
-    unsigned int m_Length; // num elements allocated in list
-    unsigned int m_Count; // num elements used.
+    unsigned int m_ElementsAllocated;
+    unsigned int m_ElementsInUse;
 
 public:
-    //Construction and destruction
     MyList()
     {
         m_Objects = 0;
-        m_Length = 0;
-        m_Count = 0;
+        m_ElementsAllocated = 0;
+        m_ElementsInUse = 0;
     }
     MyList(unsigned int length)
     {
@@ -43,46 +42,48 @@ public:
         MyAssert( m_Objects == 0 );
         if( length > 0 )
             m_Objects = MyNew MyType[length];
-        m_Length = length;
-        m_Count = 0;
+        m_ElementsAllocated = length;
+        m_ElementsInUse = 0;
     }
 
     void FreeAllInList()
     {
         SAFE_DELETE_ARRAY( m_Objects );
-        m_Length = 0;
-        m_Count = 0;
+        m_ElementsAllocated = 0;
+        m_ElementsInUse = 0;
     }
 
     bool InsertAtIndex(unsigned int index, MyType pObj)
     {
-        MyAssert( m_Count < m_Length );
-        if( m_Count >= m_Length )
+        MyAssert( m_ElementsInUse < m_ElementsAllocated );
+        if( m_ElementsInUse >= m_ElementsAllocated )
             return false;
 
-        MyAssert( index <= m_Count );
-        if( index > m_Count )
+        MyAssert( index <= m_ElementsInUse );
+        if( index > m_ElementsInUse )
             return false;
 
-        for( unsigned int i=m_Count; i>index; i-- )
+        // Shift all entries after 'index' up by one.
+        for( unsigned int i=m_ElementsInUse; i>index; i-- )
         {
             m_Objects[i] = m_Objects[i-1];
         }
 
+        // Insert new object.
         m_Objects[index] = pObj;
-        m_Count++;
+        m_ElementsInUse++;
 
         return true;
     }
 
     bool Add(MyType pObj)
     {
-        MyAssert( m_Count < m_Length );
-        if( m_Count >= m_Length )
+        MyAssert( m_ElementsInUse < m_ElementsAllocated );
+        if( m_ElementsInUse >= m_ElementsAllocated )
             return false;
 
-        m_Objects[m_Count] = pObj;
-        m_Count++;
+        m_Objects[m_ElementsInUse] = pObj;
+        m_ElementsInUse++;
 
         return true;
     }
@@ -91,7 +92,7 @@ public:
     {
         unsigned int i;
 
-        for( i=0; i<m_Count; i++ )
+        for( i=0; i<m_ElementsInUse; i++ )
         {
             if( m_Objects[i] == pObj )
             {
@@ -107,7 +108,7 @@ public:
     {
         unsigned int i;
 
-        for( i=0; i<m_Count; i++ )
+        for( i=0; i<m_ElementsInUse; i++ )
         {
             if( m_Objects[i] == pObj )
             {
@@ -122,57 +123,57 @@ public:
     MyType RemoveIndex(unsigned int i)
     {
         MyType temp = m_Objects[i];
-        m_Objects[i] = m_Objects[m_Count-1];
-        m_Count--;
+        m_Objects[i] = m_Objects[m_ElementsInUse-1];
+        m_ElementsInUse--;
         return temp;
     }
 
     MyType RemoveIndex_MaintainOrder(unsigned int i)
     {
         MyType temp = m_Objects[i];
-        for( ; i<m_Count-1; i++ )
+        for( ; i<m_ElementsInUse-1; i++ )
         {
             m_Objects[i] = m_Objects[i+1];
         }
 
-        m_Count--;
+        m_ElementsInUse--;
 
         return temp;
     }
 
     unsigned int Length()
     {
-        return m_Length;
+        return m_ElementsAllocated;
+    }
+
+    unsigned int Count() const
+    {
+        return m_ElementsInUse;
     }
 
     // This exists to keep code using std::vector in editor mode slightly less ifdefy.
     unsigned int size() const
     {
-        return m_Count;
+        return m_ElementsInUse;
     }
 
-    unsigned int Count() const
+    MyType& operator[](unsigned int i) const
     {
-        return m_Count;
-    }
-
-    MyType& operator[] (unsigned int i) const
-    {
-        MyAssert( i < m_Count );
+        MyAssert( i < m_ElementsInUse );
         return m_Objects[i];
     }
 
     void BlockFill(const void* ptr, unsigned int size, unsigned int count)
     {
-        MyAssert( m_Count == 0 );
+        MyAssert( m_ElementsInUse == 0 );
         MyAssert( size == sizeof(MyType) * count );
         memcpy( m_Objects, ptr, size );
-        m_Count = count;
+        m_ElementsInUse = count;
     }
 
     void Clear()
     {
-        m_Count = 0;
+        m_ElementsInUse = 0;
     }
 };
 

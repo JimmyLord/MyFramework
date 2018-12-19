@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 
 #include "Box2DDebugDraw.h"
 
@@ -28,7 +29,7 @@ Box2DDebugDraw::~Box2DDebugDraw()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, int primitivetype, float pointorlinesize)
+void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, MyRE::PrimitiveTypes primitiveType, float pointorlinesize)
 {
     // Set the material to the correct color and draw the shape.
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass( 0, 0 );
@@ -56,7 +57,7 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     glDisable( GL_CULL_FACE );
     glDisable( GL_DEPTH_TEST );
 
-    MyDrawArrays( primitivetype, 0, vertexCount, true );
+    g_pRenderer->DrawArrays( primitiveType, 0, vertexCount, true );
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
@@ -66,13 +67,13 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
 
 void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP, 1 );
+    Draw( vertices, vertexCount, color, 255, MyRE::PrimitiveType_LineLoop, 1 );
 }
 
 void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN, 1 );
-    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP, 1 );
+    Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );
+    Draw( vertices, vertexCount, color, 255, MyRE::PrimitiveType_LineLoop, 1 );
 }
 
 void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
@@ -87,7 +88,7 @@ void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Co
         vertices[i].y = center.y + sin( i*anglechange ) * radius;
     }
 	
-    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN, 1 );
+    Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );
 }
 
 void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
@@ -102,15 +103,15 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const
         vertices[i].y = center.y + sin( i*anglechange ) * radius;
     }
 	
-    Draw( vertices, vertexCount, color, 128, GL_TRIANGLE_FAN, 1 );
-    Draw( vertices, vertexCount, color, 255, GL_LINE_LOOP, 1 );
+    Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );
+    Draw( vertices, vertexCount, color, 255, MyRE::PrimitiveType_LineLoop, 1 );
 }
 
 void Box2DDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
     b2Vec2 vertices[2] = { p1, p2 };
 
-    Draw( vertices, 2, color, 255, GL_LINES, 1 );
+    Draw( vertices, 2, color, 255, MyRE::PrimitiveType_Lines, 1 );
 }
 
 void Box2DDebugDraw::DrawTransform(const b2Transform& xf)
@@ -118,13 +119,13 @@ void Box2DDebugDraw::DrawTransform(const b2Transform& xf)
     b2Vec2 vertices[2] = { xf.p };
 
     vertices[1] = xf.p + 0.5f * xf.q.GetXAxis();
-    Draw( vertices, 2, b2Color( 1, 0, 0 ), 255, GL_LINES, 1 );
+    Draw( vertices, 2, b2Color( 1, 0, 0 ), 255, MyRE::PrimitiveType_Lines, 1 );
 
     vertices[1] = xf.p + 0.5f * xf.q.GetYAxis();
-    Draw( vertices, 2, b2Color( 0, 1, 0 ), 255, GL_LINES, 1 );
+    Draw( vertices, 2, b2Color( 0, 1, 0 ), 255, MyRE::PrimitiveType_Lines, 1 );
 }
 
 void Box2DDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
-    Draw( &p, 1, color, 255, GL_POINTS, size );
+    Draw( &p, 1, color, 255, MyRE::PrimitiveType_Points, size );
 }

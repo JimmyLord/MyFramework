@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 #include "SpriteBatch.h"
 
 SpriteBatch::SpriteBatch()
@@ -125,13 +126,13 @@ void SpriteBatch::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 
     // Draw the contents of the buffers.
     if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
             pMatProj, pMatView, &pos, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( m_NumSprites*6, 0, 0 );
 #else
-        MyDrawElements( GL_TRIANGLES, m_NumSprites*6, GL_UNSIGNED_SHORT, 0, false );
+        g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, m_NumSprites*6, MyRE::IndexType_U16, 0, false );
 #endif
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }

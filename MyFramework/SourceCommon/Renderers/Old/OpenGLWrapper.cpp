@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderer_Enums.h"
 
 GLStats g_GLStats;
 
@@ -113,97 +114,97 @@ void MyActiveTexture(GLenum texture)
     glActiveTexture( texture );
 }
 
-void MyDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, bool hideFromDrawList)
-{
-#if MYFW_USING_WX
-    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
-#elif MYFW_USING_IMGUI
-    bool draw = true;
-    
-    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
-    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
-        g_GLStats.m_DrawCallLimit_Index != -1 )
-    {
-        // Don't draw "hidden/editor" items if we're debugging.
-        if( hideFromDrawList == true )
-            draw = false;
-
-        // Don't draw object above the draw limit.
-        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
-            draw = false;
-
-#if _DEBUG && MYFW_WINDOWS
-        if( draw )
-        {
-            if( g_GLStats.m_DrawCallLimit_BreakPointIndex == g_GLStats.m_NumDrawCallsThisFrameSoFar )
-            {
-                __debugbreak();
-                g_GLStats.m_DrawCallLimit_BreakPointIndex = -1;
-            }
-        }
-#endif //_DEBUG && MYFW_WINDOWS
-    }
-
-    if( draw )
-#endif
-    {
-        checkGlError( "glDrawElements Before" );
-        glDrawElements( mode, count, type, indices );
-        checkGlError( "glDrawElements After" );
-    }
-
-    if( hideFromDrawList == false )
-    {
-        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
-    }
-
-#if MYFW_USING_WX
-    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
-    {
-        g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
-    }
-#endif
-}
-
-void MyDrawArrays(GLenum mode, GLint first, GLsizei count, bool hideFromDrawList)
-{
-#if MYFW_USING_WX
-    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
-#elif MYFW_USING_IMGUI
-    bool draw = true;
-    
-    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
-    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
-        g_GLStats.m_DrawCallLimit_Index != -1 )
-    {
-        // Don't draw "hidden/editor" items if we're debugging.
-        if( hideFromDrawList == true )
-            draw = false;
-
-        // Don't draw object above the draw limit.
-        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
-            draw = false;
-    }
-
-    if( draw )
-#endif
-    {
-        glDrawArrays( mode, first, count );
-        checkGlError( "glDrawArrays" );
-    }
-
-    if( hideFromDrawList == false )
-    {
-        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
-    }
-
-#if MYFW_USING_WX
-    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
-    {
-        g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
-    }
-#endif
-}
+//void MyDrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList)
+//{
+//#if MYFW_USING_WX
+//    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+//#elif MYFW_USING_IMGUI
+//    bool draw = true;
+//    
+//    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
+//    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
+//        g_GLStats.m_DrawCallLimit_Index != -1 )
+//    {
+//        // Don't draw "hidden/editor" items if we're debugging.
+//        if( hideFromDrawList == true )
+//            draw = false;
+//
+//        // Don't draw object above the draw limit.
+//        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
+//            draw = false;
+//
+//#if _DEBUG && MYFW_WINDOWS
+//        if( draw )
+//        {
+//            if( g_GLStats.m_DrawCallLimit_BreakPointIndex == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+//            {
+//                __debugbreak();
+//                g_GLStats.m_DrawCallLimit_BreakPointIndex = -1;
+//            }
+//        }
+//#endif //_DEBUG && MYFW_WINDOWS
+//    }
+//
+//    if( draw )
+//#endif
+//    {
+//        checkGlError( "glDrawElements Before" );
+//        glDrawElements( mode, count, IBOType, indices );
+//        checkGlError( "glDrawElements After" );
+//    }
+//
+//    if( hideFromDrawList == false )
+//    {
+//        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+//    }
+//
+//#if MYFW_USING_WX
+//    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
+//    {
+//        g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
+//    }
+//#endif
+//}
+//
+//void MyDrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList)
+//{
+//#if MYFW_USING_WX
+//    if( g_GLStats.m_DrawCallLimit_Index == -1 || g_GLStats.m_DrawCallLimit_Index == g_GLStats.m_NumDrawCallsThisFrameSoFar )
+//#elif MYFW_USING_IMGUI
+//    bool draw = true;
+//    
+//    // If this is the canvas being debugged, limit what gets drawn (if there's a limit set).
+//    if( g_GLStats.m_DrawCallLimit_Canvas == (int)g_GLStats.m_CurrentCanvasID &&
+//        g_GLStats.m_DrawCallLimit_Index != -1 )
+//    {
+//        // Don't draw "hidden/editor" items if we're debugging.
+//        if( hideFromDrawList == true )
+//            draw = false;
+//
+//        // Don't draw object above the draw limit.
+//        if( g_GLStats.m_NumDrawCallsThisFrameSoFar > g_GLStats.m_DrawCallLimit_Index )
+//            draw = false;
+//    }
+//
+//    if( draw )
+//#endif
+//    {
+//        glDrawArrays( mode, first, count );
+//        checkGlError( "glDrawArrays" );
+//    }
+//
+//    if( hideFromDrawList == false )
+//    {
+//        g_GLStats.m_NumDrawCallsThisFrameSoFar++;
+//    }
+//
+//#if MYFW_USING_WX
+//    if( g_GLCanvasIDActive == 0 && g_pPanelMemory->m_DrawCallListDirty == true )
+//    {
+//        g_pPanelMemory->AddDrawCall( g_GLStats.m_NumDrawCallsThisFrameSoFar, "Global", "draw" );
+//    }
+//#endif
+//}
 
 void MyUseProgram(GLuint program)
 {

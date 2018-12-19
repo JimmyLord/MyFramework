@@ -20,7 +20,7 @@ public:
     SceneGraph_Flat();
     virtual ~SceneGraph_Flat();
 
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
+    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
     virtual void RemoveObject(SceneGraphObject* pObject);
 
     virtual void ObjectMoved(SceneGraphObject* pObject);

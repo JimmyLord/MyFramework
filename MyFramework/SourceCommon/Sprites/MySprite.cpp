@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 #include "MySprite.h"
 
 // These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
@@ -439,7 +440,7 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
     }
 
     bool activated = pShader->ActivateAndProgramShader(
-                        m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                        m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
                         pMatProj, pMatView, pMatWorld, m_pMaterial );
 
     // Our VBO doesn't have normals, so set normals to face forward.
@@ -465,7 +466,7 @@ void MySprite::DrawNoSetup()
     g_pD3DContext->DrawIndexed( 6, 0, 0 );
     //g_pD3DContext->Draw( 6, 0 );
 #else
-    MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, false );
+    g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, 6, MyRE::IndexType_U16, 0, false );
 #endif
 }
 
@@ -520,7 +521,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         identitymat.SetIdentity();
         pShader->ProgramBoneTransforms( &identitymat, 1 );
 
-        MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
+        g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, 6, MyRE::IndexType_U16, 0, hideFromDrawList );
         //pShader->DeactivateShader( m_pVertexBuffer, false );
     }
     else
@@ -554,7 +555,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         }
 
         if( pShader->ActivateAndProgramShader(
-                m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+                m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
                 pMatProj, pMatView, pMatWorld, m_pMaterial ) )
         {
             // Our VBO doesn't have normals, so set normals to face forward.
@@ -570,7 +571,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
 
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 
-            MyDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, hideFromDrawList );
+            g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, 6, MyRE::IndexType_U16, 0, hideFromDrawList );
             pShader->DeactivateShader( m_pVertexBuffer, true );
         }
 

@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 #include "ParticleRenderer.h"
 
 #define USE_INDEXED_TRIANGLES   1
@@ -298,10 +299,10 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
 
 #if USE_INDEXED_TRIANGLES
     if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT,
+            m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
             pMatProj, pMatView, 0, m_pMaterial ) )
     {
-        MyDrawElements( GL_TRIANGLES, m_ParticleCount*6, GL_UNSIGNED_SHORT, 0, false );
+        g_pRenderer->DrawElements( MyRE::PrimitiveType_Triangles, m_ParticleCount*6, MyRE::IndexType_U16, 0, false );
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }
 #else

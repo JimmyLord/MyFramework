@@ -66,6 +66,20 @@ BufferDefinition::~BufferDefinition()
     this->Remove();
 }
 
+MyRE::IndexTypes BufferDefinition::GetIBOType()
+{
+    if( m_BytesPerIndex == 1 )
+        return MyRE::IndexType_U8;
+    else if( m_BytesPerIndex == 2 )
+        return MyRE::IndexType_U16;
+    else if( m_BytesPerIndex == 4 )
+        return MyRE::IndexType_U32;
+
+    MyAssert( false );
+
+    return MyRE::IndexType_Undefined;
+}
+
 // copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
 void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
 {

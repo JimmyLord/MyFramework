@@ -12,7 +12,7 @@
 
 #include "../SourceEditor/EditorCommands.h"
 #include "../SourceEditor/CommandStack.h"
-#include "../SourceEditor/expr_eval.h"
+#include "../../Libraries/expr_eval/expr_eval.h"
 
 PanelWatch* g_pPanelWatch = 0;
 

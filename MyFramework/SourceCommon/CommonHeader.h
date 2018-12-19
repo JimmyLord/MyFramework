@@ -128,7 +128,7 @@
 #undef WIN32
 #undef USE_OPENGL
 #define USE_D3D 1
-#include "GraphicsWrappers/DXWrapper.h"
+#include "GraphicsWrappers/Old/DXWrapper.h"
 #undef WIN32
 #endif
 
@@ -492,7 +492,7 @@ typedef unsigned long   u_long;
 #define MYFW_USEINSTANCEDPARTICLES  0
 #endif
 
-#include "GraphicsWrappers/OpenGLWrapper.h"
+#include "Renderers/Old/OpenGLWrapper.h"
 
 #define PI 3.1415926535897932384626433832795f
 
@@ -519,7 +519,7 @@ typedef unsigned long   u_long;
 #include "Helpers/MyTime.h"
 #include "Helpers/ExternalTools.h"
 
-#include "Random/mtrand.h"
+#include "../../Libraries/mtrand/mtrand.h"
 
 #include "Helpers/GlobalEnums.h"
 #include "Helpers/MyTweener.h"

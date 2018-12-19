@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Base.h"
 #include "MySprite9.h"
 
 MySprite9::MySprite9()
@@ -176,14 +177,14 @@ void MySprite9::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
     }
 
     if( pShader->ActivateAndProgramShader(
-            m_pVertexBuffer, m_pIndexBuffer, GL_UNSIGNED_SHORT, 
+            m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16, 
             pMatProj, pMatView, &m_Position, m_pMaterial ) )
     {
 #if USE_D3D
         g_pD3DContext->DrawIndexed( 6, 0, 0 );
         //g_pD3DContext->Draw( 6, 0 );
 #else
-        MyDrawElements( GL_TRIANGLE_STRIP, 24, GL_UNSIGNED_SHORT, 0, false );
+        g_pRenderer->DrawElements( MyRE::PrimitiveType_TriangleStrip, 24, MyRE::IndexType_U16, 0, false );
 #endif
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }

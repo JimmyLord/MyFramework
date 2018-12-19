@@ -27,7 +27,7 @@ void SceneGraphObject::Clear()
     m_pSubmesh = 0;
     m_Visible = false;
 
-    m_GLPrimitiveType = 0;
+    m_GLPrimitiveType = MyRE::PrimitiveType_Undefined;
     m_PointSize = 0;
 
     m_pUserData = 0;
@@ -76,7 +76,7 @@ SceneGraph_Base::~SceneGraph_Base()
 {
 }
 
-SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, int primitiveType, int pointSize, unsigned int layers, void* pUserData)
+SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, unsigned int layers, void* pUserData)
 {
     // Add the object with the opaque flag set.
     SceneGraphObject* pSceneGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitiveType, pointSize, SceneGraphFlag_Opaque, layers, pUserData);

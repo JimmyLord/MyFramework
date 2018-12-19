@@ -15,6 +15,7 @@ class GameLevel;
 class BMFont;
 class SoundPlayer;
 class SoundManager;
+class Renderer_Base;
 #if MYFW_EDITOR
 class CommandStack;
 #endif
@@ -67,12 +68,8 @@ protected:
     bool m_OneTimeInitWasCalled; // HACK: NaCl and Android builds call OneTimeInit too often, so this will ensure it doesn't get called multiple times.
     bool m_GameConfirmedCloseIsOkay; // Setting this flag should cause the main game window to close.
 
-    bool m_GLSurfaceIsValid;
+    Renderer_Base* m_pRenderer;
 
-    float m_WindowStartX;
-    float m_WindowStartY;
-    float m_WindowWidth;
-    float m_WindowHeight;
     bool m_HasFocus;
     bool m_Settled;
 
@@ -101,15 +98,15 @@ protected:
 #endif
 
 public:
-    GameCore();
+    GameCore(Renderer_Base* pRenderer = 0);
     virtual ~GameCore();
 
-    // GameCore Getters
+    // Getters.
     bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
-    bool IsGLSurfaceIsValid() { return m_GLSurfaceIsValid; }
+    bool IsGLSurfaceIsValid();
 
-    float GetWindowWidth() { return m_WindowWidth; }
-    float GetWindowHeight() { return m_WindowHeight; }
+    float GetWindowWidth();
+    float GetWindowHeight();
     bool HasFocus() { return m_HasFocus; }
     bool IsSettled() { return m_Settled; }
 
@@ -123,7 +120,7 @@ public:
     MediaPlayer* GetMediaPlayer() { return m_pMediaPlayer; }
 #endif
 
-    // GameCore Setters
+    // Setters.
     void SetIsNotSettled() { m_Settled = false; }
 
     void RequestKeyboardOpen() { m_KeyboardOpenRequested = true; }
