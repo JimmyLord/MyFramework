@@ -113,14 +113,14 @@ bool GameCore::IsGLSurfaceIsValid()
     return m_pRenderer->IsValid();
 }
 
-float GameCore::GetWindowWidth()
+uint32 GameCore::GetWindowWidth()
 {
-    return (float)m_pRenderer->GetWindowWidth();
+    return m_pRenderer->GetWindowWidth();
 }
 
-float GameCore::GetWindowHeight()
+uint32 GameCore::GetWindowHeight()
 {
-    return (float)m_pRenderer->GetWindowHeight();
+    return m_pRenderer->GetWindowHeight();
 }
 
 void GameCore::InitializeManagers()

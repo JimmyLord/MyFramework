@@ -105,8 +105,8 @@ public:
     bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
     bool IsGLSurfaceIsValid();
 
-    float GetWindowWidth();
-    float GetWindowHeight();
+    uint32 GetWindowWidth();
+    uint32 GetWindowHeight();
     bool HasFocus() { return m_HasFocus; }
     bool IsSettled() { return m_Settled; }
 

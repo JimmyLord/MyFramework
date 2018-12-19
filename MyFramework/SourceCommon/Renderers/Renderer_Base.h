@@ -32,8 +32,14 @@ public:
 
     // Getters.
     bool IsValid() { return m_IsValid; }
+    uint32 GetWindowStartX() { return m_WindowStartX; }
+    uint32 GetWindowStartY() { return m_WindowStartY; }
     uint32 GetWindowWidth() { return m_WindowWidth; }
     uint32 GetWindowHeight() { return m_WindowHeight; }
+
+    // Setters.
+    void SetWindowWidth(uint32 newWidth) { m_WindowWidth = newWidth; }
+    void SetWindowHeight(uint32 newHeight) { m_WindowHeight = newHeight; }
 
     // Events.
     virtual void OnSurfaceCreated();

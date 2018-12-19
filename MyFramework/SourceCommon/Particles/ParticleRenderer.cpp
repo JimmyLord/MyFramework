@@ -8,6 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/Renderer_Enums.h"
 #include "../Renderers/Renderer_Base.h"
 #include "ParticleRenderer.h"
 
@@ -309,9 +310,9 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     // not supporting point sprites anymore.
     MyAssert( false );
     //if( ((Shader_PointSprite*)m_pShaderGroup->GlobalPass())->ActivateAndProgramShader( 
-    //    pMatProj, pMatView, 0, m_VertexBufferID, 0, GL_UNSIGNED_SHORT, m_pTexture->m_TextureID ) )
+    //    pMatProj, pMatView, 0, m_VertexBufferID, 0, MyRE::IndexType_U16, m_pTexture->m_TextureID ) )
     //{
-    //    MyDrawArrays( GL_POINTS, 0, m_ParticleCount );
+    //    g_pRenderer->DrawArrays( MyRE::PrimitiveType_Points, 0, m_ParticleCount );
     //    m_pMaterial->m_pShaderGroup->GlobalPass()->DeactivateShader( m_pVertexBuffer, true );
     //}
 #endif
