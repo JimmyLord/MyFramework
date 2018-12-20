@@ -35,6 +35,8 @@ GameCore::GameCore(Renderer_Base* pRenderer)
     else
         m_pRenderer = MyNew Renderer_OpenGL();
 
+    m_MainViewport.Set( 0, 0, 0, 0 );
+
     m_pSoundPlayer = 0;
     m_pSoundManager = 0;
     m_pMyJobManager = 0;
@@ -115,12 +117,12 @@ bool GameCore::IsGLSurfaceIsValid()
 
 uint32 GameCore::GetWindowWidth()
 {
-    return m_pRenderer->GetWindowWidth();
+    return m_MainViewport.GetWidth();
 }
 
 uint32 GameCore::GetWindowHeight()
 {
-    return m_pRenderer->GetWindowHeight();
+    return m_MainViewport.GetHeight();
 }
 
 void GameCore::InitializeManagers()
@@ -281,6 +283,13 @@ void GameCore::OnSurfaceCreated()
     m_pRenderer->OnSurfaceCreated();
 }
 
+void GameCore::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height)
+{
+    m_MainViewport.Set( x, y, width, height );
+
+    m_pRenderer->OnSurfaceChanged( x, y, width, height );
+}
+
 void GameCore::OnSurfaceLost()
 {
     m_pRenderer->OnSurfaceCreated();
@@ -293,11 +302,6 @@ void GameCore::OnSurfaceLost()
         g_pTextureManager->InvalidateAllTextures( false );
     if( g_pBufferManager )
         g_pBufferManager->InvalidateAllBuffers( false );
-}
-
-void GameCore::OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height)
-{
-    m_pRenderer->OnSurfaceChanged( startx, starty, width, height );
 }
 
 void GameCore::OnDrawFrameStart(unsigned int canvasid)

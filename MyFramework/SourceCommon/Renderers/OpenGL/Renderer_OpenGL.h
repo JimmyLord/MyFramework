@@ -23,14 +23,15 @@ public:
 
     // Events.
     virtual void OnSurfaceCreated() override;
-    virtual void OnSurfaceChanged(unsigned int startX, unsigned int startY, unsigned int width, unsigned int height) override;
+    virtual void OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height) override;
     //virtual void OnSurfaceLost() override;
 
     // Actions.
     virtual void SetClearColor(ColorFloat color) override;
     virtual void SetClearDepth(float depth) override;
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
-    
+    virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
+
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;
 };

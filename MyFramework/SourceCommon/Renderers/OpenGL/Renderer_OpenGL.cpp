@@ -38,23 +38,26 @@ void Renderer_OpenGL::OnSurfaceCreated()
     checkGlError( "OnSurfaceCreated\n" );
 }
 
-void Renderer_OpenGL::OnSurfaceChanged(unsigned int startX, unsigned int startY, unsigned int width, unsigned int height)
+void Renderer_OpenGL::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height)
 {
-    Renderer_Base::OnSurfaceChanged( startX, startY, width, height );
+    Renderer_Base::OnSurfaceChanged( x, y, width, height );
 
     // Only draw to part of the window with glScissor and glViewPort.
-    if( startX != 0 || startY != 0 )
+    if( x != 0 || y != 0 )
     {
         // Scissor test is really only needed for the glClear call.
         glEnable( GL_SCISSOR_TEST );
-        glScissor( startX, startY, width, height );
+        glScissor( x, y, width, height );
     }
 
-    glViewport( startX, startY, width, height );
+    glViewport( x, y, width, height );
 
     checkGlError( "glViewport" );
 }
 
+//====================================================================================================
+// Actions.
+//====================================================================================================
 void Renderer_OpenGL::SetClearColor(ColorFloat color)
 {
     Renderer_Base::SetClearColor( color );
@@ -71,9 +74,6 @@ void Renderer_OpenGL::SetClearDepth(float depth)
     checkGlError( "glClearDepth" );
 }
 
-//====================================================================================================
-// Actions.
-//====================================================================================================
 void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil)
 {
     GLbitfield flags = 0;
@@ -82,6 +82,30 @@ void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearS
     if( clearStencil ) flags |= GL_STENCIL_BUFFER_BIT;
 
     glClear( flags );
+
+    checkGlError( "glClear" );
+}
+
+void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded)
+{
+    if( enableOrDisableScissorIfNeeded )
+    {
+        // Set up scissor test if not drawing to the whole window.
+        if( pViewport->GetX() != 0 || pViewport->GetY() != 0 )
+        {
+            // Scissor test is really only needed for the glClear call, glViewport will handle the rest.
+            glEnable( GL_SCISSOR_TEST );
+            glScissor( pViewport->GetX(), pViewport->GetY(), pViewport->GetWidth(), pViewport->GetHeight() );
+        }
+        else
+        {
+            glDisable( GL_SCISSOR_TEST );
+        }
+    }
+
+    glViewport( pViewport->GetX(), pViewport->GetY(), pViewport->GetWidth(), pViewport->GetHeight() );
+
+    checkGlError( "glViewport" );
 }
 
 bool ShouldDraw(bool hideFromDrawList)

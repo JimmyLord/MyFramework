@@ -10,12 +10,15 @@
 #ifndef __GameCore_H__
 #define __GameCore_H__
 
+#include "Renderers/Renderer_Base.h"
+
 class GameCore;
 class GameLevel;
 class BMFont;
 class SoundPlayer;
 class SoundManager;
 class Renderer_Base;
+class MyViewport;
 #if MYFW_EDITOR
 class CommandStack;
 #endif
@@ -69,6 +72,7 @@ protected:
     bool m_GameConfirmedCloseIsOkay; // Setting this flag should cause the main game window to close.
 
     Renderer_Base* m_pRenderer;
+    MyViewport m_MainViewport;
 
     bool m_HasFocus;
     bool m_Settled;
@@ -141,8 +145,8 @@ public:
     virtual void OnFocusGained();
     virtual void OnFocusLost();
     virtual void OnSurfaceCreated();
+    virtual void OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height);
     virtual void OnSurfaceLost();
-    virtual void OnSurfaceChanged(unsigned int startx, unsigned int starty, unsigned int width, unsigned int height);
     virtual void OnDrawFrameStart(unsigned int canvasid);
     virtual void OnDrawFrame(unsigned int canvasid);
     virtual void OnDrawFrameDone();

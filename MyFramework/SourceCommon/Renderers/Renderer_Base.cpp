@@ -19,11 +19,6 @@ Renderer_Base::Renderer_Base()
 
     m_IsValid = false;
 
-    m_WindowStartX = 0;
-    m_WindowStartY = 0;
-    m_WindowWidth = 0;
-    m_WindowHeight = 0;
-
     m_ClearColor.Set( 0.0f, 0.0f, 0.2f, 0.0f );
     m_ClearDepth = 1.0f;
 }
@@ -42,12 +37,8 @@ void Renderer_Base::OnSurfaceCreated()
     m_IsValid = true;
 }
 
-void Renderer_Base::OnSurfaceChanged(unsigned int startX, unsigned int startY, unsigned int width, unsigned int height)
+void Renderer_Base::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height)
 {
-    m_WindowStartX = startX;
-    m_WindowStartY = startY;
-    m_WindowWidth = width;
-    m_WindowHeight = height;
 }
 
 void Renderer_Base::OnSurfaceLost()
