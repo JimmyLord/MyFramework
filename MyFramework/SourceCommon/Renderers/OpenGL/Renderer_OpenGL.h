@@ -26,10 +26,15 @@ public:
     virtual void OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height) override;
     //virtual void OnSurfaceLost() override;
 
-    // Actions.
+    // State Change.
     virtual void SetClearColor(ColorFloat color) override;
     virtual void SetClearDepth(float depth) override;
+    virtual void SetDepthWriteEnabled(bool enabled) override;
+    virtual void SetDepthTestEnabled(bool enabled) override;
+
+    // Actions.
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
+    virtual void ClearScissorRegion() override;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;

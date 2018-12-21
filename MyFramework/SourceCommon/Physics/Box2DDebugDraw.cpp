@@ -55,12 +55,12 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glDisable( GL_CULL_FACE );
-    glDisable( GL_DEPTH_TEST );
+    g_pRenderer->SetDepthTestEnabled( false );
 
     g_pRenderer->DrawArrays( primitiveType, 0, vertexCount, true );
 
     glEnable( GL_CULL_FACE );
-    glEnable( GL_DEPTH_TEST );
+    g_pRenderer->SetDepthTestEnabled( true );
 
     glDisable( GL_BLEND );
 }

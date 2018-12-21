@@ -59,8 +59,6 @@ extern GLStats g_GLStats;
 void MyBindBuffer(GLenum target, GLuint buffer);
 void MyDeleteBuffers(GLsizei num, GLuint* buffers);
 void MyActiveTexture(GLenum texture);
-//void MyDrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList);
-//void MyDrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList);
 void MyUseProgram(GLuint program);
 
 void MyEnableVertexAttribArray(GLuint index);

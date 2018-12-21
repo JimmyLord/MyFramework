@@ -1349,7 +1349,7 @@ void FragCoordTest(MainGLCanvas* pGLCanvas)
             glClearColor( 0.0f, 0.5f, 0.0f, 1.0f );
         glClear( GL_COLOR_BUFFER_BIT );
 
-        glDisable( GL_DEPTH_TEST );
+        g_pRenderer->SetDepthTestEnabled( false );
 
         glViewport( 0, 0, pGLCanvas->m_CurrentGLViewWidth, pGLCanvas->m_CurrentGLViewHeight );
 

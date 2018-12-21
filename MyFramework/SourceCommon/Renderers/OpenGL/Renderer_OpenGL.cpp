@@ -56,11 +56,12 @@ void Renderer_OpenGL::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 
 }
 
 //====================================================================================================
-// Actions.
+// State Change.
 //====================================================================================================
 void Renderer_OpenGL::SetClearColor(ColorFloat color)
 {
     Renderer_Base::SetClearColor( color );
+
     glClearColor( color.r, color.g, color.b, color.a );
 
     checkGlError( "glClearColor" );
@@ -69,11 +70,34 @@ void Renderer_OpenGL::SetClearColor(ColorFloat color)
 void Renderer_OpenGL::SetClearDepth(float depth)
 {
     Renderer_Base::SetClearDepth( depth );
+
     glClearDepth( depth );
 
     checkGlError( "glClearDepth" );
 }
 
+void Renderer_OpenGL::SetDepthWriteEnabled(bool enabled)
+{
+    Renderer_Base::SetDepthWriteEnabled( enabled );
+
+    glDepthMask( enabled );
+
+    checkGlError( "glClearDepth" );
+}
+
+void Renderer_OpenGL::SetDepthTestEnabled(bool enabled)
+{
+    Renderer_Base::SetDepthTestEnabled( enabled );
+
+    if( enabled )
+        glEnable( GL_DEPTH_TEST );
+    else
+        glDisable( GL_DEPTH_TEST );
+}
+
+//====================================================================================================
+// Actions.
+//====================================================================================================
 void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil)
 {
     GLbitfield flags = 0;
@@ -84,6 +108,11 @@ void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearS
     glClear( flags );
 
     checkGlError( "glClear" );
+}
+
+void Renderer_OpenGL::ClearScissorRegion()
+{
+    glDisable( GL_SCISSOR_TEST );
 }
 
 void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded)

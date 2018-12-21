@@ -47,6 +47,9 @@ protected:
     ColorFloat m_ClearColor;
     float m_ClearDepth;
 
+    bool m_DepthWriteEnabled;
+    bool m_DepthTestEnabled;
+
 public:
     Renderer_Base();
     virtual ~Renderer_Base();
@@ -61,10 +64,15 @@ public:
     virtual void OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height);
     virtual void OnSurfaceLost();
 
-    // Actions.
+    // State Change.
     virtual void SetClearColor(ColorFloat color);
     virtual void SetClearDepth(float depth);
+    virtual void SetDepthWriteEnabled(bool enabled);
+    virtual void SetDepthTestEnabled(bool enabled);
+
+    // Actions.
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) = 0;
+    virtual void ClearScissorRegion() = 0;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) = 0;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;

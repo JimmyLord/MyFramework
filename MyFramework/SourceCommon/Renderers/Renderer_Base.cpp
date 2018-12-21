@@ -21,6 +21,9 @@ Renderer_Base::Renderer_Base()
 
     m_ClearColor.Set( 0.0f, 0.0f, 0.2f, 0.0f );
     m_ClearDepth = 1.0f;
+
+    m_DepthWriteEnabled = false;
+    m_DepthTestEnabled = false;
 }
 
 Renderer_Base::~Renderer_Base()
@@ -49,7 +52,7 @@ void Renderer_Base::OnSurfaceLost()
 }
 
 //====================================================================================================
-// Actions.
+// State Change.
 //====================================================================================================
 void Renderer_Base::SetClearColor(ColorFloat color)
 {
@@ -59,4 +62,14 @@ void Renderer_Base::SetClearColor(ColorFloat color)
 void Renderer_Base::SetClearDepth(float depth)
 {
     m_ClearDepth = depth;
+}
+
+void Renderer_Base::SetDepthWriteEnabled(bool enabled)
+{
+    m_DepthWriteEnabled = enabled;
+}
+
+void Renderer_Base::SetDepthTestEnabled(bool enabled)
+{
+    m_DepthTestEnabled = enabled;
 }
