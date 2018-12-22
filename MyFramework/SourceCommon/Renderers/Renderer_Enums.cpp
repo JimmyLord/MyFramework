@@ -8,10 +8,12 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "Renderer_Enums.h"
+#include "Renderer_Base.h"
 
-GLenum MaterialBlendFactors_OpenGL[MyRE::MaterialBlendFactor_NumTypes] = 
+const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes] =
 {
-    GL_ONE,                       // MaterialBlendFactor_One,
-    GL_SRC_ALPHA,                 // MaterialBlendFactor_SrcAlpha,
-    GL_ONE_MINUS_SRC_ALPHA,       // MaterialBlendFactor_OneMinusSrcAlpha,
+    "Use Shader Setting",
+    "Off",
+    "On",
 };

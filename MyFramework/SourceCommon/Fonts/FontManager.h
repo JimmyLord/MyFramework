@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,18 +16,20 @@ class BMFont;
 
 extern FontManager* g_pFontManager;
 
-class FontDefinition : public CPPListNode, public RefCount
+class FontDefinition : public TCPPListNode<FontDefinition*>, public RefCount
 {
-public:
+    friend class FontManager;
+
+protected:
     bool m_FullyLoaded;
 
     char m_FriendlyName[32];
-    //char m_Filename[MAX_PATH];
     MyFileObject* m_pFile;
     BMFont* m_pBMFont;
 
     TextureDefinition* m_pTextureDef;
 
+public:
     FontDefinition();
     virtual ~FontDefinition();
 };
@@ -35,8 +37,8 @@ public:
 class FontManager
 {
 protected:
-    CPPListHead m_FontsLoaded;
-    CPPListHead m_FontsStillLoading;
+    TCPPListHead<FontDefinition*> m_FontsLoaded;
+    TCPPListHead<FontDefinition*> m_FontsStillLoading;
 
 public:
     FontDefinition* CreateFont(const char* fontfilename);
@@ -47,7 +49,6 @@ public:
     FontDefinition* FindFont(MyFileObject* pFile);
     FontDefinition* FindFontByFilename(const char* fullpath);
     void FreeAllFonts();
-    void InvalidateAllFonts();
 };
 
 #endif //__FontManager_H__

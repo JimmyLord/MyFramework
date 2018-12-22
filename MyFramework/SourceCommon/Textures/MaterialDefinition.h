@@ -44,8 +44,6 @@ public:
     void SetToInitialValue(ExposedUniformType type);
 };
 
-extern const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes];
-
 class MaterialDefinition : public CPPListNode, public RefCount
 {
     friend class MaterialManager;
@@ -67,7 +65,7 @@ protected:
     ShaderGroup* m_pShaderGroupInstanced;
     TextureDefinition* m_pTextureColor;
 
-    MaterialBlendType m_BlendType;
+    MyRE::MaterialBlendType m_BlendType;
 
     void SetFile(MyFileObject* pFile);
 
@@ -121,7 +119,7 @@ public:
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
     ShaderGroup* GetShaderInstanced() const { return m_pShaderGroupInstanced; }    
     TextureDefinition* GetTextureColor() const { return m_pTextureColor; }
-    MaterialBlendType GetBlendType() { return m_BlendType; }
+    MyRE::MaterialBlendType GetBlendType() { return m_BlendType; }
 
     ColorByte GetColorAmbient() { return m_ColorAmbient; }
     ColorByte GetColorDiffuse() { return m_ColorDiffuse; }
@@ -133,7 +131,7 @@ public:
     void SetShader(ShaderGroup* pShader);
     void SetShaderInstanced(ShaderGroup* pShader);
     void SetTextureColor(TextureDefinition* pTexture);
-    void SetBlendType(MaterialBlendType transparenttype);
+    void SetBlendType(MyRE::MaterialBlendType transparenttype);
 
     void SetColorAmbient(ColorByte color);
     void SetColorDiffuse(ColorByte color);
@@ -148,12 +146,12 @@ public:
     bool IsTransparent();
     bool IsEmissive(BaseShader* pShader);
     bool IsEmissive();
-    MaterialBlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
-    MaterialBlendFactors GetShaderBlendFactorSrc();
+    MyRE::MaterialBlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
+    MyRE::MaterialBlendFactors GetShaderBlendFactorSrc();
     GLenum GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader);
     GLenum GetShaderBlendFactorSrc_OpenGL();
-    MaterialBlendFactors GetShaderBlendFactorDest(BaseShader* pShader);
-    MaterialBlendFactors GetShaderBlendFactorDest();
+    MyRE::MaterialBlendFactors GetShaderBlendFactorDest(BaseShader* pShader);
+    MyRE::MaterialBlendFactors GetShaderBlendFactorDest();
     GLenum GetShaderBlendFactorDest_OpenGL();
     GLenum GetShaderBlendFactorDest_OpenGL(BaseShader* pShader);
 

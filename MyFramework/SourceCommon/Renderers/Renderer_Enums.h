@@ -33,6 +33,25 @@ namespace MyRE // MyRendererEnums
         IndexType_U32 = GL_UNSIGNED_INT,
         IndexType_Undefined,
     };
+
+    enum MaterialBlendType
+    {
+        MaterialBlendType_UseShaderValue,
+        MaterialBlendType_Off,
+        MaterialBlendType_On,
+        MaterialBlendType_NumTypes,
+        MaterialBlendType_NotSet = MaterialBlendType_NumTypes + 20,
+    };
+
+    enum MaterialBlendFactors
+    {
+        MaterialBlendFactor_One,
+        MaterialBlendFactor_SrcAlpha,
+        MaterialBlendFactor_OneMinusSrcAlpha,
+        MaterialBlendFactor_NumTypes,
+    };
+
+    extern const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes];
 } //namespace MyRE
 
 #endif //__Renderer_Enums_H__

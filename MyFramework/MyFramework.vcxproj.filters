@@ -534,6 +534,9 @@
     <ClCompile Include="SourceCommon\Renderers\Renderer_Base.cpp">
       <Filter>Source\Renderers</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\Renderer_Enums.cpp">
+      <Filter>Source\Renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">

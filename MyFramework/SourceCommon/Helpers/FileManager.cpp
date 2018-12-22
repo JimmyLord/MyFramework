@@ -81,7 +81,7 @@ void* FileManager::Thread_FileIO(void* obj)
     while( 1 )
     {
         pthread_mutex_lock( &pThread->m_Mutex_FileLists );
-        MyFileObject* pFileLoading = (MyFileObject*)pThread->m_FilesToLoad.GetHead();
+        MyFileObject* pFileLoading = pThread->m_FilesToLoad.GetHead();
         pthread_mutex_unlock( &pThread->m_Mutex_FileLists );
 
         if( pFileLoading )
@@ -112,14 +112,12 @@ void* FileManager::Thread_FileIO(void* obj)
 void FileManager::PrintListOfOpenFiles()
 {
     LOGInfo( LOGTag, "Open Files:\n" );
-    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        MyFileObject* pFile = (MyFileObject*)pNode;
         LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
-    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        MyFileObject* pFile = (MyFileObject*)pNode;
         LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
 }
@@ -134,22 +132,13 @@ unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 {
     unsigned int totalsize = 0;
 
-    CPPListNode* pNextNode;
-    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNextNode )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        pNextNode = pNode->GetNext();
-
-        MyFileObject* pFile = (MyFileObject*)pNode;
-
         totalsize += pFile->m_FileLength;
     }
 
-    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        pNextNode = pNode->GetNext();
-
-        MyFileObject* pFile = (MyFileObject*)pNode;
-
         totalsize += pFile->m_FileLength;
     }
 
@@ -223,18 +212,14 @@ void FileManager::ReloadFile(MyFileObject* pFile)
 
 MyFileObject* FileManager::FindFileByName(const char* filename)
 {
-    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        MyFileObject* pFile = (MyFileObject*)pNode;
-
         if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
 
-    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
     {
-        MyFileObject* pFile = (MyFileObject*)pNode;
-
         if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
@@ -285,7 +270,7 @@ void FileManager::Tick()
     pthread_mutex_lock( &pThread->m_Mutex_FileLists );
 
     // Finish loading files.
-    MyFileObject* pFile = (MyFileObject*)pThread->m_FilesFinishedLoading.GetHead();
+    MyFileObject* pFile = pThread->m_FilesFinishedLoading.GetHead();
 
     while( pFile )
     {
@@ -303,7 +288,7 @@ void FileManager::Tick()
         }
 
         // Get the next file from the list.
-        pFile = (MyFileObject*)pThread->m_FilesFinishedLoading.GetHead();
+        pFile = pThread->m_FilesFinishedLoading.GetHead();
     }
 #endif //USE_PTHREAD && !MYFW_NACL
 
@@ -311,10 +296,10 @@ void FileManager::Tick()
     {
         // Continue to tick any files still in the "loading" queue.
         MyFileObject* pNextFile;
-        for( MyFileObject* pFile = (MyFileObject*)m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
+        for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
         {
 			// Get the next file pointer
-            pNextFile = (MyFileObject*)pFile->GetNext();
+            pNextFile = pFile->GetNext();
 
             //LOGInfo( LOGTag, "Loading File: %s\n", pFile->GetFullPath() );
 
@@ -367,12 +352,10 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
 {
     int numfilesupdated = 0;
 
-    CPPListNode* pNextNode;
-    for( CPPListNode* pNode = m_FilesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+    MyFileObject* pNextFile;
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
     {
-        pNextNode = pNode->GetNext();
-
-        MyFileObject* pFile = (MyFileObject*)pNode;
+        pNextFile = pFile->GetNext();
 
         bool updateavailable = pFile->IsNewVersionAvailable();
 
@@ -384,9 +367,9 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
         }
     }
 
-    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNextNode )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pNextFile )
     {
-        MyFileObject* pFile = (MyFileObject*)pNode;
+        pNextFile = pFile->GetNext();
 
         pFile->AddRef(); // prevent file from being freed below.
 
@@ -398,8 +381,6 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
             pCallbackFunc( pFile );
             numfilesupdated++;
         }
-
-        pNextNode = pNode->GetNext();
 
         pFile->Release(); // release ref from above.
     }
@@ -413,9 +394,8 @@ void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
         return;
 
     // make sure the file is in the loaded list.
-    for( CPPListNode* pNode = m_FilesLoaded.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( MyFileObject* pFileLoaded = m_FilesLoaded.GetHead(); pFileLoaded != 0; pFileLoaded = pFileLoaded->GetNext() )
     {
-        MyFileObject* pFileLoaded = (MyFileObject*)pNode;
         if( pFileLoaded == pFile )
         {
             m_FilesLoaded.MoveHead( pFile );

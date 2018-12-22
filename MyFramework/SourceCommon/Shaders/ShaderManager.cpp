@@ -57,9 +57,9 @@ void BaseShader::Init_BaseShader()
     m_ShaderFailedToCompile = false;
 
     m_PassType = ShaderPass_NumTypes;
-    m_BlendType = MaterialBlendType_NotSet;
-    m_BlendFactorSrc = MaterialBlendFactor_SrcAlpha;
-    m_BlendFactorDest = MaterialBlendFactor_OneMinusSrcAlpha;
+    m_BlendType = MyRE::MaterialBlendType_NotSet;
+    m_BlendFactorSrc = MyRE::MaterialBlendFactor_SrcAlpha;
+    m_BlendFactorDest = MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
 
     m_Emissive = false;
 
@@ -227,7 +227,7 @@ void BaseShader::LoadFromFile()
 #endif
 }
 
-void ParseBlendFactor(const char* buffer, MaterialBlendFactors* pBlendFactorOut)
+void ParseBlendFactor(const char* buffer, MyRE::MaterialBlendFactors* pBlendFactorOut)
 {
     const char* endOfBlendFactor = strpbrk( buffer, " \t\n\r" );
     char blendFactor[32];
@@ -238,7 +238,7 @@ void ParseBlendFactor(const char* buffer, MaterialBlendFactors* pBlendFactorOut)
 
     if( _stricmp( blendFactor, "One" ) == 0 )
     {
-        *pBlendFactorOut = MaterialBlendFactor_One;
+        *pBlendFactorOut = MyRE::MaterialBlendFactor_One;
         return;
     }
 
@@ -259,7 +259,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
 
     // By default, turn blending "Off" if we try to compile this shader, as opposed to "Not Set"
     // It will be turned on if "BLENDING On" is defined in the glsl file.
-    m_BlendType = MaterialBlendType_Off;
+    m_BlendType = MyRE::MaterialBlendType_Off;
 
     if( m_pFile == 0 )
     {
@@ -312,7 +312,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                 if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
                     strncmp( &buffer[i], blendstr, strlen( blendstr ) ) == 0 )
                 {
-                    m_BlendType = MaterialBlendType_On; 
+                    m_BlendType = MyRE::MaterialBlendType_On; 
                 }
 
                 char blendFuncStr[] = "#define BLENDFUNC";
@@ -547,13 +547,13 @@ bool BaseShader::DoVAORequirementsMatch(BaseShader* pShader)
 
 GLenum BaseShader::GetShaderBlendFactorSrc_OpenGL()
 {
-    MyAssert( m_BlendFactorSrc < MaterialBlendFactor_NumTypes );
+    MyAssert( m_BlendFactorSrc < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[m_BlendFactorSrc];
 }
 
 GLenum BaseShader::GetShaderBlendFactorDest_OpenGL()
 {
-    MyAssert( m_BlendFactorDest < MaterialBlendFactor_NumTypes );
+    MyAssert( m_BlendFactorDest < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[m_BlendFactorDest];
 }
 

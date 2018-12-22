@@ -10,23 +10,6 @@
 #ifndef __GlobalEnums_H__
 #define __GlobalEnums_H__
 
-enum MaterialBlendType
-{
-    MaterialBlendType_UseShaderValue,
-    MaterialBlendType_Off,
-    MaterialBlendType_On,
-    MaterialBlendType_NumTypes,
-    MaterialBlendType_NotSet = MaterialBlendType_NumTypes + 20,
-};
-
-enum MaterialBlendFactors
-{
-    MaterialBlendFactor_One,
-    MaterialBlendFactor_SrcAlpha,
-    MaterialBlendFactor_OneMinusSrcAlpha,
-    MaterialBlendFactor_NumTypes,
-};
-
-extern GLenum MaterialBlendFactors_OpenGL[MaterialBlendFactor_NumTypes];
+extern GLenum MaterialBlendFactors_OpenGL[MyRE::MaterialBlendFactor_NumTypes];
 
 #endif //__GlobalEnums_H__

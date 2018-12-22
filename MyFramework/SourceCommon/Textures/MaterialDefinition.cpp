@@ -13,13 +13,6 @@
 #include "MaterialManager.h"
 #include "../Helpers/FileManager.h"
 
-const char* MaterialBlendTypeStrings[MaterialBlendType_NumTypes] =
-{
-    "Use Shader Setting",
-    "Off",
-    "On",
-};
-
 void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
 {
 #if MYFW_USING_WX
@@ -116,7 +109,7 @@ void MaterialDefinition::Init()
     m_pShaderGroupInstanced = 0;
     m_pTextureColor = 0;
 
-    m_BlendType = MaterialBlendType_UseShaderValue;
+    m_BlendType = MyRE::MaterialBlendType_UseShaderValue;
 
     m_ColorAmbient = ColorByte(255,255,255,255);
     m_ColorDiffuse = ColorByte(255,255,255,255);
@@ -703,7 +696,7 @@ void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
     m_pTextureColor = pTexture;
 }
 
-void MaterialDefinition::SetBlendType(MaterialBlendType transparenttype)
+void MaterialDefinition::SetBlendType(MyRE::MaterialBlendType transparenttype)
 {
     m_UnsavedChanges = true;
     m_BlendType = transparenttype;
@@ -741,13 +734,13 @@ void MaterialDefinition::SetUVOffset(Vector2 offset)
 
 bool MaterialDefinition::IsTransparent(BaseShader* pShader)
 {
-    if( m_BlendType == MaterialBlendType_On )
+    if( m_BlendType == MyRE::MaterialBlendType_On )
         return true;
 
     // check the shader
-    if( m_BlendType == MaterialBlendType_UseShaderValue )
+    if( m_BlendType == MyRE::MaterialBlendType_UseShaderValue )
     {
-        return pShader->m_BlendType == MaterialBlendType_On ? true : false;
+        return pShader->m_BlendType == MyRE::MaterialBlendType_On ? true : false;
     }
 
     return false;
@@ -768,9 +761,9 @@ bool MaterialDefinition::IsTransparent()
 
                     if( pShader )
                     {
-                        MyAssert( pShader->m_BlendType != MaterialBlendType_UseShaderValue );
+                        MyAssert( pShader->m_BlendType != MyRE::MaterialBlendType_UseShaderValue );
 
-                        if( pShader->m_BlendType != MaterialBlendType_NotSet )
+                        if( pShader->m_BlendType != MyRE::MaterialBlendType_NotSet )
                         {
                             return IsTransparent( pShader );
                         }
@@ -805,10 +798,10 @@ bool MaterialDefinition::IsEmissive()
 
                     if( pShader )
                     {
-                        MyAssert( pShader->m_BlendType != MaterialBlendType_UseShaderValue );
+                        MyAssert( pShader->m_BlendType != MyRE::MaterialBlendType_UseShaderValue );
 
                         // If the shader is loaded, m_BlendType will be set.  TODO: Don't rely on blendtype.
-                        if( pShader->m_BlendType != MaterialBlendType_NotSet )
+                        if( pShader->m_BlendType != MyRE::MaterialBlendType_NotSet )
                         {
                             return IsEmissive( pShader );
                         }
@@ -822,15 +815,15 @@ bool MaterialDefinition::IsEmissive()
     return false;
 }
 
-MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
+MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
 {
     if( pShader )
         return pShader->m_BlendFactorSrc;
 
-    return MaterialBlendFactor_SrcAlpha;
+    return MyRE::MaterialBlendFactor_SrcAlpha;
 }
 
-MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
+MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
 {
     if( m_pShaderGroup )
     {
@@ -839,32 +832,32 @@ MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
             return pShader->m_BlendFactorSrc;
     }
 
-    return MaterialBlendFactor_SrcAlpha;
+    return MyRE::MaterialBlendFactor_SrcAlpha;
 }
 
 GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader)
 {
-    MaterialBlendFactors factor = GetShaderBlendFactorSrc( pShader );
-    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorSrc( pShader );
+    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[factor];
 }
 
 GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL()
 {
-    MaterialBlendFactors factor = GetShaderBlendFactorSrc();
-    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorSrc();
+    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[factor];
 }
 
-MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest(BaseShader* pShader)
+MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest(BaseShader* pShader)
 {
     if( pShader )
         return pShader->m_BlendFactorDest;
 
-    return MaterialBlendFactor_OneMinusSrcAlpha;
+    return MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
 }
 
-MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
+MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
 {
     if( m_pShaderGroup )
     {
@@ -873,20 +866,20 @@ MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
             return pShader->m_BlendFactorDest;
     }
 
-    return MaterialBlendFactor_OneMinusSrcAlpha;
+    return MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
 }
 
 GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL(BaseShader* pShader)
 {
-    MaterialBlendFactors factor = GetShaderBlendFactorDest( pShader );
-    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorDest( pShader );
+    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[factor];
 }
 
 GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL()
 {
-    MaterialBlendFactors factor = GetShaderBlendFactorDest();
-    MyAssert( factor < MaterialBlendFactor_NumTypes );
+    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorDest();
+    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
     return MaterialBlendFactors_OpenGL[factor];
 }
 

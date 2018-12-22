@@ -23,9 +23,9 @@ public:
 
     ShaderPassTypes m_PassType;
 
-    MaterialBlendType m_BlendType;
-    MaterialBlendFactors m_BlendFactorSrc;
-    MaterialBlendFactors m_BlendFactorDest;
+    MyRE::MaterialBlendType m_BlendType;
+    MyRE::MaterialBlendFactors m_BlendFactorSrc;
+    MyRE::MaterialBlendFactors m_BlendFactorDest;
 
     bool m_Emissive;
 

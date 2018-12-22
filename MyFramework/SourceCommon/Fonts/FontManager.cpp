@@ -76,10 +76,8 @@ FontDefinition* FontManager::CreateFont(MyFileObject* pFile)
 void FontManager::Tick()
 {
     // finish loading any fonts.
-    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsStillLoading.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        FontDefinition* pFontDef = (FontDefinition*)pNode;
-
         // check if the actual font description file(*.fnt) file is done loading.
         if( pFontDef->m_pFile && pFontDef->m_pBMFont == 0 && pFontDef->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
@@ -120,26 +118,26 @@ void FontManager::Tick()
 FontDefinition* FontManager::GetFirstFont()
 {
     if( m_FontsLoaded.GetHead() )
-        return (FontDefinition*)m_FontsLoaded.GetHead();
+        return m_FontsLoaded.GetHead();
 
     if( m_FontsStillLoading.GetHead() )
-        return (FontDefinition*)m_FontsStillLoading.GetHead();
+        return m_FontsStillLoading.GetHead();
 
     return 0;
 }
 
 FontDefinition* FontManager::FindFont(const char* friendlyname)
 {
-    for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsLoaded.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_FriendlyName, friendlyname ) == 0 )
-            return (FontDefinition*)pNode;
+        if( strcmp( pFontDef->m_FriendlyName, friendlyname ) == 0 )
+            return pFontDef;
     }
 
-    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsStillLoading.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_FriendlyName, friendlyname ) == 0 )
-            return (FontDefinition*)pNode;
+        if( strcmp( pFontDef->m_FriendlyName, friendlyname ) == 0 )
+            return pFontDef;
     }
 
     return 0;
@@ -147,16 +145,16 @@ FontDefinition* FontManager::FindFont(const char* friendlyname)
 
 FontDefinition* FontManager::FindFont(MyFileObject* pFile)
 {
-    for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsLoaded.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( ((FontDefinition*)pNode)->m_pFile == pFile )
-            return (FontDefinition*)pNode;
+        if( pFontDef->m_pFile == pFile )
+            return pFontDef;
     }
 
-    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsStillLoading.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( ((FontDefinition*)pNode)->m_pFile == pFile )
-            return (FontDefinition*)pNode;
+        if( pFontDef->m_pFile == pFile )
+            return pFontDef;
     }
 
     return 0;
@@ -164,16 +162,16 @@ FontDefinition* FontManager::FindFont(MyFileObject* pFile)
 
 FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
 {
-    for( CPPListNode* pNode = m_FontsLoaded.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsLoaded.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_pFile->GetFullPath(), fullpath ) == 0 )
-            return (FontDefinition*)pNode;
+        if( strcmp( pFontDef->m_pFile->GetFullPath(), fullpath ) == 0 )
+            return pFontDef;
     }
 
-    for( CPPListNode* pNode = m_FontsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( FontDefinition* pFontDef = m_FontsStillLoading.GetHead(); pFontDef; pFontDef = pFontDef->GetNext() )
     {
-        if( strcmp( ((FontDefinition*)pNode)->m_pFile->GetFullPath(), fullpath ) == 0 )
-            return (FontDefinition*)pNode;
+        if( strcmp( pFontDef->m_pFile->GetFullPath(), fullpath ) == 0 )
+            return pFontDef;
     }
 
     return 0;
@@ -184,25 +182,13 @@ void FontManager::FreeAllFonts()
     MyAssert( m_FontsLoaded.GetHead() == 0 );
     MyAssert( m_FontsStillLoading.GetHead() == 0 );
 
-    while( CPPListNode* pNode = m_FontsLoaded.GetHead() )
+    while( FontDefinition* pFontDef = m_FontsLoaded.GetHead() )
     {
-        FontDefinition* pFontDef = (FontDefinition*)pNode;
-        //MyAssert( pFontDef->GetRefCount() == 1 );
         pFontDef->Release();
     }
 
-    while( CPPListNode* pNode = m_FontsStillLoading.GetHead() )
+    while( FontDefinition* pFontDef = m_FontsStillLoading.GetHead() )
     {
-        FontDefinition* pFontDef = (FontDefinition*)pNode;
-        //MyAssert( pFontDef->GetRefCount() == 1 );
         pFontDef->Release();
     }
-}
-
-void FontManager::InvalidateAllFonts()
-{
-    //for( CPPListNode* pNode = m_FontDefinitions.GetHead(); pNode; pNode = pNode->GetNext() )
-    //{
-    //    ((BaseFont*)pFont)->Invalidate();
-    //}
 }

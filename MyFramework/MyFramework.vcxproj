@@ -1583,6 +1583,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Renderers\Old\OpenGLWrapper.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\Renderer_Enums.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp" />

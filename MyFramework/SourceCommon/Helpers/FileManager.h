@@ -39,13 +39,13 @@ class FileManager
 
         // Lists of files used to communicate between main thread and file io thread.
         pthread_mutex_t m_Mutex_FileLists;
-        CPPListHead m_FilesToLoad;
-        CPPListHead m_FilesFinishedLoading;
+        TCPPListHead<MyFileObject*> m_FilesToLoad;
+        TCPPListHead<MyFileObject*> m_FilesFinishedLoading;
     };
 
 protected:
-    CPPListHead m_FilesLoaded;
-    CPPListHead m_FilesStillLoading;
+    TCPPListHead<MyFileObject*> m_FilesLoaded;
+    TCPPListHead<MyFileObject*> m_FilesStillLoading;
 
 protected:
 #if USE_PTHREAD
@@ -72,8 +72,8 @@ public:
     void Tick();
     int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc);
 
-    MyFileObject* GetFirstFileLoaded() { return (MyFileObject*)m_FilesLoaded.GetHead(); }
-    MyFileObject* GetFirstFileStillLoading() { return (MyFileObject*)m_FilesStillLoading.GetHead(); }
+    MyFileObject* GetFirstFileLoaded() { return m_FilesLoaded.GetHead(); }
+    MyFileObject* GetFirstFileStillLoading() { return m_FilesStillLoading.GetHead(); }
 
     void MoveFileToFrontOfFileLoadedList(MyFileObject* pFile);
 

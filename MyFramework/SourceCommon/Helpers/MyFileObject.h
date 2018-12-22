@@ -44,7 +44,7 @@ enum FileLoadStatus
     FileLoadStatus_Error_Other,
 };
 
-class MyFileObject : public CPPListNode, public RefCount
+class MyFileObject : public TCPPListNode<MyFileObject*>, public RefCount
 #if MYFW_USING_WX
 , public wxEvtHandler
 #endif
