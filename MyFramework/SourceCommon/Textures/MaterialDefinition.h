@@ -17,9 +17,6 @@ class ExposedUniformValue
 {
 public:
 #if MYFW_EDITOR
-#if MYFW_USING_WX
-    int m_ControlID;
-#endif
     std::string m_Name;
     ExposedUniformType m_Type; // used when reloading shader, needed to release ref on texture.
 #endif //MYFW_EDITOR
@@ -178,47 +175,13 @@ public:
     void OnPopupClick(MaterialDefinition* pMaterial, int id);
 
     // Getters
+    bool IsReferencingFile(MyFileObject* pFile);
     PreviewType GetPreviewType() { return m_PreviewType; }
     
     // Setters
     void SetPreviewType(PreviewType type) { m_PreviewType = type; }
 
-#if MYFW_USING_WX
-public:
-    int m_ControlID_Shader;
-    int m_ControlID_ShaderInstanced;
-
-    // Memory panel callbacks
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MaterialDefinition*)pObjectPtr)->OnLeftClick( count ); }
-    void OnLeftClick(unsigned int count);
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialDefinition*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnDrag(void* pObjectPtr) { ((MaterialDefinition*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-
-    static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((MaterialDefinition*)pObjectPtr)->OnLabelEdit( newlabel ); }
-    void OnLabelEdit(wxString newlabel);
-
-    // Watch panel callbacks.
-    static void StaticOnDropShader(void* pObjectPtr, int controlid, int x, int y) { ((MaterialDefinition*)pObjectPtr)->OnDropShader(controlid, x, y); }
-    void OnDropShader(int controlid, int x, int y);
-
-    static void StaticOnRightClickShader(void* pObjectPtr, int controlid) { ((MaterialDefinition*)pObjectPtr)->OnRightClickShader(controlid); }
-    void OnRightClickShader(int controlid);
-
-    static void StaticOnDropTexture(void* pObjectPtr, int controlid, int x, int y) { ((MaterialDefinition*)pObjectPtr)->OnDropTexture(controlid, x, y); }
-    void OnDropTexture(int controlid, int x, int y);
-
-    static void StaticOnRightClickTexture(void* pObjectPtr, int controlid) { ((MaterialDefinition*)pObjectPtr)->OnRightClickTexture(controlid); }
-    void OnRightClickTexture(int controlid);
-
-    void AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms);
-#endif //MYFW_USING_WX
-    bool IsReferencingFile(MyFileObject* pFile);
-
+    // Other.
     void SaveMaterial(const char* relativepath);
 #endif //MYFW_EDITOR
 };

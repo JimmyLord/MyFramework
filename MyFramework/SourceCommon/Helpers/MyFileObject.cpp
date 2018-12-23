@@ -55,7 +55,7 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     filehandle = fopen( fullpath, "rb" );
 #endif
 
-    char* filecontents = 0;
+    char* filecontents = nullptr;
 
     if( filehandle )
     {
@@ -69,7 +69,7 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
         MyAssert( ((uintptr_t)filecontents)%4 == 0 );
 
         fread( filecontents, size, 1, filehandle );
-        filecontents[size] = 0;
+        filecontents[size] = '\0';
 
         if( length )
             *length = (int)size+1;
@@ -88,16 +88,16 @@ MyFileObject::MyFileObject()
 {
     ClassnameSanityCheck();
 
-    m_FullPath = 0;
-    m_FilenameWithoutExtension = 0;
-    m_ExtensionWithDot = 0;
+    m_FullPath = nullptr;
+    m_FilenameWithoutExtension = nullptr;
+    m_ExtensionWithDot = nullptr;
     m_FileLoadStatus = FileLoadStatus_Loading;
     m_FileLength = 0;
-    m_pBuffer = 0;
+    m_pBuffer = nullptr;
     m_BytesRead = 0;
 
 #if MYFW_NACL
-    m_pNaClFileObject = 0;
+    m_pNaClFileObject = nullptr;
 #endif
 
 #if MYFW_WINDOWS
@@ -109,11 +109,6 @@ MyFileObject::MyFileObject()
 
 #if MYFW_EDITOR
     m_ShowInMemoryPanel = true;
-#endif
-
-#if MYFW_USING_WX
-    m_CustomLeftClickCallback = 0;
-    m_CustomLeftClickObject = 0;
 #endif
 
     // the first MyFileObject will create the pool of callback objects.
@@ -130,7 +125,7 @@ MyFileObject::~MyFileObject()
     if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
         Remove();
 
-    MyAssert( m_FileFinishedLoadingCallbackList.GetHead() == 0 );
+    MyAssert( m_FileFinishedLoadingCallbackList.GetHead() == nullptr );
 
     SAFE_DELETE_ARRAY( m_FullPath );
     SAFE_DELETE_ARRAY( m_FilenameWithoutExtension );
@@ -140,16 +135,11 @@ MyFileObject::~MyFileObject()
 #if MYFW_NACL
     SAFE_DELETE( m_pNaClFileObject );
 #endif
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveFile( this );
-#endif
 }
 
 void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
 {
-    MyAssert( buffer != 0 );
+    MyAssert( buffer != nullptr );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
     int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
@@ -157,7 +147,7 @@ void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, ch
 
 void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
 {
-    MyAssert( buffer != 0 );
+    MyAssert( buffer != nullptr );
     sprintf_s( buffer, buffersize, "%s", m_FullPath );
     int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
     sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
@@ -193,7 +183,7 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
                 i++;
             int namelen = folderstartlocation-i;
             strncpy_s( g_FolderName, MAX_PATH, &m_FullPath[i], namelen );
-            g_FolderName[namelen] = 0;
+            g_FolderName[namelen] = '\0';
             return g_FolderName;
         }
         i--;
@@ -204,11 +194,6 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
 
 const char* MyFileObject::Rename(const char* newnamewithoutextension)
 {
-#if MYFW_USING_WX
-    char fullpathbefore[MAX_PATH];
-    sprintf_s( fullpathbefore, MAX_PATH, "%s", m_FullPath );
-#endif
-
     char newfullpath[MAX_PATH];
 
     int fullpathlen = (int)strlen( m_FullPath );
@@ -223,10 +208,6 @@ const char* MyFileObject::Rename(const char* newnamewithoutextension)
     {
         // successfully renamed
         ParseName( newfullpath );
-
-#if MYFW_USING_WX
-        g_pGameCore->OnFileRenamed( fullpathbefore, m_FullPath );
-#endif
     }
     else
     {
@@ -247,7 +228,7 @@ bool MyFileObject::IsFinishedLoading()
 
 const char* MyFileObject::GetFilename()
 {
-    if( m_FullPath && m_FullPath[0] != 0 )
+    if( m_FullPath && m_FullPath[0] != '\0' )
     {
         int i;
         for( i=(int)strlen(m_FullPath)-1; i>=0; i-- )
@@ -263,11 +244,11 @@ const char* MyFileObject::GetFilename()
 
 void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
 {
-    MyAssert( pCallback != 0 );
+    MyAssert( pCallback != nullptr );
 
     FileFinishedLoadingCallbackStruct* pCallbackStruct = g_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
 
-    if( pCallbackStruct != 0 )
+    if( pCallbackStruct != nullptr )
     {
         pCallbackStruct->pObj = pObj;
         pCallbackStruct->pFunc = pCallback;
@@ -278,11 +259,9 @@ void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedL
 
 void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
 {
-    for( CPPListNode* pNode = m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
+    for( FileFinishedLoadingCallbackStruct* pCallbackStruct = m_FileFinishedLoadingCallbackList.GetHead(); pCallbackStruct != nullptr; )
     {
-        CPPListNode* pNextNode = pNode->GetNext();
-
-        FileFinishedLoadingCallbackStruct* pCallbackStruct = (FileFinishedLoadingCallbackStruct*)pNode;
+        FileFinishedLoadingCallbackStruct* pNextCallbackStruct = pCallbackStruct->GetNext();
 
         if( pCallbackStruct->pObj == pObj )
         {
@@ -290,18 +269,18 @@ void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
             g_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
         }
 
-        pNode = pNextNode;
+        pCallbackStruct = pNextCallbackStruct;
     }
 }
 
 
 void MyFileObject::RequestFile(const char* filename)
 {
-    MyAssert( filename != 0 );
-    if( filename == 0 )
+    MyAssert( filename != nullptr );
+    if( filename == nullptr )
         return;
-    MyAssert( filename[0] != 0 );
-    if( filename[0] == 0 )
+    MyAssert( filename[0] != '\0' );
+    if( filename[0] == '\0' )
         return;
 
     ParseName( filename );
@@ -330,17 +309,17 @@ void MyFileObject::ParseName(const char* filename)
                 int extensionlen = len-extensionstartlocation;
                 m_ExtensionWithDot = MyNew char[extensionlen+1];
                 strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
-                m_ExtensionWithDot[extensionlen] = 0;
+                m_ExtensionWithDot[extensionlen] = '\0';
                 break;
             }
             extensionstartlocation--;
         }
 
-        if( m_ExtensionWithDot == 0 )
+        if( m_ExtensionWithDot == nullptr )
         {
             m_ExtensionWithDot = MyNew char[2];
             m_ExtensionWithDot[0] = '.';
-            m_ExtensionWithDot[1] = 0;
+            m_ExtensionWithDot[1] = '\0';
 
             extensionstartlocation = len;
         }
@@ -357,7 +336,7 @@ void MyFileObject::ParseName(const char* filename)
                 int namelen = extensionstartlocation-i;
                 m_FilenameWithoutExtension = MyNew char[namelen+1];
                 strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
-                m_FilenameWithoutExtension[namelen] = 0;
+                m_FilenameWithoutExtension[namelen] = '\0';
                 break;
             }
             i--;
@@ -373,14 +352,14 @@ void MyFileObject::Tick()
 
         char* buffer = PlatformSpecific_LoadFile( m_FullPath, &length, m_FullPath, __LINE__ );
 
-        if( buffer == 0 )
+        if( buffer == nullptr )
         {
             LOGError( LOGTag, "FileLoadStatus_Error_FileNotFound %s\n", m_FullPath );
             m_FileLoadStatus = FileLoadStatus_Error_FileNotFound; // file not found.
             return;
         }
 
-        if( length > 0 && buffer != 0 )
+        if( length > 0 && buffer != nullptr )
         {
             FakeFileLoad( buffer, length );
         }
@@ -400,6 +379,7 @@ bool MyFileObject::IsNewVersionAvailable()
     if( m_FileLoadStatus > FileLoadStatus_Success )
         m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
 
+    // Read and store the new files timestamp if it changed.
 #if MYFW_WINDOWS
     WIN32_FIND_DATAA data;
     memset( &data, 0, sizeof( data ) );
@@ -412,7 +392,7 @@ bool MyFileObject::IsNewVersionAvailable()
         
         m_FileLastWriteTime = data.ftLastWriteTime;
     }
-#elif MYFW_USING_WX
+#else
     struct stat data;
     stat( m_FullPath, &data );
     if( m_FileLastWriteTime != data.st_mtime )
@@ -433,7 +413,7 @@ void MyFileObject::UpdateTimestamp()
     GetFileData( m_FullPath, &data );
 
     m_FileLastWriteTime = data.ftLastWriteTime;
-#elif MYFW_USING_WX
+#else
     struct stat data;
     stat( m_FullPath, &data );
     m_FileLastWriteTime = data.st_mtime;
@@ -446,17 +426,12 @@ void MyFileObject::UnloadContents()
     m_FileLength = 0;
     m_BytesRead = 0;
     m_FileLoadStatus = FileLoadStatus_Loading;
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveFile( this );
-#endif
 }
 
 void MyFileObject::FakeFileLoad(char* buffer, int length)
 {
-    MyAssert( buffer != 0 && length > 0 );
-    if( buffer == 0 || length <= 0 )
+    MyAssert( buffer != nullptr && length > 0 );
+    if( buffer == nullptr || length <= 0 )
         return;
 
     m_pBuffer = buffer;
@@ -485,7 +460,7 @@ void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
         }
     }
 
-    ShellExecuteA( 0, 0, url, 0, 0, SW_SHOWNORMAL );
+    ShellExecuteA( 0, nullptr, url, nullptr, nullptr, SW_SHOWNORMAL );
 #endif
 }
 
@@ -499,7 +474,7 @@ void MyFileObject::OSOpenContainingFolder()
 
     int endoffolderoffset = (int)( strlen(params) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) - 1);
     params[endoffolderoffset] = '"';
-    params[endoffolderoffset+1] = 0;
+    params[endoffolderoffset+1] = '\0';
     for( int i=0; i<endoffolderoffset; i++ )
     {
         if( params[i] == '/' )
@@ -508,7 +483,7 @@ void MyFileObject::OSOpenContainingFolder()
         }
     }
 
-    ShellExecuteA( 0, 0, "explorer.exe", params, 0, SW_SHOWNORMAL );
+    ShellExecuteA( 0, nullptr, "explorer.exe", params, nullptr, SW_SHOWNORMAL );
 #endif
 }
 
@@ -530,18 +505,6 @@ void MyFileObject::OnPopupClick(MyFileObject* pFileObject, int id)
 
     case RightClick_ViewInWatchWindow:
         {
-#if MYFW_USING_WX
-            g_pPanelWatch->ClearAllVariables();
-
-            g_pPanelWatch->AddSpace( pFileObject->m_FullPath );
-
-            if( strcmp( pFileObject->m_ExtensionWithDot, ".mymesh" ) == 0 )
-            {
-                MyMesh* pMesh = g_pMeshManager->FindMeshBySourceFile( pFileObject );
-
-                pMesh->FillPropertiesWindow( false );
-            }
-#endif //MYFW_USING_WX
         }
         break;
 
@@ -558,51 +521,4 @@ void MyFileObject::OnPopupClick(MyFileObject* pFileObject, int id)
         break;
     }
 }
-
-#if MYFW_USING_WX
-void MyFileObject::OnLeftClick(unsigned int count)
-{
-}
-
-void MyFileObject::OnRightClick()
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
-    menu.Append( RightClick_OpenFile, "Open file" );
-    menu.Append( RightClick_OpenContainingFolder, "Open containing folder" );
-    menu.Append( RightClick_UnloadFile, "Unload File" );
-#if MYFW_OSX
-    menu.Append( RightClick_FindAllReferences, "Find References" );
-#else
-    menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
-#endif
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MyFileObject::OnPopupClick );
-    
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void MyFileObject::OnPopupClick(wxEvent &evt)
-{
-    MyFileObject* pFileObject = (MyFileObject*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
-    OnPopupClick( pFileObject, id );
-}
-
-void MyFileObject::OnDrag()
-{
-    g_DragAndDropStruct.Add( DragAndDropType_FileObjectPointer, this );
-}
-
-void MyFileObject::SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object)
-{
-    m_CustomLeftClickObject = object;
-    m_CustomLeftClickCallback = callback;
-}
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR

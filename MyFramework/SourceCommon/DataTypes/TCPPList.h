@@ -13,11 +13,7 @@
 template <class MyType> class TCPPListNode : public CPPListNode
 {
 public:
-    //MyType Next;
-    //MyType Prev;
-    ////  unsigned long Type;
-
-    //TCPPListNode() : Next(0), Prev(0) {};
+    //TCPPListNode() : CPPListNode() {};
     //virtual ~TCPPListNode() {};
 
     // Gets the previous node, or NULL.
@@ -26,7 +22,7 @@ public:
         if( Prev->Prev )
             return (MyType)Prev;
         else
-            return 0;
+            return nullptr;
     }
 
     // Gets the previous node.  This may be the list's head sentinel.
@@ -41,7 +37,7 @@ public:
         if( Next->Next )
             return (MyType)Next;
         else
-            return 0;
+            return nullptr;
     }
 
     // Gets the next node.  This may be the list's tail sentinel.
@@ -198,19 +194,19 @@ public:
     // Construct new list
     TCPPListHead()
     {
-        HeadNode.Prev = 0;
+        HeadNode.Prev = nullptr;
         HeadNode.Next = &TailNode;
         TailNode.Prev = &HeadNode;
-        TailNode.Next = 0;
+        TailNode.Next = nullptr;
     }
 
     // Empties the list
     void NewList()
     {
-        HeadNode.Prev = 0;
+        HeadNode.Prev = nullptr;
         HeadNode.Next = &TailNode;
         TailNode.Prev = &HeadNode;
-        TailNode.Next = 0;
+        TailNode.Next = nullptr;
     }
 
     // Destruct list
@@ -220,7 +216,7 @@ public:
     MyType GetHead()
     {
         if( HeadNode.Next == &TailNode )
-            return 0;
+            return nullptr;
         else
             return (MyType)HeadNode.Next;
     }
@@ -234,8 +230,8 @@ public:
     // Get the tail node of the list.  NULL if empty
     MyType GetTail()
     {
-        if (TailNode.Prev == &HeadNode)
-            return 0;
+        if( TailNode.Prev == &HeadNode )
+            return nullptr;
         else
             return (MyType)TailNode.Prev;
     }
@@ -273,7 +269,7 @@ public:
     MyType RemHead()
     {
         if( IsEmpty() )
-            return 0;
+            return nullptr;
         else
             return (MyType)RemHeadQuick();
     }
@@ -293,7 +289,7 @@ public:
     MyType RemTail()
     {
         if( IsEmpty() )
-            return 0;
+            return nullptr;
         else
             return RemTailQuick();
     }
@@ -380,351 +376,359 @@ public:
     //    return 0;
     //}
 
-    //// Merge sort this list using the specified compare function.
-    //// The compare function should be of type
-    //// signed char CmpFunc(CPPListNode *a, CPPListNode *b);
-    //// Where the return is <0 if p is smaller than q, ==0 is p is equal to q, or
-    //// >0 if q is smaller than p.
-    //// If it makes life easier p<q and p==q are the same thing to this call.
-    //void Sort(signed char (* sortFunc)(CPPListNode *a, CPPListNode *b))
-    //{
-    //    if (IsEmpty())
-    //        return;
-    //    // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
-    //    // Apparently O(n log n), which is good.
-    //    // Merge sort has issues on arrays (extra storage requirements) which are
-    //    //  not an issue with list based implementations.  This is supposed to be
-    //    //  a really good list sort algorithm.
-    //    // This could be made faster by only maintaining the next pointers, and
-    //    //  going back and filling in the prev pointers when the sort is complete.
-    //    CPPListHead sortedList;
-    //    long k = 1;
-    //    long numMerges;
-    //    CPPListNode *p, *q, *tmp;
-    //    long psize, qsize;
+    // Merge sort this list using the specified compare function.
+    // The compare function should be of type
+    // signed char CmpFunc(CPPListNode *a, CPPListNode *b);
+    // Where the return is <0 if p is smaller than q, ==0 is p is equal to q, or
+    // >0 if q is smaller than p.
+    // If it makes life easier p<q and p==q are the same thing to this call.
+    void Sort(signed char (* sortFunc)(CPPListNode *a, CPPListNode *b))
+    {
+        if( IsEmpty() )
+            return;
 
-    //    do
-    //    {
-    //        p = HeadNode.Next;
-    //        numMerges = 0;
-    //        while (p->Next)
-    //        {
-    //            numMerges++;
-    //            q = p;
-    //            psize = 0;
-    //            while (psize < k)
-    //            {
-    //                psize++;
-    //                q = q->Next;
-    //                if (!q->Next)
-    //                    break;
-    //            }
-    //            qsize = k;
-    //            // Merge phase
-    //            if (q->Next)  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //            {
-    //                while (qsize && psize)
-    //                {
-    //                    if (sortFunc(p, q) <= 0)
-    //                    {
-    //                        tmp = p->Next;
-    //                        sortedList.AddTail(p);
-    //                        psize--;
-    //                        p = tmp;
-    //                    }
-    //                    else
-    //                    {
-    //                        tmp = q->Next;
-    //                        sortedList.AddTail(q);
-    //                        qsize--;
-    //                        q = tmp;
-    //                        if (!q->Next) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //                            break;
-    //                    }
-    //                }
-    //            }
-    //            while (psize--)
-    //            {
-    //                tmp = p->Next;
-    //                sortedList.AddTail(p);
-    //                p = tmp;
-    //            }
-    //            while (qsize-- && q->Next)
-    //            {
-    //                tmp = q->Next;
-    //                sortedList.AddTail(q);
-    //                q = tmp;
-    //            }
-    //            p = q;
-    //        }
-    //        k <<= 1;
-    //        HeadNode.Next = sortedList.HeadNode.Next;
-    //        TailNode.Prev = sortedList.TailNode.Prev;
-    //        HeadNode.Next->Prev = &HeadNode;
-    //        TailNode.Prev->Next = &TailNode;
-    //        sortedList.NewList();
-    //    } while (numMerges > 1);
-    //}
+        // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+        // Apparently O(n log n), which is good.
+        // Merge sort has issues on arrays (extra storage requirements) which are
+        //  not an issue with list based implementations.  This is supposed to be
+        //  a really good list sort algorithm.
+        // This could be made faster by only maintaining the next pointers, and
+        //  going back and filling in the prev pointers when the sort is complete.
+        CPPListHead sortedList;
+        long k = 1;
+        long numMerges;
+        CPPListNode *p, *q, *tmp;
+        long psize, qsize;
 
-    //// Merge sort this list using the <= operator or the nodes.
-    //void Sort()
-    //{
-    //    if (IsEmpty())
-    //        return;
-    //    // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
-    //    // Apparently O(n log n), which is good.
-    //    // Merge sort has issues on arrays (extra storage requirements) which are
-    //    //  not an issue with list based implementations.  This is supposed to be
-    //    //  a really good list sort algorithm.
-    //    // This could be made faster by only maintaining the next pointers, and
-    //    //  going back and filling in the prev pointers when the sort is complete.
-    //    CPPListHead sortedList;
-    //    long k = 1;
-    //    long numMerges;
-    //    CPPListNode *p, *q, *tmp;
-    //    long psize, qsize;
+        do
+        {
+            p = HeadNode.Next;
+            numMerges = 0;
+            while( p->Next )
+            {
+                numMerges++;
+                q = p;
+                psize = 0;
+                while( psize < k )
+                {
+                    psize++;
+                    q = q->Next;
+                    if( !q->Next )
+                        break;
+                }
+                qsize = k;
 
-    //    do
-    //    {
-    //        p = HeadNode.Next;
-    //        numMerges = 0;
-    //        while (p->Next)
-    //        {
-    //            numMerges++;
-    //            q = p;
-    //            psize = 0;
-    //            while (psize < k)
-    //            {
-    //                psize++;
-    //                q = q->Next;
-    //                if (!q->Next)
-    //                    break;
-    //            }
-    //            qsize = k;
-    //            // Merge phase
-    //            if (q->Next)  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //            {
-    //                while (qsize && psize)
-    //                {
-    //                    if ((*p) <= (*q))
-    //                    {
-    //                        tmp = p->Next;
-    //                        sortedList.AddTail(p);
-    //                        psize--;
-    //                        p = tmp;
-    //                    }
-    //                    else
-    //                    {
-    //                        tmp = q->Next;
-    //                        sortedList.AddTail(q);
-    //                        qsize--;
-    //                        q = tmp;
-    //                        if (!q->Next) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //                            break;
-    //                    }
-    //                }
-    //            }
-    //            while (psize--)
-    //            {
-    //                tmp = p->Next;
-    //                sortedList.AddTail(p);
-    //                p = tmp;
-    //            }
-    //            while (qsize-- && q->Next)
-    //            {
-    //                tmp = q->Next;
-    //                sortedList.AddTail(q);
-    //                q = tmp;
-    //            }
-    //            p = q;
-    //        }
-    //        k <<= 1;
-    //        HeadNode.Next = sortedList.HeadNode.Next;
-    //        TailNode.Prev = sortedList.TailNode.Prev;
-    //        HeadNode.Next->Prev = &HeadNode;
-    //        TailNode.Prev->Next = &TailNode;
-    //        sortedList.NewList();
-    //    } while (numMerges > 1);
-    //}
+                // Merge phase
+                if( q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                {
+                    while( qsize && psize )
+                    {
+                        if( sortFunc( p, q ) <= 0 )
+                        {
+                            tmp = p->Next;
+                            sortedList.AddTail( p );
+                            psize--;
+                            p = tmp;
+                        }
+                        else
+                        {
+                            tmp = q->Next;
+                            sortedList.AddTail( q );
+                            qsize--;
+                            q = tmp;
+                            if( !q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                                break;
+                        }
+                    }
+                }
+                while( psize-- )
+                {
+                    tmp = p->Next;
+                    sortedList.AddTail( p );
+                    p = tmp;
+                }
+                while( qsize-- && q->Next )
+                {
+                    tmp = q->Next;
+                    sortedList.AddTail( q );
+                    q = tmp;
+                }
+                p = q;
+            }
+            k <<= 1;
+            HeadNode.Next = sortedList.HeadNode.Next;
+            TailNode.Prev = sortedList.TailNode.Prev;
+            HeadNode.Next->Prev = &HeadNode;
+            TailNode.Prev->Next = &TailNode;
+            sortedList.NewList();
+        } while( numMerges > 1 );
+    }
 
-    //// Merge sort this list using the long at the given offset as the sort field
-    //void SortLong(long offset)
-    //{
-    //    if (IsEmpty())
-    //        return;
-    //    // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
-    //    // Apparently O(n log n), which is good.
-    //    // Merge sort has issues on arrays (extra storage requirements) which are
-    //    //  not an issue with list based implementations.  This is supposed to be
-    //    //  a really good list sort algorithm.
-    //    // This could be made faster by only maintaining the next pointers, and
-    //    //  going back and filling in the prev pointers when the sort is complete.
-    //    CPPListHead sortedList;
-    //    long k = 1;
-    //    long numMerges;
-    //    CPPListNode *p, *q, *tmp;
-    //    long psize, qsize;
+    // Merge sort this list using the <= operator or the nodes.
+    void Sort()
+    {
+        if( IsEmpty() )
+            return;
 
-    //    do
-    //    {
-    //        p = HeadNode.Next;
-    //        numMerges = 0;
-    //        while (p->Next)
-    //        {
-    //            numMerges++;
-    //            q = p;
-    //            psize = 0;
-    //            while (psize < k)
-    //            {
-    //                psize++;
-    //                q = q->Next;
-    //                if (!q->Next)
-    //                    break;
-    //            }
-    //            qsize = k;
-    //            // Merge phase
-    //            if (q->Next)  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //            {
-    //                while (qsize && psize)
-    //                {
-    //                    if ( *((long *)(&((char *)p)[offset])) <= *((long *)(&((char *)q)[offset])) )
-    //                    {
-    //                        tmp = p->Next;
-    //                        sortedList.AddTail(p);
-    //                        psize--;
-    //                        p = tmp;
-    //                    }
-    //                    else
-    //                    {
-    //                        tmp = q->Next;
-    //                        sortedList.AddTail(q);
-    //                        qsize--;
-    //                        q = tmp;
-    //                        if (!q->Next) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //                            break;
-    //                    }
-    //                }
-    //            }
-    //            while (psize--)
-    //            {
-    //                tmp = p->Next;
-    //                sortedList.AddTail(p);
-    //                p = tmp;
-    //            }
-    //            while (qsize-- && q->Next)
-    //            {
-    //                tmp = q->Next;
-    //                sortedList.AddTail(q);
-    //                q = tmp;
-    //            }
-    //            p = q;
-    //        }
-    //        k <<= 1;
-    //        HeadNode.Next = sortedList.HeadNode.Next;
-    //        TailNode.Prev = sortedList.TailNode.Prev;
-    //        HeadNode.Next->Prev = &HeadNode;
-    //        TailNode.Prev->Next = &TailNode;
-    //        sortedList.NewList();
-    //    } while (numMerges > 1);
-    //}
+        // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+        // Apparently O(n log n), which is good.
+        // Merge sort has issues on arrays (extra storage requirements) which are
+        //  not an issue with list based implementations.  This is supposed to be
+        //  a really good list sort algorithm.
+        // This could be made faster by only maintaining the next pointers, and
+        //  going back and filling in the prev pointers when the sort is complete.
+        CPPListHead sortedList;
+        long k = 1;
+        long numMerges;
+        CPPListNode *p, *q, *tmp;
+        long psize, qsize;
 
-    //// Merge sort this list using the long at the given offset as the sort field
-    //void SortFloat(long offset)
-    //{
-    //    if (IsEmpty())
-    //        return;
-    //    // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
-    //    // Apparently O(n log n), which is good.
-    //    // Merge sort has issues on arrays (extra storage requirements) which are
-    //    //  not an issue with list based implementations.  This is supposed to be
-    //    //  a really good list sort algorithm.
-    //    // This could be made faster by only maintaining the next pointers, and
-    //    //  going back and filling in the prev pointers when the sort is complete.
-    //    CPPListHead sortedList;
-    //    long k = 1;
-    //    long numMerges;
-    //    CPPListNode *p, *q, *tmp;
-    //    long psize, qsize;
+        do
+        {
+            p = HeadNode.Next;
+            numMerges = 0;
+            while( p->Next )
+            {
+                numMerges++;
+                q = p;
+                psize = 0;
+                while( psize < k )
+                {
+                    psize++;
+                    q = q->Next;
+                    if( !q->Next )
+                        break;
+                }
+                qsize = k;
 
-    //    do
-    //    {
-    //        p = HeadNode.Next;
-    //        numMerges = 0;
-    //        while (p->Next)
-    //        {
-    //            numMerges++;
-    //            q = p;
-    //            psize = 0;
-    //            while (psize < k)
-    //            {
-    //                psize++;
-    //                q = q->Next;
-    //                if (!q->Next)
-    //                    break;
-    //            }
-    //            qsize = k;
-    //            // Merge phase
-    //            if (q->Next)  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //            {
-    //                while (qsize && psize)
-    //                {
-    //                    if ( *((float *)(&((char *)p)[offset])) <= *((float *)(&((char *)q)[offset])) )
-    //                    {
-    //                        tmp = p->Next;
-    //                        sortedList.AddTail(p);
-    //                        psize--;
-    //                        p = tmp;
-    //                    }
-    //                    else
-    //                    {
-    //                        tmp = q->Next;
-    //                        sortedList.AddTail(q);
-    //                        qsize--;
-    //                        q = tmp;
-    //                        if (!q->Next) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
-    //                            break;
-    //                    }
-    //                }
-    //            }
-    //            while (psize--)
-    //            {
-    //                tmp = p->Next;
-    //                sortedList.AddTail(p);
-    //                p = tmp;
-    //            }
-    //            while (qsize-- && q->Next)
-    //            {
-    //                tmp = q->Next;
-    //                sortedList.AddTail(q);
-    //                q = tmp;
-    //            }
-    //            p = q;
-    //        }
-    //        k <<= 1;
-    //        HeadNode.Next = sortedList.HeadNode.Next;
-    //        TailNode.Prev = sortedList.TailNode.Prev;
-    //        HeadNode.Next->Prev = &HeadNode;
-    //        TailNode.Prev->Next = &TailNode;
-    //        sortedList.NewList();
-    //    } while (numMerges > 1);
-    //}
+                // Merge phase
+                if( q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                {
+                    while( qsize && psize )
+                    {
+                        if( (*p) <= (*q) )
+                        {
+                            tmp = p->Next;
+                            sortedList.AddTail( p );
+                            psize--;
+                            p = tmp;
+                        }
+                        else
+                        {
+                            tmp = q->Next;
+                            sortedList.AddTail( q );
+                            qsize--;
+                            q = tmp;
+                            if( !q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                                break;
+                        }
+                    }
+                }
+                while( psize-- )
+                {
+                    tmp = p->Next;
+                    sortedList.AddTail( p );
+                    p = tmp;
+                }
+                while( qsize-- && q->Next )
+                {
+                    tmp = q->Next;
+                    sortedList.AddTail( q );
+                    q = tmp;
+                }
+                p = q;
+            }
+            k <<= 1;
+            HeadNode.Next = sortedList.HeadNode.Next;
+            TailNode.Prev = sortedList.TailNode.Prev;
+            HeadNode.Next->Prev = &HeadNode;
+            TailNode.Prev->Next = &TailNode;
+            sortedList.NewList();
+        } while( numMerges > 1 );
+    }
+
+    // Merge sort this list using the long at the given offset as the sort field
+    void SortLong( long offset )
+    {
+        if( IsEmpty() )
+            return;
+
+        // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+        // Apparently O(n log n), which is good.
+        // Merge sort has issues on arrays (extra storage requirements) which are
+        //  not an issue with list based implementations.  This is supposed to be
+        //  a really good list sort algorithm.
+        // This could be made faster by only maintaining the next pointers, and
+        //  going back and filling in the prev pointers when the sort is complete.
+        CPPListHead sortedList;
+        long k = 1;
+        long numMerges;
+        CPPListNode *p, *q, *tmp;
+        long psize, qsize;
+
+        do
+        {
+            p = HeadNode.Next;
+            numMerges = 0;
+            while( p->Next )
+            {
+                numMerges++;
+                q = p;
+                psize = 0;
+                while( psize < k )
+                {
+                    psize++;
+                    q = q->Next;
+                    if( !q->Next )
+                        break;
+                }
+                qsize = k;
+
+                // Merge phase
+                if( q->Next )  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                {
+                    while( qsize && psize )
+                    {
+                        if( *( (long*)( &((char*)p)[offset] ) ) <= *( (long*)( &((char*)q)[offset] ) ) )
+                        {
+                            tmp = p->Next;
+                            sortedList.AddTail( p );
+                            psize--;
+                            p = tmp;
+                        }
+                        else
+                        {
+                            tmp = q->Next;
+                            sortedList.AddTail( q );
+                            qsize--;
+                            q = tmp;
+                            if( !q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                                break;
+                        }
+                    }
+                }
+                while( psize-- )
+                {
+                    tmp = p->Next;
+                    sortedList.AddTail( p );
+                    p = tmp;
+                }
+                while( qsize-- && q->Next )
+                {
+                    tmp = q->Next;
+                    sortedList.AddTail( q );
+                    q = tmp;
+                }
+                p = q;
+            }
+            k <<= 1;
+            HeadNode.Next = sortedList.HeadNode.Next;
+            TailNode.Prev = sortedList.TailNode.Prev;
+            HeadNode.Next->Prev = &HeadNode;
+            TailNode.Prev->Next = &TailNode;
+            sortedList.NewList();
+        } while( numMerges > 1 );
+    }
+
+    // Merge sort this list using the long at the given offset as the sort field
+    void SortFloat( long offset )
+    {
+        if( IsEmpty() )
+            return;
+
+        // based on http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+        // Apparently O(n log n), which is good.
+        // Merge sort has issues on arrays (extra storage requirements) which are
+        //  not an issue with list based implementations.  This is supposed to be
+        //  a really good list sort algorithm.
+        // This could be made faster by only maintaining the next pointers, and
+        //  going back and filling in the prev pointers when the sort is complete.
+        CPPListHead sortedList;
+        long k = 1;
+        long numMerges;
+        CPPListNode *p, *q, *tmp;
+        long psize, qsize;
+
+        do
+        {
+            p = HeadNode.Next;
+            numMerges = 0;
+            while( p->Next )
+            {
+                numMerges++;
+                q = p;
+                psize = 0;
+                while( psize < k )
+                {
+                    psize++;
+                    q = q->Next;
+                    if( !q->Next )
+                        break;
+                }
+                qsize = k;
+
+                // Merge phase
+                if( q->Next )  // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                {
+                    while( qsize && psize )
+                    {
+                        if( *( (float*)( &((char*)p)[offset] ) ) <= *( (float*)( &((char*)q)[offset] ) ) )
+                        {
+                            tmp = p->Next;
+                            sortedList.AddTail( p );
+                            psize--;
+                            p = tmp;
+                        }
+                        else
+                        {
+                            tmp = q->Next;
+                            sortedList.AddTail( q );
+                            qsize--;
+                            q = tmp;
+                            if( !q->Next ) // Since q doesn't change every loop iteration, I've broken this out of the main loop condition
+                                break;
+                        }
+                    }
+                }
+                while( psize-- )
+                {
+                    tmp = p->Next;
+                    sortedList.AddTail( p );
+                    p = tmp;
+                }
+                while( qsize-- && q->Next )
+                {
+                    tmp = q->Next;
+                    sortedList.AddTail( q );
+                    q = tmp;
+                }
+                p = q;
+            }
+            k <<= 1;
+            HeadNode.Next = sortedList.HeadNode.Next;
+            TailNode.Prev = sortedList.TailNode.Prev;
+            HeadNode.Next->Prev = &HeadNode;
+            TailNode.Prev->Next = &TailNode;
+            sortedList.NewList();
+        } while( numMerges > 1 );
+    }
 
     //// Convert the list to an array of node pointers.
     //// Returns the number of used entries from 0 to maxNodes.
     //// The entries are optionally removed from the list.  If you choose to
     ////  removed entries, and more entries are in the list than the array, the
     ////  remaining entries will be left in the list.
-    //long ToArray(CPPListNode **storage, long maxNodes, char removeNodes = 0)
+    //long ToArray(CPPListNode** storage, long maxNodes, char removeNodes = 0)
     //{
-    //    CPPListNode *ptr;
+    //    CPPListNode* ptr;
     //    long numNodes = 0;
 
-    //    for (ptr = HeadNode.Next; ptr->Next && numNodes != maxNodes; ptr = ptr->Next)
+    //    for( ptr = HeadNode.Next; ptr->Next && numNodes != maxNodes; ptr = ptr->Next )
     //    {
     //        *storage++ = ptr;
     //        numNodes++;
     //    }
-    //    if (removeNodes)
+    //    if( removeNodes )
     //    {
     //        HeadNode.Next = ptr;
     //        ptr->Prev = &HeadNode;
@@ -734,12 +738,12 @@ public:
 
     //// Converts an array of node pointers to a set of linked nodes at the head
     //// of the list.
-    //void FromArrayToHead(CPPListNode **storage, long numNodes)
+    //void FromArrayToHead(CPPListNode** storage, long numNodes)
     //{
-    //    CPPListNode *firstNode = HeadNode.Next;
-    //    CPPListNode *prevNode = &HeadNode;
+    //    CPPListNode* firstNode = HeadNode.Next;
+    //    CPPListNode* prevNode = &HeadNode;
 
-    //    while(numNodes--)
+    //    while( numNodes-- )
     //    {
     //        prevNode->Next = *storage;
     //        (*storage)->Prev = prevNode;
@@ -751,13 +755,13 @@ public:
 
     //// Converts an array of node pointers to a set of linked nodes at the tail
     //// of the list.
-    //void FromArrayToTail(CPPListNode **storage, long numNodes)
+    //void FromArrayToTail(CPPListNode** storage, long numNodes)
     //{
-    //    CPPListNode *lastNode = TailNode.Prev;
-    //    CPPListNode *nextNode = &TailNode;
+    //    CPPListNode* lastNode = TailNode.Prev;
+    //    CPPListNode* nextNode = &TailNode;
 
     //    storage += numNodes-1;
-    //    while(numNodes--)
+    //    while( numNodes-- )
     //    {
     //        nextNode->Prev = *storage;
     //        (*storage)->Next = nextNode;

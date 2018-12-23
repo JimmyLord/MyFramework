@@ -11,9 +11,12 @@
 #include "Renderer_Enums.h"
 #include "Renderer_Base.h"
 
-const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes] =
+namespace MyRE // MyRendererEnums
 {
-    "Use Shader Setting",
-    "Off",
-    "On",
+    const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes] =
+    {
+        "Use Shader Setting",
+        "Off",
+        "On",
+    };
 };

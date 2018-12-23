@@ -11,12 +11,13 @@
 
 #if MYFW_WINDOWS
 
-#define MEMORY_ShowDebugInfo   0
+#define MEMORY_ShowDebugInfo    0
+#define CountToAssertOn         UINT_MAX    // Set this to assert when 'new' has been called this many times.
 
 class AllocationList;
 
-CPPListHead g_StaticallyAllocatedRam;
-AllocationList* g_pAllocationList = 0;
+TCPPListHead<MemObject*> g_StaticallyAllocatedRam;
+AllocationList* g_pAllocationList = nullptr;
 unsigned int g_TotalAllocatedRam = 0;
 unsigned int g_AllocatedRamCount = 0;
 unsigned int g_ActiveAllocatedRamCount = 0;
@@ -29,6 +30,7 @@ class DummyClassToForceAStaticOperatorNew
 {
 public:
     int* m_DummyInt;
+
 public:
     DummyClassToForceAStaticOperatorNew()
     {
@@ -39,12 +41,13 @@ public:
         delete m_DummyInt;
     }
 };
+
 DummyClassToForceAStaticOperatorNew DummyInstanceOfAClassToForceAStaticOperatorNew;
 
 class AllocationList
 {
 public:
-    CPPListHead m_Allocations;
+    TCPPListHead<MemObject*> m_Allocations;
 
     AllocationList()
     {
@@ -57,67 +60,63 @@ public:
     }
 };
 
-CPPListNode* MyMemory_GetFirstMemObject()
+MemObject* MyMemory_GetFirstMemObject()
 {
     return g_pAllocationList->m_Allocations.GetHead();
 }
 
-void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation)
+void MyMemory_ValidateAllocations(AllocationList* pList, bool assertOnAnyAllocation)
 {
-#if MYFW_WINDOWS && _DEBUG
-    // grab the mutex, for g_pAllocationList and other tracking globals
+#if _DEBUG
+    // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
 
     LOGInfo( LOGTag, "Start dumping unfreed memory allocations.\n" );
-    CPPListNode* pNode;
-    for( pNode = pList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )
+    LOGInfo( LOGTag, "\\/\\/\\/\\/\\/\\/ Start of memory leak dump \\/\\/\\/\\/\\/\\/ \n" );
+    for( MemObject* pMemObject = pList->m_Allocations.GetHead(); pMemObject; pMemObject = pMemObject->GetNext() )
     {
-        MemObject* obj = (MemObject*)pNode;
-        MyAssert( obj->m_size < 200000 );
-        MyAssert( obj->m_type < 3 );
-        MyAssert( obj->m_line < 2500 );
-        MyAssert( obj->Next != NULL );
-        MyAssert( obj->Prev != NULL );
+        MyAssert( pMemObject->m_Size < 200000 );
+        MyAssert( pMemObject->m_Type < 3 );
+        MyAssert( pMemObject->m_Line < 2500 );
+        MyAssert( pMemObject->Next != nullptr );
+        MyAssert( pMemObject->Prev != nullptr );
 
-        // Pointer to allocation not freed: ((char*)obj)+sizeof(MemObject)
+        // Pointer to allocation not freed: ((char*)pMemObject)+sizeof(MemObject)
 
-        LOGInfo( LOGTag, "%s(%d):(%d) %d bytes : Memory unreleased.\n", obj->m_file, obj->m_line, obj->m_allocationcount, obj->m_size );
+        LOGInfo( LOGTag, "%s(%d): %d bytes unreleased. Count:(%d) %s\n", pMemObject->m_File, pMemObject->m_Line, pMemObject->m_Size, pMemObject->m_AllocationCount, pMemObject->m_Type == NewType_Regular ? "" : "Array Allocation" );
     }
-    LOGInfo( LOGTag, "End dumping unfreed memory allocations.\n" );
+    LOGInfo( LOGTag, "/\\/\\/\\/\\/\\/\\ End of memory leak dump /\\/\\/\\/\\/\\/\\ \n" );
 
-    if( AssertOnAnyAllocation && pList->m_Allocations.GetHead() != 0 )
+    if( assertOnAnyAllocation && pList->m_Allocations.GetHead() != nullptr )
         MyAssert( false );
 
     pthread_mutex_unlock( &g_AllocationMutex );
-#endif
+#endif //_DEBUG
 }
 
 size_t MyMemory_GetNumberOfBytesAllocated()
 {
-    if( g_pAllocationList == 0 )
+    if( g_pAllocationList == nullptr )
         return 0;
 
-#if MYFW_WINDOWS && _DEBUG
-    // grab the mutex, for g_pAllocationList and other tracking globals
+#if _DEBUG
+    // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
 
-    // since the list itself isn't in the list, start with it's size.
+    // Since the list itself isn't in the list, start with it's size.
     size_t count = sizeof( AllocationList );
 
-    CPPListNode* pNode;
-    for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode->Next; pNode = pNode->Next )
+    MemObject* pMemObject;
+    for( pMemObject = g_pAllocationList->m_Allocations.GetHead(); pMemObject; pMemObject = pMemObject->GetNext() )
     {
-        MemObject* obj = (MemObject*)pNode;
-        count += obj->m_size;
+        count += pMemObject->m_Size;
     }
 
-    for( pNode = g_StaticallyAllocatedRam.HeadNode.Next; pNode->Next; pNode = pNode->Next )
+    for( pMemObject = g_StaticallyAllocatedRam.GetHead(); pMemObject; pMemObject = pMemObject->GetNext() )
     {
-        MemObject* obj = (MemObject*)pNode;
-        count += obj->m_size;
+        count += pMemObject->m_Size;
     }
 
-    //LOGInfo( LOGTag, "Memory used %d\n", count );
     MyAssert( count == g_TotalAllocatedRam );
 
     pthread_mutex_unlock( &g_AllocationMutex );
@@ -125,15 +124,15 @@ size_t MyMemory_GetNumberOfBytesAllocated()
     return count;
 #else
     return 0;
-#endif
+#endif //_DEBUG
 }
 
-unsigned int MyMemory_GetNumberOfMemoryAllocations()
+uint32 MyMemory_GetNumberOfMemoryAllocations()
 {
     return g_AllocatedRamCount;
 }
 
-unsigned int MyMemory_GetNumberOfActiveMemoryAllocations()
+uint32 MyMemory_GetNumberOfActiveMemoryAllocations()
 {
     return g_ActiveAllocatedRamCount;
 }
@@ -142,46 +141,34 @@ void MyMemory_MarkAllExistingAllocationsAsStatic()
 {
     return;
 
-    // not ideal, but called from game code's WinMain.cpp ATM
+    // Not ideal, but called from game code's WinMain.cpp ATM.
     // If any code(in this case the bullet profiler clock btQuickProf.cpp) allocated memory in a static class instance,
     //    this will remove it from the allocation list that ValidateAllocations() checks on shutdown.
-    // Turned off bullet profiling instead(#define BT_NO_PROFILE 1 in btQuickProf.cpp), but situation still possible
+    // Turned off bullet profiling instead(#define BT_NO_PROFILE 1 in btQuickProf.cpp), but situation still possible.
 
-    // Used again in wxWidgets build, event tables (BEGIN_EVENT_TABLE...END_EVENT_TABLE) are statically allocated
+    // Used again in wxWidgets build, event tables (BEGIN_EVENT_TABLE...END_EVENT_TABLE) are statically allocated.
 
-    CPPListNode* pNode;
+    //for( MemObject* pMemObject = g_pAllocationList->m_Allocations.GetHead(); pMemObject; )
+    //{
+    //    MemObject* pNextMemObject = pMemObject->GetNext();
 
-    for( pNode = g_pAllocationList->m_Allocations.HeadNode.Next; pNode && pNode->Next; )
-    {
-        CPPListNode* pNodeToMove = pNode;
-        pNode = pNode->GetNext();
+    //    LOGInfo( LOGTag, "Moving memory allocation to StaticallyAllocatedRam cpplist. %d bytes\n", pMemObject->m_Size );
+    //    g_StaticallyAllocatedRam.MoveTail( pMemObject );
 
-        MemObject* obj = (MemObject*)pNode;
-        if( obj )
-            LOGInfo( LOGTag, "Moving memory allocation to StaticallyAllocatedRam cpplist. %d bytes\n", obj->m_size );
-
-        g_StaticallyAllocatedRam.MoveTail( pNodeToMove );
-    }
+    //    pMemObject = pNextMemObject;
+    //}
 }
 
-void operator delete(void* m, char* file, unsigned long line)
+void* ActualNew(NewTypes type, size_t size, const char* file, unsigned long line)
 {
-    delete (char*)m;
-}
-
-void operator delete[](void* m, char* file, unsigned long line)
-{
-    delete (char*)m;
-}
-
-void* operator new(size_t size, char* file, unsigned long line)
-{
+    MyAssert( CountToAssertOn == UINT_MAX || g_AllocatedRamCount != CountToAssertOn );
     MyAssert( size > 0 );
+    MyAssert( file != nullptr );
 
-    // grab the mutex, for g_pAllocationList and other tracking globals
+    // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
 
-    if( g_pAllocationList == 0 )
+    if( g_pAllocationList == nullptr )
     {
         g_pAllocationList = (AllocationList*)1;
         pthread_mutex_unlock( &g_AllocationMutex );
@@ -189,38 +176,30 @@ void* operator new(size_t size, char* file, unsigned long line)
         pthread_mutex_lock( &g_AllocationMutex );
     }
     if( g_pAllocationList == (AllocationList*)1 )
-        g_pAllocationList = 0;
-
-    MyAssert( file != 0 );
-    //if( g_AllocatedRamCount == 83240 )
-    //    int bp = 1;
-    //if( file == 0 && size == 380 )
-    //    int bp = 1;
+    {
+        g_pAllocationList = nullptr;
+    }
 
     MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
-    mo->m_size = size;
-    mo->m_type = newtype_reg;
-    mo->m_file = file;
-    mo->m_line = line;
-    mo->m_allocationcount = g_AllocatedRamCount;
-    if( g_pAllocationList == 0 )
+    mo->m_Size = size;
+    mo->m_Type = type;
+    mo->m_File = file;
+    mo->m_Line = line;
+    mo->m_AllocationCount = g_AllocatedRamCount;
+    if( g_pAllocationList == nullptr )
     {
         MyAssert( g_AllocatedRamCount == 0 );
         LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
-        mo->Next = 0;
-        mo->Prev = 0;
+        mo->Next = nullptr;
+        mo->Prev = nullptr;
     }
     else
-        g_pAllocationList->m_Allocations.AddTail( mo );
-
-    if( mo->m_file == 0 )
     {
-        //MyAssert( false );
-        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
+        g_pAllocationList->m_Allocations.AddTail( mo );
     }
 
 #if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "ALLOC: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, ((char*)mo) + sizeof(MemObject), mo->m_file, mo->m_line );
+    LOGInfo( LOGTag, "ALLOC %s: %d, 0x%p, 0x%p, %s, %d\n", type == NewType_Regular ? "" : "ARRAY", (int)mo->m_size, mo, ((char*)mo) + sizeof(MemObject), mo->m_file, mo->m_line );
 #endif
 
     g_TotalAllocatedRam += (int)size;
@@ -229,272 +208,87 @@ void* operator new(size_t size, char* file, unsigned long line)
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
-    //MyMemory_GetNumberOfBytesAllocated();
-
-    return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
+    return ((char*)mo) + sizeof(MemObject);
 }
 
-void* operator new[](size_t size, char* file, unsigned long line)
+void ActualDelete(NewTypes type, void* ptr)
 {
-    MyAssert( size > 0 );
+    if( ptr == nullptr )
+        return;
 
-    // grab the mutex, for g_pAllocationList and other tracking globals
+    // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
 
-    if( g_pAllocationList == 0 )
-    {
-        g_pAllocationList = (AllocationList*)1;
-        pthread_mutex_unlock( &g_AllocationMutex );
-        g_pAllocationList = new AllocationList;
-        pthread_mutex_lock( &g_AllocationMutex );
-    }
-    if( g_pAllocationList == (AllocationList*)1 )
-        g_pAllocationList = 0;
+    MemObject* pMemObject = (MemObject*)(((char*)ptr) - sizeof(MemObject));
+    size_t size = pMemObject->m_Size;
+    MyAssert( pMemObject->m_Type == type );
 
-    //if( g_AllocatedRamCount == 83240 )
-    //    int bp = 1;
-
-    MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
-    mo->m_size = size;
-    mo->m_type = newtype_array;
-    mo->m_file = file;
-    mo->m_line = line;
-    mo->m_allocationcount = g_AllocatedRamCount;
-    if( g_pAllocationList == 0 )
-    {
-        MyAssert( g_AllocatedRamCount == 0 );
-        LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
-        mo->Next = 0;
-        mo->Prev = 0;
-    }
+    if( pMemObject->m_AllocationCount == 0 )
+        LOGInfo( LOGTag, "Deleting allocation list...\n" );
+    else if( pMemObject->Next == nullptr )
+        LOGInfo( LOGTag, "Deleting object that wasn't added to list...\n" );
     else
-        g_pAllocationList->m_Allocations.AddTail( mo );
-
-    if( mo->m_file == 0 )
-    {
-        //MyAssert( false );
-        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
-    }
+        pMemObject->Remove();
 
 #if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "ALLOC ARRAY: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, ((char*)mo) + sizeof(MemObject), mo->m_file, mo->m_line );
+    LOGInfo( LOGTag, "FREE %s: %d, 0x%p, 0x%p, %s, %d\n", type == NewType_Regular ? "" : "ARRAY", (int)mo->m_size, mo, m, mo->m_file, mo->m_line );
 #endif
+    
+    int thisAllocationCount = pMemObject->m_AllocationCount;
 
-    g_TotalAllocatedRam += (int)size;
-    g_AllocatedRamCount++;
-    g_ActiveAllocatedRamCount++;
+    g_TotalAllocatedRam -= (int)size;
+    g_ActiveAllocatedRamCount--;
+    free( pMemObject );
 
     pthread_mutex_unlock( &g_AllocationMutex );
 
-    //MyMemory_GetNumberOfBytesAllocated();
+    // Will only work if the first allocation is also the last one freed... likely a static allocation.
+    if( thisAllocationCount == 1 )
+    {
+        AllocationList* pList = g_pAllocationList;
+        g_pAllocationList = nullptr;
+        delete pList;
+    }
+}
 
-    return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
+void* operator new(size_t size, const char* file, unsigned long line)
+{
+    return ActualNew( NewType_Regular, size, file, line );
+}
+
+void* operator new[](size_t size, const char* file, unsigned long line)
+{
+    return ActualNew( NewType_Array, size, file, line );
+}
+
+void operator delete(void* ptr, const char* file, unsigned long line)
+{
+    ActualDelete( NewType_Regular, ptr );
+}
+
+void operator delete[](void* ptr, const char* file, unsigned long line)
+{
+    ActualDelete( NewType_Array, ptr );
 }
 
 void* operator new(size_t size)
 {
-    MyAssert( size > 0 );
-
-    // grab the mutex, for g_pAllocationList and other tracking globals
-    pthread_mutex_lock( &g_AllocationMutex );
-
-    if( g_pAllocationList == 0 )
-    {
-        g_pAllocationList = (AllocationList*)1;
-        pthread_mutex_unlock( &g_AllocationMutex );
-        g_pAllocationList = new AllocationList;
-        pthread_mutex_lock( &g_AllocationMutex );
-    }
-    if( g_pAllocationList == (AllocationList*)1 )
-        g_pAllocationList = 0;
-
-    //if( g_AllocatedRamCount == 83240 )
-    //    int bp = 1;
-    //if( size == 16 )
-    //    int bp = 1;
-
-    MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
-    mo->m_size = size;
-    mo->m_type = newtype_reg;
-    mo->m_file = 0;
-    mo->m_line = 0;
-    mo->m_allocationcount = g_AllocatedRamCount;
-    if( g_pAllocationList == 0 )
-    {
-        MyAssert( g_AllocatedRamCount == 0 );
-        LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
-        mo->Next = 0;
-        mo->Prev = 0;
-    }
-    else
-        g_pAllocationList->m_Allocations.AddTail( mo );
-
-    if( mo->m_file == 0 )
-    {
-        //MyAssert( false );
-        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
-    }
-
-#if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "ALLOC: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, ((char*)mo) + sizeof(MemObject), mo->m_file, mo->m_line );
-#endif
-
-    g_TotalAllocatedRam += (int)size;
-    g_AllocatedRamCount++;
-    g_ActiveAllocatedRamCount++;
-
-    pthread_mutex_unlock( &g_AllocationMutex );
-
-    //MyMemory_GetNumberOfBytesAllocated();
-
-    return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
-}
-
-void operator delete(void* m)
-{
-    if( m == 0 )
-        return;
-
-    // grab the mutex, for g_pAllocationList and other tracking globals
-    pthread_mutex_lock( &g_AllocationMutex );
-
-    MemObject* mo = (MemObject*)(((char*)m) - sizeof(MemObject));
-    size_t size = mo->m_size;
-    MyAssert( mo->m_type == newtype_reg );
-    //if( mo->m_type == newtype_reg )
-    {
-        if( mo->m_allocationcount == 0 )
-            LOGInfo( LOGTag, "deleting allocation list...\n" );
-        else if( mo->Next == 0 )
-            LOGInfo( LOGTag, "deleting object that wasn't added to list...\n" );
-        else
-            mo->Remove();
-    }
-
-#if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "FREE: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, m, mo->m_file, mo->m_line );
-#endif
-
-    //memset(mo, 0, sizeof(mo));
-    
-    int thisallocationcount = mo->m_allocationcount;
-
-    g_TotalAllocatedRam -= (int)size;
-    g_ActiveAllocatedRamCount--;
-    free(mo);
-
-    pthread_mutex_unlock( &g_AllocationMutex );
-
-    //MyMemory_GetNumberOfBytesAllocated();
-
-    // will only work if the first allocation is also the last one freed... likely a static allocation.
-    if( thisallocationcount == 1 )
-    {
-        AllocationList* pList = g_pAllocationList;
-        g_pAllocationList = 0;
-        delete pList;
-    }
+    return ActualNew( NewType_Regular, size, "File not defined", 0 );
 }
 
 void* operator new[](size_t size)
 {
-    MyAssert( size > 0 );
-
-    // grab the mutex, for g_pAllocationList and other tracking globals
-    pthread_mutex_lock( &g_AllocationMutex );
-
-    if( g_pAllocationList == 0 )
-    {
-        g_pAllocationList = (AllocationList*)1;
-        pthread_mutex_unlock( &g_AllocationMutex );
-        g_pAllocationList = new AllocationList;
-        pthread_mutex_lock( &g_AllocationMutex );
-    }
-    if( g_pAllocationList == (AllocationList*)1 )
-        g_pAllocationList = 0;
-
-    //if( g_AllocatedRamCount == 83240 )
-    //    int bp = 1;
-
-    MemObject* mo = (MemObject*)malloc( size + sizeof(MemObject) );
-    mo->m_size = size;
-    mo->m_type = newtype_array;
-    mo->m_file = 0;
-    mo->m_line = 0;
-    mo->m_allocationcount = g_AllocatedRamCount;
-    if( g_pAllocationList == 0 )
-    {
-        MyAssert( g_AllocatedRamCount == 0 );
-        LOGInfo( LOGTag, "AllocatedRam table not initialized...\n" );
-        mo->Next = 0;
-        mo->Prev = 0;
-    }
-    else
-        g_pAllocationList->m_Allocations.AddTail( mo );
-
-    if( mo->m_file == 0 )
-    {
-        //MyAssert( false );
-        //LOGInfo( LOGTag, "Allocating ram without using MyNew\n" );
-    }
-
-#if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "ALLOC ARRAY: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, ((char*)mo) + sizeof(MemObject), mo->m_file, mo->m_line );
-#endif
-
-    g_TotalAllocatedRam += (int)size;
-    g_AllocatedRamCount++;
-    g_ActiveAllocatedRamCount++;
-
-    pthread_mutex_unlock( &g_AllocationMutex );
-
-    //MyMemory_GetNumberOfBytesAllocated();
-
-    return ((char*)mo) + sizeof(MemObject); //mo + sizeof(MemObject);
+    return ActualNew( NewType_Array, size, "File not defined", 0 );
 }
 
-void operator delete[](void* m)
+void operator delete(void* ptr)
 {
-    if( m == 0 )
-        return;
+    ActualDelete( NewType_Regular, ptr );
+}
 
-    // grab the mutex, for g_pAllocationList and other tracking globals
-    pthread_mutex_lock( &g_AllocationMutex );
-
-    MemObject* mo = (MemObject*)( ((char*)m) - sizeof(MemObject) );
-    size_t size = mo->m_size;
-    MyAssert( mo->m_type == newtype_array );
-    //if( mo->m_type == newtype_array )
-    {
-        if( mo->m_allocationcount == 0 )
-            LOGInfo( LOGTag, "deleting allocation list...\n" );
-        else if( mo->Next == 0 )
-            LOGInfo( LOGTag, "deleting object that wasn't added to list...\n" );
-        else
-            mo->Remove();
-    }
-
-#if MEMORY_ShowDebugInfo
-    LOGInfo( LOGTag, "FREE ARRAY: %d, 0x%p, 0x%p, %s, %d\n", (int)mo->m_size, mo, m, mo->m_file, mo->m_line );
-#endif
-
-    int thisallocationcount = mo->m_allocationcount;
-
-    g_TotalAllocatedRam -= (int)size;
-    g_ActiveAllocatedRamCount--;
-    free(mo);
-
-    pthread_mutex_unlock( &g_AllocationMutex );
-
-    //MyMemory_GetNumberOfBytesAllocated();
-
-    // will only work if the first allocation is also the last one freed... likely a static allocation.
-    if( thisallocationcount == 1 )
-    {
-        AllocationList* pList = g_pAllocationList;
-        g_pAllocationList = 0;
-        delete pList;
-    }
+void operator delete[](void* ptr)
+{
+    ActualDelete( NewType_Array, ptr );
 }
 
 #endif //MYFW_WINDOWS

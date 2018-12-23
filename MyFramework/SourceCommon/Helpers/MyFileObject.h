@@ -13,13 +13,13 @@
 class MyFileObject;
 
 #if MYFW_EDITOR
-char* PlatformSpecific_LoadFile(const char* filename, int* length = 0, const char* file = __FILE__, unsigned long line = __LINE__);
+char* PlatformSpecific_LoadFile(const char* filename, int* length = nullptr, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif
 
 typedef void (*PanelObjectListObjectCallback)(void*);
 
 typedef void (*FileFinishedLoadingCallbackFunc)(void* pObjectPtr, MyFileObject* pFile);
-struct FileFinishedLoadingCallbackStruct : public CPPListNode
+struct FileFinishedLoadingCallbackStruct : public TCPPListNode<FileFinishedLoadingCallbackStruct*>
 {
     void* pObj;
     FileFinishedLoadingCallbackFunc pFunc;
@@ -58,7 +58,7 @@ class MyFileObject : public TCPPListNode<MyFileObject*>, public RefCount
     static const int CALLBACK_POOL_SIZE = 1000;
 
 protected:
-    CPPListHead m_FileFinishedLoadingCallbackList;
+    TCPPListHead<FileFinishedLoadingCallbackStruct*> m_FileFinishedLoadingCallbackList;
 
     char* m_FullPath;
     char* m_FilenameWithoutExtension;
@@ -90,7 +90,7 @@ public:
     const char* Rename(const char* newnamewithoutextension);
 
     bool IsFinishedLoading();
-    const char* GetFullPath() { return m_FullPath; }
+    const char* GetFullPath() const { return m_FullPath; }
     const char* GetFilename();
     const char* GetFilenameWithoutExtension() { return m_FilenameWithoutExtension; }
     const char* GetExtensionWithDot() { return m_ExtensionWithDot; } // will be "." if no extension

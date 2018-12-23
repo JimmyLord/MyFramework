@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -20,49 +20,52 @@
 
 #elif MYFW_WINDOWS
 
-#define MyNew               new(__FILE__, __LINE__)
-//#define MyNewArray(x,y)      new(__FILE__, __LINE__) x[y]
+enum NewTypes
+{
+    NewType_NotSet = 0,
+    NewType_Regular = 1,
+    NewType_Array = 2,
+};
 
-#define newtype_reg         1
-#define newtype_array       2
+#define MyNew new(__FILE__, __LINE__)
 
-class MemObject : public CPPListNode
+class MemObject : public TCPPListNode<MemObject*>
 {
 public:
-    size_t m_size;
-    unsigned long m_line;
-    char* m_file;
-    int m_type;
-    int m_allocationcount;
+    size_t m_Size;
+    unsigned long m_Line;
+    const char* m_File;
+    NewTypes m_Type;
+    int m_AllocationCount;
 
     MemObject() :
-        m_size(0),
-        m_line(0),
-        m_file(0),
-        m_type(0),
-        m_allocationcount(0)
+        m_Size( 0 ),
+        m_Line( 0 ),
+        m_File( nullptr ),
+        m_Type( NewType_NotSet ),
+        m_AllocationCount( 0 )
     {
     }
 };
 
 class AllocationList;
 
-CPPListNode* MyMemory_GetFirstMemObject();
-void MyMemory_ValidateAllocations(AllocationList* pList, bool AssertOnAnyAllocation);
+MemObject* MyMemory_GetFirstMemObject();
+void MyMemory_ValidateAllocations(AllocationList* pList, bool assertOnAnyAllocation);
 size_t MyMemory_GetNumberOfBytesAllocated();
-unsigned int MyMemory_GetNumberOfMemoryAllocations();
-unsigned int MyMemory_GetNumberOfActiveMemoryAllocations();
+uint32 MyMemory_GetNumberOfMemoryAllocations();
+uint32 MyMemory_GetNumberOfActiveMemoryAllocations();
 void MyMemory_MarkAllExistingAllocationsAsStatic();
 
-void* operator new(size_t size, char* file, unsigned long line);
-void* operator new[](size_t size, char* file, unsigned long line);
-void operator delete(void* m, char* file, unsigned long line);
-void operator delete[](void* m, char* file, unsigned long line);
+void* operator new(size_t size, const char* file, unsigned long line);
+void* operator new[](size_t size, const char* file, unsigned long line);
+void operator delete(void* ptr, const char* file, unsigned long line);
+void operator delete[](void* ptr, const char* file, unsigned long line);
 
 void* operator new(size_t size);
-void operator delete(void* m);
 void* operator new[](size_t size);
-void operator delete[](void* m);
+void operator delete(void* ptr);
+void operator delete[](void* ptr);
 
 #endif //MYFW_WINDOWS
 

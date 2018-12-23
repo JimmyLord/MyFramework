@@ -32,6 +32,12 @@ protected:
 public:
     FontDefinition();
     virtual ~FontDefinition();
+
+    // Getters.
+    bool IsFullyLoaded() { return m_FullyLoaded; }
+    MyFileObject* GetFile() { return m_pFile; }
+    BMFont* GetBMFont() { return m_pBMFont; }
+    TextureDefinition* GetTexture() { return m_pTextureDef; }
 };
 
 class FontManager

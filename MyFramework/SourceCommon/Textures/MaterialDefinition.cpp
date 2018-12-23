@@ -15,10 +15,6 @@
 
 void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
 {
-#if MYFW_USING_WX
-    m_ControlID = -1;
-#endif
-
     switch( type )
     {
     case ExposedUniformType_Float:
@@ -42,7 +38,7 @@ void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
         break;
 
     case ExposedUniformType_Sampler2D:
-        m_pTexture = 0;
+        m_pTexture = nullptr;
         break;
 
     case ExposedUniformType_NotSet:
@@ -82,7 +78,7 @@ void MaterialDefinition::SetFile(MyFileObject* pFile)
 {
     // This method should only be used by the Material Manager when initially creating a material from an pre-created file object.
     // So, make sure this material doesn't already have a file pointer.
-    MyAssert( m_pFile == 0 );
+    MyAssert( m_pFile == nullptr );
     MyAssert( m_MaterialFileIsLoaded == false );
 
     m_pFile = pFile;
@@ -102,12 +98,12 @@ void MaterialDefinition::Init()
 
     m_UnsavedChanges = false;
 
-    m_Name[0] = 0;
-    m_pFile = 0;
+    m_Name[0] = '\0';
+    m_pFile = nullptr;
 
-    m_pShaderGroup = 0;
-    m_pShaderGroupInstanced = 0;
-    m_pTextureColor = 0;
+    m_pShaderGroup = nullptr;
+    m_pShaderGroupInstanced = nullptr;
+    m_pTextureColor = nullptr;
 
     m_BlendType = MyRE::MaterialBlendType_UseShaderValue;
 
@@ -124,18 +120,10 @@ void MaterialDefinition::Init()
 
     for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
     {
-#if MYFW_USING_WX
-        m_UniformValues[i].m_ControlID = -1;
-#endif //MYFW_USING_WX
         m_UniformValues[i].m_Name = "";
         m_UniformValues[i].m_Type = ExposedUniformType_NotSet;
     }
 #endif //MYFW_EDITOR
-
-#if MYFW_USING_WX
-    m_ControlID_Shader = -1;
-    m_ControlID_ShaderInstanced = -1;
-#endif
 }
 
 MaterialDefinition::~MaterialDefinition()
@@ -143,10 +131,6 @@ MaterialDefinition::~MaterialDefinition()
     // not all materials are in the MaterialManagers list.
     if( Prev )
         this->Remove();
-
-#if MYFW_USING_WX
-    g_pPanelMemory->RemoveMaterial( this );
-#endif
 
     // Release the exposed uniform texturedef pointers.
     if( m_pShaderGroup && m_pShaderGroup->GetFile() )
@@ -162,8 +146,8 @@ MaterialDefinition::~MaterialDefinition()
         }
     }
 
-    SetShader( 0 );
-    SetShaderInstanced( 0 );
+    SetShader( nullptr );
+    SetShaderInstanced( nullptr );
 
     // Release the file after setting shader to 0, so SetShader() can unregister the finished loading callback.
     SAFE_RELEASE( m_pFile );
@@ -209,12 +193,12 @@ void MaterialDefinition::ImportFromFile()
     // TODO: replace asserts: if a shader or texture isn't found, load it.
 
     MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
-    if( m_pFile == 0 || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
+    if( m_pFile == nullptr || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
         return;
 
     cJSON* jRoot = cJSON_Parse( m_pFile->GetBuffer() );
 
-    if( jRoot == 0 )
+    if( jRoot == nullptr )
         return;
 
     cJSON* jMaterial = cJSON_GetObjectItem( jRoot, "Material" );
@@ -226,7 +210,7 @@ void MaterialDefinition::ImportFromFile()
         if( jShaderString )
         {
             ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
-            if( pShaderGroup != 0 )
+            if( pShaderGroup != nullptr )
             {
                 SetShader( pShaderGroup );
             }
@@ -252,7 +236,7 @@ void MaterialDefinition::ImportFromFile()
         if( jShaderString )
         {
             ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
-            if( pShaderGroup != 0 )
+            if( pShaderGroup != nullptr )
             {
                 SetShaderInstanced( pShaderGroup );
             }
@@ -275,7 +259,7 @@ void MaterialDefinition::ImportFromFile()
         }
 
         cJSON* jTexColor = cJSON_GetObjectItem( jMaterial, "TexColor" );
-        if( jTexColor && jTexColor->valuestring[0] != 0 )
+        if( jTexColor && jTexColor->valuestring[0] != '\0' )
         {
             TextureDefinition* pTexture = g_pTextureManager->CreateTexture( jTexColor->valuestring ); // adds a ref.
             MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.
@@ -351,16 +335,9 @@ void MaterialDefinition::SetName(const char* name)
         // Rename the file on disk and force a save to update the name in the material file.
         m_pFile->Rename( name );
 #if MYFW_EDITOR
-        SaveMaterial( 0 );
+        SaveMaterial( nullptr );
 #endif //MYFW_EDITOR
     }
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-    {
-        g_pPanelMemory->RenameObject( g_pPanelMemory->m_pTree_Materials, this, m_Name );
-    }
-#endif //MYFW_USING_WX
 }
 
 bool MaterialDefinition::IsShaderLoaded()
@@ -406,7 +383,7 @@ const char* MaterialDefinition::GetMaterialDescription()
     if( m_pFile )
         return m_pFile->GetFullPath();
 
-    return 0;
+    return nullptr;
 }
 
 const char* MaterialDefinition::GetMaterialShortDescription()
@@ -414,7 +391,7 @@ const char* MaterialDefinition::GetMaterialShortDescription()
     if( m_pFile )
         return m_pFile->GetFilenameWithoutExtension();
 
-    return 0;
+    return nullptr;
 }
 
 void MaterialDefinition::SetShader(ShaderGroup* pShader)
@@ -469,10 +446,6 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
     // Shader file finished loading, so set all exposed uniforms to 0 and reimport our material (if loaded),
     //     which will reimport saved exposed uniform values.
     InitializeExposedUniformValues( true );
-    
-#if MYFW_USING_WX
-    g_pPanelWatch->SetNeedsRefresh();
-#endif
 }
 
 void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingvalues)
@@ -602,7 +575,7 @@ void MaterialDefinition::ImportExposedUniformValues(cJSON* jMaterial)
                         {
                             char* filename = obj->valuestring;
 
-                            if( filename != 0 )
+                            if( filename != nullptr )
                             {
                                 m_UniformValues[i].m_pTexture = g_pTextureManager->FindTexture( filename );
                                 m_UniformValues[i].m_pTexture->AddRef();
@@ -892,9 +865,6 @@ void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
     {
     case RightClick_ViewInWatchWindow:
         {
-#if MYFW_USING_WX
-            pMaterial->AddToWatchPanel( true, true, true );
-#endif
         }
         break;
 
@@ -913,290 +883,6 @@ void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
         break;
     }
 }
-
-#if MYFW_USING_WX
-void MaterialDefinition::OnLeftClick(unsigned int count) // StaticOnLeftClick
-{
-}
-
-void MaterialDefinition::OnRightClick() // StaticOnRightClick
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
-
-    MyFileObject* pMaterialFile = this->GetFile();
-    if( pMaterialFile )
-    {
-        menu.Append( RightClick_UnloadFile, "Unload File" );
-        menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
-    }
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialDefinition::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void MaterialDefinition::OnPopupClick(wxEvent &evt)
-{
-    MaterialDefinition* pMaterial = (MaterialDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
-    OnPopupClick( pMaterial, id );
-}
-
-void MaterialDefinition::OnDrag() // StaticOnDrag
-{
-    g_DragAndDropStruct.Add( DragAndDropType_MaterialDefinitionPointer, this );
-}
-
-void MaterialDefinition::OnLabelEdit(wxString newlabel) // StaticOnLabelEdit
-{
-    size_t len = newlabel.length();
-    if( len > 0 )
-    {
-        SetName( newlabel );
-    }
-}
-
-void MaterialDefinition::OnDropShader(int controlid, int x, int y) // StaticOnDropShader
-{
-    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
-
-    if( pDropItem->m_Type == DragAndDropType_ShaderGroupPointer )
-    {
-        ShaderGroup* pShaderGroup = (ShaderGroup*)pDropItem->m_Value;
-        MyAssert( pShaderGroup );
-        //MyAssert( m_pMesh );
-
-        if( controlid == m_ControlID_Shader )
-        {
-            SetShader( pShaderGroup );
-        }
-        else if( controlid == m_ControlID_ShaderInstanced )
-        {
-            SetShaderInstanced( pShaderGroup );
-        }
-        else
-        {
-            MyAssert( false );
-        }
-
-        // update the panel so new Shader name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-    }
-}
-
-void MaterialDefinition::OnRightClickShader(int controlid) // StaticOnRightClickShader
-{
-    if( controlid == m_ControlID_Shader )
-    {
-        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
-
-        SetShader( 0 );
-    }
-    else if( controlid == m_ControlID_ShaderInstanced )
-    {
-        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
-
-        SetShaderInstanced( 0 );
-    }
-}
-
-void MaterialDefinition::OnDropTexture(int controlid, int x, int y) // StaticOnDropTexture
-{
-    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
-
-    if( pDropItem->m_Type == DragAndDropType_FileObjectPointer )
-    {
-        MyFileObject* pFile = (MyFileObject*)pDropItem->m_Value;
-        MyAssert( pFile );
-        //MyAssert( m_pMesh );
-
-        const char* pPath = pFile->GetFullPath();
-        size_t len = strlen( pPath );
-        const char* filenameext = &pPath[len-4];
-
-        if( strcmp( filenameext, ".png" ) == 0 )
-        {
-            SetTextureColor( g_pTextureManager->FindTexture( pFile->GetFullPath() ) );
-        }
-
-        // update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = m_pTextureColor->GetFilename();
-    }
-
-    if( pDropItem->m_Type == DragAndDropType_TextureDefinitionPointer )
-    {
-        TextureDefinition* pNewTexture = (TextureDefinition*)pDropItem->m_Value;
-        MyAssert( pNewTexture );
-
-        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
-        if( pShaderFile )
-        {
-            unsigned int i;
-            for( i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
-            {
-                if( m_UniformValues[i].m_ControlID == controlid )
-                {
-                    if( pNewTexture )
-                        pNewTexture->AddRef();
-                    SAFE_RELEASE( m_UniformValues[i].m_pTexture );
-                    m_UniformValues[i].m_pTexture = pNewTexture;
-                    break;
-                }
-            }
-
-            if( i == pShaderFile->m_NumExposedUniforms )
-            {
-                SetTextureColor( pNewTexture );
-            }
-        }
-        else
-        {
-            SetTextureColor( pNewTexture );
-        }
-
-        // Update the panel so new texture name shows up.
-        g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = pNewTexture->GetFilename();
-    }
-}
-
-void MaterialDefinition::OnRightClickTexture(int controlid) // StaticOnRightClickTexture
-{
-    MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
-    if( pShaderFile )
-    {
-        unsigned int i;
-        for( i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
-        {
-            if( m_UniformValues[i].m_ControlID == controlid )
-            {
-                g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
-
-                SAFE_RELEASE( m_UniformValues[i].m_pTexture );
-                m_UniformValues[i].m_pTexture = 0;
-                break;
-            }
-        }
-
-        if( i == pShaderFile->m_NumExposedUniforms )
-        {
-            g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
-
-            SetTextureColor( 0 );
-        }
-    }
-    else
-    {
-        g_pPanelWatch->ChangeDescriptionForPointerWithDescription( controlid, "none" );
-
-        SetTextureColor( 0 );
-    }
-}
-
-void MaterialDefinition::AddToWatchPanel(bool clearwatchpanel, bool showbuiltinuniforms, bool showexposeduniforms)
-{
-    int oldpaddingleft = g_pPanelWatch->m_PaddingLeft;
-
-    if( clearwatchpanel )
-    {
-        g_pPanelWatch->ClearAllVariables();
-
-        g_pPanelWatch->AddSpace( m_Name );
-    }
-    else
-    {
-        g_pPanelWatch->m_PaddingLeft = 20;
-    }
-
-    if( showbuiltinuniforms )
-    {
-        g_pPanelWatch->AddEnum( "Blend", (int*)&m_BlendType, MaterialBlendType_NumTypes, MaterialBlendTypeStrings );
-
-        g_pPanelWatch->AddVector2( "UVScale", &m_UVScale, 0, 1 );
-        g_pPanelWatch->AddVector2( "UVOffset", &m_UVOffset, 0, 1 );
-
-        const char* desc = "no shader";
-        if( m_pShaderGroup && m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile )
-            desc = m_pShaderGroup->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-        m_ControlID_Shader = g_pPanelWatch->AddPointerWithDescription( "Shader", 0, desc, this, MaterialDefinition::StaticOnDropShader, 0, MaterialDefinition::StaticOnRightClickShader );
-
-        desc = "no shader";
-        if( m_pShaderGroupInstanced && m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile )
-            desc = m_pShaderGroupInstanced->GetShader( ShaderPass_Main )->m_pFile->GetFilenameWithoutExtension();
-        m_ControlID_ShaderInstanced = g_pPanelWatch->AddPointerWithDescription( "Shader Instanced", 0, desc, this, MaterialDefinition::StaticOnDropShader, 0, MaterialDefinition::StaticOnRightClickShader );
-
-        desc = "no color texture";
-        if( m_pTextureColor )
-            desc = m_pTextureColor->GetFilename();
-        g_pPanelWatch->AddPointerWithDescription( "Color Texture", 0, desc, this, MaterialDefinition::StaticOnDropTexture, 0, MaterialDefinition::StaticOnRightClickTexture );
-
-        g_pPanelWatch->AddColorByte( "Color-Ambient", &m_ColorAmbient, 0, 255 );
-        g_pPanelWatch->AddColorByte( "Color-Diffuse", &m_ColorDiffuse, 0, 255 );
-        g_pPanelWatch->AddColorByte( "Color-Specular", &m_ColorSpecular, 0, 255 );
-
-        g_pPanelWatch->AddFloat( "Shininess", &m_Shininess, 1, 300 );
-    }
-
-    if( showexposeduniforms && m_pShaderGroup )
-    {
-        MyFileObjectShader* pShaderFile = m_pShaderGroup->GetFile();
-        if( pShaderFile )
-        {
-            for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
-            {
-                char tempname[32];
-
-                // Hardcoding to remove the 'u_' I like to stick at the start of my uniform names.
-                if( pShaderFile->m_ExposedUniforms[i].m_Name[1] == '_' )
-                    strcpy_s( tempname, 32, &pShaderFile->m_ExposedUniforms[i].m_Name[2] );
-                else
-                    strcpy_s( tempname, 32, pShaderFile->m_ExposedUniforms[i].m_Name );
-
-                switch( pShaderFile->m_ExposedUniforms[i].m_Type )
-                {
-                case ExposedUniformType_Float:
-                    g_pPanelWatch->AddFloat( tempname, &m_UniformValues[i].m_Float, 0, 1 );
-                    break;
-
-                case ExposedUniformType_Vec2:
-                    g_pPanelWatch->AddVector2( tempname, (Vector2*)&m_UniformValues[i].m_Vec2, 0, 1 );
-                    break;
-
-                case ExposedUniformType_Vec3:
-                    g_pPanelWatch->AddVector3( tempname, (Vector3*)&m_UniformValues[i].m_Vec3, 0, 1 );
-                    break;
-
-                case ExposedUniformType_Vec4:
-                    g_pPanelWatch->AddVector4( tempname, (Vector4*)&m_UniformValues[i].m_Vec4, 0, 1 );
-                    break;
-
-                case ExposedUniformType_ColorByte:
-                    g_pPanelWatch->AddColorByte( tempname, (ColorByte*)&m_UniformValues[i].m_ColorByte, 0, 255 );
-                    break;
-
-                case ExposedUniformType_Sampler2D:
-                    m_UniformValues[i].m_ControlID = g_pPanelWatch->AddPointerWithDescription(
-                        tempname, m_UniformValues[i].m_pTexture,
-                        m_UniformValues[i].m_pTexture ? m_UniformValues[i].m_pTexture->GetFilename() : "Texture Not Set",
-                        this, MaterialDefinition::StaticOnDropTexture, 0, 0 );                    
-                    break;
-
-                case ExposedUniformType_NotSet:
-                default:
-                    MyAssert( false );
-                    break;
-                }
-            }
-        }
-    }
-
-    g_pPanelWatch->m_PaddingLeft = oldpaddingleft;
-}
-#endif //MYFW_USING_WX
 
 bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
 {
@@ -1232,12 +918,12 @@ bool MaterialDefinition::IsReferencingFile(MyFileObject* pFile)
 
 void MaterialDefinition::SaveMaterial(const char* relativepath)
 {
-    if( m_Name[0] == 0 )
+    if( m_Name[0] == '\0' )
         return;
 
     char filename[MAX_PATH];
 
-    if( m_pFile != 0 )
+    if( m_pFile != nullptr )
     {
         // if a file exists, use the existing file's fullpath
         strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
@@ -1246,7 +932,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
     {
         // if a file doesn't exist, create the filename out of parts.
         // TODO: move most of this block into generic system code.
-        MyAssert( relativepath != 0 );
+        MyAssert( relativepath != nullptr );
 
         char workingdir[MAX_PATH];
 #if MYFW_WINDOWS
@@ -1256,7 +942,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 #endif
         sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativepath );
 #if MYFW_WINDOWS
-        CreateDirectoryA( filename, 0 );
+        CreateDirectoryA( filename, nullptr );
 #else
         MyAssert( false );
 #endif
@@ -1279,7 +965,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
     }
 
     // Create the json string to save into the material file
-    char* jsonstr = 0;
+    char* jsonstr = nullptr;
     {
         cJSON* jRoot = cJSON_CreateObject();
 
@@ -1321,9 +1007,9 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         cJSON_Delete( jRoot );
     }
 
-    if( jsonstr != 0 )
+    if( jsonstr != nullptr )
     {
-        FILE* pFile = 0;
+        FILE* pFile = nullptr;
 #if MYFW_WINDOWS
         fopen_s( &pFile, filename, "wb" );
 #else
@@ -1337,15 +1023,15 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
         cJSONExt_free( jsonstr );
 
-        // if the file managed to save, request it.
-        if( m_pFile == 0 )
+        // If the file managed to save, request it.
+        if( m_pFile == nullptr )
         {
             sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
             m_pFile = g_pFileManager->RequestFile( filename );
         }
 
         // Update timestamp when saving a file to disk, so it doesn't reload when alt-tabbing.
-        if( m_pFile != 0 )
+        if( m_pFile != nullptr )
         {
             m_pFile->UpdateTimestamp();
         }
