@@ -388,7 +388,7 @@ void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
     }
 }
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
 void MyMesh::SaveAnimationControlFile()
 {
     char filename[MAX_PATH];

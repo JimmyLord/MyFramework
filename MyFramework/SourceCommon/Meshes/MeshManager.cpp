@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-MeshManager* g_pMeshManager = 0;
+MeshManager* g_pMeshManager = nullptr;
 
 void MeshManager::AddMesh(MyMesh* pMesh)
 {
@@ -18,13 +18,11 @@ void MeshManager::AddMesh(MyMesh* pMesh)
 
 MyMesh* MeshManager::FindMeshBySourceFile(MyFileObject* pFile)
 {
-    for( CPPListNode* pNode = m_MeshList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MyMesh* pMesh = m_MeshList.GetHead(); pMesh; pMesh = pMesh->GetNext() )
     {
-        MyMesh* pMesh = (MyMesh*)pNode;
-
         if( pMesh->GetFile() == pFile )
             return pMesh;
     }
 
-    return 0;
+    return nullptr;
 }

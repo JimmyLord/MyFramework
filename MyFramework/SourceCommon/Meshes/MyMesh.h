@@ -74,7 +74,7 @@ public:
 
 typedef void (*SetupCustomUniformsCallbackFunc)(void* pObjectPtr, Shader_Base* pShader);
 
-class MyMesh : public CPPListNode, public RefCount
+class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
 {
     friend class MySubmesh;
 
@@ -185,23 +185,8 @@ public:
 
     void RegisterSetupCustomUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
 
-#if MYFW_USING_WX
-    int m_ControlID_AnimationName[MAX_ANIMATIONS];
-
+#if MYFW_EDITOR
     void SaveAnimationControlFile();
-    void FillPropertiesWindow(bool clear);
-
-    static void StaticRefreshWatchWindow(void* pObjectPtr) { ((MyMesh*)pObjectPtr)->RefreshWatchWindow(); }
-    void RefreshWatchWindow();
-
-    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((MyMesh*)pObjectPtr)->OnAddAnimationPressed( buttonid ); }
-    void OnAddAnimationPressed(int buttonid);
-
-    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((MyMesh*)pObjectPtr)->OnSaveAnimationsPressed( buttonid ); }
-    void OnSaveAnimationsPressed(int buttonid);
-
-    static void StaticOnValueChanged(void* pObjectPtr, int controlid, bool directlychanged, bool finishedchanging, double oldvalue, bool valuewaschangedbydragging) { ((MyMesh*)pObjectPtr)->OnValueChanged( controlid, finishedchanging ); }
-    void OnValueChanged(int controlid, bool finishedchanging);
 #endif
 
     void RebuildIndices();

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-MyJobManager* g_pJobManager = 0;
+MyJobManager* g_pJobManager = nullptr;
 
 #if USE_PTHREAD
 class MyJobThread : public MyThread
@@ -18,16 +18,16 @@ protected:
 public:
     virtual void* Run()
     {
-        while( 1 )
+        while( true )
         {
-            // ask for a job, block while waiting for one to come in
+            // Ask for a job, block while waiting for one to come in.
             MyJob* pJob = g_pJobManager->RemoveJob( m_ThreadID );
 
-            // if the job given by the manager is 0, then exit the thread
-            if( pJob == 0 )
+            // If the job given by the manager is 0, then exit the thread.
+            if( pJob == nullptr )
             {
                 //LOGInfo( "Threaded Job Manager", "Thread %d exiting\n", m_ThreadID );
-                return 0;
+                return nullptr;
             }
 
             // do the job
@@ -35,7 +35,7 @@ public:
             pJob->DoWork();
             pJob->MarkAsFinished();
 
-            // TODO: move job to a completed list, then tick jobmanager each frame to call completed callbacks
+            // TODO: Move job to a completed list, then tick jobmanager each frame to call completed callbacks.
 
             //LOGInfo( "Threaded Job Manager", "Thread %d finished job\n", m_ThreadID );
         }
@@ -48,8 +48,8 @@ MyJobManager::MyJobManager()
 {
     g_pJobManager = this;
 
-    pthread_mutex_init( &m_JobListMutex, 0 );
-    pthread_cond_init( &m_JobAvailableConditional, 0 );
+    pthread_mutex_init( &m_JobListMutex, nullptr );
+    pthread_cond_init( &m_JobAvailableConditional, nullptr );
 
     for( int i=0; i<MAX_THREADS; i++ )
     {
@@ -67,21 +67,21 @@ MyJobManager::~MyJobManager()
     m_ShuttingDown = true;
 
     {
-        // destroy all outstanding jobs to allow threads to shutdown
+        // Destroy all outstanding jobs to allow threads to shutdown.
         while( m_JobList.GetHead() )
         {
-            CPPListNode* pJob = m_JobList.RemHead();
-            // jobs are not deleted, must be managed by other code
-            // TODO: add job complete callback function, return "job failed"
+            MyJob* pJob = m_JobList.RemHead();
+            // Jobs are not deleted, must be managed by other code.
+            // TODO: Add job complete callback function, return "job failed".
         }
 
-        // send a signal to each thread that a job is ready, remove job will return 0, which will kill the thread
+        // Send a signal to each thread that a job is ready, remove job will return 0, which will kill the thread.
         pthread_cond_broadcast( &m_JobAvailableConditional );
     }
 
     pthread_mutex_unlock( &m_JobListMutex );
 
-    // wait for all threads to exit, then delete them
+    // Wait for all threads to exit, then delete them.
     for( int i=0; i<MAX_THREADS; i++ )
     {
         m_pThreads[i]->Join();
@@ -102,9 +102,9 @@ void MyJobManager::ReleaseJobListMutexLock()
     pthread_mutex_unlock( &m_JobListMutex );
 }
 
-void MyJobManager::AddJob(MyJob* pItem, bool lockmutex)
+void MyJobManager::AddJob(MyJob* pItem, bool lockMutex)
 {
-    if( lockmutex )
+    if( lockMutex )
         pthread_mutex_lock( &m_JobListMutex );
     
     m_JobList.AddTail( pItem );
@@ -112,23 +112,23 @@ void MyJobManager::AddJob(MyJob* pItem, bool lockmutex)
     // Wake up a single thread so it can do this job.
     pthread_cond_signal( &m_JobAvailableConditional );
 
-    if( lockmutex )
+    if( lockMutex )
         pthread_mutex_unlock( &m_JobListMutex );
 }
 
-MyJob* MyJobManager::RemoveJob(pthread_t threadid)
+MyJob* MyJobManager::RemoveJob(pthread_t threadID)
 {
     pthread_mutex_lock( &m_JobListMutex );
 
-    while( m_JobList.GetHead() == 0 && m_ShuttingDown == false )
+    while( m_JobList.GetHead() == nullptr && m_ShuttingDown == false )
     {
-        //LOGInfo( "Threaded Job Manager", "Thread %d going to sleep waiting for job\n", threadid );
+        //LOGInfo( "Threaded Job Manager", "Thread %d going to sleep waiting for job\n", threadID );
         pthread_cond_wait( &m_JobAvailableConditional, &m_JobListMutex );
     }
 
-    // Grab item from list, will be 0 if list is empty (which will cause thread to die)
-    // list is emptied in destructor when shutting down.
-    //LOGInfo( "Threaded Job Manager", "Thread %d taking a job\n", threadid );
+    // Grab item from list, will be 0 if list is empty (which will cause thread to die).
+    // List is emptied in destructor when shutting down.
+    //LOGInfo( "Threaded Job Manager", "Thread %d taking a job\n", threadID );
     MyJob* pItem = (MyJob*)m_JobList.RemHead();
 
     pthread_mutex_unlock( &m_JobListMutex );
@@ -156,7 +156,7 @@ void MyJobManager::ReleaseJobListMutexLock()
 {
 }
 
-void MyJobManager::AddJob(MyJob* pItem, bool lockmutex)
+void MyJobManager::AddJob(MyJob* pItem, bool lockMutex)
 {
     pItem->MarkAsStarted();
     pItem->DoWork();

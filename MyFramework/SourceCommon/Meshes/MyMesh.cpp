@@ -177,7 +177,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
     int PointSize = m_PointSize;        
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     MaterialDefinition* pMaterial = m_pMaterial;
     if( pMaterial == 0 )
     {
@@ -187,7 +187,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     MaterialDefinition* pMaterial = m_pMaterial;
     if( pMaterial == 0 && pShaderOverride == 0 )
         return;
-#endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 
     if( pIndexBuffer )
     {
@@ -407,76 +407,6 @@ void MyMesh::Clear()
     m_MeshReady = false;
 }
 
-#if MYFW_USING_WX
-void MyMesh::RefreshWatchWindow()
-{
-    FillPropertiesWindow( true );
-}
-
-void MyMesh::FillPropertiesWindow(bool clear)
-{
-    g_pPanelWatch->SetRefreshCallback( this, MyMesh::StaticRefreshWatchWindow );
-
-    g_pPanelWatch->Freeze();
-
-    if( clear )
-        g_pPanelWatch->ClearAllVariables();
-
-    g_pPanelWatch->AddButton( "Save Animations", this, -1, MyMesh::StaticOnSaveAnimationsPressed );
-
-    for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
-    {
-        // TODO: replace AddPointerWithDescription with a panel watch control for char*s
-        m_ControlID_AnimationName[i] = g_pPanelWatch->AddPointerWithDescription( "Name", 0, m_pAnimations[i]->m_Name, this, 0, MyMesh::StaticOnValueChanged );
-        g_pPanelWatch->AddFloat( "Start Time", &m_pAnimations[i]->m_StartTime, 0, 0 );
-        g_pPanelWatch->AddFloat( "Duration", &m_pAnimations[i]->m_Duration, 0, 0 );
-    }
-
-    g_pPanelWatch->AddButton( "Add Animation", this, -1, MyMesh::StaticOnAddAnimationPressed );
-
-    g_pPanelWatch->Thaw();
-}
-
-void MyMesh::OnAddAnimationPressed(int buttonid)
-{
-    MyAnimation* pAnim = MyNew MyAnimation;
-
-    pAnim->SetName( "New" );
-    pAnim->m_TimelineIndex = 0;
-    pAnim->m_StartTime = 0;
-    pAnim->m_Duration = m_pAnimationTimelines[0]->m_Duration;
-
-    m_pAnimations.Add( pAnim );
-
-    g_pPanelWatch->SetNeedsRefresh();
-    //FillPropertiesWindow( true ); // crashed since in button press callback and button would be recreated.
-}
-
-void MyMesh::OnSaveAnimationsPressed(int buttonid)
-{
-    SaveAnimationControlFile();
-}
-
-void MyMesh::OnValueChanged(int controlid, bool finishedchanging)
-{
-    if( controlid != -1 )
-    {
-        int animthatchanged = -1;
-        for( int i=0; i<MAX_ANIMATIONS; i++ )
-        {
-            if( controlid == m_ControlID_AnimationName[i] )
-                animthatchanged = i;                
-        }
-
-        if( animthatchanged != -1 )
-        {
-            wxString text = g_pPanelWatch->GetVariableProperties( controlid )->GetTextCtrl()->GetValue();
-            m_pAnimations[animthatchanged]->SetName( text );
-        }
-    }
-}
-#endif
-
 void MyMesh::CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, int bytesPerIndex, unsigned int numIndices, bool dynamic)
 {
     MyAssert( m_SubmeshList.Length() == 0 );
@@ -653,7 +583,7 @@ void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
 
         char animfilename[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
-#if MYFW_USING_WX
+#if MYFW_EDITOR
         // only try to open the file if it exists, only in editor builds since file i/o isn't necessarily synchronous otherwise.
         if( g_pFileManager->DoesFileExist( animfilename ) )
         {

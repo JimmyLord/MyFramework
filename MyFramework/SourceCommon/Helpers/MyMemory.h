@@ -10,9 +10,9 @@
 #ifndef __MYMEMORY_H__
 #define __MYMEMORY_H__
 
-#define SAFE_DELETE(x) { delete x; x=0; }
-#define SAFE_DELETE_ARRAY(x) { delete[] x; x=0; }
-#define SAFE_RELEASE(x) { if(x) x->Release(); x=0; }
+#define SAFE_DELETE(x) { delete x; x = nullptr; }
+#define SAFE_DELETE_ARRAY(x) { delete[] x; x = nullptr; }
+#define SAFE_RELEASE(x) { if( x ) x->Release(); x = nullptr; }
 
 #if !MYFW_WINDOWS
 

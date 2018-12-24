@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,13 +12,13 @@
 #include "BufferManager.h"
 #include "../Helpers/FileManager.h"
 
-BufferManager* g_pBufferManager = 0;
+BufferManager* g_pBufferManager = nullptr;
 
 BufferDefinition::BufferDefinition()
 {
     for( int i=0; i<3; i++ )
     {
-        m_BufferIDs[i] = 0; // up to 3 buffers created for double/triple buffering data.
+        m_BufferIDs[i] = 0; // Up to 3 buffers created for double/triple buffering data.
         m_VAOHandles[i] = 0;
     }
     m_NumBuffersToUse = 0;
@@ -42,10 +42,10 @@ BufferDefinition::BufferDefinition()
         m_VAOInitialized[i] = false;
     }
 
-    m_pData = 0;
+    m_pData = nullptr;
     m_DataSize = 0;
     m_VertexFormat = VertexFormat_Invalid;
-    m_pFormatDesc = 0;
+    m_pFormatDesc = nullptr;
     m_Target = GL_ARRAY_BUFFER; //GL_ELEMENT_ARRAY_BUFFER
     m_Usage = GL_STATIC_DRAW; //GL_DYNAMIC_DRAW //GL_STREAM_DRAW
     m_Dirty = true;
@@ -53,15 +53,10 @@ BufferDefinition::BufferDefinition()
 
 BufferDefinition::~BufferDefinition()
 {
-    MyAssert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete BufferDefinition objects.
+    MyAssert( GetRefCount() == 0 ); // Did you call ->Release()?  Don't delete BufferDefinition objects.
 
     Invalidate( true );
     SAFE_DELETE_ARRAY( m_pData );
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveBuffer( this );
-#endif
 
     this->Remove();
 }
@@ -80,10 +75,10 @@ MyRE::IndexTypes BufferDefinition::GetIBOType()
     return MyRE::IndexType_Undefined;
 }
 
-// copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
+// Copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
 void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
 {
-    MyAssert( pData != 0 && sizeinbytes != 0 );
+    MyAssert( pData != nullptr && sizeinbytes != 0 );
 
     if( m_BufferIDs[m_NextBufferIndex] == 0 )
     {
@@ -114,7 +109,6 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
 {
     checkGlError( "BufferDefinition::Rebuild" );
 
-    //MyAssert( g_pGameCore->m_GLSurfaceIsValid );
     if( g_pGameCore->IsGLSurfaceIsValid() == false )
         return;
 
@@ -144,8 +138,6 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
 
         //LOGInfo( LOGTag, "BufferDefinition::Rebuild() rebuilding sizeinbytes(%d) m_DataSize(%d)\n", sizeinbytes, m_DataSize );
 
-        //glBufferData( m_Target, sizeinbytes, 0, m_Usage );
-        //glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
         if( sizeinbytes > m_DataSize )
         {
             m_DataSize = sizeinbytes;
@@ -274,23 +266,23 @@ void BufferDefinition::FreeBufferedData()
     m_DataSize = 0;
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
 {
-    InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, 0, category, desc );
+    InitializeBuffer( pData, dataSize, target, usage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc );
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
-    MyAssert( numbufferstoallocate >= 1 && numbufferstoallocate <= 3 );
+    MyAssert( numBuffersToAllocate >= 1 && numBuffersToAllocate <= 3 );
 
-    if( datasize == 0 || datasize != m_DataSize )
+    if( dataSize == 0 || dataSize != m_DataSize )
     {
-        // delete old data block if necessary
+        // Delete old data block if necessary
         SAFE_DELETE_ARRAY( m_pData );
 
-        // if no data block was passed in allocate one if datasize isn't 0.
-        if( pData == 0 && datasize != 0 )
-            pData = MyNew char[datasize];
+        // If no data block was passed in allocate one if dataSize isn't 0.
+        if( pData == nullptr && dataSize != 0 )
+            pData = MyNew char[dataSize];
 
         for( int i=0; i<3; i++ )
         {
@@ -304,15 +296,15 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
 
     ResetVAOs();
 
-    m_NumBuffersToUse = numbufferstoallocate;
+    m_NumBuffersToUse = numBuffersToAllocate;
     m_pData = (char*)pData;
-    m_DataSize = datasize;
+    m_DataSize = dataSize;
     m_Target = target;
     m_Usage = usage;
     m_VertexFormat = format;
     m_pFormatDesc = pVertexFormatDesc;
 
-    if( bufferdata )
+    if( bufferData )
     {
         m_pData = (char*)pData;
         for( unsigned int i=0; i<m_NumBuffersToUse; i++ )
@@ -326,64 +318,10 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int datasize, GLen
         m_pData = (char*)pData;
         m_Dirty = true;
     }
-
-#if MYFW_USING_WX
-    // TODO: temp disabled this, never used it, but can be slow with 100s of buffers.
-    //g_pPanelMemory->RemoveBuffer( this );
-    //g_pPanelMemory->AddBuffer( this, category, desc );
-#endif
 }
 
 //====================================================
 //====================================================
-
-//VAODefinition::VAODefinition()
-//{
-//    m_Handle = 0;
-//    m_Initialized = false;
-//
-//#if _DEBUG && MYFW_WINDOWS
-//    m_DEBUG_VBOUsedOnCreation = 0;
-//    m_DEBUG_IBOUsedOnCreation = 0;
-//#endif
-//}
-//
-//VAODefinition::~VAODefinition()
-//{
-//    MyAssert( GetRefCount() == 0 ); // Did you call ->Release()?  don't delete VAODefinition objects.
-//
-//    Invalidate( true );
-//
-//    this->Remove();
-//}
-//
-//void VAODefinition::Invalidate(bool cleanglallocs)
-//{
-//    if( cleanglallocs && m_Handle != 0 )
-//    {
-//        glDeleteVertexArrays( 1, &m_Handle );
-//    }
-//
-//    m_Handle = 0;
-//    m_Initialized = false;
-//}
-//
-//void VAODefinition::Create()
-//{
-//    MyAssert( m_Handle == 0 );
-//    MyAssert( glGenVertexArrays != 0 );
-//
-//    //if( glGenVertexArrays != 0 )
-//    {
-//        glGenVertexArrays( 1, &m_Handle );
-//        MyAssert( m_Handle != 0 );
-//        m_Initialized = true;
-//    }
-//}
-
-//====================================================
-//====================================================
-
 
 BufferManager::BufferManager()
 {
@@ -394,9 +332,9 @@ BufferManager::~BufferManager()
     FreeAllBuffers();
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
 {
-    return CreateBuffer(pData, datasize, target, usage, bufferdata, numbufferstoallocate, (VertexFormats)bytesperindex, 0, category, desc);
+    return CreateBuffer(pData, dataSize, target, usage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc);
 }
 
 BufferDefinition* BufferManager::CreateBuffer()
@@ -409,31 +347,16 @@ BufferDefinition* BufferManager::CreateBuffer()
     return pBufferDef;
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
     BufferDefinition* pBufferDef = CreateBuffer();
 
-    pBufferDef->InitializeBuffer( pData, datasize, target, usage, bufferdata, numbufferstoallocate, format, pVertexFormatDesc, category, desc );
+    pBufferDef->InitializeBuffer( pData, dataSize, target, usage, bufferData, numBuffersToAllocate, format, pVertexFormatDesc, category, desc );
 
     return pBufferDef;
 }
-
-//VAODefinition* BufferManager::CreateVAO()
-//{
-//    //LOGInfo( LOGTag, "CreateVAO\n" );
-//
-//    VAODefinition* pVAODef = MyNew VAODefinition();
-//
-//    m_VAOs.AddTail( pVAODef );
-//
-//#if MYFW_USING_WX
-//    //g_pPanelMemory->AddBuffer( pBufferDef, category, desc );
-//#endif
-//
-//    return pVAODef;
-//}
 
 void BufferManager::Tick()
 {
@@ -441,63 +364,37 @@ void BufferManager::Tick()
 
 void BufferManager::FreeAllBuffers()
 {
-    while( CPPListNode* pNode = m_Buffers.GetHead() )
+    while( BufferDefinition* pBuffer = m_Buffers.GetHead() )
     {
         LOGInfo( LOGTag, "Buffers weren't cleaned by their owners\n" );
         MyAssert( false );
 
-        BufferDefinition* pBuffer = (BufferDefinition*)pNode;
         while( pBuffer->GetRefCount() > 1 )
             pBuffer->Release();
 
         pBuffer->Release();
     }
-
-    //while( CPPListNode* pNode = m_VAOs.GetHead() )
-    //{
-    //    LOGInfo( LOGTag, "VAOs weren't cleaned by their owners\n" );
-    //    MyAssert( false );
-
-    //    VAODefinition* pVAO = (VAODefinition*)pNode;
-    //    while( pVAO->GetRefCount() > 1 )
-    //        pVAO->Release();
-
-    //    pVAO->Release();
-    //}
 }
 
 void BufferManager::InvalidateAllBuffers(bool cleanglallocs)
 {
-    for( CPPListNode* pNode = m_Buffers.GetHead(); pNode; )
+    for( BufferDefinition* pBufferDef = m_Buffers.GetHead(); pBufferDef; )
     {
-        BufferDefinition* pBufferDef = (BufferDefinition*)pNode;
-        pNode = pNode->GetNext();
+        BufferDefinition* pNextBufferDef = pBufferDef->GetNext();
 
         //LOGInfo( LOGTag, "Invalidated buffer\n" );
-
         pBufferDef->Invalidate( cleanglallocs );
+
+        pBufferDef = pNextBufferDef;
     }
-
-    //for( CPPListNode* pNode = m_VAOs.GetHead(); pNode; )
-    //{
-    //    VAODefinition* pVAODef = (VAODefinition*)pNode;
-    //    pNode = pNode->GetNext();
-
-    //    //LOGInfo( LOGTag, "Invalidated VAO\n" );
-
-    //    pVAODef->Invalidate( cleanglallocs );
-    //}
 }
 
 unsigned int BufferManager::CalculateTotalMemoryUsedByBuffers()
 {
     unsigned int totalsize = 0;
 
-    for( CPPListNode* pNode = m_Buffers.GetHead(); pNode; )
+    for( BufferDefinition* pBufferDef = m_Buffers.GetHead(); pBufferDef; pBufferDef = pBufferDef->GetNext() )
     {
-        BufferDefinition* pBufferDef = (BufferDefinition*)pNode;
-        pNode = pNode->GetNext();
-
         totalsize += pBufferDef->m_DataSize * (pBufferDef->m_NumBuffersToUse + 1);
     }
 

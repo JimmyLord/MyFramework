@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -17,15 +17,15 @@ extern BufferManager* g_pBufferManager;
 
 // ATM this whole buffer system creates a cpu memory block that mirrors what should be copied into OpenGL memory.
 
-class BufferDefinition : public CPPListNode, public RefCount
+class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount
 {
     friend class BufferManager;
     friend class PanelMemory;
     friend class Shader_Base;
 
 protected:
-    GLuint m_BufferIDs[3]; // up to 3 buffers created for double/triple buffering data.
-    GLuint m_VAOHandles[3]; // used only for vbo's ATM.
+    GLuint m_BufferIDs[3]; // Up to 3 buffers created for double/triple buffering data.
+    GLuint m_VAOHandles[3]; // Used only for vbo's ATM.
     bool m_VAOInitialized[3];
 
     unsigned int m_NumBuffersToUse;
@@ -33,7 +33,7 @@ protected:
     unsigned int m_NextBufferIndex;
 
 public:
-#if (_DEBUG && MYFW_WINDOWS) || MYFW_USING_WX
+#if _DEBUG && MYFW_WINDOWS
     int m_DEBUG_CurrentVAOIndex;
     GLuint m_DEBUG_VBOUsedOnCreation[3];
     GLuint m_DEBUG_IBOUsedOnCreation[3];
@@ -71,40 +71,16 @@ public:
     void ResetVAOs();
 
     void FreeBufferedData();
-    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
-    void InitializeBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
 };
-
-//class VAODefinition : public CPPListNode, public RefCount
-//{
-//    friend class BufferManager;
-//    friend class PanelMemory;
-//
-//public:
-//#if _DEBUG && MYFW_WINDOWS
-//    GLuint m_DEBUG_VBOUsedOnCreation;
-//    GLuint m_DEBUG_IBOUsedOnCreation;
-//#endif
-//
-//public:
-//    GLuint m_Handle;
-//    bool m_Initialized;
-//
-//public:
-//    VAODefinition();
-//    virtual ~VAODefinition();
-//    void Invalidate(bool cleanglallocs);
-//
-//    void Create();
-//};
 
 class BufferManager
 {
     friend class PanelMemory;
 
 protected:
-    CPPListHead m_Buffers;
-    //CPPListHead m_VAOs;
+    TCPPListHead<BufferDefinition*> m_Buffers;
 
 public:
     BufferManager();
@@ -112,9 +88,9 @@ public:
 
     // pData pointer passed in will be deleted by the BufferDefinition.
     BufferDefinition* CreateBuffer();
-    BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, int bytesperindex, const char* category, const char* desc);
-    BufferDefinition* CreateBuffer(void* pData, unsigned int datasize, GLenum target, GLenum usage, bool bufferdata, unsigned int numbufferstoallocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
-    //VAODefinition* CreateVAO();
+    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
+    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
+
     void Tick();
 
     void InvalidateAllBuffers(bool cleanglallocs);
