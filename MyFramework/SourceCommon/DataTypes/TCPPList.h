@@ -326,55 +326,55 @@ public:
         return node->MoveBefore( (MyType)&TailNode );
     }
 
-    //// Adds all nodes between first and last to the head of the list.  This requires
-    //// that nodes first and last are attached, and no nodes between them are in
-    //// a list.  Returns the first added node.
-    //MyType BulkAddHead(MyType firstNode, MyType lastNode)
-    //{
-    //    return firstNode->BulkAddAfter( &HeadNode, lastNode );
-    //}
+    // Adds all nodes between first and last to the head of the list.  This requires
+    // that nodes first and last are attached, and no nodes between them are in
+    // a list.  Returns the first added node.
+    MyType BulkAddHead(MyType firstNode, MyType lastNode)
+    {
+        return firstNode->BulkAddAfter( (MyType)&HeadNode, lastNode );
+    }
 
-    //// Adds all nodes between first and last to the tail of the list.  This requires
-    //// that nodes first and last are attached, and no nodes between them are in
-    //// a list.  Returns the first added node.
-    //MyType BulkAddTail(MyType firstNode, MyType lastNode)
-    //{
-    //    return firstNode->BulkAddBefore( &TailNode, lastNode );
-    //}
+    // Adds all nodes between first and last to the tail of the list.  This requires
+    // that nodes first and last are attached, and no nodes between them are in
+    // a list.  Returns the first added node.
+    MyType BulkAddTail(MyType firstNode, MyType lastNode)
+    {
+        return firstNode->BulkAddBefore( (MyType)&TailNode, lastNode );
+    }
 
-    //// Moves all nodes between first and last to the head of the list.  This requires
-    //// that nodes first and last are attached, and no nodes between them are in
-    //// a list.  Returns the first moved node.
-    //MyType BulkMoveHead(MyType firstNode, MyType lastNode)
-    //{
-    //    return firstNode->BulkMoveAfter( &HeadNode, lastNode );
-    //}
+    // Moves all nodes between first and last to the head of the list.  This requires
+    // that nodes first and last are attached, and no nodes between them are in
+    // a list.  Returns the first moved node.
+    MyType BulkMoveHead(MyType firstNode, MyType lastNode)
+    {
+        return firstNode->BulkMoveAfter( (MyType)&HeadNode, lastNode );
+    }
 
-    //// Moves all nodes between first and last to the tail of the list.  This requires
-    //// that nodes first and last are attached, and no nodes between them are in
-    //// a list.  Returns the first moved node.
-    //MyType BulkMoveTail(MyType firstNode, MyType lastNode)
-    //{
-    //    return firstNode->BulkMoveBefore( &TailNode, lastNode );
-    //}
+    // Moves all nodes between first and last to the tail of the list.  This requires
+    // that nodes first and last are attached, and no nodes between them are in
+    // a list.  Returns the first moved node.
+    MyType BulkMoveTail(MyType firstNode, MyType lastNode)
+    {
+        return firstNode->BulkMoveBefore( (MyType)&TailNode, lastNode );
+    }
 
-    //// Appends the specified list onto the end of this list.  This call is safe for empty lists.
-    //// Returns the first added node, or NULL on an empty list.
-    //MyType Append(TCPPListHead<MyType>* listToAppend)
-    //{
-    //    if( listToAppend->NotEmpty() )
-    //        return BulkMoveTail( listToAppend->HeadNode.Next, listToAppend->TailNode.Prev );
-    //    return 0;
-    //}
+    // Appends the specified list onto the end of this list.  This call is safe for empty lists.
+    // Returns the first added node, or NULL on an empty list.
+    MyType Append(TCPPListHead<MyType>* listToAppend)
+    {
+        if( listToAppend->NotEmpty() )
+            return BulkMoveTail( listToAppend->HeadNode.Next, listToAppend->TailNode.Prev );
+        return 0;
+    }
 
-    //// Prepends the specified list onto the beginning of list list.  This call is safe for empty lists.
-    //// Returns the first added node or NULL on an empty list.
-    //MyType Prepend(TCPPListHead<MyType>* listToPrepend)
-    //{
-    //    if( listToPrepend->NotEmpty() )
-    //        return BulkMoveHead( listToPrepend->HeadNode.Next, listToPrepend->TailNode.Prev );
-    //    return 0;
-    //}
+    // Prepends the specified list onto the beginning of list list.  This call is safe for empty lists.
+    // Returns the first added node or NULL on an empty list.
+    MyType Prepend(TCPPListHead<MyType>* listToPrepend)
+    {
+        if( listToPrepend->NotEmpty() )
+            return BulkMoveHead( listToPrepend->HeadNode.Next, listToPrepend->TailNode.Prev );
+        return 0;
+    }
 
     // Merge sort this list using the specified compare function.
     // The compare function should be of type

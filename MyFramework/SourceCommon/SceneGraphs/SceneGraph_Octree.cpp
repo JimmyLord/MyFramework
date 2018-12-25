@@ -14,19 +14,19 @@
 
 OctreeNode::OctreeNode()
 {
-    m_pSceneGraph = 0;
+    m_pSceneGraph = nullptr;
 
     for( int i=0; i<8; i++ )
     {
-        m_pChildNodes[i] = 0;
+        m_pChildNodes[i] = nullptr;
     }
-    m_pParentNode = 0;
+    m_pParentNode = nullptr;
 }
 
 OctreeNode::~OctreeNode()
 {
-    MyAssert( m_pSceneGraph == 0 );
-    MyAssert( m_pParentNode == 0 );    
+    MyAssert( m_pSceneGraph == nullptr );
+    MyAssert( m_pParentNode == nullptr );    
 }
 
 void OctreeNode::Cleanup()
@@ -41,13 +41,13 @@ void OctreeNode::Cleanup()
         if( m_pChildNodes[i] )
         {
             m_pChildNodes[i]->Cleanup();
-            m_pChildNodes[i] = 0;
+            m_pChildNodes[i] = nullptr;
         }
     }
 
     m_pSceneGraph->m_OctreeNodePool.ReturnObjectToPool( this );
-    m_pSceneGraph = 0;
-    m_pParentNode = 0;
+    m_pSceneGraph = nullptr;
+    m_pParentNode = nullptr;
 }
 
 SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz)
@@ -108,14 +108,14 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
     Vector3 center = pBounds->GetCenter();
     Vector3 half = pBounds->GetHalfSize();
 
-    // create a wvp matrix for pBounds
+    // Create a wvp matrix for pBounds.
     MyMatrix wvp = *pMatProj * *pMatView;
     if( pMatWorld )
         wvp = wvp * *pMatWorld;
 
     Vector4 clippos[8];
 
-    // transform AABB extents into clip space.
+    // Transform AABB extents into clip space.
     clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
     clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
     clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
@@ -125,38 +125,38 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
     clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
     clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
 
-    // check visibility two planes at a time
+    // Check visibility two planes at a time.
     bool visible = true;
-    for( int component=0; component<3; component++ ) // loop through x/y/z
+    for( int component=0; component<3; component++ ) // Loop through x/y/z.
     {
-        // check if all 8 points are less than the -w extent of it's axis
+        // Check if all 8 points are less than the -w extent of it's axis.
         visible = false;
         for( int i=0; i<8; i++ )
         {
             if( clippos[i][component] >= -clippos[i].w )
             {
-                visible = true; // this point is on the visible side of the plane, skip to next plane
+                visible = true; // This point is on the visible side of the plane, skip to next plane.
                 break;
             }
         }
-        if( visible == false ) // all points are on outside of plane, don't draw object
+        if( visible == false ) // All points are on outside of plane, don't draw object.
             break;
 
-        // check if all 8 points are greater than the w extent of it's axis
+        // Check if all 8 points are greater than the w extent of it's axis.
         visible = false;
         for( int i=0; i<8; i++ )
         {
             if( clippos[i][component] <= clippos[i].w )
             {
-                visible = true; // this point is on the visible side of the plane, skip to next plane
+                visible = true; // This point is on the visible side of the plane, skip to next plane.
                 break;
             }
         }
-        if( visible == false ) // all points are on outside of plane, don't draw object
+        if( visible == false ) // All points are on outside of plane, don't draw object.
             break;
     }
 
-    // if all points are on outside of frustum, don't draw mesh.
+    // If all points are on outside of frustum, don't draw mesh.
     if( visible == false )
         return false;
 
@@ -168,15 +168,13 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
     if( pOctreeNode->m_NodeDepth >= m_MaxDepth - 1 )
         return;
 
-    // move all objects in pOctreeNode node down as far as they can go.
-    CPPListNode* pNextNode;
-    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNextNode )
+    // Move all objects in pOctreeNode node down as far as they can go.
+    SceneGraphObject* pNextSceneGraphObject;
+    for( SceneGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pNextSceneGraphObject )
     {
-        pNextNode = pNode->GetNext();
+        pNextSceneGraphObject = pObject->GetNext();
 
-        SceneGraphObject* pObject = (SceneGraphObject*)pNode;
-        
-        if( pObject->m_pMesh == 0 )
+        if( pObject->m_pMesh == nullptr )
             continue;
 
         MyAABounds* meshbounds = pObject->m_pMesh->GetBounds();
@@ -186,7 +184,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
         {
             MyAABounds childbounds;
 
-            if( pOctreeNode->m_pChildNodes[i] == 0 )
+            if( pOctreeNode->m_pChildNodes[i] == nullptr )
             {
                 MyAABounds* currentbounds = &pOctreeNode->m_Bounds;
                 Vector3 center = currentbounds->GetCenter();
@@ -208,7 +206,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
 
             if( FitsInsideAABB( &childbounds, meshbounds, meshpos ) )
             {
-                if( pOctreeNode->m_pChildNodes[i] == 0 )
+                if( pOctreeNode->m_pChildNodes[i] == nullptr )
                 {
                     pOctreeNode->m_pChildNodes[i] = m_OctreeNodePool.GetObjectFromPool();
                     pOctreeNode->m_pChildNodes[i]->m_Bounds = childbounds;
@@ -222,10 +220,10 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
         }
     }
 
-    // recurse through children
+    // Recurse through children.
     for( int i=0; i<8; i++ )
     {
-        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        if( pOctreeNode->m_pChildNodes[i] != nullptr )
         {
             UpdateTree( pOctreeNode->m_pChildNodes[i] );
         }
@@ -237,10 +235,10 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
     // Loop through the 8 child nodes.
     for( int i=0; i<8; i++ )
     {
-        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        if( pOctreeNode->m_pChildNodes[i] != nullptr )
         {
             // Move all SceneGraphObjects from each child node onto the tail of the root node.
-            CPPListHead* ChildObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
+            TCPPListHead<SceneGraphObject*>* ChildObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
             if( ChildObjectList->GetHead() )
             {
                 m_pRootNode->m_Renderables.BulkMoveTail( ChildObjectList->GetHead(), ChildObjectList->GetTail() );
@@ -249,11 +247,11 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
             // Recurse through children.
             CollapseChildNodes( pOctreeNode->m_pChildNodes[i] );
 
-            // Return this child to the node pool
+            // Return this child to the node pool.
             m_OctreeNodePool.ReturnObjectToPool( pOctreeNode->m_pChildNodes[i] );
-            pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = 0;
-            pOctreeNode->m_pChildNodes[i]->m_pParentNode = 0;
-            pOctreeNode->m_pChildNodes[i] = 0;
+            pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = nullptr;
+            pOctreeNode->m_pChildNodes[i]->m_pParentNode = nullptr;
+            pOctreeNode->m_pChildNodes[i] = nullptr;
         }
     }
 }
@@ -282,7 +280,7 @@ SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransf
 {
     //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
 
-    MyAssert( pTransform != 0 );
+    MyAssert( pTransform != nullptr );
 
     SceneGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
 
@@ -321,9 +319,9 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
 {
     //LOGInfo( "SceneGraph", "Remove object %d\n", pObject->m_pUserData );
 
-    MyAssert( pObject != 0 );
+    MyAssert( pObject != nullptr );
 
-    MyAssert( pObject->Next != 0 );
+    MyAssert( pObject->Next != nullptr );
     pObject->Remove();
 
     pObject->Clear();
@@ -357,10 +355,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
     if( pOctreeNode != m_pRootNode && FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, 0 ) == false )
         return;
 
-    for( CPPListNode* pNode = pOctreeNode->m_Renderables.GetHead(); pNode != 0; pNode = pNode->GetNext() )
+    for( SceneGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
     {
-        SceneGraphObject* pObject = (SceneGraphObject*)pNode;
-
         // Skip object if it doesn't match transparency/emissive settings, isn't on the right layer, etc.
         if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )
             continue;
@@ -370,7 +366,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
         MyMesh* pMesh = pObject->m_pMesh;
 
         // Simple frustum check. // Removed since entire octree nodes will be culled, but this could still be useful.
-        //if( pMesh != 0 ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled
+        //if( pMesh != nullptr ) // TODO: Particle Renderers don't have a mesh, so no bounds and won't get frustum culled.
         //{
         //    MyAABounds* bounds = pMesh->GetBounds();
 
@@ -417,7 +413,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
     // Recurse through children.
     for( int i=0; i<8; i++ )
     {
-        if( pOctreeNode->m_pChildNodes[i] != 0 )
+        if( pOctreeNode->m_pChildNodes[i] != nullptr )
         {
             DrawNode( pOctreeNode->m_pChildNodes[i], drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatProj, pMatView, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
         }

@@ -14,7 +14,7 @@
 void SceneGraphObject::Clear()
 {
     m_Flags = SceneGraphFlag_Opaque;
-    m_pMaterial = 0;
+    m_pMaterial = nullptr;
     m_WaitingForMaterialToFinishLoading = false;
 
 #if MYFW_EDITOR
@@ -22,15 +22,15 @@ void SceneGraphObject::Clear()
 #endif
 
     m_Layers = 0;
-    m_pTransform = 0;
-    m_pMesh = 0;
-    m_pSubmesh = 0;
+    m_pTransform = nullptr;
+    m_pMesh = nullptr;
+    m_pSubmesh = nullptr;
     m_Visible = false;
 
     m_GLPrimitiveType = MyRE::PrimitiveType_Undefined;
     m_PointSize = 0;
 
-    m_pUserData = 0;
+    m_pUserData = nullptr;
 }
 
 void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
@@ -135,7 +135,7 @@ bool SceneGraph_Base::ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOp
         
     MyAssert( pObject->m_pSubmesh );
 
-    if( pObject->m_pSubmesh == 0 ) //|| pObject->GetMaterial() == 0 )
+    if( pObject->m_pSubmesh == nullptr ) //|| pObject->GetMaterial() == nullptr )
         return false;
 
     if( pObject->m_Visible == false )

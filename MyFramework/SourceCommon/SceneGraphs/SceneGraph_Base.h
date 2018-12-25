@@ -30,7 +30,7 @@ enum EmissiveDrawOptions
 
 typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
 
-class SceneGraphObject : public CPPListNode
+class SceneGraphObject : public TCPPListNode<SceneGraphObject*>
 {
     // No variables hold references.
     // If the object is free'd without removing the SceneGraphObject, bad things will happen.
@@ -62,12 +62,12 @@ public:
 
     void ObjectMoved();
 
-    // Getters
+    // Getters.
     SceneGraphFlags GetFlags() { return m_Flags; }
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     bool IsWaitingForMaterialToFinishLoading() { return m_WaitingForMaterialToFinishLoading; }
 
-    // Setters
+    // Setters.
     void SetFlags(SceneGraphFlags newFlags) { m_Flags = newFlags; }
     void SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags);
 
