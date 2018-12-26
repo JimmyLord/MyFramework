@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-ShaderManager* g_pShaderManager = 0;
+ShaderManager* g_pShaderManager = nullptr;
 
 const char* g_pBrokenShaderString =
 "                                                                                       \n\
@@ -63,13 +63,13 @@ void BaseShader::Init_BaseShader()
 
     m_Emissive = false;
 
-    m_pFilename = 0;
-    m_pFile = 0;
-    m_pFilePixelShader = 0;
+    m_pFilename = nullptr;
+    m_pFile = nullptr;
+    m_pFilePixelShader = nullptr;
 
-    m_pVSPredefinitions = 0;
-    m_pGSPredefinitions = 0;
-    m_pFSPredefinitions = 0;
+    m_pVSPredefinitions = nullptr;
+    m_pGSPredefinitions = nullptr;
+    m_pFSPredefinitions = nullptr;
 
     m_ProgramHandle = 0;
     m_VertexShaderHandle = 0;
@@ -98,17 +98,17 @@ void BaseShader::Init(ShaderPassTypes type)
     m_PassType = type;
 }
 
-void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsousedefaults)
+void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsoUseDefaults)
 {
     if( VSpredef )
     {
         int vslen = (int)strlen( VSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             vslen += (int)strlen( VERTEXPREDEFINES );
         vslen += 1;
         char* newvsstr = MyNew char[vslen];
         strcpy_s( newvsstr, vslen, VSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             strcat_s( newvsstr, vslen, VERTEXPREDEFINES );
         m_pVSPredefinitions = newvsstr;
     }
@@ -116,12 +116,12 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, con
     if( GSpredef )
     {
         int gslen = (int)strlen( GSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             gslen += (int)strlen( GEOMETRYPREDEFINES );
         gslen += 1;
         char* newgsstr = MyNew char[gslen];
         strcpy_s( newgsstr, gslen, GSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             strcat_s( newgsstr, gslen, GEOMETRYPREDEFINES );
         m_pGSPredefinitions = newgsstr;
     }
@@ -129,20 +129,20 @@ void BaseShader::OverridePredefs(const char* VSpredef, const char* GSpredef, con
     if( FSpredef )
     {
         int fslen = (int)strlen( FSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             fslen += (int)strlen( FRAGMENTPREDEFINES );
         fslen += 1;
         char* newfsstr = MyNew char[fslen];
         strcpy_s( newfsstr, fslen, FSpredef );
-        if( alsousedefaults )
+        if( alsoUseDefaults )
             strcat_s( newfsstr, fslen, FRAGMENTPREDEFINES );
         m_pFSPredefinitions = newfsstr;
     }
 }
 
-void BaseShader::Invalidate(bool cleanglallocs)
+void BaseShader::Invalidate(bool cleanGLAllocs)
 {
-    if( cleanglallocs )
+    if( cleanGLAllocs )
     {
         CleanGLAllocations();
     }
@@ -194,8 +194,8 @@ void BaseShader::CleanGLAllocations()
 
 void BaseShader::LoadFromFile(const char* filename)
 {
-    MyAssert( filename != 0 );
-    if( filename == 0 )
+    MyAssert( filename != nullptr );
+    if( filename == nullptr )
         return;
 
     m_pFilename = filename;
@@ -204,7 +204,7 @@ void BaseShader::LoadFromFile(const char* filename)
 
 void BaseShader::LoadFromFile()
 {
-    MyAssert( m_pFile == 0 );
+    MyAssert( m_pFile == nullptr );
 #if MYFW_WP8
     char tempfilename[MAX_PATH];
     sprintf_s( tempfilename, MAX_PATH, "%s.vertex.cso", m_pFilename );
@@ -246,9 +246,9 @@ void ParseBlendFactor(const char* buffer, MyRE::MaterialBlendFactors* pBlendFact
     LOGError( LOGTag, "BlendMode not supported: %s\n", blendFactor );
 }
 
-bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
+bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
 {
-    MyAssert( m_pFilePixelShader == 0 ); // TODO: see below, need to fix support for sep. vert/frag files.
+    MyAssert( m_pFilePixelShader == nullptr ); // TODO: see below, need to fix support for sep. vert/frag files.
 
     // If we already failed to compile, don't try again.
     if( m_ShaderFailedToCompile )
@@ -261,7 +261,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     // It will be turned on if "BLENDING On" is defined in the glsl file.
     m_BlendType = MyRE::MaterialBlendType_Off;
 
-    if( m_pFile == 0 )
+    if( m_pFile == nullptr )
     {
         if( m_pFilename )
         {
@@ -275,7 +275,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     {
         // If the file isn't loaded, come back next frame and check again.
         if( m_pFile->GetFileLoadStatus() != FileLoadStatus_Success ||
-            (m_pFilePixelShader != 0 && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
+            (m_pFilePixelShader != nullptr && m_pFilePixelShader->GetFileLoadStatus() != FileLoadStatus_Success) )
         {
             return false;
         }
@@ -299,7 +299,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
             m_pFile->ParseAndCleanupExposedUniforms();
         }
 
-        bool creategeometryshader = false;
+        bool createGeometryShader = false;
 
         const char* buffer = m_pFile->GetBuffer();
         for( unsigned int i=0; i<m_pFile->GetFileLength(); i++ )
@@ -347,24 +347,24 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
                 if( i + strlen(blendstr) < m_pFile->GetFileLength() &&
                     strncmp( &buffer[i], geoshaderstr, strlen( geoshaderstr ) ) == 0 )
                 {
-                    creategeometryshader = true; 
+                    createGeometryShader = true; 
                 }
             }
         }
 
         // Are all #includes loaded? if not drop out and check again next frame.
-        bool loadcomplete = m_pFile->AreAllIncludesLoaded();
-        if( loadcomplete == false )
+        bool loadComplete = m_pFile->AreAllIncludesLoaded();
+        if( loadComplete == false )
             return false;
 
         {
             // Check how many shader chunks exist between this file and all others included.
-            int numchunks = m_pFile->GetShaderChunkCount();
+            int numChunks = m_pFile->GetShaderChunkCount();
 
             // Allocate buffers for all chunks + 2 more for the shader pass defines and the prevertex/prefrag strings.
-            numchunks += 2;
-            const char** pStrings = MyNew const char*[numchunks];
-            int* pLengths = MyNew int[numchunks];
+            numChunks += 2;
+            const char** pStrings = MyNew const char*[numChunks];
+            int* pLengths = MyNew int[numChunks];
 
             m_pFile->GetShaderChunks( &pStrings[2], &pLengths[2] );
 
@@ -390,17 +390,17 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
             int FSPreLen = (int)strlen( pFSPre );
 
             // Actually create and compile the shader objects.
-            if( creategeometryshader )
+            if( createGeometryShader )
             {
                 m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
                                                  VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
-                                                 numchunks, pStrings, pLengths, premadeprogramhandle );
+                                                 numChunks, pStrings, pLengths, premadeProgramHandle );
             }
             else
             {
                 m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
                                                  VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                                 numchunks, pStrings, pLengths, premadeprogramhandle );
+                                                 numChunks, pStrings, pLengths, premadeProgramHandle );
             }
 
             delete[] pStrings;
@@ -415,13 +415,13 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
     //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
     //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-    //                                         0, premadeprogramhandle );
+    //                                         0, premadeProgramHandle );
     //#else
     //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
     //                                         m_pFile->m_FileLength, m_pFile->m_pBuffer,
     //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
     //                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
-    //                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
+    //                                         g_ShaderPassDefines[m_PassType], premadeProgramHandle );
     //#endif
     //    }
     //    else
@@ -431,13 +431,13 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
     //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
     //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
     //                                         0, 0, 0, 0,
-    //                                         0, premadeprogramhandle );
+    //                                         0, premadeProgramHandle );
     //#else
     //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
     //                                         m_pFilePixelShader->m_FileLength, m_pFilePixelShader->m_pBuffer,
     //                                         &m_VertexShaderHandle, &m_FragmentShaderHandle,
     //                                         0, 0, 0, 0,
-    //                                         g_ShaderPassDefines[m_PassType], premadeprogramhandle );
+    //                                         g_ShaderPassDefines[m_PassType], premadeProgramHandle );
     //#endif
     //    }
     }
@@ -456,7 +456,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         int brokenShaderStringLen = (int)strlen( g_pBrokenShaderString );
 
         // This is hideous code, createProgram() places the predefine strings in array entry [1] of these 2 arrays. 
-        int numchunks = 3;
+        int numChunks = 3;
 
         const char* pStrings[3];
         int pLengths[3];
@@ -470,8 +470,8 @@ bool BaseShader::LoadAndCompile(GLuint premadeprogramhandle)
         // Compiling failed, so fallback on a default "broken" shader effect.
         m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
                                          (int)strlen( VERTEXPREDEFINES ), VERTEXPREDEFINES, (int)strlen( FRAGMENTPREDEFINES ), FRAGMENTPREDEFINES,
-                                         //1, &pBrokenShaderString, &brokenShaderStringLen, premadeprogramhandle );
-                                         numchunks, pStrings, pLengths, premadeprogramhandle );
+                                         //1, &pBrokenShaderString, &brokenShaderStringLen, premadeProgramHandle );
+                                         numChunks, pStrings, pLengths, premadeProgramHandle );
 
         //return false;
     }
@@ -520,7 +520,7 @@ void BaseShader::DisableAttributeArray(GLint index, Vector3 value)
     {
         MyDisableVertexAttribArray( index );
 
-        // TODO: set this attribute override value in the MyMesh object.
+        // TODO: Set this attribute override value in the MyMesh object.
         glVertexAttrib3fv( index, &value.x );
     }
 }
@@ -531,12 +531,12 @@ void BaseShader::DisableAttributeArray(GLint index, Vector4 value)
     {
         MyDisableVertexAttribArray( index );
 
-        // TODO: set this attribute override value in the MyMesh object.
+        // TODO: Set this attribute override value in the MyMesh object.
         glVertexAttrib4fv( index, &value.x );
     }
 }
 
-void BaseShader::DeactivateShader(BufferDefinition* vbo, bool usevaosifavailable)
+void BaseShader::DeactivateShader(BufferDefinition* vbo, bool useVAOsIfAvailable)
 {
 }
 
@@ -562,24 +562,21 @@ void ShaderManager::AddShader(BaseShader* pShader)
     m_ShaderList.AddTail( pShader );
 }
 
-void ShaderManager::InvalidateAllShaders(bool cleanglallocs)
+void ShaderManager::InvalidateAllShaders(bool cleanGLAllocs)
 {
     MyUseProgram( 0 );
 
-    for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( BaseShader* pShader = m_ShaderList.GetHead(); pShader; pShader = pShader->GetNext() )
     {
-        BaseShader* pShader = (BaseShader*)pNode;
-        pShader->Invalidate( cleanglallocs );
+        pShader->Invalidate( cleanGLAllocs );
     }
 }
 
 void ShaderManager::InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFind)
 {
     // Loop through all loaded shaders.
-    for( CPPListNode* pNode = m_ShaderList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( BaseShader* pShader = m_ShaderList.GetHead(); pShader; pShader = pShader->GetNext() )
     {
-        BaseShader* pShader = (BaseShader*)pNode;
-
         MyFileObjectShader* pFile = pShader->m_pFile;
 
         if( pFile == pFileToFind )

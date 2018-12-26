@@ -30,7 +30,7 @@ extern ShaderPassTypes g_ActiveShaderPass;
 
 typedef Shader_Base* (*ShaderGroupShaderAllocationFunction)(ShaderPassTypes passtype);
 
-class ShaderGroup : public CPPListNode, public RefCount
+class ShaderGroup : public TCPPListNode<ShaderGroup*>, public RefCount
 {
 public:
     static const int SHADERGROUP_MAX_LIGHTS = 4;
@@ -60,10 +60,10 @@ public:
 
     bool ContainsShader(BaseShader* pShader);
 
-    BaseShader* GlobalPass(int numlights = 0, int numbones = 0);
-    BaseShader* GetShader(ShaderPassTypes pass, int numlights = 0, int numbones = 0);
+    BaseShader* GlobalPass(int numLights = 0, int numBones = 0);
+    BaseShader* GetShader(ShaderPassTypes pass, int numLights = 0, int numBones = 0);
 
-    void OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype);
+    void OverridePassTypeForAllShaders(ShaderPassTypes originalPassType, ShaderPassTypes newPassType);
 
     void DisableShadowCasting_AndDoItBadly_WillBeReplaced();
 
@@ -77,26 +77,13 @@ public:
     };
 
     void OnPopupClick(ShaderGroup* pShaderGroup, int id);
-
-#if MYFW_USING_WX
-    // Memory panel callbacks
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((ShaderGroup*)pObjectPtr)->OnLeftClick( count ); }
-    void OnLeftClick(unsigned int count);
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((ShaderGroup*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnDrag(void* pObjectPtr) { ((ShaderGroup*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 
 class ShaderGroupManager
 {
 public:
-    CPPListHead m_ShaderGroupList;
+    TCPPListHead<ShaderGroup*> m_ShaderGroupList;
 
 public:
     void AddShaderGroup(ShaderGroup* pShaderGroup);

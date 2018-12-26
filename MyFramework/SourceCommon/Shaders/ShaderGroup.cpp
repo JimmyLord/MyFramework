@@ -9,7 +9,7 @@
 
 #include "CommonHeader.h"
 
-ShaderGroupManager* g_pShaderGroupManager = 0;
+ShaderGroupManager* g_pShaderGroupManager = nullptr;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
 
 const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
@@ -62,18 +62,6 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
 
     SetFileForAllPasses( pFile );
     g_pShaderGroupManager->AddShaderGroup( this );
-
-#if MYFW_USING_WX
-    if( pShaderFile && pShaderFile->m_IsAnIncludeFile == false )
-    {
-        MyAssert( m_pFile->GetFilenameWithoutExtension() != 0 );
-
-        if( pShaderFile->MemoryPanel_IsVisible() )
-        {
-            g_pPanelMemory->AddShaderGroup( this, "ShaderGroups", m_pFile->GetFilenameWithoutExtension(), StaticOnRightClick, StaticOnDrag );
-        }
-    }
-#endif
 }
 
 void ShaderGroup::Initialize()
@@ -110,12 +98,12 @@ bool ShaderGroup::ContainsShader(BaseShader* pShader)
     return false;
 }
 
-void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype, ShaderPassTypes newpasstype)
+void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalPassType, ShaderPassTypes newPassType)
 {
     // This must be called before the shader gets compiled since m_PassType is used to determine the
-    //   g_ShaderPassDefines[] string used in BaseShader::LoadAndCompile(...);
+    //   g_ShaderPassDefines[] string used in BaseShader::LoadAndCompile(...).
 
-    int p = originalpasstype;
+    int p = originalPassType;
 
     for( unsigned int lc=0; lc<SHADERGROUP_MAX_LIGHTS+1; lc++ )
     {
@@ -123,7 +111,7 @@ void ShaderGroup::OverridePassTypeForAllShaders(ShaderPassTypes originalpasstype
         {
             MyAssert( m_pShaderPasses[p][lc][bc]->m_Initialized == false );
 
-            m_pShaderPasses[p][lc][bc]->m_PassType = newpasstype;
+            m_pShaderPasses[p][lc][bc]->m_PassType = newPassType;
         }
     }
 }
@@ -143,7 +131,7 @@ void ShaderGroup::DisableShadowCasting_AndDoItBadly_WillBeReplaced()
 
 ShaderGroup::~ShaderGroup()
 {
-    this->Remove(); // remove this node from the shadergroupmanager's list
+    this->Remove(); // Remove this node from the ShaderGroupManager's list.
 
     SAFE_RELEASE( m_pFile );
 
@@ -157,11 +145,6 @@ ShaderGroup::~ShaderGroup()
             }
         }
     }
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-        g_pPanelMemory->RemoveShaderGroup( this );
-#endif
 }
 
 #if MYFW_EDITOR
@@ -192,71 +175,33 @@ void ShaderGroup::OnPopupClick(ShaderGroup* pShaderGroup, int id)
         break;
     }
 }
-
-#if MYFW_USING_WX
-void ShaderGroup::OnLeftClick(unsigned int count) // StaticOnLeftClick
-{
-}
-
-void ShaderGroup::OnRightClick() // StaticOnRightClick
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    if( GetFile() )
-    {
-        menu.Append( RightClick_OpenFile, "Open File" );
-        menu.Append( RightClick_UnloadFile, "Unload File" );
-        menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
-    }
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&ShaderGroup::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void ShaderGroup::OnPopupClick(wxEvent &evt)
-{
-    ShaderGroup* pShaderGroup = (ShaderGroup*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
-    OnPopupClick( pShaderGroup, id );
-}
-
-void ShaderGroup::OnDrag() // StaticOnDrag
-{
-    g_DragAndDropStruct.Add( DragAndDropType_ShaderGroupPointer, this );
-}
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 
-BaseShader* ShaderGroup::GlobalPass(int numlights, int numbones)
+BaseShader* ShaderGroup::GlobalPass(int numLights, int numBones)
 {
-    //return m_pShaderPasses[ShaderPass_Main];
-    return GetShader( g_ActiveShaderPass, numlights, numbones );
+    return GetShader( g_ActiveShaderPass, numLights, numBones );
 }
 
-BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numbones)
+BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numLights, int numBones)
 {
-    if( numlights > SHADERGROUP_MAX_LIGHTS )
+    if( numLights > SHADERGROUP_MAX_LIGHTS )
     {
         LOGError( LOGTag, "ShaderGroup::GetShader() asking for too many lights\n" );
-        numlights = SHADERGROUP_MAX_LIGHTS;
+        numLights = SHADERGROUP_MAX_LIGHTS;
     }
 
-    if( numbones > SHADERGROUP_MAX_BONE_INFLUENCES )
+    if( numBones > SHADERGROUP_MAX_BONE_INFLUENCES )
     {
         LOGError( LOGTag, "ShaderGroup::GetShader() asking for too many bones\n" );
-        numbones = SHADERGROUP_MAX_BONE_INFLUENCES;
+        numBones = SHADERGROUP_MAX_BONE_INFLUENCES;
     }
 
-    // find the first shader that supports the correct number of lights/bones or less.
-    for( int lc = numlights; lc >= 0; lc-- )
+    // Find the first shader that supports the correct number of lights/bones or less.
+    for( int lc = numLights; lc >= 0; lc-- )
     {
-        for( int bc = numbones; bc >= 0; bc-- )
+        for( int bc = numBones; bc >= 0; bc-- )
         {
-            if( m_pShaderPasses[pass][lc][bc] != 0 )
+            if( m_pShaderPasses[pass][lc][bc] != nullptr )
                 return m_pShaderPasses[pass][lc][bc];
         }
     }
@@ -266,7 +211,7 @@ BaseShader* ShaderGroup::GetShader(ShaderPassTypes pass, int numlights, int numb
 
 void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
 {
-    if( pFile == 0 )
+    if( pFile == nullptr )
         return;
 
     if( pFile->IsA( "MyFileShader" ) == false )
@@ -283,7 +228,7 @@ void ShaderGroup::SetFileForAllPasses(MyFileObject* pFile)
         {
             for( unsigned int bc=0; bc<SHADERGROUP_MAX_BONE_INFLUENCES+1; bc++ )
             {
-                char tempstr[60]; // big enough to hold "#define NUM_LIGHTS 0\n#define NUM_INF_BONES 0\n"
+                char tempstr[60]; // Big enough to hold "#define NUM_LIGHTS 0\n#define NUM_INF_BONES 0\n".
 
                 if( m_pShaderPasses[p][lc] )
                 {
@@ -308,10 +253,8 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByName(const char* name)
 {
     MyAssert( name );
 
-    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( ShaderGroup* pShaderGroup = m_ShaderGroupList.GetHead(); pShaderGroup; pShaderGroup = pShaderGroup->GetNext() )
     {
-        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
-
         if( strcmp( pShaderGroup->GetName(), name ) == 0 )
         {
             return pShaderGroup;
@@ -325,10 +268,8 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFile(MyFileObject* pFile)
 {
     MyAssert( pFile );
 
-    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( ShaderGroup* pShaderGroup = m_ShaderGroupList.GetHead(); pShaderGroup; pShaderGroup = pShaderGroup->GetNext() )
     {
-        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
-
         if( pShaderGroup->GetShader( ShaderPass_Main, 0, 0 )->m_pFile == pFile )
         {
             return pShaderGroup;
@@ -342,10 +283,8 @@ ShaderGroup* ShaderGroupManager::FindShaderGroupByFilename(const char* fullpath)
 {
     MyAssert( fullpath );
 
-    for( CPPListNode* pNode = m_ShaderGroupList.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( ShaderGroup* pShaderGroup = m_ShaderGroupList.GetHead(); pShaderGroup; pShaderGroup = pShaderGroup->GetNext() )
     {
-        ShaderGroup* pShaderGroup = (ShaderGroup*)pNode;
-
         MyFileObject* pFile = pShaderGroup->GetFile();
         if( pFile && strcmp( pFile->GetFullPath(), fullpath ) == 0 )
         {

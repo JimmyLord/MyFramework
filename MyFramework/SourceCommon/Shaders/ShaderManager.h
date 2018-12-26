@@ -15,7 +15,7 @@ class BufferDefinition;
 
 extern ShaderManager* g_pShaderManager;
 
-class BaseShader : public CPPListNode
+class BaseShader : public TCPPListNode<BaseShader*>
 {
 public:
     bool m_Initialized;
@@ -30,7 +30,7 @@ public:
     bool m_Emissive;
 
     const char* m_pFilename;
-    MyFileObjectShader* m_pFile; // vertex shader
+    MyFileObjectShader* m_pFile; // Vertex shader.
     MyFileObjectShader* m_pFilePixelShader;
 
 #if USE_D3D
@@ -39,8 +39,8 @@ public:
 #endif
 
 protected:
-    char* m_pVSPredefinitions; // allocated in constructor if needed.
-    char* m_pGSPredefinitions; // allocated in constructor if needed.
+    char* m_pVSPredefinitions; // Allocated in constructor if needed.
+    char* m_pGSPredefinitions; // Allocated in constructor if needed.
     char* m_pFSPredefinitions;
 
 public:
@@ -54,25 +54,25 @@ public:
     BaseShader(ShaderPassTypes type);
     void Init_BaseShader();
     virtual ~BaseShader();
-    SetClassnameBase( "BaseShader" ); // only first 8 character count.
+    SetClassnameBase( "BaseShader" ); // Only first 8 character count.
 
     virtual void Init(ShaderPassTypes type);
 
-    void OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsousedefaults);
+    void OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsoUseDefaults);
 
-    virtual void Invalidate(bool cleanglallocs);
+    virtual void Invalidate(bool cleanGLAllocs);
     virtual void CleanGLAllocations();
 
     virtual void LoadFromFile(const char* filename);
     virtual void LoadFromFile();
-    virtual bool LoadAndCompile(GLuint premadeprogramhandle = 0);
+    virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
     void InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
     void DisableAttributeArray(GLint index, Vector3 value);
     void DisableAttributeArray(GLint index, Vector4 value);
 
-    virtual void DeactivateShader(BufferDefinition* vbo = 0, bool usevaosifavailable = true);
+    virtual void DeactivateShader(BufferDefinition* vbo = nullptr, bool useVAOsIfAvailable = true);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 
@@ -83,10 +83,10 @@ public:
 class ShaderManager
 {
 public:
-    CPPListHead m_ShaderList;
+    TCPPListHead<BaseShader*> m_ShaderList;
 
     void AddShader(BaseShader* pShader);
-    void InvalidateAllShaders(bool cleanglallocs);
+    void InvalidateAllShaders(bool cleanGLAllocs);
     void InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFind);
 };
 
