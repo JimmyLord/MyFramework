@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -23,31 +23,7 @@ struct SoundCueCallbackStruct
     SoundCueCallbackFunc pFunc;
 };
 
-#if MYFW_USING_WX
-class SoundCueWxEventHandler : public wxEvtHandler
-{
-public:
-    enum RightClickOptions
-    {
-        RightClick_Rename = 1000,
-        RightClick_Unload = 1001,
-    };
-
-public:
-    SoundCue* m_pSoundCue;
-    SoundObject* m_pSoundObject;
-
-public:
-    SoundCueWxEventHandler()
-    {
-        m_pSoundCue = 0;
-        m_pSoundObject = 0;
-    };
-    void OnPopupClick(wxEvent &evt);
-};
-#endif
-
-class SoundCue : public CPPListNode, public RefCount
+class SoundCue : public TCPPListNode<SoundCue*>, public RefCount
 {
     friend class SoundManager;
 
@@ -55,11 +31,11 @@ protected:
     bool m_FullyLoaded;
     bool m_UnsavedChanges;
 
-    char m_Name[MAX_SOUND_CUE_NAME_LEN]; // if [0] == 0, cue won't save to disk.
+    char m_Name[MAX_SOUND_CUE_NAME_LEN]; // If [0] == '\0', cue won't save to disk.
     MyFileObject* m_pFile;
     MySimplePool<SoundCue>* m_pSourcePool;
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
     std::vector<SoundObject*> m_pSoundObjects;
 #else
     MyList<SoundObject*> m_pSoundObjects;
@@ -69,7 +45,7 @@ public:
     SoundCue();
     virtual ~SoundCue();
 
-    virtual void Release(); // override from RefCount
+    virtual void Release() override; // Override from RefCount.
 
     void ImportFromFile();
 
@@ -83,67 +59,17 @@ public:
 #if MYFW_EDITOR
 public:
     void SaveSoundCue(const char* relativefolder);
-
-#if MYFW_USING_WX
-public:
-    SoundCueWxEventHandler m_WxEventHandler;
-    wxTreeItemId m_TreeIDRightClicked;
-
-public:
-    static void StaticOnLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString newlabel) { ((SoundCue*)pObjectPtr)->OnLabelEdit( newlabel ); }
-    void OnLabelEdit(wxString newlabel);
-
-    static void StaticOnDrag(void* pObjectPtr) { ((SoundCue*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundCue*)pObjectPtr)->OnLeftClick( index ); }
-    void OnLeftClick(unsigned int count);
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundCue*)pObjectPtr)->OnRightClick( id ); }
-    void OnRightClick(wxTreeItemId treeid);
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 
-#if MYFW_USING_WX
-class SoundManagerWxEventHandler : public wxEvtHandler
-{
-public:
-    enum RightClickOptions
-    {
-        RightClick_LoadSoundFile = 1000,
-        RightClick_CreateNewCue,
-        RightClick_RemoveSoundObjectFromCue,
-    };
-
-public:
-    SoundManager* m_pSoundManager;
-    SoundCue* m_pSoundCue;
-    SoundObject* m_pSoundObject;
-
-public:
-    SoundManagerWxEventHandler()
-    {
-        m_pSoundManager = 0;
-        m_pSoundCue = 0;
-        m_pSoundObject = 0;
-    };
-    void OnPopupClick(wxEvent &evt);
-};
-#endif
-
 class SoundManager
 {
-    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
-
-#if MYFW_USING_WX
-    friend class SoundManagerWxEventHandler;
-#endif
+    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: Fix this hardcodedness.
 
 protected:
     MySimplePool<SoundCue> m_SoundCuePool;
-    CPPListHead m_Cues;
-    CPPListHead m_CuesStillLoading;
+    TCPPListHead<SoundCue*> m_Cues;
+    TCPPListHead<SoundCue*> m_CuesStillLoading;
 
     MyList<SoundCueCallbackStruct> m_pSoundCueCreatedCallbackList;
     MyList<SoundCueCallbackStruct> m_pSoundCueUnloadedCallbackList;
@@ -187,27 +113,8 @@ public:
     void Editor_AddToNumRefsPlacedOnSoundCueBySystem() { m_NumRefsPlacedOnSoundCueBySystem += 1; }
     unsigned int Editor_GetNumRefsPlacedOnSoundCueBySystem() { return m_NumRefsPlacedOnSoundCueBySystem; }
 
-#if MYFW_USING_WX
 public:
-    SoundManagerWxEventHandler m_WxEventHandler;
-    wxTreeItemId m_TreeIDRightClicked;
-
     void AddSoundCueToMemoryPanel(SoundCue* pCue);
-
-    // Callbacks for root of tree
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClick( index ); }
-    void OnLeftClick(unsigned int count);
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClick( id ); }
-    void OnRightClick(wxTreeItemId treeid);
-
-    // Callbacks for sound object
-    static void StaticOnLeftClickSoundObject(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((SoundManager*)pObjectPtr)->OnLeftClickSoundObject( index ); }
-    void OnLeftClickSoundObject(unsigned int count);
-
-    static void StaticOnRightClickSoundObject(void* pObjectPtr, wxTreeItemId id) { ((SoundManager*)pObjectPtr)->OnRightClickSoundObject( id ); }
-    void OnRightClickSoundObject(wxTreeItemId treeid);
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 

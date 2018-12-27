@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -19,9 +19,9 @@ SoundCue::SoundCue()
     m_FullyLoaded = false;
     m_UnsavedChanges = false;
 
-    m_Name[0] = 0;
-    m_pFile = 0;
-    m_pSourcePool = 0;
+    m_Name[0] = '\0';
+    m_pFile = nullptr;
+    m_pSourcePool = nullptr;
 }
 
 SoundCue::~SoundCue()
@@ -32,22 +32,23 @@ void SoundCue::Release()
 {
     RefCount::Release();
 
-    // if removing the second to last ref, return it to the pool.
+    // If removing the second to last ref, return it to the pool.
     if( m_RefCount == 1 )
     {
         m_pSourcePool->ReturnObjectToPool( this );
 
         m_FullyLoaded = false;
         m_UnsavedChanges = false;
-        m_Name[0] = 0;
+        m_Name[0] = '\0';
         SAFE_RELEASE( m_pFile );
-        m_pSourcePool = 0;
+        m_pSourcePool = nullptr;
 
         for( unsigned int i=0; i<m_pSoundObjects.size(); i++ )
         {
             m_pSoundObjects[i]->Release();
         }
-#if MYFW_USING_WX
+
+#if MYFW_EDITOR
         m_pSoundObjects.clear();
 #else
         m_pSoundObjects.FreeAllInList();
@@ -58,7 +59,7 @@ void SoundCue::Release()
 void SoundCue::ImportFromFile()
 {
     MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
-    if( m_pFile == 0 || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
+    if( m_pFile == nullptr || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
         return;
 
     cJSON* jRoot = cJSON_Parse( m_pFile->GetBuffer() );
@@ -73,18 +74,18 @@ void SoundCue::ImportFromFile()
         {
             int numwavs = cJSON_GetArraySize( jSoundArray );
 
-#if !MYFW_USING_WX
+#if !MYFW_EDITOR
             this->m_pSoundObjects.AllocateObjects( numwavs );
 #endif            
 
             for( int i=0; i<numwavs; i++ )
             {
                 cJSON* jSound = cJSON_GetArrayItem( jSoundArray, i );
-                MyAssert( jSound != 0 );
+                MyAssert( jSound != nullptr );
                 if( jSound )
                 {
                     cJSON* jPath = cJSON_GetObjectItem( jSound, "Path" );
-                    MyAssert( jPath->valuestring[0] != 0 );
+                    MyAssert( jPath->valuestring[0] != '\0' );
                     if( jPath )
                     {
                         g_pGameCore->GetSoundManager()->AddSoundToCue( this, jPath->valuestring );
@@ -104,30 +105,23 @@ void SoundCue::SetName(const char* name)
 {
     MyAssert( name );
 
-    if( strcmp( m_Name, name ) == 0 ) // name hasn't changed.
+    if( strcmp( m_Name, name ) == 0 ) // Name hasn't changed.
         return;
 
-    const char* newfilename = 0;
+    const char* newfilename = nullptr;
     if( m_pFile )
     {
-        // if file rename fails, we'll keep the original name
+        // If file rename fails, we'll keep the original name.
         newfilename = m_pFile->Rename( name );
     }
 
     strcpy_s( m_Name, MAX_SOUND_CUE_NAME_LEN, newfilename );
-
-#if MYFW_USING_WX
-    if( g_pPanelMemory )
-    {
-        g_pPanelMemory->RenameObject( g_pPanelMemory->m_pTree_SoundCues, this, m_Name );
-    }
-#endif //MYFW_USING_WX
 }
 
 #if MYFW_EDITOR
 void SoundCue::SaveSoundCue(const char* relativefolder)
 {
-    if( m_Name[0] == 0 )
+    if( m_Name[0] == '\0' )
         return;
 
     m_FullyLoaded = true;
@@ -135,17 +129,17 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 
     char filename[MAX_PATH];
 
-    if( m_pFile != 0 )
+    if( m_pFile != nullptr )
     {
-        // if a file exists, use the existing file's fullpath
+        // If a file exists, use the existing file's fullpath.
         strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
     }
     else
     {
-        // if a file doesn't exist, create the filename out of parts.
-        // TODO: move most of this block into generic system code.
-        //MyAssert( relativepath != 0 );
-        if( relativefolder == 0 )
+        // If a file doesn't exist, create the filename out of parts.
+        // TODO: Move most of this block into generic system code.
+        //MyAssert( relativepath != nullptr );
+        if( relativefolder == nullptr )
             relativefolder = "Data/Audio";
 
         char workingdir[MAX_PATH];
@@ -156,13 +150,13 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 #endif
         sprintf_s( filename, MAX_PATH, "%s/%s/", workingdir, relativefolder );
 #if MYFW_WINDOWS
-        CreateDirectoryA( filename, 0 );
+        CreateDirectoryA( filename, nullptr );
 #else
         MyAssert( false );
 #endif
         sprintf_s( filename, MAX_PATH, "%s/%s/%s.mycue", workingdir, relativefolder, m_Name );
 
-        // this is a new file, check for filename conflict
+        // This is a new file, check for filename conflict.
         {
             unsigned int count = 0;
             char newname[MAX_SOUND_CUE_NAME_LEN];
@@ -178,8 +172,8 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         }
     }
 
-    // Create the json string to save into the sound cue file
-    char* jsonstr = 0;
+    // Create the json string to save into the sound cue file.
+    char* jsonstr = nullptr;
     {
         cJSON* root = cJSON_CreateObject();
 
@@ -196,14 +190,14 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 
         cJSON_AddItemToObject( jCue, "Sounds", jSoundArray );
 
-        // dump sound cue json structure to disk
+        // Dump sound cue json structure to disk.
         jsonstr = cJSON_Print( root );
         cJSON_Delete( root );
     }
 
-    if( jsonstr != 0 )
+    if( jsonstr != nullptr )
     {
-        FILE* pFile = 0;
+        FILE* pFile = nullptr;
 #if MYFW_WINDOWS
         fopen_s( &pFile, filename, "wb" );
 #else
@@ -217,8 +211,8 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 
         cJSONExt_free( jsonstr );
 
-        // if the file managed to save, request it.
-        if( m_pFile == 0 )
+        // If the file managed to save, request it.
+        if( m_pFile == nullptr )
         {
             sprintf_s( filename, MAX_PATH, "%s/%s.mycue", relativefolder, m_Name );
             m_pFile = g_pFileManager->RequestFile( filename );
@@ -226,86 +220,22 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
     }
 }
 
-#if MYFW_USING_WX
-void SoundCue::OnLabelEdit(wxString newlabel)
-{
-    size_t len = newlabel.length();
-    if( len > 0 )
-    {
-        SetName( newlabel );
-    }
-}
-
-void SoundCue::OnDrag()
-{
-    g_DragAndDropStruct.Add( DragAndDropType_SoundCuePointer, this );
-}
-
-void SoundCue::OnLeftClick(unsigned int count)
-{
-}
-
-void SoundCue::OnRightClick(wxTreeItemId treeid)
-{
- 	wxMenu menu;
-    menu.SetClientData( &m_WxEventHandler );
-
-    m_WxEventHandler.m_pSoundCue = this;
-
-    m_TreeIDRightClicked = treeid;
-
-    menu.Append( SoundCueWxEventHandler::RightClick_Rename, "Rename" );
-    if( m_RefCount == g_pGameCore->GetSoundManager()->Editor_GetNumRefsPlacedOnSoundCueBySystem() )
-    {
-        menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Unload" );
-    }
-    else
-    {
-        wxMenuItem* pItem = menu.Append( SoundCueWxEventHandler::RightClick_Unload, "Can't unload, still in use" );
-        pItem->Enable( false );
-    }
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundCueWxEventHandler::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void SoundCueWxEventHandler::OnPopupClick(wxEvent &evt)
-{
-    SoundCueWxEventHandler* pEvtHandler = (SoundCueWxEventHandler*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-    SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
-    SoundObject* pSoundObject = pEvtHandler->m_pSoundObject;
-
-    int id = evt.GetId();
-    switch( id )
-    {
-    case RightClick_Rename:
-        {
-            wxTreeItemId treeid = g_pPanelMemory->FindSoundCue( pSoundCue );
-            MyAssert( treeid == pSoundCue->m_TreeIDRightClicked );
-            g_pPanelMemory->m_pTree_SoundCues->EditLabel( pSoundCue->m_TreeIDRightClicked );
-        }
-        break;
-
-    case RightClick_Unload:
-        {
-            SoundManager* pSoundManager = g_pGameCore->GetSoundManager();
-
-            MyAssert( pSoundCue && pSoundCue->GetRefCount() == pSoundManager->Editor_GetNumRefsPlacedOnSoundCueBySystem() );
-
-#if MYFW_EDITOR
-            std::vector<SoundCue*> cues;
-            cues.push_back( pSoundCue );
-            g_pGameCore->GetCommandStack()->Do( MyNew EditorCommand_UnloadSoundCues( cues ) );
-#else
-            pSoundManager->UnloadCue( pSoundCue );
-#endif
-        }
-        break;
-    }
-}
-#endif //MYFW_USING_WX
+//    case RightClick_Unload:
+//        {
+//            SoundManager* pSoundManager = g_pGameCore->GetSoundManager();
+//
+//            MyAssert( pSoundCue && pSoundCue->GetRefCount() == pSoundManager->Editor_GetNumRefsPlacedOnSoundCueBySystem() );
+//
+//#if MYFW_EDITOR
+//            std::vector<SoundCue*> cues;
+//            cues.push_back( pSoundCue );
+//            g_pGameCore->GetCommandStack()->Do( MyNew EditorCommand_UnloadSoundCues( cues ) );
+//#else
+//            pSoundManager->UnloadCue( pSoundCue );
+//#endif
+//        }
+//        break;
+//    }
 #endif //MYFW_EDITOR
 
 SoundManager::SoundManager()
@@ -314,7 +244,7 @@ SoundManager::SoundManager()
 #if _DEBUG
     for( unsigned int i=0; i<m_SoundCuePool.Debug_GetLength(); i++ )
     {
-        m_SoundCuePool[i].Debug_SetBaseCount( 1 ); // assert refcount is 1 when returned to pool
+        m_SoundCuePool[i].Debug_SetBaseCount( 1 ); // Assert refcount is 1 when returned to pool.
     }
 #endif //_DEBUG
 
@@ -327,28 +257,23 @@ SoundManager::SoundManager()
     // This number exists since MyEngine will add another ref when the soundcue is loaded
     //    and unloading can't happen if other objects are referencing it as well.
     m_NumRefsPlacedOnSoundCueBySystem = 2;
-
-#if MYFW_USING_WX
-    wxTreeItemId idroot = g_pPanelMemory->m_pTree_SoundCues->GetRootItem();
-    g_pPanelMemory->SetSoundPanelCallbacks( idroot, this, SoundManager::StaticOnLeftClick, SoundManager::StaticOnRightClick, 0 );
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 }
 
 SoundManager::~SoundManager()
 {
-    CPPListNode* pNextNode;
+    SoundCue* pNextCue;
 
-    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNextNode )
+    for( SoundCue* pCue = m_CuesStillLoading.GetHead(); pCue; pCue = pNextCue )
     {
-        pNextNode = pNode->GetNext();
-        ((SoundCue*)pNode)->Release();
+        pNextCue = pCue->GetNext();
+        pCue->Release();
     }
 
-    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNextNode )
+    for( SoundCue* pCue = m_Cues.GetHead(); pCue; pCue = pNextCue )
     {
-        pNextNode = pNode->GetNext();
-        ((SoundCue*)pNode)->Release();
+        pNextCue = pCue->GetNext();
+        pCue->Release();
     }
 
     m_pSoundCueCreatedCallbackList.FreeAllInList();
@@ -357,27 +282,11 @@ SoundManager::~SoundManager()
 
 void SoundManager::Tick()
 {
-    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( SoundCue* pCue = m_CuesStillLoading.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        SoundCue* pCue = (SoundCue*)pNode;
-
         if( pCue->m_pFile && pCue->m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
             pCue->ImportFromFile();
-
-#if MYFW_USING_WX
-            //const char* foldername = "Unknown";
-            //if( pCue->m_pFile )
-            //    foldername = pCue->m_pFile->GetNameOfDeepestFolderPath();
-
-            AddSoundCueToMemoryPanel( pCue );
-
-            //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
-
-            // Add right-click options to each cue "folder".
-            //wxTreeItemId treeid = g_pPanelMemory->FindSoundCueCategory( foldername );
-            //g_pPanelMemory->SetSoundCuePanelCallbacks( treeid, this, SoundManager::StaticOnLeftClick, SoundManager::StaticOnRightClick, SoundManager::StaticOnDrag );
-#endif
         }
 
         if( pCue->IsFullyLoaded() )
@@ -390,13 +299,13 @@ void SoundManager::Tick()
 SoundCue* SoundManager::GetCueFromPool()
 {
     SoundCue* pCue = m_SoundCuePool.GetObjectFromPool();
-    if( pCue == 0 )
+    if( pCue == nullptr )
     {
         LOGError( LOGTag, "SoundManager::GetCueFromPool(): Sound cue pool ran out of cues\n" );
-        return 0;
+        return nullptr;
     }
 
-    pCue->AddRef(); // add a ref if pulled from pool, assert refcount is 1 when returned to pool
+    pCue->AddRef(); // Add a ref if pulled from pool, assert refcount is 1 when returned to pool.
     pCue->m_pSourcePool = &m_SoundCuePool;
 
     return pCue;
@@ -405,15 +314,11 @@ SoundCue* SoundManager::GetCueFromPool()
 SoundCue* SoundManager::CreateCue(const char* name)
 {
     SoundCue* pCue = GetCueFromPool();
-    if( pCue == 0 )
-        return 0;
+    if( pCue == nullptr )
+        return nullptr;
 
     strcpy_s( pCue->m_Name, MAX_SOUND_CUE_NAME_LEN, name );
     m_Cues.AddTail( pCue );
-
-#if MYFW_USING_WX
-    AddSoundCueToMemoryPanel( pCue );
-#endif //MYFW_USING_WX
 
     return pCue;
 }
@@ -424,7 +329,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
 
     SoundCue* pCue;
 
-    // check if this file was already loaded.
+    // Check if this file was already loaded.
     pCue = FindCueByFilename( fullpath );
     if( pCue )
     {
@@ -432,18 +337,13 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
         return pCue;
     }
 
-    pCue = GetCueFromPool(); // Ref added
+    pCue = GetCueFromPool(); // Ref added.
     if( pCue )
     {
         pCue->AddRef(); // Automatically add a ref for the calling code.
         pCue->m_pFile = g_pFileManager->RequestFile( fullpath );
 
         m_CuesStillLoading.AddTail( pCue );
-
-#if MYFW_USING_WX
-        wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Loading", pCue->m_pFile->GetFilenameWithoutExtension(), SoundCue::StaticOnDrag );
-        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
-#endif
     }
 
     return pCue;
@@ -460,10 +360,6 @@ SoundCue* SoundManager::LoadExistingCue(SoundCue* pCue)
         {
             m_pSoundCueCreatedCallbackList[i].pFunc( m_pSoundCueCreatedCallbackList[i].pObj, pCue );
         }
-
-#if MYFW_USING_WX
-        AddSoundCueToMemoryPanel( pCue );
-#endif
     }
 
     return pCue;
@@ -474,12 +370,8 @@ void SoundManager::UnloadCue(SoundCue* pCue)
     // Remove the cue from the cue list.
     pCue->Remove();
 
-    // Release our reference to the cue
+    // Release our reference to the cue.
     pCue->Release();
-
-#if MYFW_USING_WX
-    g_pPanelMemory->RemoveSoundCue( pCue );
-#endif
 
     for( unsigned int i=0; i<m_pSoundCueUnloadedCallbackList.Count(); i++ )
     {
@@ -489,10 +381,10 @@ void SoundManager::UnloadCue(SoundCue* pCue)
 
 void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 {
-    // TODO: check if the file was already loaded
+    // TODO: Check if the file was already loaded.
 #if MYFW_NACL
     // TODO: fix
-    SoundObject* pSoundObject = 0;
+    SoundObject* pSoundObject = nullptr;
 #else
     SoundObject* pSoundObject = g_pGameCore->GetSoundPlayer()->LoadSound( fullpath );
 #endif
@@ -501,15 +393,11 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
     {
         pSoundObject->AddRef();
 
-#if MYFW_USING_WX
+#if MYFW_EDITOR
         pCue->m_pSoundObjects.push_back( pSoundObject );
-
-        wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, fullpath, 0 );
-        g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
-        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
 #else
         pCue->m_pSoundObjects.Add( pSoundObject );
-#endif //MYFW_USING_WX
+#endif //MYFW_EDITOR
 
         pCue->m_UnsavedChanges = true;
     }
@@ -517,24 +405,12 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
 
 void SoundManager::RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject)
 {
-#if MYFW_USING_WX
-    g_pPanelMemory->RemoveSoundObject( pSoundObject );
-#endif //MYFW_USING_WX
+#if MYFW_EDITOR
+    // Remove the sound object, but maintain the order of the list.
+    pCue->m_pSoundObjects.erase( std::find( pCue->m_pSoundObjects.begin(), pCue->m_pSoundObjects.end(), pSoundObject ) );
 
-#if MYFW_USING_WX
-    // remove the sound object, but maintain the order of the list
-    for( unsigned int i=0; i<pCue->m_pSoundObjects.size(); i++ )
-    {
-        if( pCue->m_pSoundObjects[i] == pSoundObject )
-        {
-            for( ; i<pCue->m_pSoundObjects.size()-1; i++ )
-            {
-                pCue->m_pSoundObjects[i] = pCue->m_pSoundObjects[i+1];
-            }
-            pCue->m_pSoundObjects.pop_back();
-            break;
-        }
-    }
+    // Assert that there weren't two or more of the same sound object in the list.
+    MyAssert( std::find( pCue->m_pSoundObjects.begin(), pCue->m_pSoundObjects.end(), pSoundObject ) == pCue->m_pSoundObjects.end() );
 #else
     pCue->m_pSoundObjects.Remove_MaintainOrder( pSoundObject );
 #endif
@@ -544,11 +420,9 @@ void SoundManager::RemoveSoundFromCue(SoundCue* pCue, SoundObject* pSoundObject)
 
 SoundCue* SoundManager::FindCueByName(const char* name)
 {
-    // name shouldn't be set until file is loaded
-    //for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    // Name shouldn't be set until file is loaded.
+    //for( SoundCue* pCue = m_CuesStillLoading.GetHead(); pCue; pCue = pCue->GetNext() )
     //{
-    //    SoundCue* pCue = (SoundCue*)pNode;
-
     //    if( strcmp( pCue->m_Name, name ) == 0 )
     //    {
     //        return pCue;
@@ -565,32 +439,28 @@ SoundCue* SoundManager::FindCueByName(const char* name)
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
 {
-    for( CPPListNode* pNode = m_CuesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( SoundCue* pCue = m_CuesStillLoading.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        SoundCue* pCue = (SoundCue*)pNode;
-
         if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pCue;
         }
     }
 
-    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( SoundCue* pCue = m_Cues.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        SoundCue* pCue = (SoundCue*)pNode;
-
         if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
         {
             return pCue;
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 // Exposed to Lua, change elsewhere if function signature changes.
@@ -618,7 +488,7 @@ int SoundManager::PlayCue(SoundCue* pCue)
 
 void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback)
 {
-    MyAssert( pCallback != 0 );
+    MyAssert( pCallback != nullptr );
     MyAssert( m_pSoundCueCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
     SoundCueCallbackStruct callbackstruct;
@@ -630,7 +500,7 @@ void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackF
 
 void SoundManager::RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback)
 {
-    MyAssert( pCallback != 0 );
+    MyAssert( pCallback != nullptr );
     MyAssert( m_pSoundCueUnloadedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
     SoundCueCallbackStruct callbackstruct;
@@ -643,178 +513,94 @@ void SoundManager::RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallback
 #if MYFW_EDITOR
 void SoundManager::SaveAllCues(bool saveunchanged)
 {
-    for( CPPListNode* pNode = m_Cues.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( SoundCue* pCue = m_Cues.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        SoundCue* pCue = (SoundCue*)pNode;
-
         if( pCue->m_UnsavedChanges || saveunchanged )
         {
-            pCue->SaveSoundCue( 0 );
+            pCue->SaveSoundCue( nullptr );
         }
     }
 }
 
-#if MYFW_USING_WX
-void SoundManager::AddSoundCueToMemoryPanel(SoundCue* pCue)
-{
-    // Add the sound cue to the memory panel.
-    g_pPanelMemory->RemoveSoundCue( pCue );
-    wxTreeItemId idcue = g_pPanelMemory->AddSoundCue( pCue, "Default", pCue->m_Name, SoundCue::StaticOnDrag );
-    g_pPanelMemory->SetSoundPanelCallbacks( idcue, pCue, SoundCue::StaticOnLeftClick, SoundCue::StaticOnRightClick, SoundCue::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pCue, SoundCue::StaticOnLabelEdit );
+    //int id = evt.GetId();
+    //if( id == RightClick_LoadSoundFile )
+    //{
+    //    // multiple select file open dialog
+    //    wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data/Audio", "", "Waves and Cues(*.wav;*.mycue)|*.wav;*.mycue", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
 
-    // Add all of it's sound objects to the memory panel.
-    for( unsigned int i=0; i<pCue->m_pSoundObjects.size(); i++ )
-    {
-        SoundObject* pSoundObject = pCue->m_pSoundObjects[i];
-        wxTreeItemId idsoundobject = g_pPanelMemory->AddSoundObject( pSoundObject, pCue, pSoundObject->GetFullPath(), 0 );
-        g_pPanelMemory->SetSoundPanelCallbacks( idsoundobject, pSoundObject, SoundManager::StaticOnLeftClickSoundObject, SoundManager::StaticOnRightClickSoundObject, 0 );
-        //g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_SoundCues, pSoundObject, SoundManager::StaticOnLabelEditSoundObject );
-    }
-}
+    //    if( FileDialog.ShowModal() == wxID_CANCEL )
+    //        return;
 
-void SoundManager::OnLeftClick(unsigned int count)
-{
-}
+    //    // load the files chosen by the user
+    //    // TODO: typecasting will likely cause issues with multibyte names
+    //    wxArrayString patharray;
+    //    FileDialog.GetPaths( patharray );
 
-void SoundManager::OnRightClick(wxTreeItemId treeid)
-{
- 	wxMenu menu;
-    menu.SetClientData( &m_WxEventHandler );
+    //    SoundCue* pNewCue = nullptr;
 
-    m_WxEventHandler.m_pSoundManager = this;
+    //    char fullpath[MAX_PATH];
+    //    for( unsigned int filenum=0; filenum<patharray.Count(); filenum++ )
+    //    {
+    //        sprintf_s( fullpath, MAX_PATH, "%s", (const char*)patharray[filenum] );
 
-    m_TreeIDRightClicked = treeid;
+    //        // if the datafile is in our working directory, then load it... otherwise TODO: copy it in?
+    //        const char* relativepath = GetRelativePath( fullpath );
+    //        if( relativepath == nullptr )
+    //        {
+    //            // File is not in our working directory.
+    //            // TODO: copy the file into our data folder?
+    //            LOGError( LOGTag, "file must be in working directory\n" );
+    //            //MyAssert( false );
+    //            return;
+    //        }
 
-    menu.Append( SoundManagerWxEventHandler::RightClick_LoadSoundFile, "Load new sound" );
-    menu.Append( SoundManagerWxEventHandler::RightClick_CreateNewCue, "Create new cue" );
+    //        char filename[32];
+    //        char extension[10];
+    //        ParseFilename( fullpath, filename, 32, extension, 10 );
 
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
+    //        // Add all wav's selected to a new cue.
+    //        if( strcmp( extension, ".wav" ) == 0 )
+    //        {
+    //            // Create a cue for the first wav selected.
+    //            if( pNewCue == nullptr )
+    //            {
+    //                pNewCue = pSoundManager->CreateCue( filename );
+    //            }
 
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
+    //            // Add each wav.
+    //            g_pGameCore->GetSoundManager()->AddSoundToCue( pNewCue, relativepath );
+    //        }
 
-void SoundManager::OnLeftClickSoundObject(unsigned int count)
-{
-}
+    //        if( strcmp( extension, ".mycue" ) == 0 )
+    //        {
+    //            // TODO: load cue files.
+    //        }
+    //    }
 
-void SoundManager::OnRightClickSoundObject(wxTreeItemId treeid)
-{
-    TreeItemDataGenericObjectInfo* pData = 0;
+    //    // If we made a new cue, save it and inform all observers.
+    //    if( pNewCue )
+    //    {
+    //        pNewCue->SaveSoundCue( nullptr );
 
-    wxMenu menu;
-    menu.SetClientData( &m_WxEventHandler );
+    //        for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+    //        {
+    //            pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pNewCue );
+    //        }
+    //    }
+    //}
 
-    m_WxEventHandler.m_pSoundManager = this;
+    //if( id == RightClick_CreateNewCue )
+    //{
+    //    SoundCue* pSoundCue = pSoundManager->CreateCue( "new cue" );
 
-    // Get the SoundObject pointer from the tree
-    pData = (TreeItemDataGenericObjectInfo*)g_pPanelMemory->m_pTree_SoundCues->GetItemData( treeid );
-    m_WxEventHandler.m_pSoundObject = (SoundObject*)pData->m_pObject;
+    //    for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
+    //    {
+    //        pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
+    //    }
+    //}
 
-    // Get the SoundCue pointer from the tree, should be the parent of treeid
-    wxTreeItemId parentid = g_pPanelMemory->m_pTree_SoundCues->GetItemParent( treeid );
-    pData = (TreeItemDataGenericObjectInfo*)g_pPanelMemory->m_pTree_SoundCues->GetItemData( parentid );
-    m_WxEventHandler.m_pSoundCue = (SoundCue*)pData->m_pObject;
-
-    m_TreeIDRightClicked = treeid;
-
-    menu.Append( SoundManagerWxEventHandler::RightClick_RemoveSoundObjectFromCue, "Remove from cue" );
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&SoundManagerWxEventHandler::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void SoundManagerWxEventHandler::OnPopupClick(wxEvent &evt)
-{
-    SoundManagerWxEventHandler* pEvtHandler = (SoundManagerWxEventHandler*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-    SoundManager* pSoundManager = pEvtHandler->m_pSoundManager;
-    SoundCue* pSoundCue = pEvtHandler->m_pSoundCue;
-    SoundObject* pSoundObject = pEvtHandler->m_pSoundObject;
-
-    int id = evt.GetId();
-    if( id == RightClick_LoadSoundFile )
-    {
-        // multiple select file open dialog
-        wxFileDialog FileDialog( g_pMainApp->m_pMainFrame, _("Open Datafile"), "./Data/Audio", "", "Waves and Cues(*.wav;*.mycue)|*.wav;*.mycue", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_MULTIPLE );
-
-        if( FileDialog.ShowModal() == wxID_CANCEL )
-            return;
-
-        // load the files chosen by the user
-        // TODO: typecasting will likely cause issues with multibyte names
-        wxArrayString patharray;
-        FileDialog.GetPaths( patharray );
-
-        SoundCue* pNewCue = 0;
-
-        char fullpath[MAX_PATH];
-        for( unsigned int filenum=0; filenum<patharray.Count(); filenum++ )
-        {
-            sprintf_s( fullpath, MAX_PATH, "%s", (const char*)patharray[filenum] );
-
-            // if the datafile is in our working directory, then load it... otherwise TODO: copy it in?
-            const char* relativepath = GetRelativePath( fullpath );
-            if( relativepath == 0 )
-            {
-                // File is not in our working directory.
-                // TODO: copy the file into our data folder?
-                LOGError( LOGTag, "file must be in working directory\n" );
-                //MyAssert( false );
-                return;
-            }
-
-            char filename[32];
-            char extension[10];
-            ParseFilename( fullpath, filename, 32, extension, 10 );
-
-            // Add all wav's selected to a new cue.
-            if( strcmp( extension, ".wav" ) == 0 )
-            {
-                // Create a cue for the first wav selected.
-                if( pNewCue == 0 )
-                {
-                    pNewCue = pSoundManager->CreateCue( filename );
-                }
-
-                // Add each wav.
-                g_pGameCore->GetSoundManager()->AddSoundToCue( pNewCue, relativepath );
-            }
-
-            if( strcmp( extension, ".mycue" ) == 0 )
-            {
-                // TODO: load cue files
-            }
-        }
-
-        // If we made a new cue, save it and inform all observers.
-        if( pNewCue )
-        {
-            pNewCue->SaveSoundCue( 0 );
-
-            for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
-            {
-                pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pNewCue );
-            }
-        }
-    }
-
-    if( id == RightClick_CreateNewCue )
-    {
-        SoundCue* pSoundCue = pSoundManager->CreateCue( "new cue" );
-
-        for( unsigned int i=0; i<pSoundManager->m_pSoundCueCreatedCallbackList.Count(); i++ )
-        {
-            pSoundManager->m_pSoundCueCreatedCallbackList[i].pFunc( pSoundManager->m_pSoundCueCreatedCallbackList[i].pObj, pSoundCue );
-        }
-    }
-
-    if( id == RightClick_RemoveSoundObjectFromCue )
-    {
-        pSoundManager->RemoveSoundFromCue( pSoundCue, pSoundObject );
-    }
-}
-#endif //MYFW_USING_WX
+    //if( id == RightClick_RemoveSoundObjectFromCue )
+    //{
+    //    pSoundManager->RemoveSoundFromCue( pSoundCue, pSoundObject );
+    //}
 #endif //MYFW_EDITOR
