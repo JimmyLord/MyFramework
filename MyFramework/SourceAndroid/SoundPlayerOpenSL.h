@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -14,11 +14,11 @@
 #include <SLES/OpenSLES_Android.h>
 #include "../SourceCommon/Sound/WaveLoader.h"
 
-struct SoundObject : public CPPListNode, public RefCount
+struct SoundObject : TCPPListNode<SoundObject*>, public RefCount
 {
 public:
     MyFileObject* m_pFile;
-    MyWaveDescriptor m_WaveDesc; // contains pointer to data in fileobject buffer
+    MyWaveDescriptor m_WaveDesc; // Contains pointer to data in fileobject buffer.
 
 public:
     SoundObject();
@@ -38,7 +38,7 @@ public:
     };
 
 protected:
-    SLObjectItf m_ppAudioPlayer; // using a buffer queue as input
+    SLObjectItf m_ppAudioPlayer; // Using a buffer queue as input.
 
     SoundChannelStates m_CurrentState;
     double m_TimePlaybackStarted;
@@ -65,7 +65,7 @@ protected:
     static const int MAX_QUEUED_SOUNDS = 10;
     static const int MAX_CHANNELS = 10;
 
-    // OpenSL Objects
+    // OpenSL Objects.
     SLObjectItf m_ppOpenSLEngine;
     SLObjectItf m_ppOutputMix;
 

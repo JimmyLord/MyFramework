@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -44,7 +44,7 @@ void CheckForErrors(SLresult result, const char* string)
 
 SoundObject::SoundObject()
 {
-    m_pFile = 0;
+    m_pFile = nullptr;
     m_WaveDesc.valid = false;
 }
 
@@ -55,7 +55,7 @@ const char* SoundObject::GetFullPath()
 
 SoundChannel::SoundChannel()
 {
-    m_ppAudioPlayer = 0;
+    m_ppAudioPlayer = nullptr;
 
     m_CurrentState = SoundChannelState_Free;
     m_TimePlaybackStarted = 0;
@@ -65,7 +65,7 @@ void SoundChannel::PlaySound(SoundObject* pSoundObject)
 {
     SLresult result;
 
-    // Get interfaces
+    // Get interfaces.
     SLBufferQueueItf bufferQueueInterface;
     result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
     CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
@@ -79,24 +79,24 @@ void SoundChannel::PlaySound(SoundObject* pSoundObject)
     if( result != SL_RESULT_SUCCESS )
     {
         CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_VOLUME" );
-        volumeInterface = 0;
+        volumeInterface = nullptr;
     }
 
     // Clear the existing sound from the buffer. TODO: check if this is needed.
     result = (*bufferQueueInterface)->Clear( bufferQueueInterface );
     CheckForErrors( result, "(*bufferQueueInterface)->Clear" );
 
-    // Enqueue our entire buffer
+    // Enqueue our entire buffer.
     const void* pcmData = pSoundObject->m_WaveDesc.data;
     SLuint32 pcmDataSize = pSoundObject->m_WaveDesc.datasize;
     result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, pcmDataSize );
     CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
 
-    // Start playback
+    // Start playback.
     result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
     CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
 
-    // Set Volume
+    // Set Volume.
     //result = (*volumeInterface)->SetVolumeLevel( volumeInterface, volume );
     //CheckForErrors( result, "(*volumeInterface)->SetVolumeLevel" );
 
@@ -107,7 +107,7 @@ void SoundChannel::StopSound()
 {
     SLresult result;
 
-    // Get interfaces
+    // Get interfaces.
     SLBufferQueueItf bufferQueueInterface;
     result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
     CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
@@ -132,12 +132,12 @@ SoundPlayer::SoundPlayer()
 {
     m_NumQueuedSounds = 0;
 
-    m_ppOpenSLEngine = 0;
-    m_ppOutputMix = 0;
+    m_ppOpenSLEngine = nullptr;
+    m_ppOutputMix = nullptr;
 
     SLresult result;
 
-    // Create the OpenSL Engine
+    // Create the OpenSL Engine.
     SLEngineItf ppEngineInterface;
     {
         SLEngineOption EngineOptions[] =
@@ -152,12 +152,12 @@ SoundPlayer::SoundPlayer()
         result = (*m_ppOpenSLEngine)->Realize( m_ppOpenSLEngine, SL_BOOLEAN_FALSE );
         CheckForErrors( result, "(*m_ppOpenSLEngine)->Realize" );
 
-        // Get the engine interface
+        // Get the engine interface.
         result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface ); 
         CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
     }
 
-    // Create an Output Mix object
+    // Create an Output Mix object.
     {
         //const SLInterfaceID ids[] = { SL_IID_VOLUME };
         //const SLboolean req[] = { SL_BOOLEAN_FALSE };
@@ -172,17 +172,17 @@ SoundPlayer::SoundPlayer()
         //result = (*m_ppOutputMix)->GetInterface( m_ppOutputMix, SL_IID_VOLUME, &ppOutputMixVolume );
         //CheckForErrors( result, "(*m_ppOutputMix)->GetInterface SL_IID_VOLUME" );
         //if( result != SL_RESULT_SUCCESS )
-        //    ppOutputMixVolume = 0;
+        //    ppOutputMixVolume = nullptr;
     }
 
-    // Create some channels, i.e. buffer queues
+    // Create some channels, i.e. buffer queues.
     for( int i=0; i<MAX_CHANNELS; i++ )
     {
         SLDataLocator_BufferQueue bufferQueue;
         bufferQueue.locatorType = SL_DATALOCATOR_BUFFERQUEUE;
         bufferQueue.numBuffers = 1;
     
-        // Setup the format of the content in the buffer queue
+        // Setup the format of the content in the buffer queue.
         SLDataFormat_PCM pcmDataFormat;
         pcmDataFormat.formatType = SL_DATAFORMAT_PCM;
         pcmDataFormat.numChannels = 1;
@@ -196,18 +196,18 @@ SoundPlayer::SoundPlayer()
         audioSource.pFormat = &pcmDataFormat;
         audioSource.pLocator = &bufferQueue;
 
-        // Setup the data sink structure
+        // Setup the data sink structure.
         SLDataLocator_OutputMix locatorOutputMix;
         locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
         locatorOutputMix.outputMix = m_ppOutputMix;
     
         SLDataSink audioSink;
         audioSink.pLocator = &locatorOutputMix;
-        audioSink.pFormat = 0;
+        audioSink.pFormat = nullptr;
 
-        // Create an audio player
+        // Create an audio player.
         {
-            // Set ids required for audioPlayer interface
+            // Set ids required for audioPlayer interface.
             const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE, SL_IID_VOLUME };
             const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
 
@@ -220,7 +220,7 @@ SoundPlayer::SoundPlayer()
             result = (*ppAudioPlayer)->Realize( ppAudioPlayer, SL_BOOLEAN_FALSE );
             CheckForErrors( result, "(*ppAudioPlayer)->Realize" );
 
-            // Register a Play callback
+            // Register a Play callback.
             SLPlayItf playInterface;
             result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface );
             CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
@@ -284,15 +284,15 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
     int i=0;
     for( i=0; i<MAX_SOUNDS; i++ )
     {
-        if( m_Sounds[i].m_pFile == 0 )
+        if( m_Sounds[i].m_pFile == nullptr )
             break;
     }
 
     if( i < MAX_SOUNDS )
     {
-        // store the wave file and wave desc into a soundobject and return the soundobject.
-        // file may not be fully loaded, so m_WaveDesc.valid == false
-        //    wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded
+        // Store the wave file and wave desc into a soundobject and return the soundobject.
+        // File may not be fully loaded, so m_WaveDesc.valid == false.
+        //    Wave file will attempt to be parsed again in SoundPlayer::PlaySound once file is loaded.
 
         m_Sounds[i].m_pFile = pFile;
         m_Sounds[i].m_WaveDesc.valid = false;
@@ -309,7 +309,7 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
         return &m_Sounds[i];
     }
 
-    return 0;
+    return nullptr;
 }
 
 int SoundPlayer::PlaySound(SoundObject* pSoundObject)
@@ -332,7 +332,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 
     if( pSoundObject->m_WaveDesc.valid == false )
     {
-        return -1; // sound didn't play
+        return -1; // Sound didn't play.
     }
 
     // find a free channel
@@ -343,7 +343,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
             break;
     }
 
-    // if all channels are in use, find and use the oldest sound channel
+    // If all channels are in use, find and use the oldest sound channel.
     if( channelindex == -1 )
     {
         double oldesttime = DBL_MAX;
@@ -384,16 +384,16 @@ void SoundPlayer::ResumeAll()
 {
 }
 
-// code mostly adapted from these 2 sources:
+// Code mostly adapted from these 2 sources:
 // https://www.khronos.org/registry/OpenSL-ES/specs/OpenSL_ES_Specification_1.0.1.pdf
 // http://vec3.ca/getting-started-with-opensl-on-android/
 
-// Structure for passing information to bufferqueue callback function
+// Structure for passing information to bufferqueue callback function.
 struct CallbackContextStruct
 {
     SLPlayItf playItf;
-    SLint16* pDataBase; // Base address of local audio data storage
-    SLint16* pData;     // Current address of local audio data storage
+    SLint16* pDataBase; // Base address of local audio data storage.
+    SLint16* pData;     // Current address of local audio data storage.
     SLuint32 size;
 }; 
 
@@ -408,7 +408,7 @@ void BufferQueueCallback(SLBufferQueueItf queueInterface, void* pContext)
     //    result = (*queueInterface)->Enqueue( queueInterface, (void*)pCallbackContext->pData, bufferSegmentSizeInBytes );
     //    CheckForErrors( result, "(*queueInterface)->Enqueue" );
 
-    //    // Increase data pointer by buffer size
+    //    // Increase data pointer by buffer size.
     //    pCallbackContext->pData += AUDIO_DATA_SEGMENT_SIZE;
 
     //    LOGInfo( LOGTag, "Queued up more data\n" );
@@ -430,7 +430,7 @@ void SoundPlayer::TestOpenSL_BufferQueue()
 {
     SLresult result;
 
-    // Generate some noise
+    // Generate some noise.
     static const int AUDIO_DATA_STORAGE_SIZE = 32768;
     SLint16 pcmData[AUDIO_DATA_STORAGE_SIZE];
     for( int i=0; i<AUDIO_DATA_STORAGE_SIZE/2; i+=2 )
@@ -439,13 +439,13 @@ void SoundPlayer::TestOpenSL_BufferQueue()
         pcmData[i+1] = 100;
     }
 
-    // Setup the data source structure for the buffer queue
-    //   works as well with SLDataLocator_AndroidSimpleBufferQueue, SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE and SL_IID_ANDROIDSIMPLEBUFFERQUEUE
+    // Setup the data source structure for the buffer queue.
+    //   works as well with SLDataLocator_AndroidSimpleBufferQueue, SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE and SL_IID_ANDROIDSIMPLEBUFFERQUEUE.
     SLDataLocator_BufferQueue bufferQueue;
     bufferQueue.locatorType = SL_DATALOCATOR_BUFFERQUEUE;
     bufferQueue.numBuffers = 1;
     
-    // Setup the format of the content in the buffer queue
+    // Setup the format of the content in the buffer queue.
     SLDataFormat_PCM pcmDataFormat;
     pcmDataFormat.formatType = SL_DATAFORMAT_PCM;
     pcmDataFormat.numChannels = 1;
@@ -459,24 +459,24 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     audioSource.pFormat = &pcmDataFormat;
     audioSource.pLocator = &bufferQueue;
 
-    // Setup the data sink structure
+    // Setup the data sink structure.
     SLDataLocator_OutputMix locatorOutputMix;
     locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
     locatorOutputMix.outputMix = m_ppOutputMix;
 
     SLDataSink audioSink;
     audioSink.pLocator = &locatorOutputMix;
-    audioSink.pFormat = 0;
+    audioSink.pFormat = nullptr;
 
-    // Get the engine interface
+    // Get the engine interface.
     SLEngineItf ppEngineInterface;
     result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface );
     CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
 
-    // Create an audio player
+    // Create an audio player.
     SLObjectItf ppAudioPlayer;
     {
-        // Set ids required for audioPlayer interface
+        // Set ids required for audioPlayer interface.
         const SLInterfaceID ids[] = { SL_IID_BUFFERQUEUE };
         const SLboolean req[] = { SL_BOOLEAN_TRUE };
 
@@ -488,7 +488,7 @@ void SoundPlayer::TestOpenSL_BufferQueue()
         CheckForErrors( result, "(*ppAudioPlayer)->Realize" );
     }
 
-    // Get interfaces
+    // Get interfaces.
     SLPlayItf playInterface;
     result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface );
     CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_PLAY" );
@@ -497,38 +497,38 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
     CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
 
-    //// Register a BufferQueue callback
-    //// Initialize the context for Buffer queue callback functions
+    //// Register a BufferQueue callback.
+    //// Initialize the context for Buffer queue callback functions.
     //CallbackContextStruct callbackContext;
     //callbackContext.pDataBase = (SLint16*)&pcmData;
     //callbackContext.pData = callbackContext.pDataBase;
     //callbackContext.size = sizeof( pcmDataFormat );
 
-    //result = (*bufferQueueInterface)->RegisterCallback( bufferQueueInterface, BufferQueueCallback, NULL);
+    //result = (*bufferQueueInterface)->RegisterCallback( bufferQueueInterface, BufferQueueCallback, nullptr );
     //CheckForErrors( result, "(*bufferQueueInterface)->RegisterCallback" );
 
-    //// Register a Play callback
+    //// Register a Play callback.
     //result = (*playInterface)->RegisterCallback( playInterface, PlayCallback, 0 );
     //CheckForErrors( result, "(*playInterface)->RegisterCallback" );
 
     //result = (*playInterface)->SetCallbackEventsMask( playInterface, SL_PLAYEVENT_HEADATEND );
     //CheckForErrors( result, "(*playInterface)->SetCallbackEventsMask" );
 
-    //// Before we start set volume to -3dB (-300mB)
-    //if( ppOutputMixVolume != 0 )
+    //// Before we start set volume to -3dB (-300mB).
+    //if( ppOutputMixVolume != nullptr )
     //{
     //    result = (*ppOutputMixVolume)->SetVolumeLevel( ppOutputMixVolume, -300 );
     //}
 
-    // Enqueue our entire buffer
+    // Enqueue our entire buffer.
     result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, AUDIO_DATA_STORAGE_SIZE*2 );
     CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
 
-    // Start playback
+    // Start playback.
     result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
     CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
 
-    // Enqueue a few buffers to get the ball rolling
+    // Enqueue a few buffers to get the ball rolling.
     //int bufferSegmentSizeInBytes = 2 * AUDIO_DATA_SEGMENT_SIZE;
 
     //result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, callbackContext.pData, bufferSegmentSizeInBytes );
@@ -543,7 +543,7 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     //CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
     //callbackContext.pData += AUDIO_DATA_SEGMENT_SIZE;
 
-    //// Play the PCM samples using a buffer queue
+    //// Play the PCM samples using a buffer queue.
     //result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
     //CheckForErrors( result, "(*playInterface)->SetPlayState" );
 
@@ -570,13 +570,13 @@ void SoundPlayer::TestOpenSL_BufferQueue()
     //    }
     //}
 
-    //// Make sure player is stopped
+    //// Make sure player is stopped.
     //result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_STOPPED );
     //CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_STOPPED" );
 
     //LOGInfo( LOGTag, "SetPlayState to stop\n" );
 
-    // TODO: test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
+    // TODO: Test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
     //(*ppAudioPlayer)->Destroy( ppAudioPlayer );
 }
 
@@ -611,7 +611,7 @@ void SoundPlayer::TestOpenSL_URILocator()
         audioSource.pFormat = (void*)&mime;
     }
 
-    // Setup the data sink structure
+    // Setup the data sink structure.
     SLDataLocator_OutputMix locatorOutputMix;
     SLDataSink audioSink;
     {
@@ -622,17 +622,17 @@ void SoundPlayer::TestOpenSL_URILocator()
         audioSink.pFormat = 0;
     }
 
-    // Get the engine interface
+    // Get the engine interface.
     SLEngineItf ppEngineInterface;
     result = (*m_ppOpenSLEngine)->GetInterface( m_ppOpenSLEngine, SL_IID_ENGINE, (void*)&ppEngineInterface );
     CheckForErrors( result, "(*m_ppOpenSLEngine)->GetInterface SL_IID_ENGINE" );
 
-    // Create an audio player
+    // Create an audio player.
     SLObjectItf ppAudioPlayer;
     {
         LOGInfo( LOGTag, "About to create Audio Player\n" );
 
-        // Set ids required for audioPlayer interface
+        // Set ids required for audioPlayer interface.
         const SLInterfaceID ids[] = { SL_IID_PREFETCHSTATUS, SL_IID_VOLUME };
         const SLboolean req[] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
 
@@ -644,7 +644,7 @@ void SoundPlayer::TestOpenSL_URILocator()
         CheckForErrors( result, "(*ppAudioPlayer)->Realize" );
     }
  
-    // Get play interface and play the sound
+    // Get play interface and play the sound.
     {
         SLPlayItf playInterface;
         result = (*ppAudioPlayer)->GetInterface( ppAudioPlayer, SL_IID_PLAY, &playInterface );
@@ -654,6 +654,6 @@ void SoundPlayer::TestOpenSL_URILocator()
         CheckForErrors( result, "(*playInterface)->SetPlayState -> SL_PLAYSTATE_PLAYING" );
     }
 
-    // TODO: test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
+    // TODO: Test code should destroy this, but that would cause sound to stop... too lazy to detect sound ended.
     //(*ppAudioPlayer)->Destroy( ppAudioPlayer );
 }

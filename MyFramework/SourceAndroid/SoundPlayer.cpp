@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -88,7 +88,7 @@ SoundObject* SoundPlayer::LoadSound(const char* path, const char* ext)
         //LOGInfo( LOGTag, "LoadSound - methodid %p", methodid );
         long soundid = g_pJavaEnvironment->CallIntMethod( g_pJavaSoundPlayer, methodid, jpath );
 
-        // store the sound id into a soundobject and return the soundobject.
+        // Store the sound id into a soundobject and return the soundobject.
         m_Sounds[i].m_Sound = soundid;
         return &m_Sounds[i];
     }
@@ -145,7 +145,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
         m_NumQueuedSounds++;
     }
 
-    return 0; // TODO: should return some unique id for the sound, so it can be stopped/paused/etc.
+    return 0; // TODO: Should return some unique id for the sound, so it can be stopped/paused/etc.
 }
 
 void SoundPlayer::StopSound(int soundid)

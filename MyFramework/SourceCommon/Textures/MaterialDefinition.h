@@ -18,7 +18,7 @@ class ExposedUniformValue
 public:
 #if MYFW_EDITOR
     std::string m_Name;
-    ExposedUniformType m_Type; // used when reloading shader, needed to release ref on texture.
+    ExposedUniformType m_Type; // Used when reloading shader, needed to release ref on texture.
 #endif //MYFW_EDITOR
 
     ExposedUniformValue()
@@ -41,7 +41,7 @@ public:
     void SetToInitialValue(ExposedUniformType type);
 };
 
-class MaterialDefinition : public CPPListNode, public RefCount
+class MaterialDefinition : public TCPPListNode<MaterialDefinition*>, public RefCount
 {
     friend class MaterialManager;
 #if MYFW_USING_IMGUI
@@ -55,7 +55,7 @@ protected:
     bool m_UnsavedChanges;
     bool m_MaterialFileIsLoaded;
 
-    char m_Name[MAX_MATERIAL_NAME_LEN]; // if [0] == 0, material won't save to disk.
+    char m_Name[MAX_MATERIAL_NAME_LEN]; // If [0] == '/0', material won't save to disk.
     MyFileObject* m_pFile;
 
     ShaderGroup* m_pShaderGroup;
@@ -112,7 +112,7 @@ public:
     void ImportExposedUniformValues(cJSON* jMaterial);
     void ExportExposedUniformValues(cJSON* jMaterial);
 
-    // Material Property Getters
+    // Material Property Getters.
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
     ShaderGroup* GetShaderInstanced() const { return m_pShaderGroupInstanced; }    
     TextureDefinition* GetTextureColor() const { return m_pTextureColor; }
@@ -138,7 +138,7 @@ public:
 
     void MarkDirty() { m_UnsavedChanges = true; }
 
-    // Shader Property Getters
+    // Shader Property Getters.
     bool IsTransparent(BaseShader* pShader);
     bool IsTransparent();
     bool IsEmissive(BaseShader* pShader);
@@ -174,11 +174,11 @@ protected:
 public:
     void OnPopupClick(MaterialDefinition* pMaterial, int id);
 
-    // Getters
+    // Getters.
     bool IsReferencingFile(MyFileObject* pFile);
     PreviewType GetPreviewType() { return m_PreviewType; }
     
-    // Setters
+    // Setters.
     void SetPreviewType(PreviewType type) { m_PreviewType = type; }
 
     // Other.

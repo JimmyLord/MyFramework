@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -90,7 +90,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject, bool looping)
 {
     //LOGInfo( LOGTag, "NaCL SoundPlayer PlaySound soundid %d looping %d\n", soundid, looping );
 
-    if( pSoundObject == 0 )
+    if( pSoundObject == nullptr )
         return -1;
     
     SoundCueWrapper* pCueInfo = m_SoundCueQueue.MakeObjectActive();
@@ -139,7 +139,7 @@ inline short floattoshortclamped(float value)
     
     return value;
 
-    // TODO: try this at some point: from Glenn Barnett's comment on http://stackoverflow.com/questions/376036/algorithm-to-mix-sound
+    // TODO: Try this at some point: from Glenn Barnett's comment on http://stackoverflow.com/questions/376036/algorithm-to-mix-sound
     //float waveshape_distort( float in ) {
     //    if(in <= -1.25f) {
     //        return -0.984375;
@@ -155,8 +155,8 @@ inline short floattoshortclamped(float value)
 void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
 {
     // https://developers.google.com/native-client/devguide/coding/audio
-    // this func runs in a thread...
-    // avoid c runtime and pepper calls and be thread safe without locking.
+    // This func runs in a thread...
+    // Avoid c runtime and pepper calls and be thread safe without locking.
     // In short, the audio (callback) thread should use "lock-free" techniques and avoid making CRT library calls.
 
     // buffer_size = 16bit * 2channel * frame count(4096)
@@ -190,7 +190,7 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
             else if( sizetocopy <= buffer_size )
             {
                 //LOGInfo( LOGTag, "NaCL SoundPlayer FillBufferCallback removing sound %d\n", pCueInfo->descindex );
-                // remove the sound from the list.
+                // Remove the sound from the list.
                 pSoundPlayer->m_SoundCueQueue.MakeObjectInactive( pCueInfo );
                 i--;
             }
@@ -210,7 +210,7 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
             {
                 if( pWaveDesc->samplerate == 44100 )
                 {
-                    // convert 44khz 16-bit mono sample into 44khz 16-bit stereo.
+                    // Convert 44khz 16-bit mono sample into 44khz 16-bit stereo.
                     for( int i=0; i<sizetocopy/2; i+=2 )
                     {
                         float newvalue;
@@ -225,7 +225,7 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
                 }
                 else
                 {
-                    // convert 22khz 16-bit mono sample into 44khz 16-bit stereo.
+                    // Convert 22khz 16-bit mono sample into 44khz 16-bit stereo.
                     for( int i=0; i<sizetocopy/2; i+=4 )
                     {
                         float newvalue;
@@ -258,9 +258,9 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
                             pCueInfo->offset = 0;
                     }
 
-                    // useless? memcpy attempt, since we'll need to mix with other sounds.
-                        // probably useful if we can guarantee it comes first.
-                    //// don't copy more than what's left in the source wave buffer.
+                    // Useless? memcpy attempt, since we'll need to mix with other sounds.
+                        // Probably useful if we can guarantee it comes first.
+                    //// Don't copy more than what's left in the source wave buffer.
                     //if( sizetocopy > pWaveDesc->datasize - pCueInfo->offset )
                     //    sizetocopy = pWaveDesc->datasize - pCueInfo->offset;
 
@@ -268,14 +268,14 @@ void FillBufferCallback(void* samples, uint32_t buffer_size, void* data)
                 }
                 else
                 {
-                    // not handling 22050khz, 16bit stereo.
-                    // not handling 11025khz, 16bit stereo.
+                    // Not handling 22050khz, 16bit stereo.
+                    // Not handling 11025khz, 16bit stereo.
                 }
             }
         }
         else
         {
-            // not handling anything but 16bit samples.
+            // Not handling anything but 16bit samples.
         }
     }
 

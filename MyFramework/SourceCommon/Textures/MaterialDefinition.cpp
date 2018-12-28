@@ -128,7 +128,7 @@ void MaterialDefinition::Init()
 
 MaterialDefinition::~MaterialDefinition()
 {
-    // not all materials are in the MaterialManagers list.
+    // Not all materials are in the MaterialManagers list.
     if( Prev )
         this->Remove();
 
@@ -149,7 +149,7 @@ MaterialDefinition::~MaterialDefinition()
     SetShader( nullptr );
     SetShaderInstanced( nullptr );
 
-    // Release the file after setting shader to 0, so SetShader() can unregister the finished loading callback.
+    // Release the file after setting shader to nullptr, so SetShader() can unregister the finished loading callback.
     SAFE_RELEASE( m_pFile );
     SAFE_RELEASE( m_pTextureColor );
 }
@@ -158,7 +158,7 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
 {
     MyAssert( &other != this );
 
-    // Doesn't copy variables associated with file on disk.
+    // Don't copy variables associated with file on disk.
     // m_UnsavedChanges
     // m_Name
     // m_pFile
@@ -176,7 +176,7 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
     this->m_UVScale = other.m_UVScale;
     this->m_UVOffset = other.m_UVOffset;
 
-    // fully loaded flag isn't copied.
+    // Fully loaded flag isn't copied.
     //m_FullyLoaded
 
     // TODO: Copy the exposed uniform values.
@@ -190,7 +190,7 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
 
 void MaterialDefinition::ImportFromFile()
 {
-    // TODO: replace asserts: if a shader or texture isn't found, load it.
+    // TODO: Replace asserts: if a shader or texture isn't found, load it.
 
     MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
     if( m_pFile == nullptr || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
@@ -261,13 +261,13 @@ void MaterialDefinition::ImportFromFile()
         cJSON* jTexColor = cJSON_GetObjectItem( jMaterial, "TexColor" );
         if( jTexColor && jTexColor->valuestring[0] != '\0' )
         {
-            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( jTexColor->valuestring ); // adds a ref.
+            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( jTexColor->valuestring ); // Adds a ref.
             MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.
             if( pTexture )
             {
-                SetTextureColor( pTexture ); // adds a reference to the texture;
+                SetTextureColor( pTexture ); // Adds a reference to the texture.
             }
-            pTexture->Release(); // release the ref added by CreateTexture();
+            pTexture->Release(); // Release the ref added by CreateTexture().
         }
 
         ColorFloat tempcolor;
@@ -326,8 +326,6 @@ void MaterialDefinition::SetName(const char* name)
     if( strcmp( m_Name, name ) == 0 ) // Name hasn't changed.
         return;
 
-    //size_t len = strlen( name );
-    
     strcpy_s( m_Name, MAX_MATERIAL_NAME_LEN, name );
 
     if( m_pFile )
@@ -473,7 +471,7 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
         {
             for( unsigned int i=0; i<pShaderFile->m_NumExposedUniforms; i++ )
             {
-                // Set the uniforms to it's initial value (generally zero)
+                // Set the uniforms to it's initial value (generally zero).
                 m_UniformValues[i].SetToInitialValue( pShaderFile->m_ExposedUniforms[i].m_Type );
             }
 
@@ -522,7 +520,7 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
                     }
                 }
 
-                // Copy the new type into our array for the next time the file is reloaded
+                // Copy the new type into our array for the next time the file is reloaded.
                 m_UniformValues[j].m_Type = pShaderFile->m_ExposedUniforms[j].m_Type;
             }
 #endif
@@ -925,13 +923,13 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 
     if( m_pFile != nullptr )
     {
-        // if a file exists, use the existing file's fullpath
+        // If a file exists, use the existing file's fullpath.
         strcpy_s( filename, MAX_PATH, m_pFile->GetFullPath() );
     }
     else
     {
-        // if a file doesn't exist, create the filename out of parts.
-        // TODO: move most of this block into generic system code.
+        // If a file doesn't exist, create the filename out of parts.
+        // TODO: Move most of this block into generic system code.
         MyAssert( relativepath != nullptr );
 
         char workingdir[MAX_PATH];
@@ -948,7 +946,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
 #endif
         sprintf_s( filename, MAX_PATH, "%s/%s/%s.mymaterial", workingdir, relativepath, m_Name );
 
-        // this is a new file, check for filename conflict
+        // This is a new file, check for filename conflict.
         {
             unsigned int count = 0;
             char newname[MAX_MATERIAL_NAME_LEN];
@@ -964,7 +962,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         }
     }
 
-    // Create the json string to save into the material file
+    // Create the json string to save into the material file.
     char* jsonstr = nullptr;
     {
         cJSON* jRoot = cJSON_CreateObject();

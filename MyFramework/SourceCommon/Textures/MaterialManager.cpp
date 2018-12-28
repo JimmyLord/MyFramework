@@ -13,17 +13,12 @@
 #include "MaterialManager.h"
 #include "../Helpers/FileManager.h"
 
-MaterialManager* g_pMaterialManager = 0;
+MaterialManager* g_pMaterialManager = nullptr;
 
 MaterialManager::MaterialManager()
 {
-#if MYFW_USING_WX
-    wxTreeItemId idroot = g_pPanelMemory->m_pTree_Materials->GetRootItem();
-    g_pPanelMemory->SetMaterialPanelCallbacks( idroot, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
-#endif
-
 #if MYFW_EDITOR
-    m_pDefaultEditorMaterial = 0;
+    m_pDefaultEditorMaterial = nullptr;
 #endif
 
     m_pMaterialCreatedCallbackList.AllocateObjects( MAX_REGISTERED_CALLBACKS );
@@ -41,13 +36,11 @@ MaterialManager::~MaterialManager()
 
 void MaterialManager::Tick()
 {
-    // TODO: free file once the material is loaded... or not and check for updates on alt-tab
-    CPPListNode* pNextNode;
-    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNextNode )
+    // TODO: Free file once the material is loaded... or not and check for updates on alt-tab.
+    MaterialDefinition* pNextMaterial;
+    for( MaterialDefinition* pMaterial = m_MaterialsStillLoading.GetHead(); pMaterial; pMaterial = pNextMaterial )
     {
-        pNextNode = pNode->GetNext();
-
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
+        pNextMaterial = pMaterial->GetNext();
 
         MyAssert( pMaterial->m_pFile );
 
@@ -59,20 +52,6 @@ void MaterialManager::Tick()
 
                 MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_MaterialFinishedLoading );
                 g_pEventManager->SendEventNow( pEvent );
-
-#if MYFW_USING_WX
-                const char* foldername = "Unknown";
-                if( pMaterial->m_pFile )
-                    foldername = pMaterial->m_pFile->GetNameOfDeepestFolderPath();
-
-                g_pPanelMemory->RemoveMaterial( pMaterial );
-                g_pPanelMemory->AddMaterial( pMaterial, foldername, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-                g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-
-                // Add right-click options to each material "folder".
-                wxTreeItemId treeid = g_pPanelMemory->FindMaterialCategory( foldername );
-                g_pPanelMemory->SetMaterialPanelCallbacks( treeid, this, MaterialManager::StaticOnLeftClick, MaterialManager::StaticOnRightClick, MaterialManager::StaticOnDrag );
-#endif
             }
             else
             {
@@ -80,19 +59,13 @@ void MaterialManager::Tick()
             }
         }
 
-        // file loading errors
+        // File loading errors.
         if( pMaterial->m_pFile->GetFileLoadStatus() > FileLoadStatus_Success ) //== FileLoadStatus_Error_FileNotFound )
         {
             LOGError( LOGTag, "Material file failed to load: %s\n", pMaterial->m_pFile->GetFullPath() );
             
-            // move the material to the unsaved list
+            // Move the material to the unsaved list.
             strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, pMaterial->m_pFile->GetFilenameWithoutExtension() );
-
-#if MYFW_USING_WX
-            g_pPanelMemory->RemoveMaterial( pMaterial );
-            g_pPanelMemory->AddMaterial( pMaterial, "Unsaved", pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-            g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif //MYFW_USING_WX
 
             m_Materials.MoveTail( pMaterial );
         }
@@ -106,31 +79,29 @@ void MaterialManager::Tick()
 
 void MaterialManager::FreeAllMaterials()
 {
-    while( CPPListNode* pNode = m_MaterialsStillLoading.GetHead() )
+    while( MaterialDefinition* pMaterial = m_MaterialsStillLoading.GetHead() )
     {
         MyAssert( false );
-        MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
-        ((MaterialDefinition*)pNode)->Release();
+        MyAssert( pMaterial->GetRefCount() == 1 );
+        pMaterial->Release();
     }
 
-    while( CPPListNode* pNode = m_Materials.GetHead() )
+    while( MaterialDefinition* pMaterial = m_Materials.GetHead() )
     {
         MyAssert( false );
-        MyAssert( ((MaterialDefinition*)pNode)->GetRefCount() == 1 );
-        ((MaterialDefinition*)pNode)->Release();
+        MyAssert( pMaterial->GetRefCount() == 1 );
+        pMaterial->Release();
     }
 }
 
 #if MYFW_EDITOR
 void MaterialManager::SaveAllMaterials(bool saveunchanged)
 {
-    for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MaterialDefinition* pMaterial = m_Materials.GetHead(); pMaterial; pMaterial = pMaterial->GetNext() )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
-
         if( pMaterial->m_UnsavedChanges || saveunchanged )
         {
-            pMaterial->SaveMaterial( 0 );
+            pMaterial->SaveMaterial( nullptr );
         }
     }
 }
@@ -145,7 +116,7 @@ void MaterialManager::Editor_MoveMaterialToFrontOfLoadedList(MaterialDefinition*
 
 MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 {
-    if( m_pDefaultEditorMaterial == 0 )
+    if( m_pDefaultEditorMaterial == nullptr )
     {
         m_pDefaultEditorMaterial = CreateMaterial();
         ShaderGroup* pShader = MyNew ShaderGroup();
@@ -159,7 +130,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
 
 MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pMaterialFile)
 {
-    MyAssert( pMaterialFile != 0 );
+    MyAssert( pMaterialFile != nullptr );
 
     MaterialDefinition* pMaterial = MyNew MaterialDefinition();
     m_Materials.AddTail( pMaterial );
@@ -175,14 +146,14 @@ MaterialDefinition* MaterialManager::CreateMaterial(const char* name, const char
     m_Materials.AddTail( pMaterial );
 
     pMaterial->m_MaterialFileIsLoaded = true;
-    if( name != 0 )
+    if( name != nullptr )
     {
         pMaterial->m_UnsavedChanges = true;
         strcpy_s( pMaterial->m_Name, MaterialDefinition::MAX_MATERIAL_NAME_LEN, name );
     }
 
 #if MYFW_EDITOR
-    if( relativePath != 0 )
+    if( relativePath != nullptr )
     {
         pMaterial->SaveMaterial( relativePath );
         CallMaterialCreatedCallbacks( pMaterial );
@@ -198,7 +169,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
 
     MaterialDefinition* pMaterial;
 
-    // check if this file was already loaded.
+    // Check if this file was already loaded.
     pMaterial = FindMaterialByFilename( fullpath );
     if( pMaterial )
     {
@@ -212,11 +183,6 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
 
     MyAssert( pMaterial->m_pFile );
-
-#if MYFW_USING_WX
-    g_pPanelMemory->AddMaterial( pMaterial, "Loading", pMaterial->m_pFile->GetFilenameWithoutExtension(), MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-#endif
 
     return pMaterial;
 }
@@ -233,12 +199,12 @@ void MaterialManager::ReloadMaterial(MaterialDefinition* pMaterial)
 
 MaterialDefinition* MaterialManager::GetFirstMaterial()
 {
-    // Get first material that was loaded from disk
+    // Get first material that was loaded from disk.
     for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
     {
         MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
 
-        if( pMaterial->GetFile() != 0 )
+        if( pMaterial->GetFile() != nullptr )
             return pMaterial;
     }
 
@@ -248,10 +214,8 @@ MaterialDefinition* MaterialManager::GetFirstMaterial()
 
 MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, TextureDefinition* pTextureColor)
 {
-    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MaterialDefinition* pMaterial = m_MaterialsStillLoading.GetHead(); pMaterial; pMaterial = pMaterial->GetNext() )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
-
         if( pMaterial->m_pShaderGroup == m_pShaderGroup &&
             pMaterial->m_pTextureColor == pTextureColor )
         {
@@ -259,10 +223,8 @@ MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, T
         }
     }
 
-    for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MaterialDefinition* pMaterial = m_Materials.GetHead(); pMaterial; pMaterial = pMaterial->GetNext() )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
-
         if( pMaterial->m_pShaderGroup == m_pShaderGroup &&
             pMaterial->m_pTextureColor == pTextureColor )
         {
@@ -270,33 +232,30 @@ MaterialDefinition* MaterialManager::FindMaterial(ShaderGroup* m_pShaderGroup, T
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath)
 {
-    for( CPPListNode* pNode = m_MaterialsStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MaterialDefinition* pMaterial = m_MaterialsStillLoading.GetHead(); pMaterial; pMaterial = pMaterial->GetNext() )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
-
         if( strcmp( pMaterial->m_pFile->GetFullPath(), fullpath ) == 0 )
             return pMaterial;
     }
 
-    for( CPPListNode* pNode = m_Materials.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( MaterialDefinition* pMaterial = m_Materials.GetHead(); pMaterial; pMaterial = pMaterial->GetNext() )
     {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pNode;
-
         if( pMaterial->m_pFile && strcmp( pMaterial->m_pFile->GetFullPath(), fullpath ) == 0 )
             return pMaterial;
     }
 
-    return 0;
+    return nullptr;
 }
 
 void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback)
 {
-    MyAssert( pCallback != 0 );
+    MyAssert( pObj != nullptr );
+    MyAssert( pCallback != nullptr );
     MyAssert( m_pMaterialCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
 
     MaterialCreatedCallbackStruct callbackstruct;
@@ -306,63 +265,36 @@ void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreate
     m_pMaterialCreatedCallbackList.Add( callbackstruct );
 }
 
-#if MYFW_USING_WX
-void MaterialManager::OnLeftClick(unsigned int count)
-{
-}
+    //int id = evt.GetId();
+    //if( id == 1000 )
+    //{
+    //    MaterialDefinition* pMaterial = g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
+    //    // TODO: this material will cause an assert on shutdown, unless released by some other code.
 
-void MaterialManager::OnRightClick(wxTreeItemId treeid)
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
+    //    // find the selected folder and put the object into that folder.
+    //    wxString wxcategory = g_pPanelMemory->m_pTree_Materials->GetItemText( g_pMaterialManager->m_TreeIDRightClicked );
+    //    const char* category = wxcategory;
 
-    m_TreeIDRightClicked = treeid;
+    //    char tempstr[MAX_PATH];
+    //    if( strcmp( category, "Materials" ) == 0 )
+    //        sprintf_s( tempstr, MAX_PATH, "Data/Materials" );
+    //    else
+    //        sprintf_s( tempstr, MAX_PATH, "Data/Materials/%s", category );
+    //    pMaterial->SaveMaterial( tempstr );
 
-    menu.Append( 1000, "Create new material" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&MaterialManager::OnPopupClick );
+    //    g_pPanelMemory->RemoveMaterial( pMaterial );
+    //    g_pPanelMemory->AddMaterial( pMaterial, category, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
+    //    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
 
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void MaterialManager::OnPopupClick(wxEvent &evt)
-{
-    int id = evt.GetId();
-    if( id == 1000 )
-    {
-        MaterialDefinition* pMaterial = g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
-        // TODO: this material will cause an assert on shutdown, unless released by some other code.
-
-        // find the selected folder and put the object into that folder.
-        wxString wxcategory = g_pPanelMemory->m_pTree_Materials->GetItemText( g_pMaterialManager->m_TreeIDRightClicked );
-        const char* category = wxcategory;
-
-        char tempstr[MAX_PATH];
-        if( strcmp( category, "Materials" ) == 0 )
-            sprintf_s( tempstr, MAX_PATH, "Data/Materials" );
-        else
-            sprintf_s( tempstr, MAX_PATH, "Data/Materials/%s", category );
-        pMaterial->SaveMaterial( tempstr );
-
-        g_pPanelMemory->RemoveMaterial( pMaterial );
-        g_pPanelMemory->AddMaterial( pMaterial, category, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-        g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-
-        CallMaterialCreatedCallbacks( pMaterial );
-    }
-}
-
-void MaterialManager::OnDrag()
-{
-    //g_DragAndDropStruct.m_Type = DragAndDropType_MaterialDefinitionPointer;
-    //g_DragAndDropStruct.m_Value = this;
-}
-#endif //MYFW_USING_WX
+    //    CallMaterialCreatedCallbacks( pMaterial );
+    //}
 
 #if MYFW_EDITOR
 void MaterialManager::CallMaterialCreatedCallbacks(MaterialDefinition* pMaterial)
 {
     for( unsigned int i=0; i<g_pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
+    {
         g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
+    }
 }
 #endif

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -15,10 +15,10 @@
 //====================================================================================================
 SoundObject::SoundObject()
 {
-    m_FullPath[0] = 0;
+    m_FullPath[0] = '\0';
     m_Sound = 0;
 
-    m_pSourcePool = 0;
+    m_pSourcePool = nullptr;
 
 #if _DEBUG
     m_BaseCount = 1; // RefCount hack: since soundobjects are in an array in soundplayer, final ref won't be released.
@@ -84,7 +84,7 @@ bool CheckForALUTErrors(const char* description)
 }
 #endif
 
-#if 0 //MYFW_IOS
+#if false //MYFW_IOS
 ALvoid  alBufferDataStaticProc(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq)
 {
     static alBufferDataStaticProcPtr proc = 0;
@@ -109,12 +109,12 @@ SoundPlayer::SoundPlayer()
     return;
 #endif
 
-    // Init openAL
+    // Init openAL.
 #if USE_ALUT
-    alutInit(0, NULL);
+    alutInit( 0, nullptr );
 #else
     m_pDevice = alcOpenDevice( 0 );
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
     {
         LOGError( LOGTag, "alcOpenDevice() failed\n" );
         return;
@@ -125,7 +125,7 @@ SoundPlayer::SoundPlayer()
     CheckForOpenALCErrors( m_pDevice, "alcMakeContextCurrent" );
 #endif
 
-    // initialize the listener to 0,0,0 with no velocity, good for 2d sounds.
+    // Initialize the listener to 0,0,0 with no velocity, good for 2D sounds.
     alListener3f( AL_POSITION, 0, 0, 0 );
     CheckForOpenALErrors( "alListener3f( AL_POSITION" );
     alListener3f( AL_VELOCITY, 0, 0, 0 );
@@ -139,7 +139,7 @@ SoundPlayer::SoundPlayer()
         m_Buffers[i] = 0;
     }
 
-    // Generate the sources
+    // Generate the sources.
     for( int i=0; i<NUM_SOURCES; i++ )
         alGenSources( 1, &m_Sources[i].m_Sound );
     CheckForOpenALErrors( "alGenSources" );
@@ -147,7 +147,7 @@ SoundPlayer::SoundPlayer()
 
 SoundPlayer::~SoundPlayer()
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     for( int i=0; i<NUM_SOURCES; i++ )
@@ -166,7 +166,7 @@ SoundPlayer::~SoundPlayer()
 
 void SoundPlayer::ActivateSoundContext()
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
 #if !USE_ALUT
@@ -176,7 +176,7 @@ void SoundPlayer::ActivateSoundContext()
 
 void SoundPlayer::DeactivateSoundContext()
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
 #if !USE_ALUT
@@ -186,7 +186,7 @@ void SoundPlayer::DeactivateSoundContext()
 
 void SoundPlayer::OnFocusGained()
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     for( int i=0; i<NUM_SOURCES; i++ )
@@ -206,7 +206,7 @@ void SoundPlayer::OnFocusGained()
 
 void SoundPlayer::OnFocusLost()
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     for( int i=0; i<NUM_SOURCES; i++ )
@@ -229,7 +229,7 @@ void SoundPlayer::OnFocusLost()
 
 SoundObject* SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return 0;
 
 #if USE_ALUT
@@ -249,16 +249,16 @@ SoundObject* SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 
     m_Buffers[m_NextID] = index;
 
-    // make a single source for each sound buffer... not very general usage, but works for what I need.
+    // Make a single source for each sound buffer... not very general usage, but works for what I need.
     alSourcei( m_Sources[m_NextID].m_Sound, AL_BUFFER, m_Buffers[m_NextID] );
     if( CheckForOpenALErrors( "alSourcei" ) )
     {
         alDeleteBuffers( 1, &m_Buffers[m_NextID] );
         m_Buffers[m_NextID] = 0;
-        return 0;
+        return nullptr;
     }
 
-    // set the source to 0,0,0 for 2d again, same as listener.
+    // Set the source to 0,0,0 for 2d again, same as listener.
     alSourcef( m_Sources[m_NextID].m_Sound, AL_PITCH, 1 );
     CheckForOpenALErrors( "alSourcef( SoundObject[m_NextID].m_Sound, AL_PITCH" );
     alSourcef( m_Sources[m_NextID].m_Sound, AL_GAIN, 1 );
@@ -280,10 +280,10 @@ SoundObject* SoundPlayer::LoadSound(const char* buffer, unsigned int buffersize)
 SoundObject* SoundPlayer::LoadSound(const char* fullpath)
 {
     if( m_pDevice == 0 )
-        return 0;
+        return nullptr;
 
     int length = 0;
-    // TODO: sounds should load through fileobjects like any other thing.
+    // TODO: Sounds should load through fileobjects like any other thing.
     char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* file, unsigned long line);
     char* buffer = PlatformSpecific_LoadFile( fullpath, &length, fullpath, __LINE__ );
 
@@ -296,7 +296,7 @@ void SoundPlayer::Shutdown()
 
 int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return -1; // return value not used ATM
 
     alSourcePlay( pSoundObject->m_Sound ); //m_Sources[soundid] );
@@ -307,7 +307,7 @@ int SoundPlayer::PlaySound(SoundObject* pSoundObject)
 
 void SoundPlayer::StopSound(int soundid)
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     alSourceStop( m_Sources[soundid].m_Sound );
@@ -316,7 +316,7 @@ void SoundPlayer::StopSound(int soundid)
 
 void SoundPlayer::PauseSound(int soundid)
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     alSourcePause( m_Sources[soundid].m_Sound );
@@ -325,7 +325,7 @@ void SoundPlayer::PauseSound(int soundid)
 
 void SoundPlayer::ResumeSound(int soundid)
 {
-    if( m_pDevice == 0 )
+    if( m_pDevice == nullptr )
         return;
 
     alSourcePlay( m_Sources[soundid].m_Sound );

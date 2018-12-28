@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -101,7 +101,7 @@ SoundObject* SoundPlayer::LoadSound(const char* path, const char* ext)
         return &m_Sounds[i];
     }
 
-    return 0;
+    return nullptr;
 }
 
 SoundObject* SoundPlayer::LoadSound(const char* fullpath)
@@ -120,7 +120,7 @@ SoundObject* SoundPlayer::LoadSound(const char* fullpath)
         return &m_Sounds[i];
     }
 
-    return 0;
+    return nullptr;
 }
 
 void SoundPlayer::Shutdown()

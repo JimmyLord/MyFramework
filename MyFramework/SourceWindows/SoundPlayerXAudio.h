@@ -22,7 +22,7 @@ struct IXAudio2;
 struct IXAudio2SourceVoice;
 struct IXAudio2MasteringVoice;
 
-struct SoundObject : public CPPListNode, public RefCount
+struct SoundObject : public TCPPListNode<SoundObject*>, public RefCount
 {
 protected:
     MyFileObject* m_pFile;
@@ -120,7 +120,7 @@ protected:
     IXAudio2MasteringVoice* m_pMasteringVoice;
 
     MySimplePool<SoundObject> m_SoundObjectPool;
-    //CPPListHead m_pSounds; // SoundObject*
+    //TCPPListHead<SoundObject*> m_pSounds;
     SoundChannel* m_pChannels[MAX_CHANNELS];
     SoundObject m_Music;
 

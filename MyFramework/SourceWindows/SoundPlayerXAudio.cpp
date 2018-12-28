@@ -198,7 +198,7 @@ SoundPlayer::~SoundPlayer()
     }
 
     //SoundObject* pSound = 0;
-    //while( pSound = (SoundObject*)m_pSounds.GetHead() )
+    //while( pSound = m_pSounds.GetHead() )
     //{
     //    pSound->Release();
     //}

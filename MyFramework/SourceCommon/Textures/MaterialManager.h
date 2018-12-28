@@ -27,7 +27,7 @@ class MaterialManager
 : public wxEvtHandler
 #endif
 {
-    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: fix this hardcodedness
+    static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: Fix this hardcodedness.
 
 private:
 #if MYFW_USING_WX
@@ -35,8 +35,8 @@ private:
 #endif
 
 protected:
-    CPPListHead m_Materials;
-    CPPListHead m_MaterialsStillLoading;
+    TCPPListHead<MaterialDefinition*> m_Materials;
+    TCPPListHead<MaterialDefinition*> m_MaterialsStillLoading;
 
     MyList<MaterialCreatedCallbackStruct> m_pMaterialCreatedCallbackList;
 
@@ -52,7 +52,7 @@ public:
     
     void FreeAllMaterials();
 
-    // Callbacks
+    // Callbacks.
     void RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback);
 
 #if MYFW_EDITOR
@@ -73,18 +73,6 @@ public:
     MaterialDefinition* FindMaterialByFilename(const char* fullpath);
 
 public:
-#if MYFW_USING_WX
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int index) { ((MaterialManager*)pObjectPtr)->OnLeftClick( index ); }
-    void OnLeftClick(unsigned int index);
-    
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MaterialManager*)pObjectPtr)->OnRightClick( id ); }
-    void OnRightClick(wxTreeItemId treeid);
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnDrag(void* pObjectPtr) { ((MaterialManager*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-#endif
-
 #if MYFW_EDITOR
     void CallMaterialCreatedCallbacks(MaterialDefinition* pMaterial);
 #endif
