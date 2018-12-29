@@ -13,13 +13,13 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
-TextureManager* g_pTextureManager = 0;
+TextureManager* g_pTextureManager = nullptr;
 
 TextureManager::TextureManager()
 {
     m_MaxTexturesToLoadInOneTick = -1;
 
-    m_pErrorTexture = 0;
+    m_pErrorTexture = nullptr;
 }
 
 TextureManager::~TextureManager()
@@ -27,52 +27,52 @@ TextureManager::~TextureManager()
     FreeAllTextures( true );
 }
 
-TextureDefinition* TextureManager::CreateTexture(const char* texturefilename, int minfilter, int magfilter, int wraps, int wrapt)
+TextureDefinition* TextureManager::CreateTexture(const char* textureFilename, int minFilter, int magFilter, int wrapS, int wrapT)
 {
-    MyAssert( texturefilename );
-    //LOGInfo( LOGTag, "CreateTexture - %s\n", texturefilename );
+    MyAssert( textureFilename );
+    //LOGInfo( LOGTag, "CreateTexture - %s\n", textureFilename );
 
-    TextureDefinition* pTextureDef = FindTexture( texturefilename );
-    if( pTextureDef != 0 )
+    TextureDefinition* pTextureDef = FindTexture( textureFilename );
+    if( pTextureDef != nullptr )
     {
         pTextureDef->AddRef();
         return pTextureDef;
     }
 
-    MyFileObject* pFile = g_pFileManager->RequestFile( texturefilename );
-    pTextureDef = CreateTexture( pFile, minfilter, magfilter, wraps, wrapt );
+    MyFileObject* pFile = g_pFileManager->RequestFile( textureFilename );
+    pTextureDef = CreateTexture( pFile, minFilter, magFilter, wrapS, wrapT );
     pFile->Release(); // CreateTexture() will add a ref.
 
     return pTextureDef;
 }
 
-TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfilter, int magfilter, int wraps, int wrapt)
+TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minFilter, int magFilter, int wrapS, int wrapT)
 {
     MyAssert( pFile );
     //LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->GetFullPath() );
 
-    // find the texture if it already exists:
+    // Find the texture if it already exists.
     TextureDefinition* pTextureDef = FindTexture( pFile );
-    if( pTextureDef != 0 )
+    if( pTextureDef != nullptr )
     {
         pTextureDef->AddRef();
         return pTextureDef;
     }
 
-    // Create a new texture and add it to m_TexturesStillLoading
+    // Create a new texture and add it to m_TexturesStillLoading.
     pTextureDef = MyNew TextureDefinition();
     pTextureDef->m_ManagedByTextureManager = true;
     strcpy_s( pTextureDef->m_Filename, MAX_PATH, pFile->GetFullPath() );
-    pTextureDef->m_MinFilter = minfilter;
-    pTextureDef->m_MagFilter = magfilter;
-    pTextureDef->m_WrapS = wraps;
-    pTextureDef->m_WrapT = wrapt;
+    pTextureDef->m_MinFilter = minFilter;
+    pTextureDef->m_MagFilter = magFilter;
+    pTextureDef->m_WrapS = wrapS;
+    pTextureDef->m_WrapT = wrapT;
 
     m_TexturesStillLoading.AddTail( pTextureDef );
 
-    // assign the file to the texture def.  Add a ref to the file.
-    MyAssert( pTextureDef->m_pFile == 0 );
-    if( pTextureDef->m_pFile != 0 )
+    // Assign the file to the texture def.  Add a ref to the file.
+    MyAssert( pTextureDef->m_pFile == nullptr );
+    if( pTextureDef->m_pFile != nullptr )
         pTextureDef->m_pFile->Release();
 
     //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
@@ -83,13 +83,13 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minfil
     return pTextureDef;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBO = MyNew FBODefinition();
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformat, depthbits, depthreadable );
-    pFBO->m_OnlyFreeOnShutdown = onlyfreeonshutdown;
+    bool newtexneeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormat, depthBits, depthReadable );
+    pFBO->m_OnlyFreeOnShutdown = onlyFreeOnShutdown;
 
     if( newtexneeded )
     {
@@ -99,15 +99,15 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
     return pFBO;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable, bool onlyfreeonshutdown)
+FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
     FBODefinition* pFBO = MyNew FBODefinition();
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformats, numcolorformats, depthbits, depthreadable );
-    pFBO->m_OnlyFreeOnShutdown = onlyfreeonshutdown;
+    bool newTexNeeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormats, numColorFormats, depthBits, depthReadable );
+    pFBO->m_OnlyFreeOnShutdown = onlyFreeOnShutdown;
 
-    if( newtexneeded )
+    if( newTexNeeded )
     {
         m_UninitializedFBOs.AddTail( pFBO );
     }
@@ -116,41 +116,41 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minfilter, i
 }
 
 // return true if new texture was needed.
-bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable)
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
         return false;
     //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
 
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformat, depthbits, depthreadable );
+    bool newTexNeeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormat, depthBits, depthReadable );
 
-    if( newtexneeded )
+    if( newTexNeeded )
     {
         LOGInfo( LOGTag, "ReSetupFBO - Creating new FBO textures %dx%d\n", width, height );
         InvalidateFBO( pFBO );
     }
 
-    return newtexneeded;
+    return newTexNeeded;
 }
 
 // return true if new texture was needed.
-bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable)
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
         return false;
     //LOGInfo( LOGTag, "ReSetupFBO - %dx%d\n", width, height );
 
-    bool newtexneeded = pFBO->Setup( width, height, minfilter, magfilter, colorformats, numcolorformats, depthbits, depthreadable );
+    bool newTexNeeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormats, numColorFormats, depthBits, depthReadable );
 
-    if( newtexneeded )
+    if( newTexNeeded )
     {
         LOGInfo( LOGTag, "ReSetupFBO - Creating new FBO textures %dx%d\n", width, height );
         InvalidateFBO( pFBO );
     }
 
-    return newtexneeded;
+    return newTexNeeded;
 }
 
 void TextureManager::InvalidateFBO(FBODefinition* pFBO)
@@ -162,14 +162,12 @@ void TextureManager::InvalidateFBO(FBODefinition* pFBO)
 
 void TextureManager::Tick()
 {
-    // Initialize all FBOs
+    // Initialize all FBOs.
     {
-        CPPListNode* pNextNode;
-        for( CPPListNode* pNode = m_UninitializedFBOs.GetHead(); pNode != 0; pNode = pNextNode )
+        FBODefinition* pNextFBODef;
+        for( FBODefinition* pFBODef = m_UninitializedFBOs.GetHead(); pFBODef; pFBODef = pNextFBODef )
         {
-            pNextNode = pNode->GetNext();
-
-            FBODefinition* pFBODef = (FBODefinition*)pNode;
+            pNextFBODef = pFBODef->GetNext();
 
             if( pFBODef->m_FailedToInit )
                 continue;
@@ -197,29 +195,28 @@ void TextureManager::Tick()
         }
     }
 
-    //// debug: list all textures that need loading.
-    //for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    //// Debug: List all textures that need loading.
+    //for( TextureDefinition* pTextureDef = m_TexturesStillLoading.GetHead(); pTextureDef; pTextureDef = pTextureDef->GetNext() )
     //{
-    //    TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
     //    LOGInfo( LOGTag, "Still need to load: %s\n", pTextureDef->m_Filename );
     //}
 
-    int texturesloadedthistick = 0;
+    int texturesLoadedThisTick = 0;
 
     CPPListNode* pNextNode;
-    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode != 0; pNode = pNextNode )
+    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNextNode )
     {
         pNextNode = pNode->GetNext();
 
-        if( m_MaxTexturesToLoadInOneTick != -1 && texturesloadedthistick >= m_MaxTexturesToLoadInOneTick )
+        if( m_MaxTexturesToLoadInOneTick != -1 && texturesLoadedThisTick >= m_MaxTexturesToLoadInOneTick )
             break;
 
-        texturesloadedthistick++;
+        texturesLoadedThisTick++;
 
         TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
         //LOGInfo( LOGTag, "Loading Texture: %s\n", pTextureDef->m_Filename );
 
-        // if we have an opengl texture, then nothing to do.  this shouldn't happen, loaded textures should be in "m_LoadedTextures".
+        // If we have an opengl texture, then nothing to do.  this shouldn't happen, loaded textures should be in "m_LoadedTextures".
         MyAssert( pTextureDef->m_TextureID == 0 );
         if( pTextureDef->m_TextureID != 0 )
         {
@@ -227,27 +224,27 @@ void TextureManager::Tick()
             continue;
         }
 
-        bool textureloaded = false;
+        bool textureLoaded = false;
 
 #if 0 //MYFW_ANDROID
         //LOGInfo( LOGTag, "Loading Texture: pTextureDef->m_pFile %d\n", pTextureDef->m_pFile );
-        if( pTextureDef->m_pFile == 0 )
+        if( pTextureDef->m_pFile == nullptr )
         {
             pTextureDef->m_pFile = RequestTexture( pTextureDef->m_Filename, pTextureDef );
-            textureloaded = true;
+            textureLoaded = true;
         }
         else
         {
             LOGInfo( LOGTag, "Loading Texture: calling Android_LoadTextureFromMemory\n" );
             pTextureDef->m_TextureID = Android_LoadTextureFromMemory( pTextureDef );
-            textureloaded = true;
+            textureLoaded = true;
         }
 #else
-        // if the file load hasn't started... start the file load.
-        if( pTextureDef->m_pFile == 0 )
+        // If the file load hasn't started... start the file load.
+        if( pTextureDef->m_pFile == nullptr )
         {
-            MyAssert( pTextureDef->m_Filename[0] != 0 );
-            if( pTextureDef->m_Filename[0] != 0 )
+            MyAssert( pTextureDef->m_Filename[0] != '\0' );
+            if( pTextureDef->m_Filename[0] != '\0' )
             {
                 //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
                 pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
@@ -265,8 +262,8 @@ void TextureManager::Tick()
 
                 if( pTextureDef->m_TextureID != 0 )
                 {
-                    //LOGInfo( LOGTag, "Loading Texture: textureloaded = true\n" );
-                    textureloaded = true;
+                    //LOGInfo( LOGTag, "Loading Texture: textureLoaded = true\n" );
+                    textureLoaded = true;
                 }
             }
 
@@ -280,14 +277,11 @@ void TextureManager::Tick()
 
                 // The texture failed to load, but add it to the loaded texture list anyway.
                 m_LoadedTextures.MoveTail( pTextureDef );
-#if MYFW_USING_WX
-                g_pPanelMemory->AddTexture( pTextureDef, "Failed to load", pTextureDef->m_Filename, TextureDefinition::StaticOnRightClick, TextureDefinition::StaticOnDrag );
-#endif
             }
         }
 #endif
 
-        if( textureloaded )
+        if( textureLoaded )
         {
             //LOGInfo( LOGTag, "textureloaded %s\n", pTextureDef->m_Filename );
 
@@ -299,90 +293,81 @@ void TextureManager::Tick()
 
             pTextureDef->m_FullyLoaded = true;
 
-#if MYFW_USING_WX
-            if( pTextureDef->m_ShowInMemoryPanel )
-            {
-                g_pPanelMemory->AddTexture( pTextureDef, "Global", pTextureDef->m_Filename, TextureDefinition::StaticOnRightClick, TextureDefinition::StaticOnDrag );
-            }
-#endif
-
             //LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
         }
     }
 }
 
-TextureDefinition* TextureManager::FindTexture(const char* texturefilename)
+TextureDefinition* TextureManager::FindTexture(const char* textureFilename)
 {
-    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( TextureDefinition* pTextureDef = m_LoadedTextures.GetHead(); pTextureDef; pTextureDef = pTextureDef->GetNext() )
     {
-        if( strcmp( ((TextureDefinition*)pNode)->m_Filename, texturefilename ) == 0 )
-            return (TextureDefinition*)pNode;
+        if( strcmp( pTextureDef->m_Filename, textureFilename ) == 0 )
+            return pTextureDef;
     }
 
-    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( TextureDefinition* pTextureDef = m_TexturesStillLoading.GetHead(); pTextureDef; pTextureDef = pTextureDef->GetNext() )
     {
-        if( strcmp( ((TextureDefinition*)pNode)->m_Filename, texturefilename ) == 0 )
-            return (TextureDefinition*)pNode;
+        if( strcmp( pTextureDef->m_Filename, textureFilename ) == 0 )
+            return pTextureDef;
     }
 
-    return 0;
+    return nullptr;
 }
 
 TextureDefinition* TextureManager::FindTexture(const MyFileObject* pFile)
 {
-    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( TextureDefinition* pTextureDef = m_LoadedTextures.GetHead(); pTextureDef; pTextureDef = pTextureDef->GetNext() )
     {
-        if( ((TextureDefinition*)pNode)->m_pFile == pFile )
-            return (TextureDefinition*)pNode;
+        if( pTextureDef->m_pFile == pFile )
+            return pTextureDef;
     }
 
-    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; pNode = pNode->GetNext() )
+    for( TextureDefinition* pTextureDef = m_TexturesStillLoading.GetHead(); pTextureDef; pTextureDef = pTextureDef->GetNext() )
     {
-        if( ((TextureDefinition*)pNode)->m_pFile == pFile )
-            return (TextureDefinition*)pNode;
+        if( pTextureDef->m_pFile == pFile )
+            return pTextureDef;
     }
 
-    return 0;
+    return nullptr;
 }
 
-void TextureManager::FreeAllTextures(bool shuttingdown)
+void TextureManager::FreeAllTextures(bool shuttingDown)
 {
-    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; )
+    TextureDefinition* pNextTextureDef;
+    for( TextureDefinition* pTextureDef = m_LoadedTextures.GetHead(); pTextureDef; pTextureDef = pNextTextureDef )
     {
-        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextTextureDef = pTextureDef->GetNext();
 
         MyAssert( pTextureDef->GetRefCount() == 1 );
         pTextureDef->Release();
     }
 
-    for( CPPListNode* pNode = m_TexturesStillLoading.GetHead(); pNode; )
+    for( TextureDefinition* pTextureDef = m_TexturesStillLoading.GetHead(); pTextureDef; pTextureDef = pNextTextureDef )
     {
-        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextTextureDef = pTextureDef->GetNext();
 
         MyAssert( pTextureDef->GetRefCount() == 1 );
         pTextureDef->Release();
     }
 
-    for( CPPListNode* pNode = m_InitializedFBOs.GetHead(); pNode; )
+    FBODefinition* pNextFBODef;
+    for( FBODefinition* pFBODef = m_InitializedFBOs.GetHead(); pFBODef; pFBODef = pNextFBODef )
     {
-        FBODefinition* pFBODef = (FBODefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextFBODef = pFBODef->GetNext();
 
-        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
+        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingDown )
         {
             MyAssert( pFBODef->GetRefCount() == 1 );
             pFBODef->Release();
         }
     }
 
-    for( CPPListNode* pNode = m_UninitializedFBOs.GetHead(); pNode; )
+    for( FBODefinition* pFBODef = m_UninitializedFBOs.GetHead(); pFBODef; pFBODef = pNextFBODef )
     {
-        FBODefinition* pFBODef = (FBODefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextFBODef = pFBODef->GetNext();
 
-        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingdown )
+        if( pFBODef->m_OnlyFreeOnShutdown == false || shuttingDown )
         {
             MyAssert( pFBODef->GetRefCount() == 1 );
             pFBODef->Release();
@@ -390,26 +375,26 @@ void TextureManager::FreeAllTextures(bool shuttingdown)
     }
 }
 
-void TextureManager::InvalidateAllTextures(bool cleanglallocs)
+void TextureManager::InvalidateAllTextures(bool cleanGLAllocs)
 {
-    for( CPPListNode* pNode = m_LoadedTextures.GetHead(); pNode; )
+    TextureDefinition* pNextTextureDef;
+    for( TextureDefinition* pTextureDef = m_LoadedTextures.GetHead(); pTextureDef; pTextureDef = pNextTextureDef )
     {
-        TextureDefinition* pTextureDef = (TextureDefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextTextureDef = pTextureDef->GetNext();
         
-        pTextureDef->Invalidate( cleanglallocs );
+        pTextureDef->Invalidate( cleanGLAllocs );
 
         m_TexturesStillLoading.MoveTail( pTextureDef );
 
         pTextureDef->m_FullyLoaded = false;
     }
 
-    for( CPPListNode* pNode = m_InitializedFBOs.GetHead(); pNode; )
+    FBODefinition* pNextFBODef;
+    for( FBODefinition* pFBODef = m_InitializedFBOs.GetHead(); pFBODef; pFBODef = pNextFBODef )
     {
-        FBODefinition* pFBODef = (FBODefinition*)pNode;
-        pNode = pNode->GetNext();
+        pNextFBODef = pFBODef->GetNext();
         
-        pFBODef->Invalidate( cleanglallocs );
+        pFBODef->Invalidate( cleanGLAllocs );
 
         m_UninitializedFBOs.MoveTail( pFBODef );
     }
@@ -418,7 +403,7 @@ void TextureManager::InvalidateAllTextures(bool cleanglallocs)
 TextureDefinition* TextureManager::GetErrorTexture()
 {
     // If the error texture isn't created, create it.
-    if( m_pErrorTexture == 0 )
+    if( m_pErrorTexture == nullptr )
     {
         m_pErrorTexture = MyNew TextureDefinition();
 

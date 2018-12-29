@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -14,7 +14,7 @@ class TextureManager;
 class RefCount;
 class FBODefinition;
 
-class TextureDefinition : public CPPListNode, public RefCount
+class TextureDefinition : public TCPPListNode<TextureDefinition*>, public RefCount
 {
     friend class TextureManager;
     friend class FBODefinition;
@@ -30,7 +30,7 @@ protected:
     MyFileObject* m_pFile;
     GLuint m_TextureID;
 
-    unsigned int m_MemoryUsed;
+    uint32 m_MemoryUsed;
 
     int m_Width;
     int m_Height;
@@ -42,13 +42,13 @@ protected:
     int m_WrapT;
 
 public:
-    TextureDefinition(bool freeonceloaded = false);
+    TextureDefinition(bool freeOnceLoaded = false);
     virtual ~TextureDefinition();
 
     // Seemingly useless wrapper of release to allow Lua to call release and avoid issues with multiple inheritance.
     void Lua_Release() { Release(); }
 
-    // TextureDefinition Getters
+    // Getters.
     bool IsFullyLoaded() { return m_FullyLoaded; }
 
     const char* GetFilename() { return (const char*)m_Filename; }
@@ -60,10 +60,10 @@ public:
     int GetWidth() { return m_Width; }
     int GetHeight() { return m_Height; }
 
-    // TextureDefinition Methods
+    // Methods.
     bool QueryFreeWhenCreated() { return m_FreeFileFromRamWhenTextureCreated; }
     
-    void Invalidate(bool cleanglallocs);
+    void Invalidate(bool cleanGLAllocs);
 
     void FinishLoadingFileAndGenerateTexture();
 
@@ -79,15 +79,6 @@ public:
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
 
     void OnPopupClick(TextureDefinition* pTexture, int id);
-
-#if MYFW_USING_WX
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((TextureDefinition*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnDrag(void* pObjectPtr) { ((TextureDefinition*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 

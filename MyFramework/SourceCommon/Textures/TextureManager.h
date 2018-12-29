@@ -24,10 +24,10 @@ class TextureManager
 #endif
 
 protected:
-    CPPListHead m_LoadedTextures;
-    CPPListHead m_TexturesStillLoading;
-    CPPListHead m_InitializedFBOs;
-    CPPListHead m_UninitializedFBOs;
+    TCPPListHead<TextureDefinition*> m_LoadedTextures;
+    TCPPListHead<TextureDefinition*> m_TexturesStillLoading;
+    TCPPListHead<FBODefinition*> m_InitializedFBOs;
+    TCPPListHead<FBODefinition*> m_UninitializedFBOs;
     int m_MaxTexturesToLoadInOneTick;
 
     TextureDefinition* m_pErrorTexture;
@@ -38,19 +38,19 @@ public:
 
     void Tick();
     
-    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable, bool onlyfreeonshutdown = false);
-    FBODefinition* CreateFBO(int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable, bool onlyfreeonshutdown = false);
-    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat colorformat, int depthbits, bool depthreadable);
-    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minfilter, int magfilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthbits, bool depthreadable);
+    FBODefinition* CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
+    FBODefinition* CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
+    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable);
+    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
     void InvalidateFBO(FBODefinition* pFBO);
 
-    TextureDefinition* CreateTexture(const char* texturefilename, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
-    TextureDefinition* CreateTexture(MyFileObject* pFile, int minfilter = GL_NEAREST, int magfilter = GL_NEAREST, int wraps = GL_REPEAT, int wrapt = GL_REPEAT);
-    TextureDefinition* FindTexture(const char* texturefilename); // Does not add to the TextureDefinition ref count.
+    TextureDefinition* CreateTexture(const char* textureFilename, int minFilter = GL_NEAREST, int magFilter = GL_NEAREST, int wrapS = GL_REPEAT, int wrapT = GL_REPEAT);
+    TextureDefinition* CreateTexture(MyFileObject* pFile, int minFilter = GL_NEAREST, int magFilter = GL_NEAREST, int wrapS = GL_REPEAT, int wrapT = GL_REPEAT);
+    TextureDefinition* FindTexture(const char* textureFilename); // Does not add to the TextureDefinition ref count.
     TextureDefinition* FindTexture(const MyFileObject* pFile); // Does not add to the TextureDefinition ref count.
 
-    void FreeAllTextures(bool shuttingdown);
-    void InvalidateAllTextures(bool cleanglallocs);
+    void FreeAllTextures(bool shuttingDown);
+    void InvalidateAllTextures(bool cleanGLAllocs);
 
     void SetMaxTexturesToLoadInOneTick(int max) { m_MaxTexturesToLoadInOneTick = max; }
 

@@ -19,9 +19,9 @@ FBODefinition::FBODefinition()
     m_NumColorTextures = 0;
     for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
     {
-        m_pColorTextures[i] = 0;
+        m_pColorTextures[i] = nullptr;
     }
-    m_pDepthTexture = 0;
+    m_pDepthTexture = nullptr;
     m_FrameBufferID = 0;
 
     m_Width = 0;
@@ -81,7 +81,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
         NewTextureHeight = m_TextureHeight;
 
     bool newtextureneeded = false;
-    bool newfilteroptions = false;
+    bool newFilterOptions = false;
 
     if( m_TextureWidth != NewTextureWidth || m_TextureHeight != NewTextureHeight )
         newtextureneeded = true;
@@ -97,7 +97,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
         newtextureneeded = true;
 
     if( newtextureneeded == false && (m_MinFilter != minFilter || m_MagFilter != magFilter) )
-        newfilteroptions = true;
+        newFilterOptions = true;
 
     m_TextureWidth = NewTextureWidth;
     m_TextureHeight = NewTextureHeight;
@@ -133,8 +133,8 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
     m_DepthBits = depthBits;
     m_DepthIsTexture = depthReadable;
 
-    // If filter options changed, reset them on the texture
-    if( newfilteroptions == true )
+    // If filter options changed, reset them on the texture.
+    if( newFilterOptions == true )
     {
         for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
         {
@@ -151,7 +151,7 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
 bool FBODefinition::Create()
 {
 #if MYFW_WINDOWS
-    if( glGenFramebuffers == 0 )
+    if( glGenFramebuffers == nullptr )
     {
         return false;
     }
@@ -190,7 +190,7 @@ bool FBODefinition::Create()
 
     MyAssert( m_FrameBufferID == 0 );
 
-    // get a framebuffer, render buffer and a texture from opengl.
+    // Get a framebuffer, render buffer and a texture from opengl.
     glGenFramebuffers( 1, &m_FrameBufferID );
     m_HasValidResources = true;
     checkGlError( "glGenFramebuffers" );
@@ -200,7 +200,7 @@ bool FBODefinition::Create()
     {
         if( m_ColorFormats[i] != FBOColorFormat_None )
         {
-            MyAssert( m_pColorTextures[i] == 0 );
+            MyAssert( m_pColorTextures[i] == nullptr );
             m_pColorTextures[i] = MyNew TextureDefinition();
 
             glGenTextures( 1, &m_pColorTextures[i]->m_TextureID );
@@ -216,8 +216,8 @@ bool FBODefinition::Create()
         else
         {
             // FBO had more color textures then was later resetup with less.
-            // TODO: handle this case:
-            //   - delete old TextureDefinitions
+            // TODO: Handle this case:
+            //   - Delete old TextureDefinitions.
             MyAssert( m_pColorTextures[i] == 0 );
         }
     }
@@ -225,7 +225,7 @@ bool FBODefinition::Create()
 
     if( m_DepthBits != 0 )
     {
-        MyAssert( m_pDepthTexture == 0 );
+        MyAssert( m_pDepthTexture == nullptr );
         m_pDepthTexture = MyNew TextureDefinition();
 
         MyAssert( m_DepthBits == 16 || m_DepthBits == 24 || m_DepthBits == 32 );

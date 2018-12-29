@@ -84,7 +84,7 @@ bool CheckForALUTErrors(const char* description)
 }
 #endif
 
-#if false //MYFW_IOS
+#if 0 //MYFW_IOS
 ALvoid  alBufferDataStaticProc(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq)
 {
     static alBufferDataStaticProcPtr proc = 0;

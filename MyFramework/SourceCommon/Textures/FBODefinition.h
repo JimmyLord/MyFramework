@@ -10,7 +10,7 @@
 #ifndef __FBODefinition_H__
 #define __FBODefinition_H__
 
-class FBODefinition : public CPPListNode, public RefCount
+class FBODefinition : public TCPPListNode<FBODefinition*>, public RefCount
 {
     friend class TextureManager;
 

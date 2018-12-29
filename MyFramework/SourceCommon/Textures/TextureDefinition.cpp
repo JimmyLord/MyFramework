@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -18,15 +18,15 @@
 #include "../../Libraries/LodePNG/lodepng.h"
 #pragma warning( pop )
 
-TextureDefinition::TextureDefinition(bool freeonceloaded)
-: m_FreeFileFromRamWhenTextureCreated(freeonceloaded)
+TextureDefinition::TextureDefinition(bool freeOnceLoaded)
+: m_FreeFileFromRamWhenTextureCreated(freeOnceLoaded)
 {
     m_ManagedByTextureManager = false;
 
     m_FullyLoaded = false;
 
-    m_Filename[0] = 0;
-    m_pFile = 0;
+    m_Filename[0] = '\0';
+    m_pFile = nullptr;
     m_TextureID = 0;
 
     m_MemoryUsed = 0;
@@ -58,14 +58,6 @@ TextureDefinition::~TextureDefinition()
     }
 
     Invalidate( true );
-
-#if MYFW_USING_WX
-    if( m_ManagedByTextureManager )
-    {
-        if( g_pPanelMemory )
-            g_pPanelMemory->RemoveTexture( this );
-    }
-#endif
 }
 
 #if MYFW_EDITOR
@@ -90,44 +82,11 @@ void TextureDefinition::OnPopupClick(TextureDefinition* pTexture, int id)
         break;
     }
 }
-
-#if MYFW_USING_WX
-void TextureDefinition::OnRightClick() // StaticOnRightClick
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    MyFileObject* pFile = this->m_pFile;
-    if( pFile )
-    {
-        menu.Append( RightClick_UnloadFile, "Unload File" );
-        menu.Append( RightClick_FindAllReferences, wxString::Format( wxT("Find References (%d)"), (long long)this->GetRefCount() ) );
-    }
-
-    menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&TextureDefinition::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void TextureDefinition::OnPopupClick(wxEvent &evt)
-{
-    TextureDefinition* pTexture = (TextureDefinition*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
-    OnPopupClick( pTexture, id );
-}
-
-void TextureDefinition::OnDrag()
-{
-    g_DragAndDropStruct.Add( DragAndDropType_TextureDefinitionPointer, this );
-}
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 
-void TextureDefinition::Invalidate(bool cleanglallocs)
+void TextureDefinition::Invalidate(bool cleanGLAllocs)
 {
-    if( cleanglallocs && m_TextureID != 0 )
+    if( cleanGLAllocs && m_TextureID != 0 )
     {
         glDeleteTextures( 1, &m_TextureID );
     }
@@ -145,7 +104,7 @@ void TextureDefinition::FinishLoadingFileAndGenerateTexture()
 
     MyAssert( pFile );
     MyAssert( pFile->IsFinishedLoading() == true );
-    MyAssert( pFile->GetBuffer() != 0 );
+    MyAssert( pFile->GetBuffer() != nullptr );
 
     unsigned char* buffer = (unsigned char*)pFile->GetBuffer();
     int length = pFile->GetFileLength();
@@ -156,11 +115,11 @@ void TextureDefinition::FinishLoadingFileAndGenerateTexture()
     unsigned int error = lodepng_decode32( &pngbuffer, &width, &height, buffer, length );
     MyAssert( error == 0 );
 
-    GLuint texhandle = 0;
-    glGenTextures( 1, &texhandle );
-    MyAssert( texhandle != 0 );
+    GLuint textureHandle = 0;
+    glGenTextures( 1, &textureHandle );
+    MyAssert( textureHandle != 0 );
     glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, texhandle );
+    glBindTexture( GL_TEXTURE_2D, textureHandle );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pngbuffer );
     checkGlError( "glTexImage2D" );
@@ -177,5 +136,5 @@ void TextureDefinition::FinishLoadingFileAndGenerateTexture()
     m_Width = width;
     m_Height = height;
 
-    m_TextureID = texhandle;
+    m_TextureID = textureHandle;
 }
