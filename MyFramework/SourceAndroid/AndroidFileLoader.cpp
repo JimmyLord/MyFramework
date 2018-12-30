@@ -27,26 +27,6 @@ MyFileObject* RequestFile(const char* filename)
     return g_pFileManager->RequestFile( filename );
 }
 
-//MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef)
-//{
-//    // this function should be obsolete...
-//    LOGInfo( LOGTag, "AndroidRequestFile %s - texturedef %d\n", filename, texturedef );
-//
-//    MyFileObject* file = MyNew MyFileObject;
-//    
-//    char* pBuffer = LoadTexture( filename, &texturedef->m_Width, &texturedef->m_Height );
-//    LOGInfo( LOGTag, "RequestTexture - LoadTexture done" );
-//    int length = texturedef->m_Width*texturedef->m_Height*4;
-//    LOGInfo( LOGTag, "RequestTexture - length = %d", length );
-//    file->FakeFileLoad( pBuffer, length );
-//    LOGInfo( LOGTag, "RequestTexture - FakeFileLoad done" );
-//    
-//    texturedef->m_pFile = file;
-//    texturedef->m_TextureID = Android_LoadTextureFromMemory( texturedef );
-//    
-//    return file;
-//}
-
 char* LoadFile(const char* filepath, int* length)
 {
     LOGInfo( LOGTag, ">>>>>>>>>>>>>>>> LoadFile - Loading %s", filepath );
@@ -191,7 +171,7 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
 
     char* pBuffer;
 
-    if( 1 )
+    if( true )
     {
         pBuffer = MyNew char[width*height*4];
 
@@ -207,30 +187,6 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
 
         LOGInfo( LOGTag, "LoadTexture - copied pixels from pixelarray" );
     }
-    //else
-    //{
-    //    jint* pixels = g_pJavaEnvironment->GetIntArrayElements( pixelarray, 0 );
-
-    //    // flip pixels from abgr to argb
-    //    for( int i=0; i<width*height; i++ )
-    //    {
-    //        int pixel = pixels[i];
-    //        pixels[i] = (pixel & 0xff00ff00) | ((pixel & 0x00ff0000) >> 16 ) | ((pixel & 0x000000ff) << 16 );
-    //    }
-
-    //    LOGInfo( LOGTag, "LoadTexture - got pixels" );
-
-    //    //GLuint tex_id = Android_LoadTextureFromMemory( pixels, width, height );
-    //    pBuffer = MyNew char[width*height*4];
-    //    memcpy( pBuffer, pixels, width*height*4 );
-
-    //    LOGInfo( LOGTag, "LoadTexture - Allocated and copied pixels" );
-
-    //    g_pJavaEnvironment->ReleaseIntArrayElements( pixelarray, pixels, JNI_ABORT ); // abort won't copy data back if a copy was passed to us.
-    //    //g_pJavaEnvironment->DeleteGlobalRef( pixelarray );
-
-    //    LOGInfo( LOGTag, "LoadTexture - released pixelarray" );
-    //}
 
     // Free image
     methodid = g_pJavaEnvironment->GetMethodID( cls, "close", "(Landroid/graphics/Bitmap;)V" );
@@ -245,39 +201,3 @@ char* LoadTexture(const char* filepath, int* widthout, int* heightout)
 
     return pBuffer;
 }
-
-//GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef)
-//{
-//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory texturedef(%d)\n", texturedef );
-//    if( texturedef == 0 )
-//        return 0;
-//
-//    checkGlError( "Android_LoadTextureFromMemory" );
-//
-//    GLuint tex_id = 0;
-//
-//    glGenTextures( 1, &tex_id );
-//    checkGlError( "glGenTextures" );
-//
-//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory file(%d)", texturedef->m_pFile );
-//
-//    const char* buffer = texturedef->m_pFile->GetBuffer();
-//    int width = texturedef->m_Width;
-//    int height = texturedef->m_Height;
-//    int minfilter = texturedef->m_MinFilter;
-//    int magfilter = texturedef->m_MagFilter;
-//
-//    LOGInfo( LOGTag, "Android_LoadTextureFromMemory - tex_id %d, size: %dx%d", tex_id, width, height );
-//
-//    if( tex_id != 0 )
-//    {
-//        glBindTexture( GL_TEXTURE_2D, tex_id );
-//        checkGlError( "glBindTexture" );
-//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter ); //LINEAR );
-//        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter ); //GL_LINEAR );
-//        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
-//        checkGlError( "glTexImage2D" );
-//    }
-//
-//    return tex_id;
-//}

@@ -12,6 +12,35 @@
 #include "../Renderer_Base.h"
 #include "Renderer_OpenGL.h"
 
+//====================================================================================================
+// Enum Conversions.
+//====================================================================================================
+GLint MinFilterConversionTable[MyRE::MinFilter_NumTypes] =
+{
+    GL_NEAREST,
+    GL_LINEAR,
+    GL_NEAREST_MIPMAP_NEAREST,
+    GL_LINEAR_MIPMAP_NEAREST,
+    GL_NEAREST_MIPMAP_LINEAR,
+    GL_LINEAR_MIPMAP_LINEAR,
+};
+
+GLint MagFilterConversionTable[MyRE::MagFilter_NumTypes] =
+{
+    GL_NEAREST,
+    GL_LINEAR,
+};
+
+GLint WrapModeConversionTable[MyRE::WrapMode_NumTypes] =
+{
+    GL_CLAMP_TO_EDGE,
+    GL_REPEAT,
+    GL_MIRRORED_REPEAT,
+};
+
+//====================================================================================================
+// Renderer_OpenGL.
+//====================================================================================================
 Renderer_OpenGL::Renderer_OpenGL()
 {
 }
@@ -201,4 +230,37 @@ void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyR
     {
         g_GLStats.m_NumDrawCallsThisFrameSoFar++;
     }
+}
+
+//====================================================================================================
+// Textures/FBOs.
+//====================================================================================================
+void Renderer_OpenGL::SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag)
+{
+    MyAssert( texture != 0 );
+    MyAssert( min < MyRE::MinFilter_NumTypes );
+    MyAssert( mag < MyRE::MagFilter_NumTypes );
+
+    // Note: This does not preserve the current texture bindings.
+    glBindTexture( GL_TEXTURE_2D, texture );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, MinFilterConversionTable[min] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, MagFilterConversionTable[mag] );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    checkGlError( "SetTextureMinMagFilters" );
+}
+
+void Renderer_OpenGL::SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT)
+{
+    MyAssert( texture != 0 );
+    MyAssert( wrapModeS < MyRE::WrapMode_NumTypes );
+    MyAssert( wrapModeT < MyRE::WrapMode_NumTypes );
+
+    // Note: This does not preserve the current texture bindings.
+    glBindTexture( GL_TEXTURE_2D, texture );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, WrapModeConversionTable[wrapModeS] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, WrapModeConversionTable[wrapModeT] );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    checkGlError( "SetTextureWrapMode" );
 }

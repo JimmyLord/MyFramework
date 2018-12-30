@@ -77,8 +77,9 @@ char* LoadFile(const char* filename, int* length)
 //                                    //| SOIL_FLAG_TEXTURE_RECTANGLE
 //                                  );
 //
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter ); //LINEAR );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter ); //GL_LINEAR );
+//    g_pRenderer->SetTextureMinMagFilters( ..., m_MinFilter, m_MagFilter );
+//    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter ); //LINEAR );
+//    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter ); //GL_LINEAR );
 //
 //    return tex_ID;
 //}

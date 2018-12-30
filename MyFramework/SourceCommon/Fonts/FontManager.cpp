@@ -95,7 +95,7 @@ void FontManager::Tick()
                 tempname[i] = 0;
             }
             strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
-            pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+            pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, MyRE::MinFilter_Linear, MyRE::MagFilter_Linear, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
 #if MYFW_EDITOR
             if( pFontDef->m_pFile->MemoryPanel_IsVisible() == false )
             {

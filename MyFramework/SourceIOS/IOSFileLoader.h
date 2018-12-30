@@ -7,17 +7,9 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __TEXTURELOADER_H__
-#define __TEXTURELOADER_H__
-
-class TextureDefinition;
+#ifndef __IOSFILELOADER_H__
+#define __IOSFILELOADER_H__
 
 FILE* IOS_fopen(const char* filepathnameext);
 
-//MyFileObject* RequestFile(const char* filepathnameext);
-//
-//char* LoadFile(const char* filename, int* length = 0);
-//GLuint LoadTexture(const char* filename);
-//GLuint LoadTextureFromMemory(TextureDefinition* texturedef);
-
-#endif //__TEXTURELOADER_H__
+#endif //__IOSFILELOADER_H__

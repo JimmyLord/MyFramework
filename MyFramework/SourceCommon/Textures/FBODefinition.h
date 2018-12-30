@@ -45,8 +45,8 @@ protected:
     unsigned int m_TextureWidth; // generally will be power of 2 bigger than requested width/height
     unsigned int m_TextureHeight;
 
-    int m_MinFilter;
-    int m_MagFilter;
+    MyRE::MinFilters m_MinFilter;
+    MyRE::MagFilters m_MagFilter;
 
     FBOColorFormat m_ColorFormats[MAX_COLOR_TEXTURES];
     int m_DepthBits;
@@ -59,8 +59,8 @@ protected: // Limiting access of setup, creation and destruction to TextureManag
     virtual ~FBODefinition();
 
     // Returns true if new textures need to be created.
-    bool Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable);
-    bool Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
+    bool Setup(unsigned int width, unsigned int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable);
+    bool Setup(unsigned int width, unsigned int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
 
     bool Create();
 

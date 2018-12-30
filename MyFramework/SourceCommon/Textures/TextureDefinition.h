@@ -35,11 +35,11 @@ protected:
     int m_Width;
     int m_Height;
 
-    int m_MinFilter;
-    int m_MagFilter;
+    MyRE::MinFilters m_MinFilter;
+    MyRE::MagFilters m_MagFilter;
 
-    int m_WrapS;
-    int m_WrapT;
+    MyRE::WrapModes m_WrapS;
+    MyRE::WrapModes m_WrapT;
 
 public:
     TextureDefinition(bool freeOnceLoaded = false);

@@ -62,7 +62,7 @@ SpriteSheet::~SpriteSheet()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials)
+void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
     MyAssert( m_pMaterial == 0 );
     MyAssert( m_pSprites == 0 );
@@ -70,10 +70,10 @@ void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, int minfilt
 
     MyFileObject* pFile = RequestFile( fullpath );
 
-    Create( pFile, pShader, minfilter, magfilter, createsprites, creatematerials );
+    Create( pFile, pShader, minFilter, magFilter, createSprites, createMaterials );
 }
 
-void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilter, int magfilter, bool createsprites, bool creatematerials)
+void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
     MyAssert( m_pMaterial == 0 );
     MyAssert( m_pSprites == 0 );
@@ -110,7 +110,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
 
     m_pJSONFile = pJSONFile;
 
-    TextureDefinition* pTextureDef = g_pTextureManager->CreateTexture( pTextureFile, minfilter, magfilter );
+    TextureDefinition* pTextureDef = g_pTextureManager->CreateTexture( pTextureFile, minFilter, magFilter );
     m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_pMaterial->SetTextureColor( pTextureDef );
     m_pMaterial->SetShader( pShader );
@@ -121,8 +121,8 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, int minfilte
     pTextureDef->Release();
     pTextureFile->Release();
 
-    m_CreateSprites = createsprites;
-    m_CreateMaterials = creatematerials;
+    m_CreateSprites = createSprites;
+    m_CreateMaterials = createMaterials;
 
     pFile->Release();
 

@@ -1169,7 +1169,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="SourceAndroid\TextureLoader.cpp">
+    <ClCompile Include="SourceAndroid\AndroidFileLoader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">true</ExcludedFromBuild>
@@ -1778,7 +1778,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="SourceIOS\TextureLoader.cpp">
+    <ClCompile Include="SourceIOS\IOSFileLoader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">true</ExcludedFromBuild>
@@ -2435,7 +2435,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="SourceAndroid\TextureLoader.h">
+    <ClInclude Include="SourceAndroid\AndroidFileLoader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Win32'">true</ExcludedFromBuild>
@@ -3136,7 +3136,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="SourceIOS\TextureLoader.h">
+    <ClInclude Include="SourceIOS\IOSFileLoader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VROculusDebug|Android'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|Android'">true</ExcludedFromBuild>

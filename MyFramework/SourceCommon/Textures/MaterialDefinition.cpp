@@ -667,10 +667,10 @@ void MaterialDefinition::SetTextureColor(TextureDefinition* pTexture)
     m_pTextureColor = pTexture;
 }
 
-void MaterialDefinition::SetBlendType(MyRE::MaterialBlendType transparenttype)
+void MaterialDefinition::SetBlendType(MyRE::MaterialBlendTypes blendType)
 {
     m_UnsavedChanges = true;
-    m_BlendType = transparenttype;
+    m_BlendType = blendType;
 }
 
 void MaterialDefinition::SetColorAmbient(ColorByte color)

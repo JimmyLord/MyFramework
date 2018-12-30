@@ -62,7 +62,7 @@ protected:
     ShaderGroup* m_pShaderGroupInstanced;
     TextureDefinition* m_pTextureColor;
 
-    MyRE::MaterialBlendType m_BlendType;
+    MyRE::MaterialBlendTypes m_BlendType;
 
     void SetFile(MyFileObject* pFile);
 
@@ -116,7 +116,7 @@ public:
     ShaderGroup* GetShader() const { return m_pShaderGroup; }
     ShaderGroup* GetShaderInstanced() const { return m_pShaderGroupInstanced; }    
     TextureDefinition* GetTextureColor() const { return m_pTextureColor; }
-    MyRE::MaterialBlendType GetBlendType() { return m_BlendType; }
+    MyRE::MaterialBlendTypes GetBlendType() { return m_BlendType; }
 
     ColorByte GetColorAmbient() { return m_ColorAmbient; }
     ColorByte GetColorDiffuse() { return m_ColorDiffuse; }
@@ -128,7 +128,7 @@ public:
     void SetShader(ShaderGroup* pShader);
     void SetShaderInstanced(ShaderGroup* pShader);
     void SetTextureColor(TextureDefinition* pTexture);
-    void SetBlendType(MyRE::MaterialBlendType transparenttype);
+    void SetBlendType(MyRE::MaterialBlendTypes blendType);
 
     void SetColorAmbient(ColorByte color);
     void SetColorDiffuse(ColorByte color);

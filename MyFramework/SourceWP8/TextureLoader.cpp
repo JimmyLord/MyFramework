@@ -142,8 +142,9 @@ char* LoadFile(const char* filename, int* length)
 //
 //    // TODO: make these lines do something.
 //    glBindTexture( GL_TEXTURE_2D, textureid );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter );
+//    g_pRenderer->SetTextureMinMagFilters( ..., m_MinFilter, m_MagFilter );
+//    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texturedef->m_MinFilter );
+//    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texturedef->m_MagFilter );
 //
 //    return textureid+1;
 //}

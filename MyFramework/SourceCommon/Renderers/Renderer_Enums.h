@@ -34,7 +34,7 @@ namespace MyRE // MyRendererEnums
         IndexType_Undefined,
     };
 
-    enum MaterialBlendType
+    enum MaterialBlendTypes
     {
         MaterialBlendType_UseShaderValue,
         MaterialBlendType_Off,
@@ -49,6 +49,32 @@ namespace MyRE // MyRendererEnums
         MaterialBlendFactor_SrcAlpha,
         MaterialBlendFactor_OneMinusSrcAlpha,
         MaterialBlendFactor_NumTypes,
+    };
+
+    enum MinFilters
+    {
+        MinFilter_Nearest,
+        MinFilter_Linear,
+        MinFilter_Nearest_MipmapNearest,
+        MinFilter_Linear_MipmapNearest,
+        MinFilter_Nearest_MipmapLinear,
+        MinFilter_Linear_MipmapLinear,
+        MinFilter_NumTypes,
+    };
+
+    enum MagFilters
+    {
+        MagFilter_Nearest,
+        MagFilter_Linear,
+        MagFilter_NumTypes,
+    };
+
+    enum WrapModes
+    {
+        WrapMode_Clamp,
+        WrapMode_Repeat,
+        WrapMode_MirroredRepeat,
+        WrapMode_NumTypes,
     };
 
     extern const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes];

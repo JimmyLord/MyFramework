@@ -27,7 +27,7 @@ TextureManager::~TextureManager()
     FreeAllTextures( true );
 }
 
-TextureDefinition* TextureManager::CreateTexture(const char* textureFilename, int minFilter, int magFilter, int wrapS, int wrapT)
+TextureDefinition* TextureManager::CreateTexture(const char* textureFilename, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, MyRE::WrapModes wrapS, MyRE::WrapModes wrapT)
 {
     MyAssert( textureFilename );
     //LOGInfo( LOGTag, "CreateTexture - %s\n", textureFilename );
@@ -46,7 +46,7 @@ TextureDefinition* TextureManager::CreateTexture(const char* textureFilename, in
     return pTextureDef;
 }
 
-TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minFilter, int magFilter, int wrapS, int wrapT)
+TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, MyRE::WrapModes wrapS, MyRE::WrapModes wrapT)
 {
     MyAssert( pFile );
     //LOGInfo( LOGTag, "CreateTexture - %s\n", pFile->GetFullPath() );
@@ -83,7 +83,7 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, int minFil
     return pTextureDef;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
+FBODefinition* TextureManager::CreateFBO(int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
@@ -99,7 +99,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, i
     return pFBO;
 }
 
-FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
+FBODefinition* TextureManager::CreateFBO(int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown)
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
@@ -116,7 +116,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, int minFilter, i
 }
 
 // return true if new texture was needed.
-bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable)
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
@@ -135,7 +135,7 @@ bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int 
 }
 
 // return true if new texture was needed.
-bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
+bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );
     if( width <= 0 || height <= 0 )
@@ -408,10 +408,10 @@ TextureDefinition* TextureManager::GetErrorTexture()
         m_pErrorTexture = MyNew TextureDefinition();
 
         m_pErrorTexture->m_ManagedByTextureManager = true;
-        m_pErrorTexture->m_MinFilter = GL_NEAREST;
-        m_pErrorTexture->m_MagFilter = GL_NEAREST;
-        m_pErrorTexture->m_WrapS = GL_REPEAT;
-        m_pErrorTexture->m_WrapT = GL_REPEAT;
+        m_pErrorTexture->m_MinFilter = MyRE::MinFilter_Nearest;
+        m_pErrorTexture->m_MagFilter = MyRE::MagFilter_Nearest;
+        m_pErrorTexture->m_WrapS = MyRE::WrapMode_Repeat;
+        m_pErrorTexture->m_WrapT = MyRE::WrapMode_Repeat;
 
         unsigned int width = 64;
         unsigned int height = 64;
@@ -438,25 +438,25 @@ TextureDefinition* TextureManager::GetErrorTexture()
             }
         }
 
-        GLuint texhandle = 0;
-        glGenTextures( 1, &texhandle );
-        MyAssert( texhandle != 0 );
+        GLuint textureHandle = 0;
+        glGenTextures( 1, &textureHandle );
+        MyAssert( textureHandle != 0 );
         glActiveTexture( GL_TEXTURE0 );
-        glBindTexture( GL_TEXTURE_2D, texhandle );
+        glBindTexture( GL_TEXTURE_2D, textureHandle );
 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelbuffer );
         checkGlError( "glTexImage2D" );
+        glBindTexture( GL_TEXTURE_2D, 0 );
+
         delete[] pixelbuffer;
 
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+        g_pRenderer->SetTextureMinMagFilters( textureHandle, MyRE::MinFilter_Nearest, MyRE::MagFilter_Nearest );
+        g_pRenderer->SetTextureWrapModes( textureHandle, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
 
         m_pErrorTexture->m_Width = width;
         m_pErrorTexture->m_Height = height;
 
-        m_pErrorTexture->m_TextureID = texhandle;
+        m_pErrorTexture->m_TextureID = textureHandle;
 
         m_LoadedTextures.AddTail( m_pErrorTexture );
     }

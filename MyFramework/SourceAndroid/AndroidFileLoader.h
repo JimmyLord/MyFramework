@@ -7,18 +7,15 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __TEXTURELOADER_H__
-#define __TEXTURELOADER_H__
+#ifndef __ANDROIDFILELOADER_H__
+#define __ANDROIDFILELOADER_H__
 
 class TextureDefinition;
 class MyFileObject;
 
 MyFileObject* RequestFile(const char* filename);
-//MyFileObject* RequestTexture(const char* filename, TextureDefinition* texturedef);
 
 char* LoadFile(const char* filepath, int* length = 0);
 char* LoadTexture(const char* filepath, int* width, int* height);
-//GLuint Android_LoadTextureFromMemory(TextureDefinition* texturedef);
 
-#endif //__TEXTURELOADER_H__
-
+#endif //__ANDROIDFILELOADER_H__

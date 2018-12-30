@@ -135,9 +135,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SourceAndroid\TextureLoader.cpp">
-      <Filter>Source-Platform\Source - Android</Filter>
-    </ClCompile>
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp">
       <Filter>Source\Helpers</Filter>
     </ClCompile>
@@ -212,9 +209,6 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Sound\WaveLoader.cpp">
       <Filter>Source\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceIOS\TextureLoader.cpp">
-      <Filter>Source-Platform\Source - IOS</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Sprites\MySprite.cpp">
       <Filter>Source\Sprites</Filter>
@@ -537,13 +531,16 @@
     <ClCompile Include="SourceCommon\Renderers\Renderer_Enums.cpp">
       <Filter>Source\Renderers</Filter>
     </ClCompile>
+    <ClCompile Include="SourceIOS\IOSFileLoader.cpp">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceAndroid\AndroidFileLoader.cpp">
+      <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
       <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceAndroid\TextureLoader.h">
-      <Filter>Source-Platform\Source - Android</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h">
       <Filter>Source\Helpers</Filter>
@@ -633,9 +630,6 @@
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClInclude>
     <ClInclude Include="SourceIOS\SavedData.h">
-      <Filter>Source-Platform\Source - IOS</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceIOS\TextureLoader.h">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Sprites\MySprite.h">
@@ -1006,6 +1000,12 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\Renderer_Enums.h">
       <Filter>Source\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceIOS\IOSFileLoader.h">
+      <Filter>Source-Platform\Source - IOS</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceAndroid\AndroidFileLoader.h">
+      <Filter>Source-Platform\Source - Android</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

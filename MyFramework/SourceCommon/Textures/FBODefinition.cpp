@@ -30,8 +30,8 @@ FBODefinition::FBODefinition()
     m_TextureWidth = 0;
     m_TextureHeight = 0;
 
-    m_MinFilter = GL_LINEAR;
-    m_MagFilter = GL_LINEAR;
+    m_MinFilter = MyRE::MinFilter_Linear;
+    m_MagFilter = MyRE::MagFilter_Linear;
 
     for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
         m_ColorFormats[i] = FBOColorFormat_None;
@@ -49,12 +49,12 @@ FBODefinition::~FBODefinition()
 }
 
 // Returns true if a new textures need to be created.
-bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable)
+bool FBODefinition::Setup(unsigned int width, unsigned int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBOColorFormat colorFormat, int depthBits, bool depthReadable)
 {
     return Setup( width, height, minFilter, magFilter, &colorFormat, 1, depthBits, depthReadable );
 }
 
-bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter, int magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
+bool FBODefinition::Setup(unsigned int width, unsigned int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
 {
     MyAssert( numColorFormats < MAX_COLOR_TEXTURES );
     MyAssert( width <= 4096 );
@@ -80,23 +80,23 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
     if( NewTextureHeight < m_TextureHeight )
         NewTextureHeight = m_TextureHeight;
 
-    bool newtextureneeded = false;
+    bool newTextureNeeded = false;
     bool newFilterOptions = false;
 
     if( m_TextureWidth != NewTextureWidth || m_TextureHeight != NewTextureHeight )
-        newtextureneeded = true;
+        newTextureNeeded = true;
 
     m_NumColorTextures = numColorFormats;
     for( int i=0; i<numColorFormats; i++ )
     {
         if( m_ColorFormats[i] != colorFormats[i] )
-            newtextureneeded = true;
+            newTextureNeeded = true;
     }
     
     if( m_DepthBits != depthBits || m_DepthIsTexture != depthReadable )
-        newtextureneeded = true;
+        newTextureNeeded = true;
 
-    if( newtextureneeded == false && (m_MinFilter != minFilter || m_MagFilter != magFilter) )
+    if( newTextureNeeded == false && (m_MinFilter != minFilter || m_MagFilter != magFilter) )
         newFilterOptions = true;
 
     m_TextureWidth = NewTextureWidth;
@@ -138,14 +138,11 @@ bool FBODefinition::Setup(unsigned int width, unsigned int height, int minFilter
     {
         for( int i=0; i<MAX_COLOR_TEXTURES; i++ )
         {
-            glBindTexture( GL_TEXTURE_2D, m_pColorTextures[i]->m_TextureID );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
-            glBindTexture( GL_TEXTURE_2D, 0 );
+            g_pRenderer->SetTextureMinMagFilters( m_pColorTextures[i]->m_TextureID, m_MinFilter, m_MagFilter );
         }
     }
 
-    return newtextureneeded;
+    return newTextureNeeded;
 }
 
 bool FBODefinition::Create()
@@ -208,8 +205,8 @@ bool FBODefinition::Create()
 
             m_pColorTextures[i]->m_MinFilter = m_MinFilter;
             m_pColorTextures[i]->m_MagFilter = m_MagFilter;
-            m_pColorTextures[i]->m_WrapS = GL_CLAMP_TO_EDGE;
-            m_pColorTextures[i]->m_WrapT = GL_CLAMP_TO_EDGE;
+            m_pColorTextures[i]->m_WrapS = MyRE::WrapMode_Clamp;
+            m_pColorTextures[i]->m_WrapT = MyRE::WrapMode_Clamp;
             m_pColorTextures[i]->m_Width = m_Width;
             m_pColorTextures[i]->m_Height = m_Height;
         }
@@ -288,11 +285,9 @@ bool FBODefinition::Create()
 
             glBindTexture( GL_TEXTURE_2D, m_pColorTextures[i]->m_TextureID );
             glTexImage2D( GL_TEXTURE_2D, 0, internalformat, m_TextureWidth, m_TextureHeight, 0, format, type, 0 );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MinFilter );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MagFilter );
             glBindTexture( GL_TEXTURE_2D, 0 );
+            g_pRenderer->SetTextureMinMagFilters( m_pColorTextures[i]->m_TextureID, m_MinFilter, m_MagFilter );
+            g_pRenderer->SetTextureWrapModes( m_pColorTextures[i]->m_TextureID, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
             checkGlError( "glBindTexture" );
         }
     }
@@ -313,18 +308,15 @@ bool FBODefinition::Create()
         if( m_DepthIsTexture )
         {
             glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->m_TextureID );
-            checkGlError( "glBindTexture" );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-            checkGlError( "glTexParameteri" );
             glTexImage2D( GL_TEXTURE_2D, 0, depthformat, m_TextureWidth, m_TextureHeight, 0,
                           GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0 );
                           //GL_DEPTH_COMPONENT, GL_FLOAT, 0 );
             checkGlError( "glTexImage2D" );
             glBindTexture( GL_TEXTURE_2D, 0 );
             checkGlError( "glBindTexture" );
+
+            g_pRenderer->SetTextureMinMagFilters( m_pDepthTexture->m_TextureID, MyRE::MinFilter_Nearest, MyRE::MagFilter_Nearest );
+            g_pRenderer->SetTextureWrapModes( m_pDepthTexture->m_TextureID, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
         }
         else
         {

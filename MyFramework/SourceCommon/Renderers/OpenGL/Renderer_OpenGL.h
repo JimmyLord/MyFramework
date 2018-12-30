@@ -39,6 +39,10 @@ public:
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;
+
+    // Textures/FBOs.
+    virtual void SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag) override;
+    virtual void SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT) override;
 };
 
 #endif //__Renderer_OpenGL_H__

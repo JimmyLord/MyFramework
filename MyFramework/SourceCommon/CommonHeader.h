@@ -352,7 +352,7 @@ using namespace Osp::Graphics::Opengl;
 #include <EGL/egl.h>
 #include "../SourceAndroid/GLExtensions.h"
 #include "../SourceAndroid/IAPManagerAndroid.h"
-#include "../SourceAndroid/TextureLoader.h"
+#include "../SourceAndroid/AndroidFileLoader.h"
 #if 0
 #include "../SourceAndroid/SoundPlayer.h"
 #else
@@ -399,7 +399,7 @@ typedef unsigned long   u_long;
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include "../SourceIOS/IAPManagerIOS.h"
-#include "../SourceIOS/TextureLoader.h"
+#include "../SourceIOS/IOSFileLoader.h"
 #include "Sound/SoundPlayerOpenAL.h"
 #include "../SourceIOS/SavedData.h"
 #include "Networking/WebRequest.h"
@@ -424,7 +424,7 @@ typedef unsigned long   u_long;
 #include <OpenGL/gl.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include "../SourceIOS/TextureLoader.h"
+#include "../SourceIOS/IOSFileLoader.h"
 //#include "../SourceWindows/TextureLoader.h"
 #include "Sound/SoundPlayerOpenAL.h"
 #include "../SourceIOS/SavedData.h"

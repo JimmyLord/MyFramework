@@ -38,14 +38,14 @@ public:
 
     void Tick();
     
-    FBODefinition* CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
-    FBODefinition* CreateFBO(int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
-    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable);
-    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, int minFilter, int magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
+    FBODefinition* CreateFBO(int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
+    FBODefinition* CreateFBO(int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat* colorformats, int numcolorformats, int depthBits, bool depthReadable, bool onlyFreeOnShutdown = false);
+    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable);
+    bool ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable);
     void InvalidateFBO(FBODefinition* pFBO);
 
-    TextureDefinition* CreateTexture(const char* textureFilename, int minFilter = GL_NEAREST, int magFilter = GL_NEAREST, int wrapS = GL_REPEAT, int wrapT = GL_REPEAT);
-    TextureDefinition* CreateTexture(MyFileObject* pFile, int minFilter = GL_NEAREST, int magFilter = GL_NEAREST, int wrapS = GL_REPEAT, int wrapT = GL_REPEAT);
+    TextureDefinition* CreateTexture(const char* textureFilename, MyRE::MinFilters minFilter = MyRE::MinFilter_Nearest, MyRE::MagFilters magFilter = MyRE::MagFilter_Nearest, MyRE::WrapModes wrapS = MyRE::WrapMode_Repeat, MyRE::WrapModes wrapT = MyRE::WrapMode_Repeat);
+    TextureDefinition* CreateTexture(MyFileObject* pFile, MyRE::MinFilters minFilter = MyRE::MinFilter_Nearest, MyRE::MagFilters magFilter = MyRE::MagFilter_Nearest, MyRE::WrapModes wrapS = MyRE::WrapMode_Repeat, MyRE::WrapModes wrapT = MyRE::WrapMode_Repeat);
     TextureDefinition* FindTexture(const char* textureFilename); // Does not add to the TextureDefinition ref count.
     TextureDefinition* FindTexture(const MyFileObject* pFile); // Does not add to the TextureDefinition ref count.
 

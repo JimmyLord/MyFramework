@@ -23,7 +23,7 @@ public:
 
     ShaderPassTypes m_PassType;
 
-    MyRE::MaterialBlendType m_BlendType;
+    MyRE::MaterialBlendTypes m_BlendType;
     MyRE::MaterialBlendFactors m_BlendFactorSrc;
     MyRE::MaterialBlendFactors m_BlendFactorDest;
 

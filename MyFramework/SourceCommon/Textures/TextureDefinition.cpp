@@ -34,11 +34,11 @@ TextureDefinition::TextureDefinition(bool freeOnceLoaded)
     m_Width = 0;
     m_Height = 0;
 
-    m_MinFilter = GL_LINEAR;
-    m_MagFilter = GL_LINEAR;
+    m_MinFilter = MyRE::MinFilter_Linear;
+    m_MagFilter = MyRE::MagFilter_Linear;
 
-    m_WrapS = GL_CLAMP_TO_EDGE;
-    m_WrapT = GL_CLAMP_TO_EDGE;
+    m_WrapS = MyRE::WrapMode_Clamp;
+    m_WrapT = MyRE::WrapMode_Clamp;
 
 #if MYFW_EDITOR
     m_ShowInMemoryPanel = true;
@@ -125,13 +125,8 @@ void TextureDefinition::FinishLoadingFileAndGenerateTexture()
     checkGlError( "glTexImage2D" );
     free( pngbuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_MinFilter ); //LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_MagFilter ); //GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_WrapS );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_WrapT );
+    g_pRenderer->SetTextureMinMagFilters( textureHandle, m_MinFilter, m_MagFilter );
+    g_pRenderer->SetTextureWrapModes( textureHandle, m_WrapS, m_WrapT );
 
     m_Width = width;
     m_Height = height;
