@@ -9,6 +9,11 @@
 
 #include "CommonHeader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 GLenum MaterialBlendFactors_OpenGL[MyRE::MaterialBlendFactor_NumTypes] = 
 {
     GL_ONE,                       // MaterialBlendFactor_One,

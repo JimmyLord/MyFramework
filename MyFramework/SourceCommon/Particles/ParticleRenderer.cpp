@@ -12,6 +12,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "ParticleRenderer.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 #define USE_INDEXED_TRIANGLES   1
 
 ParticleRenderer::ParticleRenderer(bool creatematerial)

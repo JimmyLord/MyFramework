@@ -12,6 +12,11 @@
 #include "SceneGraph_Base.h"
 #include "SceneGraph_Flat.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 SceneGraph_Flat::SceneGraph_Flat()
 {
     m_NumRenderables = 0;

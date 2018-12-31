@@ -12,6 +12,11 @@
 #include "BufferManager.h"
 #include "../Helpers/FileManager.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 BufferManager* g_pBufferManager = nullptr;
 
 BufferDefinition::BufferDefinition()

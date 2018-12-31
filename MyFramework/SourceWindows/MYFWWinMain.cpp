@@ -11,6 +11,10 @@
 #include "Screenshot.h"
 #include "MYFWWinMain.h"
 
+// TODO: Fix GL Includes.
+#include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/WGLExtensions.h"
+
 // Initialize opengl window on windows, huge chunks taken from nehe
 //    http://nehe.gamedev.net/tutorial/creating_an_opengl_window_%28win32%29/13001/
 

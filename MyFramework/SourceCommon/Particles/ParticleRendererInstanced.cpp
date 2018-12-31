@@ -13,6 +13,11 @@
 
 #include "ParticleRendererInstanced.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
 {

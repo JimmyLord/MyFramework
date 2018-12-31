@@ -12,6 +12,11 @@
 #include "SceneGraph_Base.h"
 #include "SceneGraph_Octree.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 OctreeNode::OctreeNode()
 {
     m_pSceneGraph = nullptr;

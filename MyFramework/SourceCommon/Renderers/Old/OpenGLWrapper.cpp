@@ -10,6 +10,11 @@
 #include "CommonHeader.h"
 #include "../Renderer_Enums.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../../Shaders/GLHelpers.h"
+
 GLStats g_GLStats;
 
 //static GLuint g_CurrentGLBuffers[2] = { 0, 0 };

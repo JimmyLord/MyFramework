@@ -11,6 +11,11 @@
 #include "ShaderManager.h"
 #include "VertexFormats.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 Shader_Base::Shader_Base()
 {
     Init_Shader_Base();

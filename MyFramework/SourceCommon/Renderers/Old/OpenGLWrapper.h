@@ -12,6 +12,24 @@
 
 #include "../Renderer_Enums.h"
 
+// TODO: Fix GL Includes.
+// Temp redefine of base GL types until all GL code is in Renderers/OpenGL
+typedef unsigned int GLenum;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef signed char GLbyte;
+typedef short GLshort;
+typedef int GLint;
+typedef int GLsizei;
+typedef unsigned char GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int GLuint;
+typedef float GLfloat;
+typedef float GLclampf;
+typedef double GLdouble;
+typedef double GLclampd;
+typedef void GLvoid;
+
 class GLStats
 {
 public:

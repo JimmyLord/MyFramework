@@ -12,9 +12,37 @@
 #include "../Renderer_Base.h"
 #include "Renderer_OpenGL.h"
 
+#include <gl/GL.h>
+#include <gl/GLU.h>
+
+#if MYFW_WINDOWS
+#include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/WGLExtensions.h"
+#endif //MYFW_WINDOWS
+
+#include "Shaders/GLHelpers.h"
+
 //====================================================================================================
 // Enum Conversions.
 //====================================================================================================
+GLint PrimitiveTypeConversionTable[MyRE::PrimitiveType_Undefined] =
+{
+    GL_POINTS,
+    GL_LINES,
+    GL_LINE_LOOP,
+    GL_LINE_STRIP,
+    GL_TRIANGLES,
+    GL_TRIANGLE_STRIP,
+    GL_TRIANGLE_FAN,
+};
+
+GLint IndexTypeConversionTable[MyRE::IndexType_Undefined] =
+{
+    GL_UNSIGNED_BYTE,
+    GL_UNSIGNED_SHORT,
+    GL_UNSIGNED_INT,
+};
+
 GLint MinFilterConversionTable[MyRE::MinFilter_NumTypes] =
 {
     GL_NEAREST,
@@ -200,12 +228,14 @@ bool ShouldDraw(bool hideFromDrawList)
 
 void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList)
 {
+    MyAssert( mode < MyRE::PrimitiveType_Undefined );
+
     bool draw = ShouldDraw( hideFromDrawList );
 
     if( draw )
     {
         checkGlError( "glDrawArrays Before" );
-        glDrawArrays( mode, first, count );
+        glDrawArrays( PrimitiveTypeConversionTable[mode], first, count );
         checkGlError( "glDrawArrays After" );
     }
 
@@ -217,12 +247,14 @@ void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei
 
 void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList)
 {
+    MyAssert( mode < MyRE::PrimitiveType_Undefined );
+
     bool draw = ShouldDraw( hideFromDrawList );
     
     if( draw )
     {
         checkGlError( "glDrawElements Before" );
-        glDrawElements( mode, count, IBOType, indices );
+        glDrawElements( PrimitiveTypeConversionTable[mode], count, IBOType, indices );
         checkGlError( "glDrawElements After" );
     }
 

@@ -11,6 +11,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "SpriteBatch_XYZVertexColor.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 SpriteBatch_XYZVertexColor::SpriteBatch_XYZVertexColor()
 {
 }

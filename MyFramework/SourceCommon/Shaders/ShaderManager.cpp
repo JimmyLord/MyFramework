@@ -9,6 +9,11 @@
 
 #include "CommonHeader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 ShaderManager* g_pShaderManager = nullptr;
 
 const char* g_pBrokenShaderString =

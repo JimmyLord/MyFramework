@@ -14,7 +14,6 @@ namespace MyRE // MyRendererEnums
 {
     enum PrimitiveTypes
     {
-        // These values match OpenGL primitive types (GL_POINTS, GL_LINES, etc). TODO: don't rely on them lining up.
         PrimitiveType_Points,
         PrimitiveType_Lines,
         PrimitiveType_LineLoop,
@@ -27,10 +26,9 @@ namespace MyRE // MyRendererEnums
 
     enum IndexTypes
     {
-        // These values match OpenGL types. TODO: don't rely on them matching.
-        IndexType_U8 = GL_UNSIGNED_BYTE,
-        IndexType_U16 = GL_UNSIGNED_SHORT,
-        IndexType_U32 = GL_UNSIGNED_INT,
+        IndexType_U8,
+        IndexType_U16,
+        IndexType_U32,
         IndexType_Undefined,
     };
 

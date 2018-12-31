@@ -11,6 +11,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "SpriteBatch.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 SpriteBatch::SpriteBatch()
 {
     m_pMaterial = 0;//g_pMaterialManager->CreateMaterial();

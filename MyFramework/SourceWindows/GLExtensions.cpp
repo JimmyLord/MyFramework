@@ -9,6 +9,9 @@
 
 #include "CommonHeader.h"
 
+// TODO: Fix GL Includes.
+#include "GLExtensions.h"
+
 #pragma warning( push )
 #pragma warning( disable : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
 

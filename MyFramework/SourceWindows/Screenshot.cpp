@@ -15,6 +15,10 @@
 
 #pragma warning( disable : 4996 )
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../SourceCommon/Shaders/GLHelpers.h"
+
 // taken from: http://dave.thehorners.com/content/view/124/67 and massaged.
 // but really simple otherwise.
 void SaveScreenshot(int windowWidth, int windowHeight, char* filename)

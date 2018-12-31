@@ -11,6 +11,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "MySprite.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 // These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
 //   for code to use them, you'd need to fill your vertex buffer in this order.
 // 0--1

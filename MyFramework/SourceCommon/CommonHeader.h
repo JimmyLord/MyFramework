@@ -214,11 +214,6 @@
 #include <WinSock.h>
 #include <ShellAPI.h>
 typedef unsigned char byte;
-#include <gl/GL.h>
-#include <gl/GLU.h>
-//#define GLEW_STATIC
-//#include "GL/glew.h"
-//#include "GL/glfw.h"
 #endif
 
 #if !MYFW_WINDOWS && !MYFW_WP8
@@ -450,8 +445,6 @@ typedef unsigned long   u_long;
 #if MYFW_WINDOWS
 #define USE_LOADWAVESFROMFILESYSTEM 1 // set to 0 for SDL, 1 for XAudio
 #define USE_OPENAL 0
-#include "../SourceWindows/GLExtensions.h"
-#include "../SourceWindows/WGLExtensions.h"
 #pragma warning( push )
 #pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
 #include <xaudio2.h>
@@ -524,7 +517,6 @@ typedef unsigned long   u_long;
 #include "Helpers/GlobalEnums.h"
 #include "Helpers/MyTweener.h"
 
-#include "Shaders/GLHelpers.h"
 #include "Shaders/VertexFormats.h"
 #include "Shaders/VertexFormatManager.h"
 #include "Shaders/ShaderGroup.h"

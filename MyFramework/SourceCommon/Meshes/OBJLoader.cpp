@@ -10,6 +10,11 @@
 #include "CommonHeader.h"
 #include "OBJLoader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 // This code is assuming a list of faces longer than 3 is a triangle fan and turning into a list of tris.
 // TODO: obj's can have concave face lists... so this is a step better, but still broken.
 

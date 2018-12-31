@@ -9,6 +9,11 @@
 
 #include "CommonHeader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 void printGLString(const char* name, GLenum s)
 {
 #if _DEBUG && !MYFW_NACL && !USE_D3D

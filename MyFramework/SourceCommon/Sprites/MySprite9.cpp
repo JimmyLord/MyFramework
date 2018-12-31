@@ -11,6 +11,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "MySprite9.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 MySprite9::MySprite9()
 {
     m_pMaterial = 0;

@@ -13,6 +13,11 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 TextureManager* g_pTextureManager = nullptr;
 
 TextureManager::TextureManager()

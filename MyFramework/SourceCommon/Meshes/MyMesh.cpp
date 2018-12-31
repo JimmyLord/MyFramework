@@ -12,6 +12,11 @@
 #include "../Renderers/Renderer_Enums.h"
 #include "../Renderers/Renderer_Base.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 MySubmesh::MySubmesh()
 {
     m_pMaterial = 0;

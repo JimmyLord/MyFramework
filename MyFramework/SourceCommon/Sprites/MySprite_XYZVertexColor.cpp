@@ -11,6 +11,11 @@
 #include "../Renderers/Renderer_Base.h"
 #include "MySprite_XYZVertexColor.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 MySprite_XYZVertexColor::MySprite_XYZVertexColor(bool creatematerial)
 : MySprite( creatematerial )
 {

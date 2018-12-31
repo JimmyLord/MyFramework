@@ -9,6 +9,11 @@
 
 #include "CommonHeader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 FBODefinition::FBODefinition()
 {
     m_HasValidResources = false;

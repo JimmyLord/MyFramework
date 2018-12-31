@@ -13,6 +13,11 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 #pragma warning( push )
 #pragma warning( disable : 4996 )
 #include "../../Libraries/LodePNG/lodepng.h"

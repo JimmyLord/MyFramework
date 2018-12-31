@@ -10,6 +10,11 @@
 #include "CommonHeader.h"
 #include "MyMeshLoader.h"
 
+// TODO: Fix GL Includes.
+#include <gl/GL.h>
+#include "../../GLExtensions.h"
+#include "../Shaders/GLHelpers.h"
+
 void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
     checkGlError( "MyMesh::LoadMyMesh" );

@@ -9,6 +9,8 @@
 
 #include "CommonHeader.h"
 
+#include "WGLExtensions.h"
+
 #pragma warning( push )
 #pragma warning( disable : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
 
