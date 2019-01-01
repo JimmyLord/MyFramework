@@ -51,8 +51,8 @@ public:
         int m_BytesPerIndex; // if this is an index buffer.
     };
     VertexFormat_Dynamic_Desc* m_pFormatDesc;
-    GLenum m_Target;
-    GLenum m_Usage;
+    MyRE::BufferTypes m_BufferType;
+    MyRE::BufferUsages m_BufferUsage;
     bool m_Dirty;
 
 public:
@@ -61,6 +61,7 @@ public:
 
     // Getters.
     MyRE::IndexTypes GetIBOType();
+    void* GetData() { return m_pData; }
 
     // Other.
     void TempBufferData(unsigned int sizeinbytes, void* pData);
@@ -71,8 +72,8 @@ public:
     void ResetVAOs();
 
     void FreeBufferedData();
-    void InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
-    void InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
+    void InitializeBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
 };
 
 class BufferManager
@@ -88,8 +89,8 @@ public:
 
     // pData pointer passed in will be deleted by the BufferDefinition.
     BufferDefinition* CreateBuffer();
-    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
-    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
+    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc);
+    BufferDefinition* CreateBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc);
 
     void Tick();
 

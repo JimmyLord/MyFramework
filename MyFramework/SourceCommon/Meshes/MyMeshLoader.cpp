@@ -248,8 +248,8 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                 }
 
                 // The buffer will delete the allocated arrays of verts/indices
-                (*ppVBO)->InitializeBuffer( verts, vertbuffersize, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
-                (*ppIBO)->InitializeBuffer( indices, indexbuffersize, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
+                (*ppVBO)->InitializeBuffer( verts, vertbuffersize, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
+                (*ppIBO)->InitializeBuffer( indices, indexbuffersize, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
 
                 //delete[] verts;
                 //delete[] indices;

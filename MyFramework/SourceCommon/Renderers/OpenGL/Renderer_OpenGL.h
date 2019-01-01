@@ -49,11 +49,17 @@ public:
     virtual void SetClearDepth(float depth) override;
     virtual void SetDepthWriteEnabled(bool enabled) override;
     virtual void SetDepthTestEnabled(bool enabled) override;
+    virtual void SetSwapInterval(int32 interval) override;
+    virtual void SetBlendEnabled(bool enabled) override;
+    virtual void SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor) override;
 
     // Actions.
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
     virtual void ClearScissorRegion() override;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
+
+    virtual void BufferData(BufferDefinition* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) override;
+    virtual void BufferSubData(BufferDefinition* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;

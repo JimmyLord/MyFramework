@@ -1510,7 +1510,6 @@
     <ClCompile Include="SourceCommon\Fonts\FontManager.cpp" />
     <ClCompile Include="SourceCommon\GameCore.cpp" />
     <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp" />
-    <ClCompile Include="SourceCommon\Helpers\GlobalEnums.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp" />
     <ClCompile Include="SourceCommon\Helpers\FileManager.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MyAssert.cpp" />
@@ -2720,7 +2719,6 @@
     <ClInclude Include="SourceCommon\GameCore.h" />
     <ClInclude Include="SourceCommon\GL\glext.h" />
     <ClInclude Include="SourceCommon\Helpers\ExternalTools.h" />
-    <ClInclude Include="SourceCommon\Helpers\GlobalEnums.h" />
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h" />
     <ClInclude Include="SourceCommon\Helpers\FileManager.h" />
     <ClInclude Include="SourceCommon\Helpers\MyAssert.h" />

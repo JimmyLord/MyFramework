@@ -355,7 +355,7 @@ Vector2 BMFont::GetSize(const char* string, float height)
     return Vector2( biggest_x, -current_y );
 }
 
-unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_Sprite* verts, float height, GLenum glmode, unsigned char justificationflags)
+unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_Sprite* verts, float height, unsigned char justificationflags)
 {
     float biggest_x = 0;
 
@@ -546,7 +546,7 @@ unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_Sprite
     return lettercount;
 }
 
-unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_RGBA* verts, float height, GLenum glmode, unsigned char justificationflags, ColorByte color)
+unsigned int BMFont::GenerateVerts(const char* string, bool quads, Vertex_XYZUV_RGBA* verts, float height, unsigned char justificationflags, ColorByte color)
 {
     float biggest_x = 0;
 

@@ -786,15 +786,17 @@ bool MaterialDefinition::IsEmissive()
     return false;
 }
 
-MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
+MyRE::BlendFactors MaterialDefinition::GetShaderBlendFactorSrc(BaseShader* pShader)
 {
     if( pShader )
+    {
         return pShader->m_BlendFactorSrc;
+    }
 
-    return MyRE::MaterialBlendFactor_SrcAlpha;
+    return MyRE::BlendFactor_SrcAlpha;
 }
 
-MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
+MyRE::BlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
 {
     if( m_pShaderGroup )
     {
@@ -803,32 +805,20 @@ MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorSrc()
             return pShader->m_BlendFactorSrc;
     }
 
-    return MyRE::MaterialBlendFactor_SrcAlpha;
+    return MyRE::BlendFactor_SrcAlpha;
 }
 
-GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader)
-{
-    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorSrc( pShader );
-    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[factor];
-}
-
-GLenum MaterialDefinition::GetShaderBlendFactorSrc_OpenGL()
-{
-    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorSrc();
-    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[factor];
-}
-
-MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest(BaseShader* pShader)
+MyRE::BlendFactors MaterialDefinition::GetShaderBlendFactorDest(BaseShader* pShader)
 {
     if( pShader )
+    {
         return pShader->m_BlendFactorDest;
+    }
 
-    return MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
+    return MyRE::BlendFactor_OneMinusSrcAlpha;
 }
 
-MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
+MyRE::BlendFactors MaterialDefinition::GetShaderBlendFactorDest()
 {
     if( m_pShaderGroup )
     {
@@ -837,21 +827,7 @@ MyRE::MaterialBlendFactors MaterialDefinition::GetShaderBlendFactorDest()
             return pShader->m_BlendFactorDest;
     }
 
-    return MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
-}
-
-GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL(BaseShader* pShader)
-{
-    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorDest( pShader );
-    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[factor];
-}
-
-GLenum MaterialDefinition::GetShaderBlendFactorDest_OpenGL()
-{
-    MyRE::MaterialBlendFactors factor = GetShaderBlendFactorDest();
-    MyAssert( factor < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[factor];
+    return MyRE::BlendFactor_OneMinusSrcAlpha;
 }
 
 #if MYFW_EDITOR

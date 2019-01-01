@@ -79,7 +79,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
     LOGInfo( LOGTag, "ParticleRenderer: about to call glGenBuffers\n" );
 
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
+    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 
     LOGInfo( LOGTag, "ParticleRenderer: m_pVertexBuffer->m_BufferID = %d\n", m_pVertexBuffer->m_CurrentBufferID );
 
@@ -96,7 +96,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
             tempindices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
         }
 
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, 2, category, "Particles-Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, 2, category, "Particles-Indices" );
     }
 
     checkGlError( "End of ParticleRenderer::AllocateVertices()" );
@@ -268,10 +268,10 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     //glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
     //glEnable(GL_ARB_point_sprite);
 
-    //glEnable( GL_BLEND );
+    //g_pRenderer->SetBlendEnabled( true );
     if( m_Additive )
     {
-        glBlendFunc( GL_ONE, GL_ONE );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_One, MyRE::BlendFactor_One );
 #if USE_D3D
         float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabledAdditive.Get(), blendfactor, 0xfff);
@@ -296,11 +296,11 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
+        g_pRenderer->SetBlendEnabled( true );
         if( m_Additive )
-            glBlendFunc( GL_ONE, GL_ONE );
+            g_pRenderer->SetBlendFunc( MyRE::BlendFactor_One, MyRE::BlendFactor_One );
         else
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
     }
 
 #if USE_INDEXED_TRIANGLES
@@ -322,13 +322,13 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     //}
 #endif
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 
-    //glEnable( GL_BLEND );
+    //g_pRenderer->SetBlendEnabled( true );
     if( m_Additive ) // revert back to regular enabled alpha blending.
     {
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
 #if USE_D3D
         float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);

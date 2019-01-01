@@ -36,11 +36,47 @@ GLint PrimitiveTypeConversionTable[MyRE::PrimitiveType_Undefined] =
     GL_TRIANGLE_FAN,
 };
 
+GLint BufferTypeConversionTable[MyRE::BufferType_NumTypes] =
+{
+    GL_ARRAY_BUFFER,
+    GL_ELEMENT_ARRAY_BUFFER,
+};
+
+GLint BufferUsageConversionTable[MyRE::BufferUsage_NumTypes] =
+{
+    GL_STREAM_DRAW,
+    GL_STATIC_DRAW,
+    GL_DYNAMIC_DRAW,
+};
+
 GLint IndexTypeConversionTable[MyRE::IndexType_Undefined] =
 {
     GL_UNSIGNED_BYTE,
     GL_UNSIGNED_SHORT,
     GL_UNSIGNED_INT,
+};
+
+GLenum BlendFactorConversionTable[MyRE::BlendFactor_NumTypes] = 
+{
+    GL_ZERO,
+    GL_ONE,
+    GL_SRC_COLOR,
+    GL_ONE_MINUS_SRC_COLOR,
+    GL_DST_COLOR,
+    GL_ONE_MINUS_DST_COLOR,
+    GL_SRC_ALPHA,
+    GL_ONE_MINUS_SRC_ALPHA,
+    GL_DST_ALPHA,
+    GL_ONE_MINUS_DST_ALPHA,
+    //GL_CONSTANT_COLOR,
+    //GL_ONE_MINUS_CONSTANT_COLOR,
+    //GL_CONSTANT_ALPHA,
+    //GL_ONE_MINUS_CONSTANT_ALPHA,
+    GL_SRC_ALPHA_SATURATE,
+    //GL_SRC1_COLOR,
+    //GL_ONE_MINUS_SRC1_COLOR,
+    //GL_SRC1_ALPHA,
+    //GL_ONE_MINUS_SRC1_ALPHA,
 };
 
 GLint MinFilterConversionTable[MyRE::MinFilter_NumTypes] =
@@ -150,6 +186,39 @@ void Renderer_OpenGL::SetDepthTestEnabled(bool enabled)
         glEnable( GL_DEPTH_TEST );
     else
         glDisable( GL_DEPTH_TEST );
+
+    checkGlError( "glEnable or glDisable( GL_DEPTH_TEST )" );
+}
+
+void Renderer_OpenGL::SetSwapInterval(int32 interval)
+{
+    Renderer_Base::SetSwapInterval( interval );
+
+    if( wglSwapInterval )
+        wglSwapInterval( interval );
+
+    checkGlError( "wglSwapInterval" );
+}
+
+void Renderer_OpenGL::SetBlendEnabled(bool enabled)
+{
+    Renderer_Base::SetBlendEnabled( enabled );
+
+    if( enabled )
+        glEnable( GL_BLEND );
+    else
+        glDisable( GL_BLEND );
+
+    checkGlError( "glEnable or glDisable( GL_BLEND )" );
+}
+
+void Renderer_OpenGL::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor)
+{
+    Renderer_Base::SetBlendFunc( srcFactor, dstFactor );
+
+    glBlendFunc( BlendFactorConversionTable[srcFactor], BlendFactorConversionTable[dstFactor] );
+
+    checkGlError( "glBlendFunc" );
 }
 
 //====================================================================================================
@@ -170,6 +239,8 @@ void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearS
 void Renderer_OpenGL::ClearScissorRegion()
 {
     glDisable( GL_SCISSOR_TEST );
+
+    checkGlError( "glDisable( GL_SCISSOR_TEST )" );
 }
 
 void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded)
@@ -192,6 +263,29 @@ void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisable
     glViewport( pViewport->GetX(), pViewport->GetY(), pViewport->GetWidth(), pViewport->GetHeight() );
 
     checkGlError( "glViewport" );
+}
+
+void Renderer_OpenGL::BufferData(BufferDefinition* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData)
+{
+    GLenum target = BufferTypeConversionTable[pBuffer->m_BufferType];
+    GLenum usage = BufferUsageConversionTable[pBuffer->m_BufferUsage];
+
+    MyBindBuffer( target, bufferID );
+    checkGlError( "MyBindBuffer" );
+
+    glBufferData( target, sizeInBytes, pData, usage );
+    checkGlError( "glBufferData" );
+}
+
+void Renderer_OpenGL::BufferSubData(BufferDefinition* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
+{
+    GLenum target = BufferTypeConversionTable[pBuffer->m_BufferType];
+
+    MyBindBuffer( target, bufferID );
+    checkGlError( "MyBindBuffer" );
+
+    glBufferSubData( target, offset, sizeInBytes, pData );
+    checkGlError( "glBufferSubData" );
 }
 
 bool ShouldDraw(bool hideFromDrawList)
@@ -254,7 +348,7 @@ void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyR
     if( draw )
     {
         checkGlError( "glDrawElements Before" );
-        glDrawElements( PrimitiveTypeConversionTable[mode], count, IBOType, indices );
+        glDrawElements( PrimitiveTypeConversionTable[mode], count, IndexTypeConversionTable[IBOType], indices );
         checkGlError( "glDrawElements After" );
     }
 

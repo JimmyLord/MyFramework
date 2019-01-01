@@ -507,9 +507,6 @@
     <ClCompile Include="..\Libraries\OpenSimplexInC\open-simplex-noise.c">
       <Filter>Libraries\OpenSimplexInC</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\Helpers\GlobalEnums.cpp">
-      <Filter>Source\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="..\Libraries\cJSON\cJSON.c">
       <Filter>Libraries\cJSON</Filter>
     </ClCompile>
@@ -862,9 +859,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Textures\MaterialDefinition.h">
       <Filter>Source\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\Helpers\GlobalEnums.h">
-      <Filter>Source\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Particles\ParticleRendererInstanced.h">
       <Filter>Source\Particles</Filter>

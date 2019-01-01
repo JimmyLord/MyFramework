@@ -73,7 +73,7 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
     memcpy( pVerts, pSprite->m_pVertexBuffer->m_pData, sizeof(Vertex_Sprite)*4);
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
+    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
 
     m_pIndexBuffer->AddRef();
 }
@@ -110,9 +110,9 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
 
             Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
             if( staticverts )
-                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, category, "MySprite-Static Verts" );
+                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, category, "MySprite-Static Verts" );
             else
-                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
+                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
         }
 
         if( m_pIndexBuffer == 0 )
@@ -126,7 +126,7 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
             pIndices[4] = g_SpriteVertexIndices[4];
             pIndices[5] = g_SpriteVertexIndices[5];
 
-            m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite-Indices" );
+            m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }
 
         // fill vertex buffer with data and mark it dirty.
@@ -226,9 +226,9 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
 
             Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
             if( staticverts )
-                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, category, "MySprite-Static Verts" );
+                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, category, "MySprite-Static Verts" );
             else
-                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
+                m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
         }
 
         if( m_pIndexBuffer == 0 )
@@ -242,7 +242,7 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
             pIndices[4] = g_SpriteVertexIndices[4];
             pIndices[5] = g_SpriteVertexIndices[5];
 
-            m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite-Indices" );
+            m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }
 
         // fill vertex buffer with data and mark it dirty.
@@ -440,8 +440,8 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendEnabled( true );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
     }
 
     bool activated = pShader->ActivateAndProgramShader(
@@ -454,8 +454,8 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
         glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
     }
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 
     checkGlError( "end of MySprite::Setup()" );
 
@@ -555,8 +555,8 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         // Enable blending if necessary. TODO: sort draws and only set this once.
         if( m_pMaterial->IsTransparent( pShader ) )
         {
-            glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            g_pRenderer->SetBlendEnabled( true );
+            g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
         }
 
         if( pShader->ActivateAndProgramShader(
@@ -580,8 +580,8 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
             pShader->DeactivateShader( m_pVertexBuffer, true );
         }
 
-        // always disable blending
-        glDisable( GL_BLEND );
+        // Always disable blending.
+        g_pRenderer->SetBlendEnabled( false );
     }
 }
 

@@ -24,6 +24,21 @@ namespace MyRE // MyRendererEnums
         PrimitiveType_Undefined,
     };
 
+    enum BufferTypes
+    {
+        BufferType_Vertex,
+        BufferType_Index,
+        BufferType_NumTypes,
+    };
+
+    enum BufferUsages
+    {
+        BufferUsage_StreamDraw,
+        BufferUsage_StaticDraw,
+        BufferUsage_DynamicDraw,
+        BufferUsage_NumTypes,
+    };
+
     enum IndexTypes
     {
         IndexType_U8,
@@ -41,12 +56,28 @@ namespace MyRE // MyRendererEnums
         MaterialBlendType_NotSet = MaterialBlendType_NumTypes + 20,
     };
 
-    enum MaterialBlendFactors
+    enum BlendFactors
     {
-        MaterialBlendFactor_One,
-        MaterialBlendFactor_SrcAlpha,
-        MaterialBlendFactor_OneMinusSrcAlpha,
-        MaterialBlendFactor_NumTypes,
+        BlendFactor_Zero,
+        BlendFactor_One,
+        BlendFactor_SrcColor,
+        BlendFactor_OneMinusSrcColor,
+        BlendFactor_DstColor,
+        BlendFactor_OneMinusDstColor,
+        BlendFactor_SrcAlpha,
+        BlendFactor_OneMinusSrcAlpha,
+        BlendFactor_DstAlpha,
+        BlendFactor_OneMinusDstAlpha,
+        //BlendFactor_ConstantColor,
+        //BlendFactor_OneMinusConstantColor,
+        //BlendFactor_ConstantAlpha,
+        //BlendFactor_OneMinusConstantAlpha,
+        BlendFactor_SrcAlphaSaturate,
+        //BlendFactor_Src1Color,
+        //BlendFactor_OneMinusSrc1Color,
+        //BlendFactor_Src1Alpha,
+        //BlendFactor_OneMinusSrc1Alpha,
+        BlendFactor_NumTypes,
     };
 
     enum MinFilters

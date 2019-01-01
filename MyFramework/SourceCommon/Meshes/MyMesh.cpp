@@ -109,11 +109,11 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
+        g_pRenderer->SetBlendEnabled( true );
 
-        GLenum srcfactor = pShader->GetShaderBlendFactorSrc_OpenGL();
-        GLenum destfactor = pShader->GetShaderBlendFactorDest_OpenGL();
-        glBlendFunc( srcfactor, destfactor );
+        MyRE::BlendFactors srcFactor = pShader->GetShaderBlendFactorSrc();
+        MyRE::BlendFactors destFactor = pShader->GetShaderBlendFactorDest();
+        g_pRenderer->SetBlendFunc( srcFactor, destFactor );
     }
 
     if( pMesh->m_pSetupCustomUniformsCallback )
@@ -270,7 +270,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
             g_pRenderer->DrawArrays( primitiveType, 0, NumVertsToDraw, hideFromDrawList );
 
         // Always disable blending.
-        glDisable( GL_BLEND );
+        g_pRenderer->SetBlendEnabled( false );
 
         checkGlError( "end of MyMesh::Draw() - if( pShaderOverride )" );
     }
@@ -332,7 +332,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
                 checkGlError( "Drawing Mesh DeactivateShader()" );
 
                 // Always disable blending.
-                glDisable( GL_BLEND );
+                g_pRenderer->SetBlendEnabled( false );
             }
         }
     }
@@ -436,12 +436,12 @@ void MyMesh::CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVerte
     MyAssert( m_SubmeshList[meshIndex]->m_pVertexBuffer == 0 );
     MyAssert( m_SubmeshList[meshIndex]->m_pIndexBuffer == 0 );
 
-    GLenum usage = GL_STATIC_DRAW;
+    MyRE::BufferUsages usage = MyRE::BufferUsage_StaticDraw;
     int numbuffers = 1;
 
     if( dynamic )
     {
-        usage = GL_DYNAMIC_DRAW;
+        usage = MyRE::BufferUsage_DynamicDraw;
         numbuffers = 2;
     }
 
@@ -450,7 +450,7 @@ void MyMesh::CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVerte
         m_SubmeshList[meshIndex]->m_VertexFormat = VertexFormat_Dynamic;
 
         m_SubmeshList[meshIndex]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
-            0, pVertexFormatDesc->stride*numVerts, GL_ARRAY_BUFFER, usage,
+            0, pVertexFormatDesc->stride*numVerts, MyRE::BufferType_Vertex, usage,
             false, numbuffers, VertexFormat_Dynamic, pVertexFormatDesc, "MyMesh", "Verts" );
     }
 }
@@ -460,12 +460,12 @@ void MyMesh::CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int nu
     MyAssert( meshIndex < (int)m_SubmeshList.Count() );
     MyAssert( m_SubmeshList[meshIndex]->m_pIndexBuffer == 0 );
 
-    GLenum usage = GL_STATIC_DRAW;
+    MyRE::BufferUsages usage = MyRE::BufferUsage_StaticDraw;
     int numbuffers = 1;
 
     if( dynamic )
     {
-        usage = GL_DYNAMIC_DRAW;
+        usage = MyRE::BufferUsage_DynamicDraw;
         numbuffers = 2;
     }
 
@@ -473,8 +473,8 @@ void MyMesh::CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int nu
         m_SubmeshList[meshIndex]->m_NumIndicesToDraw = numIndices;
 
         m_SubmeshList[meshIndex]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
-            0, bytesPerIndex*numIndices, GL_ELEMENT_ARRAY_BUFFER, usage,
-            false, numbuffers, bytesPerIndex, "MyMesh", "Verts" );
+            0, bytesPerIndex*numIndices, MyRE::BufferType_Index, usage,
+            false, numbuffers, bytesPerIndex, "MyMesh", "Indices" );
     }
 }
 
@@ -706,7 +706,7 @@ void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, "MyMesh_ScreenSpaceQuad", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*24, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, "MyMesh_ScreenSpaceQuad", "Verts" );
     }
 
     Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -741,13 +741,13 @@ void MyMesh::CreateBox(float boxw, float boxh, float boxd, float startu, float e
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Box", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*24, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Box", "Verts" );
     }
 
     if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Box", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Box", "Indices" );
     }
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -886,13 +886,13 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float star
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
         Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*24, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, "MyMesh_BoxXYZUVRGBA", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*24, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 2, VertexFormat_XYZUV_RGBA, "MyMesh_BoxXYZUVRGBA", "Verts" );
     }
 
     if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[36];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
     }
 
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
@@ -1096,13 +1096,13 @@ void MyMesh::CreateCylinder(float radius, unsigned short numsegments, float edge
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Cylinder", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUVNorm, "MyMesh_Cylinder", "Verts" );
     }
 
     if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned short* pIndices = MyNew unsigned short[numtris*3];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Cylinder", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Cylinder", "Indices" );
     }
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -1407,14 +1407,14 @@ void MyMesh::CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount,
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
     }
 
     if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
     }
 
     m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
@@ -1528,14 +1528,14 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topleftpos, Vector2 size, Vector2In
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
         Vertex_XYZUV* pVerts = MyNew Vertex_XYZUV[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, 0, "MyMesh_Plane", "Verts" );
     }
 
     if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 2, "MyMesh_Plane", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
     }
 
     m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
@@ -1660,14 +1660,14 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionlevel)
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = vertexFormat;
         Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, vertexSize*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, vertexFormat, 0, "MyMesh_Icosphere", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, vertexSize*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, vertexFormat, 0, "MyMesh_Icosphere", "Verts" );
     }
 
     if( bytesperindex*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, bytesperindex*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, bytesperindex*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
     }
 
     m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
@@ -1893,7 +1893,7 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberofsegments)
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
     }
 
     Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -1941,7 +1941,7 @@ void MyMesh::Create2DArc(Vector3 origin, float startangle, float endangle, float
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_Sprite)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, 0, "MyMesh_2dCircle", "Verts" );
     }
 
     Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -2016,7 +2016,7 @@ void MyMesh::CreateGrass(Vector3 topleftpos, Vector2 size, Vector2Int bladecount
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
         Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
         m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts,
-            GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV_RGBA, 0, "MyMesh_Grass", "Verts" );
+            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, 0, "MyMesh_Grass", "Verts" );
     }
 
     Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
@@ -2071,13 +2071,15 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumba
     {
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZ;
         Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts, GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
+        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts,
+            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZ, "MyMesh_GridPlane", "Verts" );
     }
 
     if( m_SubmeshList[0]->m_pIndexBuffer == 0 )
     {
         unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, 1, "MyMesh_GridPlane", "Indices" );
+        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices,
+            MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 1, "MyMesh_GridPlane", "Indices" );
     }
 
     m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Lines;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -34,17 +34,15 @@ struct ParticleInstanceData
 class ParticleRendererInstanced : public ParticleRenderer
 {
 protected:
-    GLuint m_ParticleDataBuffer;
     unsigned int m_NumParticlesAllocated;
     ParticleInstanceData* m_pParticleData;
-
-    Vertex_XYZUV_RGBA* m_pParticleQuadVerts; // will be deleted by VBO.
+    BufferDefinition* m_pInstancedAttributesBuffer;
 
 public:
     ParticleRendererInstanced(bool creatematerial);
     virtual ~ParticleRendererInstanced();
 
-    virtual void AllocateVertices(unsigned int numpoints, const char* category);
+    virtual void AllocateVertices(unsigned int maxPoints, const char* category);
     virtual void RebuildParticleQuad(MyMatrix* matrot);
     virtual void Reset() { m_ParticleCount = 0; }
 

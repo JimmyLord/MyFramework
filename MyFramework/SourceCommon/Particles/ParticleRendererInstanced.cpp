@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -21,57 +21,58 @@
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
 {
-    m_ParticleDataBuffer = 0;
     m_NumParticlesAllocated = 0;
-
-    m_pParticleData = 0;
-
-    m_pParticleQuadVerts = 0;
+    m_pParticleData = nullptr;
+    m_pInstancedAttributesBuffer = nullptr;
 }
 
 ParticleRendererInstanced::~ParticleRendererInstanced()
 {
     delete[] m_pParticleData;
-    glDeleteBuffers( 1, &m_ParticleDataBuffer );
-
-    // m_pParticleQuadVerts; // will be deleted by VBO.
+    delete m_pInstancedAttributesBuffer;
 }
 
-void ParticleRendererInstanced::AllocateVertices(unsigned int numpoints, const char* category)
+void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const char* category)
 {
-    LOGInfo( LOGTag, "ParticleRendererInstanced: Allocating %d Verts\n", numpoints );
+    LOGInfo( LOGTag, "ParticleRendererInstanced: Allocating %d Verts\n", maxPoints );
 
-    MyAssert( m_pVertexBuffer == 0 );
+    MyAssert( m_pVertexBuffer == nullptr );
 
     unsigned int numverts = 4;
 
-    m_pParticleData = new ParticleInstanceData[numpoints];
-    m_NumParticlesAllocated = numpoints;
-    glGenBuffers( 1, &m_ParticleDataBuffer );
+    m_pParticleData = MyNew ParticleInstanceData[maxPoints];
+    m_NumParticlesAllocated = maxPoints;
+
+    m_pInstancedAttributesBuffer = MyNew BufferDefinition();
+    m_pInstancedAttributesBuffer->InitializeBuffer( nullptr, 0, MyRE::BufferType_Vertex, MyRE::BufferUsage_StreamDraw,
+                                                    false, 1, VertexFormat_Dynamic, nullptr, "Particles", "InstancedAttribs" );
 
     Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
-    m_pParticleQuadVerts = pVerts;
-    float halfsize = 0.5;
+
+    float halfsize = 0.5f;
     pVerts[0].x = -halfsize; pVerts[0].y = +halfsize; pVerts[0].z = 0; pVerts[0].u = 0; pVerts[0].v = 0;
     pVerts[1].x = +halfsize; pVerts[1].y = +halfsize; pVerts[1].z = 0; pVerts[1].u = 1; pVerts[1].v = 0;
     pVerts[2].x = -halfsize; pVerts[2].y = -halfsize; pVerts[2].z = 0; pVerts[2].u = 0; pVerts[2].v = 1;
     pVerts[3].x = +halfsize; pVerts[3].y = -halfsize; pVerts[3].z = 0; pVerts[3].u = 1; pVerts[3].v = 1;
     m_NumVertsAllocated = numverts;
 
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
+    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 }
 
 void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
 {
+    // Never rebuild quad since billboarding is done in shader allowing particles to work in shadowmaps.
+    return;
+
     static const unsigned int numverts = 4;
 
     MyAssert( m_NumVertsAllocated == numverts );
 
-    Vertex_XYZUV_RGBA* pVerts = m_pParticleQuadVerts;
-    float halfsize = 0.5;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData();
     
-    //if( matrot ) // billboard the quad
-    if( 0 ) // billboarding in shader so particles will work in shadowmaps.
+    float halfsize = 0.5f;
+    
+    if( matrot ) // Billboard the quad.
     {
         Vector3 pos;
     
@@ -127,10 +128,10 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     if( pShaderOverride )
         return;
 
-    if( m_pMaterial == 0 || m_pMaterial->GetShaderInstanced() == 0 || m_ParticleCount == 0 )
+    if( m_pMaterial == nullptr || m_pMaterial->GetShaderInstanced() == nullptr || m_ParticleCount == 0 )
         return;
 
-    checkGlError( "start of ParticleRenderInstanced::Draw()" );
+    //checkGlError( "start of ParticleRenderInstanced::Draw()" );
 
     int numparticles = m_ParticleCount;
 
@@ -142,16 +143,16 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     MyAssert( m_pVertexBuffer->m_Dirty == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShaderInstanced()->GlobalPass();
-    if( pShader == 0 )
+    if( pShader == nullptr )
         return;
 
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
+        g_pRenderer->SetBlendEnabled( true );
         if( m_Additive )
         {
-            glBlendFunc( GL_ONE, GL_ONE );
+            g_pRenderer->SetBlendFunc( MyRE::BlendFactor_One, MyRE::BlendFactor_One );
 #if USE_D3D
             float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
             g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabledAdditive.Get(), blendfactor, 0xfff);
@@ -159,21 +160,20 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
         }
         else
         {
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
         }
     }
 
     if( pShader->ActivateAndProgramShader(
             m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
-            pMatProj, pMatView, 0, m_pMaterial ) )
+            pMatProj, pMatView, nullptr, m_pMaterial ) )
     {
         GLint aiposloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Position" );
         GLint aiscaleloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Scale" );
         GLint aicolorloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Color" );
 
         {
-            glBindBuffer( GL_ARRAY_BUFFER, m_ParticleDataBuffer );
-            glBufferData( GL_ARRAY_BUFFER, sizeof(ParticleInstanceData) * m_ParticleCount, m_pParticleData, GL_DYNAMIC_DRAW );
+            m_pInstancedAttributesBuffer->TempBufferData( sizeof(ParticleInstanceData) * m_ParticleCount, m_pParticleData );
 
             if( aiposloc != -1 )
             {
@@ -197,7 +197,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
             }
         }
 
-        pShader->ProgramCamera( 0, &camrot );
+        pShader->ProgramCamera( nullptr, &camrot );
 
         checkGlError( "before glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
 
@@ -223,15 +223,12 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
         checkGlError( "after glVertexAttribDivisor() in ParticleRenderInstanced::Draw()" );
     }
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 
-    checkGlError( "after glDisable( GL_BLEND ) in ParticleRenderInstanced::Draw()" );
-
-    //glEnable( GL_BLEND );
-    if( m_Additive ) // revert back to regular enabled alpha blending.
+    if( m_Additive ) // Revert back to regular alpha blend func.
     {
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
 #if USE_D3D
         float blendfactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);

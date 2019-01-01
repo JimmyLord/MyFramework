@@ -143,14 +143,10 @@ public:
     bool IsTransparent();
     bool IsEmissive(BaseShader* pShader);
     bool IsEmissive();
-    MyRE::MaterialBlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
-    MyRE::MaterialBlendFactors GetShaderBlendFactorSrc();
-    GLenum GetShaderBlendFactorSrc_OpenGL(BaseShader* pShader);
-    GLenum GetShaderBlendFactorSrc_OpenGL();
-    MyRE::MaterialBlendFactors GetShaderBlendFactorDest(BaseShader* pShader);
-    MyRE::MaterialBlendFactors GetShaderBlendFactorDest();
-    GLenum GetShaderBlendFactorDest_OpenGL();
-    GLenum GetShaderBlendFactorDest_OpenGL(BaseShader* pShader);
+    MyRE::BlendFactors GetShaderBlendFactorSrc(BaseShader* pShader);
+    MyRE::BlendFactors GetShaderBlendFactorSrc();
+    MyRE::BlendFactors GetShaderBlendFactorDest(BaseShader* pShader);
+    MyRE::BlendFactors GetShaderBlendFactorDest();
 
 #if MYFW_EDITOR
 public:

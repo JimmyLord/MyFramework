@@ -37,7 +37,7 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
     MyAssert( pIndices );
 
     // allocate 2 empty buffers, will be filled by subbufferdata elsewhere.
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numsprites*4, GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, "SpriteBatch_XYZVertexColor", "Verts" );
+    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numsprites*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, "SpriteBatch_XYZVertexColor", "Verts" );
 
     for( GLushort i=0; i<numsprites; i++ )
     {
@@ -49,7 +49,7 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
         pIndices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
     }
 
-    m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
+    m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
 }
 
 void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
@@ -131,8 +131,8 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendEnabled( true );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
     }
 
     // Draw the contents of the buffers.
@@ -148,8 +148,8 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 
     return;
 }

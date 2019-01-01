@@ -56,8 +56,8 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     glPointSize( pointorlinesize );
 #endif
 
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    g_pRenderer->SetBlendEnabled( true );
+    g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
 
     glDisable( GL_CULL_FACE );
     g_pRenderer->SetDepthTestEnabled( false );
@@ -67,7 +67,8 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     glEnable( GL_CULL_FACE );
     g_pRenderer->SetDepthTestEnabled( true );
 
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 }
 
 void Box2DDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)

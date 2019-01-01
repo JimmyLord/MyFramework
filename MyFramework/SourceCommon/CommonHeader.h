@@ -514,7 +514,6 @@ typedef unsigned long   u_long;
 
 #include "../../Libraries/mtrand/mtrand.h"
 
-#include "Helpers/GlobalEnums.h"
 #include "Helpers/MyTweener.h"
 
 #include "Shaders/VertexFormats.h"

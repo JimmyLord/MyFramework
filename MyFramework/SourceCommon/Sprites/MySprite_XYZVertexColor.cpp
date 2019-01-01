@@ -47,9 +47,9 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
 
         Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[4];
         if( staticverts )
-            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), GL_ARRAY_BUFFER, GL_STATIC_DRAW, false, 1, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-StaticVerts" );
+            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-StaticVerts" );
         else
-            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-Verts" );
+            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-Verts" );
     }
 
     if( m_pIndexBuffer == 0 )
@@ -63,7 +63,7 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
         pIndices[4] = g_SpriteVertexIndices[4];
         pIndices[5] = g_SpriteVertexIndices[5];
 
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
     }
 
     // fill vertex buffer with data and mark it dirty.
@@ -205,8 +205,8 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* 
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendEnabled( true );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
     }
 
     if( pShader->ActivateAndProgramShader(
@@ -222,8 +222,8 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* 
         m_pMaterial->GetShader()->GlobalPass()->DeactivateShader( m_pVertexBuffer );
     }
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 }
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr )

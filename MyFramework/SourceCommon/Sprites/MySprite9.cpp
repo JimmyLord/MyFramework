@@ -78,7 +78,7 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
     if( m_pVertexBuffer == 0 )
     {
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[16];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 16*sizeof(Vertex_Sprite), GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW, false, 2, VertexFormat_Sprite, "MySprite9", "Verts" );
+        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 16*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, "MySprite9", "Verts" );
     }
 
     // allocate and fill 24 indices for a triangle strip
@@ -115,7 +115,7 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
             pIndices[i] = vertindex;
         }
         
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, numindices*sizeof(GLushort), GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, VertexFormat_None, "MySprite9", "Verts" );
+        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, numindices*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "MySprite9", "Verts" );
     }
 
     // fill vertex buffer with data and mark it dirty.
@@ -177,8 +177,8 @@ void MySprite9::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
     // Enable blending if necessary. TODO: sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        g_pRenderer->SetBlendEnabled( true );
+        g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
     }
 
     if( pShader->ActivateAndProgramShader(
@@ -194,6 +194,6 @@ void MySprite9::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
         pShader->DeactivateShader( m_pVertexBuffer, true );
     }
 
-    // always disable blending
-    glDisable( GL_BLEND );
+    // Always disable blending.
+    g_pRenderer->SetBlendEnabled( false );
 }

@@ -581,8 +581,8 @@ foundduplicate_skiptonextvert:
     }
 
     // The buffer will delete the allocated arrays of verts/indices
-    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, GL_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, format, 0, "OBJLoader", "VBO" );
-    (*ppIBO)->InitializeBuffer( indices, indexcount*bytesperindex, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, true, 1, bytesperindex, "OBJLoader", "IBO" );
+    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, format, 0, "OBJLoader", "VBO" );
+    (*ppIBO)->InitializeBuffer( indices, indexcount*bytesperindex, MyRE::BufferType_Index, MyRE::BufferUsage_DynamicDraw, true, 1, bytesperindex, "OBJLoader", "IBO" );
 
     //delete[] verts;
     //delete[] indices;

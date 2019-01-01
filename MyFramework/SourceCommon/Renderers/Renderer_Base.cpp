@@ -24,6 +24,12 @@ Renderer_Base::Renderer_Base()
 
     m_DepthWriteEnabled = false;
     m_DepthTestEnabled = false;
+
+    m_SwapInterval = 1;
+
+    m_BlendEnabled = false;
+    m_BlendFunc_SrcFactor = MyRE::BlendFactor_One;
+    m_BlendFunc_DstFactor = MyRE::BlendFactor_Zero;
 }
 
 Renderer_Base::~Renderer_Base()
@@ -72,4 +78,20 @@ void Renderer_Base::SetDepthWriteEnabled(bool enabled)
 void Renderer_Base::SetDepthTestEnabled(bool enabled)
 {
     m_DepthTestEnabled = enabled;
+}
+
+void Renderer_Base::SetSwapInterval(int32 interval)
+{
+    m_SwapInterval = interval;
+}
+
+void Renderer_Base::SetBlendEnabled(bool enabled)
+{
+    m_BlendEnabled = enabled;
+}
+
+void Renderer_Base::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor)
+{
+    m_BlendFunc_SrcFactor = srcFactor;
+    m_BlendFunc_DstFactor = dstFactor;
 }

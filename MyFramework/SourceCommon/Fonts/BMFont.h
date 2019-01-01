@@ -98,8 +98,8 @@ public:
     Vector2 GetSize(const char* string, float height);
 
     // return number of characters drawn.
-    unsigned int GenerateVerts(const char* string, bool quads, Vertex_Sprite* verts, float height, GLenum glmode, unsigned char justificationflags = Justify_Top|Justify_Left);
-    unsigned int GenerateVerts(const char* string, bool quads, Vertex_XYZUV_RGBA* verts, float height, GLenum glmode, unsigned char justificationflags, ColorByte color);
+    unsigned int GenerateVerts(const char* string, bool quads, Vertex_Sprite* verts, float height, unsigned char justificationflags = Justify_Top|Justify_Left);
+    unsigned int GenerateVerts(const char* string, bool quads, Vertex_XYZUV_RGBA* verts, float height, unsigned char justificationflags, ColorByte color);
 };
 
 #endif //__BMFont_H__

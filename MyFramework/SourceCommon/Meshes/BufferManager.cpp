@@ -51,8 +51,8 @@ BufferDefinition::BufferDefinition()
     m_DataSize = 0;
     m_VertexFormat = VertexFormat_Invalid;
     m_pFormatDesc = nullptr;
-    m_Target = GL_ARRAY_BUFFER; //GL_ELEMENT_ARRAY_BUFFER
-    m_Usage = GL_STATIC_DRAW; //GL_DYNAMIC_DRAW //GL_STREAM_DRAW
+    m_BufferType = MyRE::BufferType_Vertex;
+    m_BufferUsage = MyRE::BufferUsage_StaticDraw;
     m_Dirty = true;
 }
 
@@ -91,8 +91,7 @@ void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
         checkGlError( "glGenBuffers" );
     }
 
-    MyBindBuffer( m_Target, m_BufferIDs[m_NextBufferIndex] );
-    glBufferData( m_Target, sizeinbytes, pData, m_Usage );
+    g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeinbytes, pData );
 
     m_CurrentBufferID = m_BufferIDs[m_NextBufferIndex];
     m_CurrentVAOHandle = m_VAOHandles[m_NextBufferIndex];
@@ -128,36 +127,28 @@ void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bo
         glGenBuffers( 1, &m_BufferIDs[m_NextBufferIndex] );
         checkGlError( "glGenBuffers" );
 
-        MyBindBuffer( m_Target, m_BufferIDs[m_NextBufferIndex] );
-        checkGlError( "MyBindBuffer" );
-
-        glBufferData( m_Target, m_DataSize, m_pData, m_Usage );
-        checkGlError( "glBufferData" );
+        g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], m_DataSize, m_pData );
 
         //LOGInfo( LOGTag, "creating buffer - %d - target:%d\n", m_BufferIDs[m_NextBufferIndex], m_Target );
     }
     else
     {
-        MyBindBuffer( m_Target, m_BufferIDs[m_NextBufferIndex] );
-        checkGlError( "BufferDefinition::Rebuild MyBindBuffer" );
-
         //LOGInfo( LOGTag, "BufferDefinition::Rebuild() rebuilding sizeinbytes(%d) m_DataSize(%d)\n", sizeinbytes, m_DataSize );
 
         if( sizeinbytes > m_DataSize )
         {
             m_DataSize = sizeinbytes;
 
-            glBufferData( m_Target, m_DataSize, m_pData, m_Usage );
+            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], m_DataSize, m_pData );
         }
         else
         {
 #if MYFW_IOS
-            glBufferData( m_Target, sizeinbytes, m_pData, m_Usage );
+            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeinbytes, m_pData );
 #else
-            glBufferSubData( m_Target, offset, sizeinbytes, m_pData );
+            g_pRenderer->BufferSubData( this, m_BufferIDs[m_NextBufferIndex], offset, sizeinbytes, m_pData );
 #endif
         }
-        checkGlError( "glBufferData or glBufferSubData" );
 
 #if _DEBUG && MYFW_WINDOWS
         // Buffer shouldn't be updated twice in one frame, might cause stall.
@@ -271,21 +262,21 @@ void BufferDefinition::FreeBufferedData()
     m_DataSize = 0;
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
 {
-    InitializeBuffer( pData, dataSize, target, usage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc );
+    InitializeBuffer( pData, dataSize, bufferType, bufferUsage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc );
 }
 
-void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
+void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
     MyAssert( numBuffersToAllocate >= 1 && numBuffersToAllocate <= 3 );
 
     if( dataSize == 0 || dataSize != m_DataSize )
     {
-        // Delete old data block if necessary
+        // Delete old data block if necessary.
         SAFE_DELETE_ARRAY( m_pData );
 
-        // If no data block was passed in allocate one if dataSize isn't 0.
+        // If no data block was passed in, allocate one if dataSize isn't 0.
         if( pData == nullptr && dataSize != 0 )
             pData = MyNew char[dataSize];
 
@@ -304,8 +295,8 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLen
     m_NumBuffersToUse = numBuffersToAllocate;
     m_pData = (char*)pData;
     m_DataSize = dataSize;
-    m_Target = target;
-    m_Usage = usage;
+    m_BufferType = bufferType;
+    m_BufferUsage = bufferUsage;
     m_VertexFormat = format;
     m_pFormatDesc = pVertexFormatDesc;
 
@@ -317,7 +308,7 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, GLen
     }
     else
     {
-        m_pData = 0;
+        m_pData = nullptr;
         for( unsigned int i=0; i<m_NumBuffersToUse; i++ )
             Rebuild( 0, m_DataSize, true );
         m_pData = (char*)pData;
@@ -337,9 +328,9 @@ BufferManager::~BufferManager()
     FreeAllBuffers();
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, int bytesPerIndex, const char* category, const char* desc)
 {
-    return CreateBuffer(pData, dataSize, target, usage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc);
+    return CreateBuffer( pData, dataSize, bufferType, bufferUsage, bufferData, numBuffersToAllocate, (VertexFormats)bytesPerIndex, nullptr, category, desc );
 }
 
 BufferDefinition* BufferManager::CreateBuffer()
@@ -352,13 +343,13 @@ BufferDefinition* BufferManager::CreateBuffer()
     return pBufferDef;
 }
 
-BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, GLenum target, GLenum usage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
+BufferDefinition* BufferManager::CreateBuffer(void* pData, unsigned int dataSize, MyRE::BufferTypes bufferType, MyRE::BufferUsages bufferUsage, bool bufferData, unsigned int numBuffersToAllocate, VertexFormats format, VertexFormat_Dynamic_Desc* pVertexFormatDesc, const char* category, const char* desc)
 {
     //LOGInfo( LOGTag, "CreateBuffer\n" );
 
     BufferDefinition* pBufferDef = CreateBuffer();
 
-    pBufferDef->InitializeBuffer( pData, dataSize, target, usage, bufferData, numBuffersToAllocate, format, pVertexFormatDesc, category, desc );
+    pBufferDef->InitializeBuffer( pData, dataSize, bufferType, bufferUsage, bufferData, numBuffersToAllocate, format, pVertexFormatDesc, category, desc );
 
     return pBufferDef;
 }

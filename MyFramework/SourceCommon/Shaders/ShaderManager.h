@@ -24,8 +24,8 @@ public:
     ShaderPassTypes m_PassType;
 
     MyRE::MaterialBlendTypes m_BlendType;
-    MyRE::MaterialBlendFactors m_BlendFactorSrc;
-    MyRE::MaterialBlendFactors m_BlendFactorDest;
+    MyRE::BlendFactors m_BlendFactorSrc;
+    MyRE::BlendFactors m_BlendFactorDest;
 
     bool m_Emissive;
 
@@ -76,8 +76,8 @@ public:
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 
-    GLenum GetShaderBlendFactorSrc_OpenGL();
-    GLenum GetShaderBlendFactorDest_OpenGL();
+    MyRE::BlendFactors GetShaderBlendFactorSrc();
+    MyRE::BlendFactors GetShaderBlendFactorDest();
 };
 
 class ShaderManager

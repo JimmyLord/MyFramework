@@ -63,8 +63,8 @@ void BaseShader::Init_BaseShader()
 
     m_PassType = ShaderPass_NumTypes;
     m_BlendType = MyRE::MaterialBlendType_NotSet;
-    m_BlendFactorSrc = MyRE::MaterialBlendFactor_SrcAlpha;
-    m_BlendFactorDest = MyRE::MaterialBlendFactor_OneMinusSrcAlpha;
+    m_BlendFactorSrc = MyRE::BlendFactor_SrcAlpha;
+    m_BlendFactorDest = MyRE::BlendFactor_OneMinusSrcAlpha;
 
     m_Emissive = false;
 
@@ -232,7 +232,7 @@ void BaseShader::LoadFromFile()
 #endif
 }
 
-void ParseBlendFactor(const char* buffer, MyRE::MaterialBlendFactors* pBlendFactorOut)
+void ParseBlendFactor(const char* buffer, MyRE::BlendFactors* pBlendFactorOut)
 {
     const char* endOfBlendFactor = strpbrk( buffer, " \t\n\r" );
     char blendFactor[32];
@@ -243,7 +243,7 @@ void ParseBlendFactor(const char* buffer, MyRE::MaterialBlendFactors* pBlendFact
 
     if( _stricmp( blendFactor, "One" ) == 0 )
     {
-        *pBlendFactorOut = MyRE::MaterialBlendFactor_One;
+        *pBlendFactorOut = MyRE::BlendFactor_One;
         return;
     }
 
@@ -413,7 +413,7 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
         }
 
         // TODO: Fix support for separate vert/frag files (rather than glsl files).
-    //    if( m_pFilePixelShader == 0 )
+    //    if( m_pFilePixelShader == nullptr )
     //    {
     //#if MYFW_WP8
     //        m_ProgramHandle = createProgram( m_pFile->m_FileLength, m_pFile->m_pBuffer,
@@ -507,7 +507,7 @@ void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, 
 
 void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
-    MyAssert( false ); // no availabe with es 2.0, so avoid it for now.
+    MyAssert( false ); // Not availabe with ES 2.0, so avoid it for now.
     //if( index != -1 )
     //{
     //    MyEnableVertexAttribArray( index );
@@ -550,16 +550,14 @@ bool BaseShader::DoVAORequirementsMatch(BaseShader* pShader)
     return true;
 }
 
-GLenum BaseShader::GetShaderBlendFactorSrc_OpenGL()
+MyRE::BlendFactors BaseShader::GetShaderBlendFactorSrc()
 {
-    MyAssert( m_BlendFactorSrc < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[m_BlendFactorSrc];
+    return m_BlendFactorSrc;
 }
 
-GLenum BaseShader::GetShaderBlendFactorDest_OpenGL()
+MyRE::BlendFactors BaseShader::GetShaderBlendFactorDest()
 {
-    MyAssert( m_BlendFactorDest < MyRE::MaterialBlendFactor_NumTypes );
-    return MaterialBlendFactors_OpenGL[m_BlendFactorDest];
+    return m_BlendFactorDest;
 }
 
 void ShaderManager::AddShader(BaseShader* pShader)
