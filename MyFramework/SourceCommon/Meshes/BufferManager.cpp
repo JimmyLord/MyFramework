@@ -15,7 +15,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
+#include "../Renderers/OpenGL/GLHelpers.h"
 
 BufferManager* g_pBufferManager = nullptr;
 

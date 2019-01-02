@@ -16,7 +16,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
+#include "../Renderers/OpenGL/GLHelpers.h"
 
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
@@ -29,7 +29,7 @@ ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 ParticleRendererInstanced::~ParticleRendererInstanced()
 {
     delete[] m_pParticleData;
-    delete m_pInstancedAttributesBuffer;
+    SAFE_RELEASE( m_pInstancedAttributesBuffer );
 }
 
 void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const char* category)
@@ -43,7 +43,7 @@ void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const c
     m_pParticleData = MyNew ParticleInstanceData[maxPoints];
     m_NumParticlesAllocated = maxPoints;
 
-    m_pInstancedAttributesBuffer = MyNew BufferDefinition();
+    m_pInstancedAttributesBuffer = g_pBufferManager->CreateBuffer();
     m_pInstancedAttributesBuffer->InitializeBuffer( nullptr, 0, MyRE::BufferType_Vertex, MyRE::BufferUsage_StreamDraw,
                                                     false, 1, VertexFormat_Dynamic, nullptr, "Particles", "InstancedAttribs" );
 

@@ -97,6 +97,7 @@ public:
     bool Activate();
 
     void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
+    void SetupDefaultAttributes(BufferDefinition* pVBO);
     void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
     void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
     void ProgramTint(ColorByte tint);

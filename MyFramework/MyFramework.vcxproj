@@ -1529,6 +1529,8 @@
     <ClCompile Include="SourceCommon\Meshes\MyLight.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp" />
     <ClCompile Include="SourceCommon\Meshes\MyMeshLoader.cpp" />
+    <ClCompile Include="SourceCommon\Meshes\MyMeshShapes.cpp" />
+    <ClCompile Include="SourceCommon\Meshes\MySubmesh.cpp" />
     <ClCompile Include="SourceCommon\Meshes\OBJLoader.cpp" />
     <ClCompile Include="SourceCommon\Multithreading\MyThread.cpp" />
     <ClCompile Include="SourceCommon\Multithreading\MyJobManager.cpp" />
@@ -1567,6 +1569,7 @@
     <ClCompile Include="SourceCommon\Physics\Box2DContactListener.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DDebugDraw.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DWorld.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Renderers\Renderer_Base.cpp" />
     <ClCompile Include="SourceCommon\Renderers\Old\DXWrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -1587,7 +1590,6 @@
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp" />
     <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp" />
-    <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp" />
     <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp" />
@@ -2738,7 +2740,7 @@
     <ClInclude Include="SourceCommon\Meshes\MeshManager.h" />
     <ClInclude Include="SourceCommon\Meshes\MyLight.h" />
     <ClInclude Include="SourceCommon\Meshes\MyMesh.h" />
-    <ClInclude Include="SourceCommon\Meshes\MyMeshLoader.h" />
+    <ClInclude Include="SourceCommon\Meshes\MySubmesh.h" />
     <ClInclude Include="SourceCommon\Meshes\OBJLoader.h" />
     <ClInclude Include="SourceCommon\Multithreading\MyThread.h" />
     <ClInclude Include="SourceCommon\Multithreading\MyJobManager.h" />
@@ -2777,6 +2779,7 @@
     <ClInclude Include="SourceCommon\Physics\Box2DContactListener.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DDebugDraw.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DWorld.h" />
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\GLHelpers.h" />
     <ClInclude Include="SourceCommon\Renderers\Renderer_Base.h" />
     <ClInclude Include="SourceCommon\Renderers\Renderer_Enums.h" />
     <ClInclude Include="SourceCommon\Renderers\Old\DXWrapper.h">
@@ -2798,7 +2801,6 @@
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
-    <ClInclude Include="SourceCommon\Shaders\GLHelpers.h" />
     <ClInclude Include="SourceCommon\Shaders\ShaderGroup.h" />
     <ClInclude Include="SourceCommon\Shaders\ShaderManager.h" />
     <ClInclude Include="SourceCommon\Shaders\Shader_Base.h" />

@@ -20,7 +20,7 @@
 #include "../SourceWindows/WGLExtensions.h"
 #endif //MYFW_WINDOWS
 
-#include "Shaders/GLHelpers.h"
+#include "GLHelpers.h"
 
 //====================================================================================================
 // Enum Conversions.

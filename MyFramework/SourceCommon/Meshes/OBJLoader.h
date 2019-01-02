@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2014-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -13,10 +13,10 @@
 class MySubmesh;
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB);
 #endif
 
 // return 2 BufferDefinition pointers.
-void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB);
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB);
 
 #endif //__OBJLoader_H__

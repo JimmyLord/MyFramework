@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2014-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,13 +10,8 @@
 #include "CommonHeader.h"
 #include "OBJLoader.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
-
-// This code is assuming a list of faces longer than 3 is a triangle fan and turning into a list of tris.
-// TODO: obj's can have concave face lists... so this is a step better, but still broken.
+// This code is assuming a list of faces longer than 3 is a triangle fan and turns it into a list of tris.
+// TODO: OBJs can have concave face lists... so this is a step better, but still broken.
 
 struct FaceInfo
 {
@@ -28,7 +23,7 @@ struct FaceInfo
 #if _DEBUG
 char* LoadFile(const char* filename, long* length)
 {
-    char* filecontents = 0;
+    char* filecontents = nullptr;
 
     FILE* filehandle;
 #if MYFW_WINDOWS
@@ -45,7 +40,7 @@ char* LoadFile(const char* filename, long* length)
 
         filecontents = MyNew char[size+1];
         fread( filecontents, size, 1, filehandle );
-        filecontents[size] = 0;
+        filecontents[size] = '\0';
 
         if( length )
             *length = size;
@@ -59,7 +54,7 @@ char* LoadFile(const char* filename, long* length)
 
 int FindIndexOfNextSpaceOrTab(const char* buffer, int index)
 {
-    // find first non-whitespace
+    // Find first non-whitespace.
     while( buffer[index] != '\t' && buffer[index] != ' ' )
     {
         index++;
@@ -70,7 +65,7 @@ int FindIndexOfNextSpaceOrTab(const char* buffer, int index)
 
 int FindIndexOfFirstNonWhitespace(const char* buffer, int index)
 {
-    // find first non-whitespace
+    // Find first non-whitespace.
     while( buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == '\t' || buffer[index] == ' ' )
     {
         index++;
@@ -81,7 +76,7 @@ int FindIndexOfFirstNonWhitespace(const char* buffer, int index)
 
 int FindIndexOfFirstNonSpaceOrTab(const char* buffer, int index)
 {
-    // find first non-whitespace
+    // Find first non-whitespace.
     while( buffer[index] == '\t' || buffer[index] == ' ' )
     {
         index++;
@@ -92,8 +87,8 @@ int FindIndexOfFirstNonSpaceOrTab(const char* buffer, int index)
 
 int FindIndexOfFirstNonWhitespaceOfNextLine(const char* buffer, int index)
 {
-    // find end of line
-    while( buffer[index] != '\n' && buffer[index] != 0 )
+    // Find end of line.
+    while( buffer[index] != '\n' && buffer[index] != '\0' )
     {
         index++;
     }
@@ -103,51 +98,51 @@ int FindIndexOfFirstNonWhitespaceOfNextLine(const char* buffer, int index)
 
 float ReadFloatAndMoveOn(const char* buffer, int* index)
 {
-    char numberbuffer[100];
-    int numberbufferindex = 0;
+    char numberBuffer[100];
+    int numberBufferIndex = 0;
 
     while( (buffer[*index] >= '0' && buffer[*index] <= '9') || buffer[*index] == '.' || buffer[*index] == '-' || buffer[*index] == 'e' || buffer[*index] == '+' )
     {
-        numberbuffer[numberbufferindex] = buffer[*index];
-        numberbuffer[numberbufferindex+1] = 0;
-        numberbufferindex++;
+        numberBuffer[numberBufferIndex] = buffer[*index];
+        numberBuffer[numberBufferIndex+1] = '\0';
+        numberBufferIndex++;
 
         (*index)++;
     }
 
-    return (float)atof( numberbuffer );
+    return (float)atof( numberBuffer );
 }
 
 int ReadIntAndMoveOn(const char* buffer, int* index)
 {
-    char numberbuffer[100];
-    int numberbufferindex = 0;
+    char numberBuffer[100];
+    int numberBufferIndex = 0;
 
     while( (buffer[*index] >= '0' && buffer[*index] <= '9') || buffer[*index] == '-' )
     {
-        numberbuffer[numberbufferindex] = buffer[*index];
-        numberbuffer[numberbufferindex+1] = 0;
-        numberbufferindex++;
+        numberBuffer[numberBufferIndex] = buffer[*index];
+        numberBuffer[numberBufferIndex+1] = '\0';
+        numberBufferIndex++;
 
         (*index)++;
     }
 
-    return atoi( numberbuffer );
+    return atoi( numberBuffer );
 }
 
 Vector3 ParseVertex(const char* buffer, int index)
 {
     MyAssert( buffer[index] == 'v' );
 
-    Vector3 outvector(0,0,0);
+    Vector3 outVector(0,0,0);
 
-    // jump to the first space after the v, vt, or vn
+    // Jump to the first space after the v, vt, or vn.
     index = FindIndexOfNextSpaceOrTab( buffer, index );
     index = FindIndexOfFirstNonWhitespace( buffer, index+1 );
 
     int count = 0;
 
-    while( buffer[index] != '\r' && buffer[index] != '\n' && buffer[index] != 0 )
+    while( buffer[index] != '\r' && buffer[index] != '\n' && buffer[index] != '\0' )
     {
         if( buffer[index] == ' ' || buffer[index] == '\t' )
         {
@@ -159,21 +154,21 @@ Vector3 ParseVertex(const char* buffer, int index)
             float value = ReadFloatAndMoveOn( buffer, &index );
 
             if( count > 2 )
-                MyAssert( value == 1 ); // seen "v 3.25000 -2.48000 14.0000 1.00000" in a file, not sure why 1 is there.
+                MyAssert( value == 1 ); // Seen "v 3.25000 -2.48000 14.0000 1.00000" in a file, not sure why 1 is there.
             else
-                outvector[count] = value;
+                outVector[count] = value;
         }
     }
 
     //if( outvector.LengthSquared() == 0 )
     //    int bp = 1;
 
-    return outvector;
+    return outVector;
 }
 
 int ParseFaceInfo(FaceInfo* faces, const char* buffer, int index)
 {
-    // divide the face into a bunch of triangles... assumes face is defined as triangle fan, which it isn't.
+    // Divide the face into a bunch of triangles... assumes face is defined as triangle fan, which it isn't.
 
     int trianglecount = 0;
 
@@ -182,59 +177,59 @@ int ParseFaceInfo(FaceInfo* faces, const char* buffer, int index)
     // jump to the first number
     index = FindIndexOfFirstNonWhitespace( buffer, index+1 );
 
-    FaceInfo faceinfo;
-    memset( &faceinfo, 0, sizeof(FaceInfo) );
+    FaceInfo faceInfo;
+    memset( &faceInfo, 0, sizeof(FaceInfo) );
 
-    int numverts = 0;
-    int numattrs = 0;
+    int numVerts = 0;
+    int numAttrs = 0;
 
-    int lastnumber = -1;
+    int lastNumber = -1;
 
-    while( 1 )
+    while( true )
     {
-        if( buffer[index] == ' ' || buffer[index] == '\t' || buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == 0 )
+        if( buffer[index] == ' ' || buffer[index] == '\t' || buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == '\0' )
         {
-            MyAssert( numverts < 3 );
+            MyAssert( numVerts < 3 );
 
-            if( lastnumber > 0 )
+            if( lastNumber > 0 )
             {
-                faceinfo.attributes[numverts][numattrs] = lastnumber;
-                numverts++;
+                faceInfo.attributes[numVerts][numAttrs] = lastNumber;
+                numVerts++;
 
-                if( numverts == 3 ) // if we filled a triangle, create a new one.
+                if( numVerts == 3 ) // If we filled a triangle, create a new one.
                 {
-                    faces[trianglecount] = faceinfo;
+                    faces[trianglecount] = faceInfo;
                     trianglecount++;
 
-                    // assuming a triangle fan, so copy vert2 into vert1, vert0 stays the same, then read a new vert2
+                    // Assuming a triangle fan, so copy vert2 into vert1, vert0 stays the same, then read a new vert2.
                     for( int i=0; i<3; i++ )
-                        faceinfo.attributes[1][i] = faceinfo.attributes[2][i];
-                    numverts--;
+                        faceInfo.attributes[1][i] = faceInfo.attributes[2][i];
+                    numVerts--;
                 }
     
                 index = FindIndexOfFirstNonSpaceOrTab( buffer, index );
             }
 
-            lastnumber = -1; // invalid index
-            numattrs = 0;
+            lastNumber = -1; // Invalid index.
+            numAttrs = 0;
 
-            if( buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == 0 )
+            if( buffer[index] == '\r' || buffer[index] == '\n' || buffer[index] == '\0' )
                 break;
         }
         else if( buffer[index] == '/' )
         {
-            MyAssert( numverts < 3 );
-            MyAssert( numattrs < 3 );
+            MyAssert( numVerts < 3 );
+            MyAssert( numAttrs < 3 );
 
-            faceinfo.attributes[numverts][numattrs] = lastnumber;
-            lastnumber = 0; // invalid index
+            faceInfo.attributes[numVerts][numAttrs] = lastNumber;
+            lastNumber = 0; // Invalid index.
 
-            numattrs++;
+            numAttrs++;
             index++;
         }
         else
         {
-            lastnumber = ReadIntAndMoveOn( buffer, &index );
+            lastNumber = ReadIntAndMoveOn( buffer, &index );
         }
     }
 
@@ -242,38 +237,38 @@ int ParseFaceInfo(FaceInfo* faces, const char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB)
 {
     MyAssert( pSubmeshList );
 
-    MyAssert( false ); // don't use this function, file i/o should be done through a RequestFile call.
+    MyAssert( false ); // Don't use this function, file i/o should be done through a RequestFile call.
 
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, pSubmeshList, removeduplicatevertices, scale, pAABB );
+    LoadBasicOBJ( buffer, pSubmeshList, removeDuplicateVertices, scale, pAABB );
 
     delete[] buffer;
 }
 #endif
 
-void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int indexbytes)
+void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int indexBytes)
 {
-    if( indexbytes == 1 )
+    if( indexBytes == 1 )
     {
         *(unsigned char*)&indices[index] = (unsigned char)value;
     }
-    if( indexbytes == 2 )
+    if( indexBytes == 2 )
     {
         *(unsigned short*)&indices[index] = (unsigned short)value;
     }
-    if( indexbytes == 4 )
+    if( indexBytes == 4 )
     {
         *(unsigned int*)&indices[index] = (unsigned int)value;
     }
 }
 
-void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeduplicatevertices, float scale, MyAABounds* pAABB)
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB)
 {
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
@@ -283,100 +278,100 @@ void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool rem
 
     MyAssert( pSubmeshList->Count() > 0 );
 
-    // TODO: fix this ugliness from adding submeshes... or relegate obj loading to MeshTool.
+    // TODO: Fix this ugliness from adding submeshes... or relegate obj loading to MeshTool.
     BufferDefinition** ppVBO = &(*pSubmeshList)[0]->m_pVertexBuffer;
     BufferDefinition** ppIBO = &(*pSubmeshList)[0]->m_pIndexBuffer;
 
     MyAssert( ppVBO );
     MyAssert( ppIBO );
 
-    Vector3 minvert;
-    Vector3 maxvert;
+    Vector3 minVert;
+    Vector3 maxVert;
 
-    // count the number of faces and each type of vertex attribute.
-    int facecount = 0;
-    int vertposcount = 0;
-    int vertuvcount = 0;
-    int vertnormalcount = 0;
+    // Count the number of faces and each type of vertex attribute.
+    int faceCount = 0;
+    int vertPosCount = 0;
+    int vertUVCount = 0;
+    int vertNormalCount = 0;
 
     {
         int index = FindIndexOfFirstNonWhitespace( buffer, 0 );
-        while( buffer[index] != 0 )
+        while( buffer[index] != '\0' )
         {
             if( buffer[index] == 'v' )
             {
-                if( buffer[index+1] == ' ' )        vertposcount++;
-                else if( buffer[index+1] == 't' )   vertuvcount++;
-                else if( buffer[index+1] == 'n' )   vertnormalcount++;
+                if( buffer[index+1] == ' ' )        vertPosCount++;
+                else if( buffer[index+1] == 't' )   vertUVCount++;
+                else if( buffer[index+1] == 'n' )   vertNormalCount++;
             }
             else if( buffer[index] == 'f' )
             {
-                // count the number of verices, I'll assume the list produces a convex shape.
-                // so, numfaces is 2 less than the number of verts.
-                int numvertsinface = -1;
+                // Count the number of verices, I'll assume the list produces a convex shape.
+                // So, numfaces is 2 less than the number of verts.
+                int numVertsInFace = -1;
                 while( buffer[index] != '\r' && buffer[index] != '\n' )
                 {
-                    // skip all non-whitespace.
+                    // Skip all non-whitespace.
                     while( buffer[index] != '\t' && buffer[index] != ' ' && buffer[index] != '\r' && buffer[index] != '\n' )
                         index++;
 
-                    numvertsinface++;
+                    numVertsInFace++;
 
-                    // skip all whitespace.
+                    // Skip all whitespace.
                     while( buffer[index] == '\t' || buffer[index] == ' ' )
                         index++;
                 }
 
-                facecount += numvertsinface-2;
+                faceCount += numVertsInFace-2;
             }
 
             index = FindIndexOfFirstNonWhitespaceOfNextLine( buffer, index );
         }
     }
 
-    // allocate individual buffers for pos/uv/norm, then parse again to store values
-    Vector3* VertexPositions = MyNew Vector3[vertposcount];
-    Vector2* VertexUVs = vertuvcount ? MyNew Vector2[vertuvcount] : 0;
-    Vector3* VertexNormals = vertnormalcount ? MyNew Vector3[vertnormalcount] : 0;
-    FaceInfo* Faces = MyNew FaceInfo[facecount];
+    // Allocate individual buffers for pos/uv/norm, then parse again to store values.
+    Vector3* VertexPositions = MyNew Vector3[vertPosCount];
+    Vector2* VertexUVs = vertUVCount ? MyNew Vector2[vertUVCount] : 0;
+    Vector3* VertexNormals = vertNormalCount ? MyNew Vector3[vertNormalCount] : 0;
+    FaceInfo* Faces = MyNew FaceInfo[faceCount];
 
     {
         int index = FindIndexOfFirstNonWhitespace( buffer, 0 );
-        facecount = 0;
-        vertposcount = 0;
-        vertuvcount = 0;
-        vertnormalcount = 0;
+        faceCount = 0;
+        vertPosCount = 0;
+        vertUVCount = 0;
+        vertNormalCount = 0;
 
-        while( buffer[index] != 0 )
+        while( buffer[index] != '\0' )
         {
             if( buffer[index] == 'v' )
             {
                 if( buffer[index+1] == ' ' )
-                    VertexPositions[vertposcount++] = ParseVertex( buffer, index );
+                    VertexPositions[vertPosCount++] = ParseVertex( buffer, index );
                 else if( buffer[index+1] == 't' )
-                    VertexUVs[vertuvcount++] = ParseVertex( buffer, index ).XY();
+                    VertexUVs[vertUVCount++] = ParseVertex( buffer, index ).XY();
                 else if( buffer[index+1] == 'n' )
-                    VertexNormals[vertnormalcount++] = ParseVertex( buffer, index );
+                    VertexNormals[vertNormalCount++] = ParseVertex( buffer, index );
 
-                if( VertexPositions[vertposcount].x < minvert.x || vertposcount == 0 ) minvert.x = VertexPositions[vertposcount].x;
-                if( VertexPositions[vertposcount].y < minvert.y || vertposcount == 0 ) minvert.y = VertexPositions[vertposcount].y;
-                if( VertexPositions[vertposcount].z < minvert.z || vertposcount == 0 ) minvert.z = VertexPositions[vertposcount].z;
-                if( VertexPositions[vertposcount].x > maxvert.x || vertposcount == 0 ) maxvert.x = VertexPositions[vertposcount].x;
-                if( VertexPositions[vertposcount].y > maxvert.y || vertposcount == 0 ) maxvert.y = VertexPositions[vertposcount].y;
-                if( VertexPositions[vertposcount].z > maxvert.z || vertposcount == 0 ) maxvert.z = VertexPositions[vertposcount].z;
+                if( VertexPositions[vertPosCount].x < minVert.x || vertPosCount == 0 ) minVert.x = VertexPositions[vertPosCount].x;
+                if( VertexPositions[vertPosCount].y < minVert.y || vertPosCount == 0 ) minVert.y = VertexPositions[vertPosCount].y;
+                if( VertexPositions[vertPosCount].z < minVert.z || vertPosCount == 0 ) minVert.z = VertexPositions[vertPosCount].z;
+                if( VertexPositions[vertPosCount].x > maxVert.x || vertPosCount == 0 ) maxVert.x = VertexPositions[vertPosCount].x;
+                if( VertexPositions[vertPosCount].y > maxVert.y || vertPosCount == 0 ) maxVert.y = VertexPositions[vertPosCount].y;
+                if( VertexPositions[vertPosCount].z > maxVert.z || vertPosCount == 0 ) maxVert.z = VertexPositions[vertPosCount].z;
             }
 
             if( buffer[index] == 'f' )
             {
-                facecount += ParseFaceInfo( &Faces[facecount], buffer, index );
+                faceCount += ParseFaceInfo( &Faces[faceCount], buffer, index );
             }
 
             index = FindIndexOfFirstNonWhitespaceOfNextLine( buffer, index );
         }
     }
 
-    // check the first face, to see how many attributes we need to allocate.
-    int numcomponents = 0;
+    // Check the first face, to see how many attributes we need to allocate.
+    int numComponents = 0;
 
     {
         for( int i=0; i<3; i++ )
@@ -384,166 +379,166 @@ void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool rem
             if( Faces[0].attributes[0][i] != 0 )
             {
                 if( i == 1 )
-                    numcomponents += 2; // uv
+                    numComponents += 2; // UV.
                 else
-                    numcomponents += 3; // position or normal
+                    numComponents += 3; // Position or normal.
             }
         }
 
         //for( int i=0; i<4; i++ )
         //{
-        //    if( Faces[0].attributes[i][0] != 0 ) // if it has a position, index 0 is an invalid vertex position
+        //    if( Faces[0].attributes[i][0] != 0 ) // If it has a position, index 0 is an invalid vertex position.
         //        numvertsinaface++;
         //}
     }
 
-    // we need a vert count, the number will be different if we remove dupes or not.
-    int numverts = 0;
-    int numtriangles = 0;
+    // We need a vert count, the number will be different if we remove dupes or not.
+    int numVerts = 0;
+    int numTriangles = 0;
 
-    // count the number of verts and triangles and copy the vertex indices into the face list.
+    // Count the number of verts and triangles and copy the vertex indices into the face list.
     {
-        double starttime = MyTime_GetSystemTime();
+        double startTime = MyTime_GetSystemTime();
 
-        numverts = 0;
-        numtriangles = 0;
-        int dupesfound = 0;
+        numVerts = 0;
+        numTriangles = 0;
+        int dupesFound = 0;
 
-        // loop through all faces and vertices
-        for( int f=0; f<facecount; f++ )
+        // Loop through all faces and vertices.
+        for( int f=0; f<faceCount; f++ )
         {
-            if( removeduplicatevertices )
+            if( removeDuplicateVertices )
             {
                 if( f % 10000 == 0 )
                 {
                     double endtime = MyTime_GetSystemTime();
-                    LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, f, dupesfound );
+                    LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - startTime, f, dupesFound );
                 }
             }
 
-            int numvertsinface = 3;
-            numtriangles++;
-            if( Faces[f].attributes[3][0] != 0 ) // if the 4th vertex has a valid position index, then it's a valid vert
+            int numVertsInFace = 3;
+            numTriangles++;
+            if( Faces[f].attributes[3][0] != 0 ) // If the 4th vertex has a valid position index, then it's a valid vert.
             {
-                numvertsinface = 4;
-                numtriangles++;
+                numVertsInFace = 4;
+                numTriangles++;
             }
 
-            for( int v=0; v<numvertsinface; v++ )
+            for( int v=0; v<numVertsInFace; v++ )
             {
-                // try to reduce the number of vertices by searching for duplicate vertices in face list.
-                //   needs some serious optimizing. TODO: optimize this step.
-                // search all previous vertices looking for a duplicate.
-                if( removeduplicatevertices )
+                // Try to reduce the number of vertices by searching for duplicate vertices in face list.
+                //   Needs some serious optimizing. TODO: optimize this step.
+                // Search all previous vertices looking for a duplicate.
+                if( removeDuplicateVertices )
                 {
-                    for( int origf=0; origf < f; origf++ )
+                    for( int origF=0; origF < f; origF++ )
                     {
-                        for( int origv=0; origv < numvertsinface; origv++ )
+                        for( int origV=0; origV < numVertsInFace; origV++ )
                         {
-                            if( Faces[f].attributes[v][0] == Faces[origf].attributes[origv][0] &&
-                                Faces[f].attributes[v][1] == Faces[origf].attributes[origv][1] &&
-                                Faces[f].attributes[v][2] == Faces[origf].attributes[origv][2] )
+                            if( Faces[f].attributes[v][0] == Faces[origF].attributes[origV][0] &&
+                                Faces[f].attributes[v][1] == Faces[origF].attributes[origV][1] &&
+                                Faces[f].attributes[v][2] == Faces[origF].attributes[origV][2] )
                             {
-                                Faces[f].vertindex[v] = Faces[origf].vertindex[origv];
-                                dupesfound++;
-                                goto foundduplicate_skiptonextvert;
+                                Faces[f].vertindex[v] = Faces[origF].vertindex[origV];
+                                dupesFound++;
+                                goto foundDuplicate_SkipToNextVert;
                             }
                         }
                     }
                 }
 
-                Faces[f].vertindex[v] = numverts + 1;
-                numverts++;
-foundduplicate_skiptonextvert:
+                Faces[f].vertindex[v] = numVerts + 1;
+                numVerts++;
+foundDuplicate_SkipToNextVert:
                 ;
             }
         }
 
-        double endtime = MyTime_GetSystemTime();
+        double endTime = MyTime_GetSystemTime();
 
-        if( removeduplicatevertices )
+        if( removeDuplicateVertices )
         {
-            LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endtime - starttime, facecount, dupesfound );
+            LOGInfo( LOGTag, "Looking for dupes (%0.0f) - faces %d, dupes found %d\n", endTime - startTime, faceCount, dupesFound );
         }
     }
 
-    int vertbuffersize = numverts * numcomponents;
-    int indexcount = numtriangles * 3;
+    int vertBufferSize = numVerts * numComponents;
+    int indexCount = numTriangles * 3;
 
-    int bytesperindex = 1;
-    if( numverts > 256 && numverts <= 256*256 )
-        bytesperindex = 2;
-    else if( numverts > 256*256 )
-        bytesperindex = 4;
+    int bytesPerIndex = 1;
+    if( numVerts > 256 && numVerts <= 256*256 )
+        bytesPerIndex = 2;
+    else if( numVerts > 256*256 )
+        bytesPerIndex = 4;
 
-    float* verts = MyNew float[vertbuffersize];
-    unsigned char* indices = MyNew unsigned char[indexcount * bytesperindex];
+    float* verts = MyNew float[vertBufferSize];
+    unsigned char* indices = MyNew unsigned char[indexCount * bytesPerIndex];
 
-    // cycle through the faces and copy the vertex info into the final vertex/index buffers.
+    // Cycle through the faces and copy the vertex info into the final vertex/index buffers.
     {
-        int indexbytecount = 0;
-        int vertcount = 0;
-        for( int f=0; f<facecount; f++ )
+        int indexByteCount = 0;
+        int vertCount = 0;
+        for( int f=0; f<faceCount; f++ )
         {
-            int vertindices[4];
+            int vertIndices[4];
 
-            vertindices[0] = Faces[f].vertindex[0] - 1;
-            vertindices[1] = Faces[f].vertindex[1] - 1;
-            vertindices[2] = Faces[f].vertindex[2] - 1;
-            vertindices[3] = Faces[f].vertindex[3] - 1;
+            vertIndices[0] = Faces[f].vertindex[0] - 1;
+            vertIndices[1] = Faces[f].vertindex[1] - 1;
+            vertIndices[2] = Faces[f].vertindex[2] - 1;
+            vertIndices[3] = Faces[f].vertindex[3] - 1;
+            
+            int numVertsInFace = 3;
+            if( Faces[f].attributes[3][0] != 0 ) // if the 4th vertex has a valid position index, then it's a valid vert.
+                numVertsInFace = 4;
 
-            int numvertsinface = 3;
-            if( Faces[f].attributes[3][0] != 0 ) // if the 4th vertex has a valid position index, then it's a valid vert
-                numvertsinface = 4;
-
-            for( int v=0; v<numvertsinface; v++ )
+            for( int v=0; v<numVertsInFace; v++ )
             {
-                int attroffset = vertindices[v] * numcomponents;
+                int attrOffset = vertIndices[v] * numComponents;
 
-                int vertposindex = Faces[f].attributes[v][0] - 1;
-                verts[attroffset] = VertexPositions[vertposindex].x * scale; attroffset++;
-                verts[attroffset] = VertexPositions[vertposindex].y * scale; attroffset++;
-                verts[attroffset] = VertexPositions[vertposindex].z * scale; attroffset++;
+                int vertPosIndex = Faces[f].attributes[v][0] - 1;
+                verts[attrOffset] = VertexPositions[vertPosIndex].x * scale; attrOffset++;
+                verts[attrOffset] = VertexPositions[vertPosIndex].y * scale; attrOffset++;
+                verts[attrOffset] = VertexPositions[vertPosIndex].z * scale; attrOffset++;
 
-                int vertuvindex = Faces[f].attributes[v][1] - 1;
-                if( vertuvindex != -1 )
+                int vertUVIndex = Faces[f].attributes[v][1] - 1;
+                if( vertUVIndex != -1 )
                 {
-                    verts[attroffset] = VertexUVs[vertuvindex].x; attroffset++;
-                    verts[attroffset] = VertexUVs[vertuvindex].y; attroffset++;
+                    verts[attrOffset] = VertexUVs[vertUVIndex].x; attrOffset++;
+                    verts[attrOffset] = VertexUVs[vertUVIndex].y; attrOffset++;
                 }
 
-                int vertnormalindex = Faces[f].attributes[v][2] - 1;
-                if( vertnormalindex != -1 )
+                int vertNormalIndex = Faces[f].attributes[v][2] - 1;
+                if( vertNormalIndex != -1 )
                 {
-                    verts[attroffset] = VertexNormals[vertnormalindex].x; attroffset++;
-                    verts[attroffset] = VertexNormals[vertnormalindex].y; attroffset++;
-                    verts[attroffset] = VertexNormals[vertnormalindex].z; attroffset++;
+                    verts[attrOffset] = VertexNormals[vertNormalIndex].x; attrOffset++;
+                    verts[attrOffset] = VertexNormals[vertNormalIndex].y; attrOffset++;
+                    verts[attrOffset] = VertexNormals[vertNormalIndex].z; attrOffset++;
                 }
             }
 
-            if( numvertsinface == 3 )
+            if( numVertsInFace == 3 )
             {
-                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[0], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[1], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[2], bytesPerIndex ); indexByteCount += bytesPerIndex;
             }
-            else if( numvertsinface == 4 )
+            else if( numVertsInFace == 4 )
             {
-                MyAssert( false ); // should reach this code anymore, faces are broken up into triangles in ParseFaceInfo();
-                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[1], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
+                MyAssert( false ); // Shouldn't reach this code anymore, faces are broken up into triangles in ParseFaceInfo().
+                SetValueOfIndex( indices, indexByteCount, vertIndices[0], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[1], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[2], bytesPerIndex ); indexByteCount += bytesPerIndex;
 
-                SetValueOfIndex( indices, indexbytecount, vertindices[0], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[2], bytesperindex ); indexbytecount += bytesperindex;
-                SetValueOfIndex( indices, indexbytecount, vertindices[3], bytesperindex ); indexbytecount += bytesperindex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[0], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[2], bytesPerIndex ); indexByteCount += bytesPerIndex;
+                SetValueOfIndex( indices, indexByteCount, vertIndices[3], bytesPerIndex ); indexByteCount += bytesPerIndex;
             }
             else
             {
                 MyAssert( false );
             }
 
-            vertcount += numvertsinface;
+            vertCount += numVertsInFace;
         }
     }
 
@@ -563,27 +558,24 @@ foundduplicate_skiptonextvert:
     else
         format = VertexFormat_XYZ;
 
-    // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
-    if( *ppVBO == 0 )
+    // Give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s.
+    if( *ppVBO == nullptr )
     {
         *ppVBO = g_pBufferManager->CreateBuffer();
     }
 
-    if( *ppIBO == 0 )
+    if( *ppIBO == nullptr )
     {
         *ppIBO = g_pBufferManager->CreateBuffer();
     }
 
     if( pAABB )
     {
-        Vector3 center = (minvert + maxvert) / 2;
-        pAABB->Set( center, maxvert - center );
+        Vector3 center = (minVert + maxVert) / 2;
+        pAABB->Set( center, maxVert - center );
     }
 
-    // The buffer will delete the allocated arrays of verts/indices
-    (*ppVBO)->InitializeBuffer( verts, vertbuffersize*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, format, 0, "OBJLoader", "VBO" );
-    (*ppIBO)->InitializeBuffer( indices, indexcount*bytesperindex, MyRE::BufferType_Index, MyRE::BufferUsage_DynamicDraw, true, 1, bytesperindex, "OBJLoader", "IBO" );
-
-    //delete[] verts;
-    //delete[] indices;
+    // The buffer will delete the allocated arrays of verts/indices.
+    (*ppVBO)->InitializeBuffer( verts, vertBufferSize*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, format, nullptr, "OBJLoader", "VBO" );
+    (*ppIBO)->InitializeBuffer( indices, indexCount*bytesPerIndex, MyRE::BufferType_Index, MyRE::BufferUsage_DynamicDraw, true, 1, bytesPerIndex, "OBJLoader", "IBO" );
 }

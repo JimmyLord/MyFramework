@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -8,141 +8,133 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "MyMeshLoader.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
-
-void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale)
+void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
-    checkGlError( "MyMesh::LoadMyMesh" );
-
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
 
-    // get the number of verts/indices/bones.
-    unsigned int totalverts = 0;
-    unsigned int totalindices = 0;
-    unsigned int totalbones = 0;
-    unsigned int totalnodes = 0;
-    unsigned int totalanimtimelines = 0;
+    // Get the number of verts/indices/bones.
+    unsigned int totalVerts = 0;
+    unsigned int totalIndices = 0;
+    unsigned int totalBones = 0;
+    unsigned int totalNodes = 0;
+    unsigned int totalAnimTimelines = 0;
 
-    Vector3 minvert;
-    Vector3 maxvert;
+    Vector3 minVert;
+    Vector3 maxVert;
 
-    // Skip the comments at the top of mymesh files by searching for '{'
-    const char* jsonstart = buffer;
+    // Skip the comments at the top of mymesh files by searching for '{'.
+    const char* jsonStart = pBuffer;
     {
         int i=0;
-        while( jsonstart[i] != '{' )
+        while( jsonStart[i] != '{' )
         {
             i++;
         }
-        jsonstart += i;
+        jsonStart += i;
     }
 
-    cJSON* root = cJSON_Parse( jsonstart );
-    MyAssert( root );
+    cJSON* jRoot = cJSON_Parse( jsonStart );
+    MyAssert( jRoot );
 
-    cJSONExt_GetFloat( root, "InitialScale", &m_InitialScale );
+    cJSONExt_GetFloat( jRoot, "InitialScale", &m_InitialScale );
     scale = m_InitialScale;
 
     // Find a line that starts with "#RAW" and store it's index.
-    unsigned int bufferlen = (int)strlen( buffer );
-    unsigned int rawbyteoffset = 0;
-    if( bufferlen > 5 )
+    unsigned int bufferLen = (int)strlen( pBuffer );
+    unsigned int rawByteOffset = 0;
+    if( bufferLen > 5 )
     {
-        for( unsigned int i=0; i<bufferlen; i++ )
+        for( unsigned int i=0; i<bufferLen; i++ )
         {
-            if( i > 1 && strncmp( &buffer[i], "\n#RAW", 5 ) == 0 )
+            if( i > 1 && strncmp( &pBuffer[i], "\n#RAW", 5 ) == 0 )
             {
-                rawbyteoffset = i+5;
+                rawByteOffset = i+5;
                 break;
             }
         }
     }
 
     // Ensure raw data starts on 4-byte boundary.
-    MyAssert( rawbyteoffset%4 == 0 );
+    MyAssert( rawByteOffset%4 == 0 );
 
     {
-        cJSONExt_GetUnsignedInt( root, "TotalBones", &totalbones );
-        cJSONExt_GetUnsignedInt( root, "TotalNodes", &totalnodes );
+        cJSONExt_GetUnsignedInt( jRoot, "TotalBones", &totalBones );
+        cJSONExt_GetUnsignedInt( jRoot, "TotalNodes", &totalNodes );
 
         // Read in bone info.
-        if( totalbones )
+        if( totalBones )
         {
-            m_BoneNames.AllocateObjects( totalbones );
-            m_BoneOffsetMatrices.AllocateObjects( totalbones );
-            m_BoneFinalMatrices.AllocateObjects( totalbones );
+            m_BoneNames.AllocateObjects( totalBones );
+            m_BoneOffsetMatrices.AllocateObjects( totalBones );
+            m_BoneFinalMatrices.AllocateObjects( totalBones );
 
-            cJSON* bones = cJSON_GetObjectItem( root, "Bones" );
-            MyAssert( totalbones == (unsigned int)cJSON_GetArraySize( bones ) );
-            for( unsigned int i=0; i<totalbones; i++ )
+            cJSON* jBonesArray = cJSON_GetObjectItem( jRoot, "Bones" );
+            MyAssert( totalBones == (unsigned int)cJSON_GetArraySize( jBonesArray ) );
+            for( unsigned int i=0; i<totalBones; i++ )
             {
-                cJSON* bone = cJSON_GetArrayItem( bones, i );
-                if( bone )
+                cJSON* jBone = cJSON_GetArrayItem( jBonesArray, i );
+                if( jBone )
                 {
-                    int namelen = (int)strlen( bone->valuestring );
-                    char* bonename = MyNew char[namelen+1];
-                    strcpy_s( bonename, namelen+1, bone->valuestring );
+                    int nameLen = (int)strlen( jBone->valuestring );
+                    char* boneName = MyNew char[nameLen+1];
+                    strcpy_s( boneName, nameLen+1, jBone->valuestring );
 
-                    m_BoneNames.Add( bonename );
+                    m_BoneNames.Add( boneName );
                 }
             }
         }
 
         // Read in skeleton's node tree.
-        if( totalnodes > 0 )
+        if( totalNodes > 0 )
         {
-            m_pSkeletonNodeTree.AllocateObjects( totalnodes );
+            m_pSkeletonNodeTree.AllocateObjects( totalNodes );
 
-            cJSON* rootnode = cJSON_GetObjectItem( root, "Nodes" );
+            cJSON* jFirstNode = cJSON_GetObjectItem( jRoot, "Nodes" );
 
-            LoadMyMesh_ReadNode( rootnode->child, 0 );
+            LoadMyMesh_ReadNode( jFirstNode->child, nullptr );
         }
 
         // Read in the animation timelines.
-        cJSON* animarray = cJSON_GetObjectItem( root, "AnimArray" );
-        if( animarray )
+        cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "AnimArray" );
+        if( jAnimArray )
         {
-            totalanimtimelines = cJSON_GetArraySize( animarray );
-            if( totalanimtimelines > 0 )
+            totalAnimTimelines = cJSON_GetArraySize( jAnimArray );
+            if( totalAnimTimelines > 0 )
             {
-                m_pAnimationTimelines.AllocateObjects( totalanimtimelines );
+                m_pAnimationTimelines.AllocateObjects( totalAnimTimelines );
 
-                for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
+                for( unsigned int ai=0; ai<totalAnimTimelines; ai++ )
                 {
                     MyAnimationTimeline* pAnim = MyNew MyAnimationTimeline;
                     m_pAnimationTimelines.Add( pAnim );
 
-                    cJSON* pAnimObj = cJSON_GetArrayItem( animarray, ai );
-                    pAnim->ImportFromJSON( pAnimObj );
+                    cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, ai );
+                    pAnim->ImportFromJSON( jAnim );
                 }
             }
         }
     }
 
-    cJSON* mesharray = cJSON_GetObjectItem( root, "Meshes" );
-    if( mesharray )
+    cJSON* jMeshArray = cJSON_GetObjectItem( jRoot, "Meshes" );
+    if( jMeshArray )
     {
-        cJSON* mesh = 0;
-        if( mesharray )
-            mesh = mesharray->child;
+        cJSON* jMesh = nullptr;
+        if( jMeshArray )
+            jMesh = jMeshArray->child;
 
-        int nummeshes = cJSON_GetArraySize( mesharray );
-        pSubmeshList->AllocateObjects( nummeshes );
-        for( int i=0; i<nummeshes; i++ )
+        int numMeshes = cJSON_GetArraySize( jMeshArray );
+        pSubmeshList->AllocateObjects( numMeshes );
+        for( int i=0; i<numMeshes; i++ )
             pSubmeshList->Add( MyNew MySubmesh() );
 
-        int meshcount = 0;
-        while( mesh )
+        int meshCount = 0;
+        while( jMesh )
         {
-            MyAssert( meshcount < (int)pSubmeshList->Count() );
+            MyAssert( meshCount < (int)pSubmeshList->Count() );
 
-            MySubmesh* pSubmesh = (*pSubmeshList)[meshcount];
+            MySubmesh* pSubmesh = (*pSubmeshList)[meshCount];
 
             BufferDefinition** ppVBO = &pSubmesh->m_pVertexBuffer;
             BufferDefinition** ppIBO = &pSubmesh->m_pIndexBuffer;
@@ -152,7 +144,7 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
 
             if( m_LoadDefaultMaterials )
             {
-                cJSON* jMaterial = cJSON_GetObjectItem( mesh, "Material" );
+                cJSON* jMaterial = cJSON_GetObjectItem( jMesh, "Material" );
                 if( jMaterial && jMaterial->valuestring )
                 {
                     MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
@@ -162,54 +154,54 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                 }
             }
 
-            cJSONExt_GetUnsignedInt( mesh, "TotalVerts", &totalverts );
-            cJSONExt_GetUnsignedInt( mesh, "TotalIndices", &totalindices );
+            cJSONExt_GetUnsignedInt( jMesh, "TotalVerts", &totalVerts );
+            cJSONExt_GetUnsignedInt( jMesh, "TotalIndices", &totalIndices );
 
-            unsigned int numuvchannels = 0;
-            bool hasnormals = false;
-            bool hastangents = false;
-            bool hasbitangents = false;
-            bool hascolor = false;
-            unsigned int mostbonesinfluences = 0;
+            unsigned int numUVChannels = 0;
+            bool hasNormals = false;
+            bool hasTangents = false;
+            bool hasBitangents = false;
+            bool hasColor = false;
+            unsigned int mostBonesInfluences = 0;
 
-            cJSONExt_GetUnsignedInt( mesh, "VF-uv", &numuvchannels );
-            cJSONExt_GetBool( mesh, "VF-normal", &hasnormals );
-            cJSONExt_GetBool( mesh, "VF-tangent", &hastangents );
-            cJSONExt_GetBool( mesh, "VF-bitangent", &hasbitangents );
-            cJSONExt_GetBool( mesh, "VF-color", &hascolor );
-            cJSONExt_GetUnsignedInt( mesh, "VF-mostweights", &mostbonesinfluences );
+            cJSONExt_GetUnsignedInt( jMesh, "VF-uv", &numUVChannels );
+            cJSONExt_GetBool( jMesh, "VF-normal", &hasNormals );
+            cJSONExt_GetBool( jMesh, "VF-tangent", &hasTangents );
+            cJSONExt_GetBool( jMesh, "VF-bitangent", &hasBitangents );
+            cJSONExt_GetBool( jMesh, "VF-color", &hasColor );
+            cJSONExt_GetUnsignedInt( jMesh, "VF-mostweights", &mostBonesInfluences );
 
-            VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numuvchannels, hasnormals, hastangents, hasbitangents, hascolor, mostbonesinfluences );
+            VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numUVChannels, hasNormals, hasTangents, hasBitangents, hasColor, mostBonesInfluences );
 
             // read this mesh's raw bytes, verts/indices/etc.
-            if( rawbyteoffset != 0 )
+            if( rawByteOffset != 0 )
             {
-                int bytesperindex = 4;
-                if( totalverts <= 256 )
-                    bytesperindex = 1;
-                else if( totalverts <= 256*256 )
-                    bytesperindex = 2;
+                int bytesPerIndex = 4;
+                if( totalVerts <= 256 )
+                    bytesPerIndex = 1;
+                else if( totalVerts <= 256*256 )
+                    bytesPerIndex = 2;
 
-                unsigned int vertbuffersize = totalverts * pDesc->stride;
-                unsigned int indexbuffersize = totalindices * bytesperindex;
-                unsigned char* verts = MyNew unsigned char[vertbuffersize];
-                unsigned char* indices = MyNew unsigned char[indexbuffersize];
+                unsigned int vertBufferSize = totalVerts * pDesc->stride;
+                unsigned int indexBufferSize = totalIndices * bytesPerIndex;
+                unsigned char* verts = MyNew unsigned char[vertBufferSize];
+                unsigned char* indices = MyNew unsigned char[indexBufferSize];
 
-                // read the raw data:
+                // Read the raw data:
                 {
                     // Advance the rawbyteoffset to land on next 4-byte boundary.
-                    if( rawbyteoffset%4 != 0 )
-                        rawbyteoffset += 4 - rawbyteoffset%4;
+                    if( rawByteOffset%4 != 0 )
+                        rawByteOffset += 4 - rawByteOffset%4;
 
                     // Read vert buffer bytes. //(Vertex_XYZUVNorm_RGBA_4Bones*)verts,10
-                    memcpy( verts, &buffer[rawbyteoffset], vertbuffersize );
-                    rawbyteoffset += vertbuffersize;
+                    memcpy( verts, &pBuffer[rawByteOffset], vertBufferSize );
+                    rawByteOffset += vertBufferSize;
 
                     // Scale the verts if requested... should be done at export or not at all.
                     // Assumes position is the first attribute... ugh. TODO: rip this out.
                     if( scale != 1.0f )
                     {
-                        for( unsigned int i=0; i<totalverts; i++ )
+                        for( unsigned int i=0; i<totalVerts; i++ )
                         {
                             ((float*)(&(verts[pDesc->stride * i])))[0] *= scale;
                             ((float*)(&(verts[pDesc->stride * i])))[1] *= scale;
@@ -217,39 +209,39 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                         }
                     }
 
-                    for( unsigned int i=0; i<totalverts; i++ )
+                    for( unsigned int i=0; i<totalVerts; i++ )
                     {
-                        if( ((float*)(&(verts[pDesc->stride * i])))[0] < minvert.x || i == 0 ) minvert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
-                        if( ((float*)(&(verts[pDesc->stride * i])))[1] < minvert.y || i == 0 ) minvert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
-                        if( ((float*)(&(verts[pDesc->stride * i])))[2] < minvert.z || i == 0 ) minvert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
-                        if( ((float*)(&(verts[pDesc->stride * i])))[0] > maxvert.x || i == 0 ) maxvert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
-                        if( ((float*)(&(verts[pDesc->stride * i])))[1] > maxvert.y || i == 0 ) maxvert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
-                        if( ((float*)(&(verts[pDesc->stride * i])))[2] > maxvert.z || i == 0 ) maxvert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[0] < minVert.x || i == 0 ) minVert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[1] < minVert.y || i == 0 ) minVert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[2] < minVert.z || i == 0 ) minVert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[0] > maxVert.x || i == 0 ) maxVert.x = ((float*)(&(verts[pDesc->stride * i])))[0];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[1] > maxVert.y || i == 0 ) maxVert.y = ((float*)(&(verts[pDesc->stride * i])))[1];
+                        if( ((float*)(&(verts[pDesc->stride * i])))[2] > maxVert.z || i == 0 ) maxVert.z = ((float*)(&(verts[pDesc->stride * i])))[2];
                     }
 
                     // Advance the rawbyteoffset to land on next 4-byte boundary.
-                    if( rawbyteoffset%4 != 0 )
-                        rawbyteoffset += 4 - rawbyteoffset%4;
+                    if( rawByteOffset%4 != 0 )
+                        rawByteOffset += 4 - rawByteOffset%4;
 
                     // Read index buffer bytes.
-                    memcpy( indices, &buffer[rawbyteoffset], indexbuffersize );
-                    rawbyteoffset += indexbuffersize;
+                    memcpy( indices, &pBuffer[rawByteOffset], indexBufferSize );
+                    rawByteOffset += indexBufferSize;
                 }
 
-                // give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s
-                if( *ppVBO == 0 )
+                // Give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s.
+                if( *ppVBO == nullptr )
                 {
                     *ppVBO = g_pBufferManager->CreateBuffer();
                 }
 
-                if( *ppIBO == 0 )
+                if( *ppIBO == nullptr )
                 {
                     *ppIBO = g_pBufferManager->CreateBuffer();
                 }
 
-                // The buffer will delete the allocated arrays of verts/indices
-                (*ppVBO)->InitializeBuffer( verts, vertbuffersize, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
-                (*ppIBO)->InitializeBuffer( indices, indexbuffersize, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, bytesperindex, "MyMeshLoader", "IBO" );
+                // The buffer will delete the allocated arrays of verts/indices.
+                (*ppVBO)->InitializeBuffer( verts, vertBufferSize, MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_Dynamic, pDesc, "MyMeshLoader", "VBO" );
+                (*ppIBO)->InitializeBuffer( indices, indexBufferSize, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, bytesPerIndex, "MyMeshLoader", "IBO" );
 
                 //delete[] verts;
                 //delete[] indices;
@@ -259,24 +251,24 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                 pSubmesh->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
             }
 
-            // get the next mesh from the cJSON array.
-            mesh = mesh->next;
-            meshcount++;
+            // Get the next mesh from the cJSON array.
+            jMesh = jMesh->next;
+            meshCount++;
         }
 
-        // read in the rest of the raw data.
-        if( rawbyteoffset != 0 )
+        // Read in the rest of the raw data.
+        if( rawByteOffset != 0 )
         {
             // Advance the rawbyteoffset to land on next 4-byte boundary.
-            if( rawbyteoffset%4 != 0 )
-                rawbyteoffset += 4 - rawbyteoffset%4;
+            if( rawByteOffset%4 != 0 )
+                rawByteOffset += 4 - rawByteOffset%4;
 
-            // read bone offset matrices
+            // Read bone offset matrices.
             {
-                if( totalbones > 0 )
+                if( totalBones > 0 )
                 {
-                    m_BoneOffsetMatrices.BlockFill( &buffer[rawbyteoffset], sizeof(MyMatrix)*totalbones, totalbones );
-                    rawbyteoffset += sizeof(MyMatrix)*totalbones;
+                    m_BoneOffsetMatrices.BlockFill( &pBuffer[rawByteOffset], sizeof(MyMatrix)*totalBones, totalBones );
+                    rawByteOffset += sizeof(MyMatrix)*totalBones;
 
                     for( unsigned int i=0; i<m_BoneOffsetMatrices.Count(); i++ )
                     {
@@ -286,52 +278,52 @@ void MyMesh::LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, fl
                     }
                 }
 
-                // initialize all the final bone matrices to identity.
+                // Initialize all the final bone matrices to identity.
                 MyMatrix matidentity;
                 matidentity.SetIdentity();
-                for( unsigned int i=0; i<totalbones; i++ )
+                for( unsigned int i=0; i<totalBones; i++ )
                 {
                     m_BoneFinalMatrices.Add( matidentity );
                 }
             }
 
             // Read in the node transforms
-            for( unsigned int ni=0; ni<totalnodes; ni++ )
+            for( unsigned int ni=0; ni<totalNodes; ni++ )
             {
                 MyAssert( ni < m_pSkeletonNodeTree.Count() );
 
-                // TODO: this line fails on Android(gcc)... no clue why, so did it with a memcpy.
-                //m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawbyteoffset];
-                memcpy( &m_pSkeletonNodeTree[ni].m_Transform, &buffer[rawbyteoffset], sizeof(MyMatrix) );
+                // TODO: This line fails on Android(gcc)... no clue why, so did it with a memcpy.
+                //m_pSkeletonNodeTree[ni].m_Transform = *(MyMatrix*)&buffer[rawByteOffset];
+                memcpy( &m_pSkeletonNodeTree[ni].m_Transform, &pBuffer[rawByteOffset], sizeof(MyMatrix) );
 
-                rawbyteoffset += sizeof(MyMatrix);
+                rawByteOffset += sizeof(MyMatrix);
 
                 m_pSkeletonNodeTree[ni].m_Transform.m41 *= scale;
                 m_pSkeletonNodeTree[ni].m_Transform.m42 *= scale;
                 m_pSkeletonNodeTree[ni].m_Transform.m43 *= scale;
             }
 
-            // read animation channels
-            for( unsigned int ai=0; ai<totalanimtimelines; ai++ )
+            // Read animation channels.
+            for( unsigned int ai=0; ai<totalAnimTimelines; ai++ )
             {
                 MyAssert( ai < m_pAnimationTimelines.Count() );
 
                 // Ensure animation data starts on 4-byte boundary.
-                MyAssert( rawbyteoffset%4 == 0 );
+                MyAssert( rawByteOffset%4 == 0 );
 
-                rawbyteoffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &buffer[rawbyteoffset], scale );
+                rawByteOffset += m_pAnimationTimelines[ai]->ImportChannelsFromBuffer( &pBuffer[rawByteOffset], scale );
             }
         }
     }
 
-    cJSON_Delete( root );
+    cJSON_Delete( jRoot );
 
-    // if something failed to load, don't consider the mesh ready.
-    // TODO: add better error handling... maybe
+    // If something failed to load, don't consider the mesh ready.
+    // TODO: Add better error handling... maybe.
     if( pSubmeshList->Count() > 0 )
     {
-        Vector3 center = (minvert + maxvert) / 2;
-        m_AABounds.Set( center, maxvert - center );
+        Vector3 center = (minVert + maxVert) / 2;
+        m_AABounds.Set( center, maxVert - center );
 
         m_MeshReady = true;
     }
@@ -350,45 +342,45 @@ int MyMesh::FindBoneIndexByName(char* name)
     return -1;
 }
 
-void MyMesh::LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode)
+void MyMesh::LoadMyMesh_ReadNode(cJSON* jNode, MySkeletonNode* pParentSkelNode)
 {
-    MySkeletonNode skelnodetoadd;
-    int skelnodeindex = m_pSkeletonNodeTree.Count();
-    m_pSkeletonNodeTree.Add( skelnodetoadd );
+    MySkeletonNode skelNodeToAdd;
+    int skelNodeIndex = m_pSkeletonNodeTree.Count();
+    m_pSkeletonNodeTree.Add( skelNodeToAdd );
 
-    MyAssert( skelnodeindex < (int)m_pSkeletonNodeTree.Count() );
+    MyAssert( skelNodeIndex < (int)m_pSkeletonNodeTree.Count() );
 
-    MySkeletonNode& skelnode = m_pSkeletonNodeTree[skelnodeindex];
+    MySkeletonNode& skelNode = m_pSkeletonNodeTree[skelNodeIndex];
 
     // Add this node as a child of the parent.
     if( pParentSkelNode )
-        pParentSkelNode->m_pChildren.Add( &m_pSkeletonNodeTree[skelnodeindex] );
+        pParentSkelNode->m_pChildren.Add( &m_pSkeletonNodeTree[skelNodeIndex] );
 
-    char* name = pNode->string;
+    char* name = jNode->string;
     MyAssert( name );
 
-    skelnode.m_SkeletonNodeIndex = skelnodeindex;
-    skelnode.m_BoneIndex = FindBoneIndexByName( name );
+    skelNode.m_SkeletonNodeIndex = skelNodeIndex;
+    skelNode.m_BoneIndex = FindBoneIndexByName( name );
 
-    // add the name.
-    int namelen = (int)strlen(name);
-    skelnode.m_Name = MyNew char[namelen+1];
-    strcpy_s( skelnode.m_Name, namelen+1, name );
+    // Add the name.
+    int nameLen = (int)strlen(name);
+    skelNode.m_Name = MyNew char[nameLen+1];
+    strcpy_s( skelNode.m_Name, nameLen+1, name );
 
-    // get count of children.
-    unsigned int childcount = cJSONExt_GetDirectChildCount( pNode );
+    // Get count of children.
+    unsigned int childCount = cJSONExt_GetDirectChildCount( jNode );
 
-    if( childcount > 0 )
+    if( childCount > 0 )
     {
-        // allocate enough pointer for each child.
-        skelnode.m_pChildren.AllocateObjects( childcount );
+        // Allocate enough pointers for each child.
+        skelNode.m_pChildren.AllocateObjects( childCount );
 
-        // recurse through the children.
-        cJSON* childnode = pNode->child;
-        while( childnode )
+        // Recurse through the children.
+        cJSON* jChildNode = jNode->child;
+        while( jChildNode )
         {
-            LoadMyMesh_ReadNode( childnode, &m_pSkeletonNodeTree[skelnodeindex] );
-            childnode = childnode->next;
+            LoadMyMesh_ReadNode( jChildNode, &m_pSkeletonNodeTree[skelNodeIndex] );
+            jChildNode = jChildNode->next;
         }
     }
 }
@@ -399,26 +391,26 @@ void MyMesh::SaveAnimationControlFile()
     char filename[MAX_PATH];
     m_pSourceFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", filename, MAX_PATH );
 
-    cJSON* root = cJSON_CreateObject();
+    cJSON* jRoot = cJSON_CreateObject();
 
-    cJSON* animarray = cJSON_CreateArray();
-    cJSON_AddItemToObject( root, "Anims", animarray );
+    cJSON* jAnimArray = cJSON_CreateArray();
+    cJSON_AddItemToObject( jRoot, "Anims", jAnimArray );
 
     for( unsigned int i=0; i<m_pAnimations.Count(); i++ )
     {
-        cJSON* anim = cJSON_CreateObject();
+        cJSON* jAnim = cJSON_CreateObject();
 
-        cJSON_AddItemToArray( animarray, anim );
+        cJSON_AddItemToArray( jAnimArray, jAnim );
 
-        cJSON_AddStringToObject( anim, "Name", m_pAnimations[i]->m_Name );
-        cJSON_AddNumberToObject( anim, "TimelineIndex", m_pAnimations[i]->m_TimelineIndex );
-        cJSON_AddNumberToObject( anim, "StartTime", m_pAnimations[i]->m_StartTime );
-        cJSON_AddNumberToObject( anim, "Duration", m_pAnimations[i]->m_Duration );
+        cJSON_AddStringToObject( jAnim, "Name", m_pAnimations[i]->m_Name );
+        cJSON_AddNumberToObject( jAnim, "TimelineIndex", m_pAnimations[i]->m_TimelineIndex );
+        cJSON_AddNumberToObject( jAnim, "StartTime", m_pAnimations[i]->m_StartTime );
+        cJSON_AddNumberToObject( jAnim, "Duration", m_pAnimations[i]->m_Duration );
     }
 
-    // dump animarray to disk
-    char* jsonstr = cJSON_Print( root );
-    cJSON_Delete( root );
+    // Dump animArray to disk.
+    char* jsonString = cJSON_Print( jRoot );
+    cJSON_Delete( jRoot );
 
     FILE* pFile;
 #if MYFW_WINDOWS
@@ -426,17 +418,17 @@ void MyMesh::SaveAnimationControlFile()
 #else
     pFile = fopen( filename, "wb" );
 #endif
-    fprintf( pFile, "%s", jsonstr );
+    fprintf( pFile, "%s", jsonString );
     fclose( pFile );
 
-    cJSONExt_free( jsonstr );
+    cJSONExt_free( jsonString );
 }
 #endif
 
-void MyMesh::LoadAnimationControlFile(const char* buffer)
+void MyMesh::LoadAnimationControlFile(const char* pBuffer)
 {
-    // if the file doesn't exist, create a single animation for each timeline
-    if( buffer == 0 )
+    // If the file doesn't exist, create a single animation for each timeline.
+    if( pBuffer == nullptr )
     {
         MyAssert( m_pAnimationTimelines.Count() < MAX_ANIMATIONS );
 
@@ -454,35 +446,35 @@ void MyMesh::LoadAnimationControlFile(const char* buffer)
             m_pAnimations.Add( pAnim );
         }
 
-        // only save if the user adds animations via the editor interface.
+        // Only save if the user adds animations via the editor interface.
         //SaveAnimationControlFile();
     }
     else
     {
-        cJSON* root = cJSON_Parse( buffer );
+        cJSON* jRoot = cJSON_Parse( pBuffer );
 
-        if( root )
+        if( jRoot )
         {
-            cJSON* animarray = cJSON_GetObjectItem( root, "Anims" );
+            cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
 
-            int numanims = cJSON_GetArraySize( animarray );
+            int numanims = cJSON_GetArraySize( jAnimArray );
             for( int i=0; i<numanims; i++ )
             {
-                cJSON* anim = cJSON_GetArrayItem( animarray, i );
+                cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );
 
                 MyAnimation* pAnim = MyNew MyAnimation;
 
-                cJSON* obj = cJSON_GetObjectItem( anim, "Name" );
+                cJSON* obj = cJSON_GetObjectItem( jAnim, "Name" );
                 if( obj )
                     pAnim->SetName( obj->valuestring );
-                cJSONExt_GetInt( anim, "TimelineIndex", &pAnim->m_TimelineIndex );
-                cJSONExt_GetFloat( anim, "StartTime", &pAnim->m_StartTime );
-                cJSONExt_GetFloat( anim, "Duration", &pAnim->m_Duration );
+                cJSONExt_GetInt( jAnim, "TimelineIndex", &pAnim->m_TimelineIndex );
+                cJSONExt_GetFloat( jAnim, "StartTime", &pAnim->m_StartTime );
+                cJSONExt_GetFloat( jAnim, "Duration", &pAnim->m_Duration );
 
                 m_pAnimations.Add( pAnim );
             }
         }
 
-        cJSON_Delete( root );
+        cJSON_Delete( jRoot );
     }
 }

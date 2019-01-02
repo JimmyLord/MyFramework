@@ -363,9 +363,6 @@
     <ClCompile Include="SourceCommon\DataTypes\Vector.cpp">
       <Filter>Source\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\Shaders\GLHelpers.cpp">
-      <Filter>Source\Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="SourceIOS\IAPManagerIOS.mm">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClCompile>
@@ -533,6 +530,15 @@
     </ClCompile>
     <ClCompile Include="SourceAndroid\AndroidFileLoader.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MyMeshShapes.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Meshes\MySubmesh.cpp">
+      <Filter>Source\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\GLHelpers.cpp">
+      <Filter>Source\Renderers\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -809,9 +815,6 @@
     <ClInclude Include="SourceCommon\DataTypes\MyList.h">
       <Filter>Source\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCommon\Shaders\GLHelpers.h">
-      <Filter>Source\Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\DataTypes\CPPList.h">
       <Filter>Source\DataTypes</Filter>
     </ClInclude>
@@ -835,9 +838,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MyFileObject.h">
       <Filter>Source\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\Meshes\MyMeshLoader.h">
-      <Filter>Source\Meshes</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Meshes\MyAnimation.h">
       <Filter>Source\Meshes</Filter>
@@ -1000,6 +1000,12 @@
     </ClInclude>
     <ClInclude Include="SourceAndroid\AndroidFileLoader.h">
       <Filter>Source-Platform\Source - Android</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Meshes\MySubmesh.h">
+      <Filter>Source\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\GLHelpers.h">
+      <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

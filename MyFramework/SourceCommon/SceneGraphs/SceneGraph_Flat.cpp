@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,11 +11,6 @@
 
 #include "SceneGraph_Base.h"
 #include "SceneGraph_Flat.h"
-
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
 
 SceneGraph_Flat::SceneGraph_Flat()
 {
@@ -90,8 +85,6 @@ void SceneGraph_Flat::ObjectMoved(SceneGraphObject* pObject)
 
 void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
-    checkGlError( "Start of SceneGraph_Flat::Draw()" );
-
     MyAssert( pMatProj != nullptr );
     MyAssert( pMatView != nullptr );
 
@@ -103,7 +96,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
         if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )
             continue;
 
-        MyMatrix worldtransform = *pObject->m_pTransform;
+        MyMatrix worldTransform = *pObject->m_pTransform;
         MyMesh* pMesh = pObject->m_pMesh;
         MySubmesh* pSubmesh = pObject->m_pSubmesh;
         MaterialDefinition* pMaterial = pObject->GetMaterial();
@@ -115,19 +108,19 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
             Vector3 center = bounds->GetCenter();
             Vector3 half = bounds->GetHalfSize();
 
-            MyMatrix wvp = matViewProj * worldtransform;
+            MyMatrix wvp = matViewProj * worldTransform;
 
-            Vector4 clippos[8];
+            Vector4 clipPos[8];
 
             // Transform AABB extents into clip space.
-            clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
-            clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
-            clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
-            clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
-            clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
-            clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
-            clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
-            clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
+            clipPos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
+            clipPos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
+            clipPos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
+            clipPos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
+            clipPos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
+            clipPos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
+            clipPos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
+            clipPos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
 
             // Check visibility two planes at a time.
             bool visible;
@@ -137,7 +130,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
                 visible = false;
                 for( int i=0; i<8; i++ )
                 {
-                    if( clippos[i][component] >= -clippos[i].w )
+                    if( clipPos[i][component] >= -clipPos[i].w )
                     {
                         visible = true; // This point is on the visible side of the plane, skip to next plane.
                         break;
@@ -150,7 +143,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
                 visible = false;
                 for( int i=0; i<8; i++ )
                 {
-                    if( clippos[i][component] <= clippos[i].w )
+                    if( clipPos[i][component] <= clipPos[i].w )
                     {
                         visible = true; // This point is on the visible side of the plane, skip to next plane.
                         break;
@@ -171,8 +164,8 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 
         // Find nearest lights.
         MyLight* lights[5];
-        int numlights = g_pLightManager->FindNearestLights( LightType_Directional, 1, worldtransform.GetTranslation(), &lights[0] );
-        numlights += g_pLightManager->FindNearestLights( LightType_Point, 4, worldtransform.GetTranslation(), &lights[numlights] );
+        int numLights = g_pLightManager->FindNearestLights( LightType_Directional, 1, worldTransform.GetTranslation(), &lights[0] );
+        numLights += g_pLightManager->FindNearestLights( LightType_Point, 4, worldTransform.GetTranslation(), &lights[numLights] );
 
         if( pPreDrawCallbackFunc )
         {
@@ -184,17 +177,11 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
             pMesh->PreDraw();
         }
 
-        checkGlError( "SceneGraph_Flat::Draw() before pSubmesh->Draw()" );
-
 #if MYFW_EDITOR
         bool hideFromDrawList = pObject->IsEditorObject();
 #else
         bool hideFromDrawList = false;
 #endif
-        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldtransform, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
-
-        checkGlError( "SceneGraph_Flat::Draw() after pSubmesh->Draw()" );
+        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldTransform, camPos, camRot, lights, numLights, shadowlightVP, pShadowTex, nullptr, pShaderOverride, hideFromDrawList );
     }
-
-    checkGlError( "End of SceneGraph_Flat::Draw()" );
 }

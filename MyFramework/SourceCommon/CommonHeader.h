@@ -527,7 +527,7 @@ typedef unsigned long   u_long;
 #include "Meshes/OBJLoader.h"
 #include "Meshes/MyAnimation.h"
 #include "Meshes/MyMesh.h"
-#include "Meshes/MyMeshLoader.h"
+#include "Meshes/MySubmesh.h"
 #include "Meshes/BufferManager.h"
 #include "Meshes/MyLight.h"
 #include "Meshes/LightManager.h"

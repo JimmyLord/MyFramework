@@ -14,7 +14,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
+#include "../Renderers/OpenGL/GLHelpers.h"
 
 Shader_Base::Shader_Base()
 {
@@ -604,6 +604,19 @@ void Shader_Base::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO
             MyAssert( pVBO->m_DEBUG_IBOUsedOnCreation[pIBO->m_CurrentBufferIndex] == pIBO->m_CurrentBufferID );
 #endif
         glBindVertexArray( pVBO->m_CurrentVAOHandle );
+    }
+}
+
+void Shader_Base::SetupDefaultAttributes(BufferDefinition* pVBO)
+{
+    // TODO: find better way to handle default attributes, MySprite sets this to 0,0,-1
+    //       so need to set since VAOs don't change these values
+    if( m_aHandle_Normal != -1 )
+    {
+        if( pVBO->m_VertexFormat == VertexFormat_Sprite )
+            glVertexAttrib3f( m_aHandle_Normal, 0, 0, -1 );
+        else
+            glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
     }
 }
 

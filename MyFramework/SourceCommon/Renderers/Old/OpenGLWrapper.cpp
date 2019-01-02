@@ -13,7 +13,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../../Shaders/GLHelpers.h"
+#include "../OpenGL/GLHelpers.h"
 
 GLStats g_GLStats;
 

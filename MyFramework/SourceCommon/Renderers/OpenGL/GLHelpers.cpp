@@ -12,7 +12,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
+#include "GLHelpers.h"
 
 void printGLString(const char* name, GLenum s)
 {

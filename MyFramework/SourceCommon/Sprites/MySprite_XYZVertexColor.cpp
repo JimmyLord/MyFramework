@@ -14,7 +14,7 @@
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Shaders/GLHelpers.h"
+#include "../Renderers/OpenGL/GLHelpers.h"
 
 MySprite_XYZVertexColor::MySprite_XYZVertexColor(bool creatematerial)
 : MySprite( creatematerial )

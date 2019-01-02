@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -14,6 +14,7 @@ class MaterialDefinition;
 class TextureDefinition;
 class BufferDefinition;
 class MyLight;
+class MySubmesh;
 
 struct MySkeletonNode
 {
@@ -25,51 +26,11 @@ struct MySkeletonNode
 
     MySkeletonNode()
     {
-        m_Name = 0;
+        m_Name = nullptr;
         m_SkeletonNodeIndex = 0;
         m_BoneIndex = 0;
     }
     ~MySkeletonNode() { delete[] m_Name; }
-};
-
-class MySubmesh
-{
-    friend class MyMesh;
-
-protected:
-    MaterialDefinition* m_pMaterial;
-
-#if _DEBUG && MYFW_WINDOWS
-    bool m_TriggerBreakpointOnNextDraw; // Used by editor to trap the next time this object is drawn.
-#endif
-
-public:
-    int m_VertexFormat;
-
-    BufferDefinition* m_pVertexBuffer;
-    BufferDefinition* m_pIndexBuffer;
-
-    unsigned int m_NumVertsToDraw;
-    unsigned int m_NumIndicesToDraw;
-    MyRE::PrimitiveTypes m_PrimitiveType;
-    int m_PointSize;
-
-    MySubmesh();
-    virtual ~MySubmesh();
-
-public:
-    MaterialDefinition* GetMaterial() { return m_pMaterial; }
-    void SetMaterial(MaterialDefinition* pMaterial);
-    unsigned int GetStride();
-
-    virtual bool SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex);
-    virtual void SetupMeshSpecificShaderUniforms(Shader_Base* pShader, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MyMatrix* matInverseWorld, Vector3* pCamPos, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP);
-    virtual void SetupAttributes(Shader_Base* pShader);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
-
-#if _DEBUG && MYFW_WINDOWS
-    void TriggerBreakpointOnNextDraw() { m_TriggerBreakpointOnNextDraw = true; }
-#endif
 };
 
 typedef void (*SetupCustomUniformsCallbackFunc)(void* pObjectPtr, Shader_Base* pShader);
@@ -78,7 +39,7 @@ class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
 {
     friend class MySubmesh;
 
-    static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
+    static const unsigned int MAX_ANIMATIONS = 10; // TODO: Fix this hardcodedness.
 
 protected:
     float m_InitialScale;
@@ -106,9 +67,7 @@ protected:
     bool m_MeshReady;
 
 protected:
-    //MyMatrix m_Transform;
-
-    // Internal file loading functions
+    // Internal file loading functions.
     void CreateFromOBJFile();
     static void StaticOnFileFinishedLoadingOBJ(void* pObjectPtr, MyFileObject* pFile) { ((MyMesh*)pObjectPtr)->OnFileFinishedLoadingOBJ( pFile ); }
     void OnFileFinishedLoadingOBJ(MyFileObject* pFile);
@@ -127,69 +86,14 @@ public:
     MyMesh();
     virtual ~MyMesh();
 
-    // MyMesh Getters
+    void Clear();
+
+    // Getters.
     unsigned int GetSubmeshListCount() { return m_SubmeshList.Count(); }
     MySubmesh* GetSubmesh(unsigned int index) { return m_SubmeshList[index]; }
 
     MyFileObject* GetFile() { return m_pSourceFile; }
     bool IsReady() { return m_MeshReady; }
-
-    // MyMesh Setters()
-    void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
-
-    // MyMesh Methods
-    void Clear();
-
-    void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
-    void CreateSubmeshes(int numSubmeshes);
-    void CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, bool dynamic = false);
-    void CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
-
-    void SetIndexBuffer(BufferDefinition* pBuffer);
-
-    void SetSourceFile(MyFileObject* pFile);
-
-    // Shape creation functions
-    void CreateClipSpaceQuad(Vector2 maxUV);
-    void CreateBox(float boxw, float boxh, float boxd, float startu, float endu, float startv, float endv, unsigned char justificationflags, Vector3 offset);
-    void CreateBox_XYZUV_RGBA(float boxw, float boxh, float boxd, float startutop, float endutop, float startvtop, float endvtop, float startuside, float enduside, float startvside, float endvside, unsigned char justificationflags);
-    void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);
-
-    void CreateCylinder(float radius, unsigned short numsegments, float edgeradius, float height, float topstartu, float topendu, float topstartv, float topendv, float sidestartu, float sideendu, float sidestartv, float sideendv);
-    void CreatePlane(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles = true);
-    void CreatePlaneUVsNotShared(Vector3 topleftpos, Vector2 size, Vector2Int vertcount, Vector2 uvstart, Vector2 uvrange, bool createtriangles = true);
-    void CreateIcosphere(float radius, unsigned int recursionlevel);
-    void Create2DCircle(float radius, unsigned int numberofsegments);
-    void Create2DArc(Vector3 origin, float startangle, float endangle, float startradius, float endradius, unsigned int numberofsegments);
-    void CreateGrass(Vector3 topleftpos, Vector2 size, Vector2Int bladecount, Vector2 bladesize);
-
-    void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfnumbars);
-    void CreateEditorTransformGizmoAxis(float length, float thickness);
-
-    virtual MaterialDefinition* GetMaterial(int submeshindex);
-    MyAABounds* GetBounds() { return &m_AABounds; }
-    virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
-    //void SetPosition(float x, float y, float z);
-    //void SetTransform(MyMatrix& matrix);
-    virtual void PreDraw() {}
-    void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
-
-    void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
-    void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);
-
-    int FindBoneIndexByName(char* name);
-
-    void LoadMyMesh(const char* buffer, MyList<MySubmesh*>* pSubmeshList, float scale);
-    void LoadMyMesh_ReadNode(cJSON* pNode, MySkeletonNode* pParentSkelNode);
-    void LoadAnimationControlFile(const char* buffer);
-
-    void RegisterSetupCustomUniformCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
-
-#if MYFW_EDITOR
-    void SaveAnimationControlFile();
-#endif
-
-    void RebuildIndices();
 
     unsigned short GetNumVerts();
     unsigned int GetNumIndices();
@@ -198,6 +102,60 @@ public:
     unsigned int GetStride(unsigned int submeshindex);
 
     unsigned int GetAnimationCount() { return m_pAnimations.Count(); }
+
+    virtual MaterialDefinition* GetMaterial(int submeshindex);
+    MyAABounds* GetBounds() { return &m_AABounds; }
+
+    // Setters.
+    void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
+    virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
+
+    // Submeshes and Buffers.
+    void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
+    void CreateSubmeshes(int numSubmeshes);
+    void CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, bool dynamic = false);
+    void CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
+
+    void SetIndexBuffer(BufferDefinition* pBuffer);
+    void SetSourceFile(MyFileObject* pFile);
+
+    void RebuildIndices();
+
+    // Draw.
+    virtual void PreDraw() {}
+    void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride);
+
+    // Animation.
+    void RebuildAnimationMatrices(unsigned int animindex, double animtime, unsigned int oldanimindex, double oldanimtime, float perc);
+    void RebuildNode(MyAnimationTimeline* pTimeline, float animtime, MyAnimationTimeline* pOldTimeline, float oldanimtime, float perc, unsigned int nodeindex, MyMatrix* pParentTransform);
+
+    // These 5 functions are defined in MyMeshLoader.cpp
+    int FindBoneIndexByName(char* name);
+    void LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, float scale);
+    void LoadMyMesh_ReadNode(cJSON* jNode, MySkeletonNode* pParentSkelNode);
+    void LoadAnimationControlFile(const char* pBuffer);
+#if MYFW_EDITOR
+    void SaveAnimationControlFile();
+#endif
+
+    void RegisterSetupCustomUniformsCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
+
+    // Shape creation functions.  Defined in MyMeshShapes.cpp
+    void CreateClipSpaceQuad(Vector2 maxUV);
+    void CreateBox(float boxWidth, float boxHeight, float boxDepth, float startU, float endU, float startV, float endV, unsigned char justificationFlags, Vector3 offset);
+    void CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDepth, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV, unsigned char justificationFlags);
+    void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);
+
+    void CreateCylinder(float radius, unsigned short numSegments, float edgeRadius, float height, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV);
+    void CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount, Vector2 uvStart, Vector2 uvRange, bool createTriangles = true);
+    void CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount, Vector2 uvStart, Vector2 uvRange, bool createTriangles = true);
+    void CreateIcosphere(float radius, unsigned int recursionLevel);
+    void Create2DCircle(float radius, unsigned int numberOfSegments);
+    void Create2DArc(Vector3 origin, float startAngle, float endAngle, float startRadius, float endRadius, unsigned int numberOfSegments);
+    void CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount, Vector2 bladeSize);
+
+    void CreateEditorLineGridXZ(Vector3 center, float spacing, int halfNumBars);
+    void CreateEditorTransformGizmoAxis(float length, float thickness);
 };
 
 #endif //__MyMesh_H__
