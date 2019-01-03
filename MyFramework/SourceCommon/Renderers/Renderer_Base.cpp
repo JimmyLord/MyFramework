@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2018-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -24,6 +24,9 @@ Renderer_Base::Renderer_Base()
 
     m_DepthWriteEnabled = false;
     m_DepthTestEnabled = false;
+    m_DepthFunc = MyRE::DepthFunc_Less;
+
+    m_CullingEnabled = false;
 
     m_SwapInterval = 1;
 
@@ -78,6 +81,16 @@ void Renderer_Base::SetDepthWriteEnabled(bool enabled)
 void Renderer_Base::SetDepthTestEnabled(bool enabled)
 {
     m_DepthTestEnabled = enabled;
+}
+
+void Renderer_Base::SetDepthFunction(MyRE::DepthFuncs func)
+{
+    m_DepthFunc = func;
+}
+
+void Renderer_Base::SetCullingEnabled(bool enabled)
+{
+    m_CullingEnabled = enabled;
 }
 
 void Renderer_Base::SetSwapInterval(int32 interval)

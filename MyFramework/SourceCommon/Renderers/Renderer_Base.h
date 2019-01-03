@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2018-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -49,6 +49,9 @@ protected:
 
     bool m_DepthWriteEnabled;
     bool m_DepthTestEnabled;
+    MyRE::DepthFuncs m_DepthFunc;
+
+    bool m_CullingEnabled;
 
     int32 m_SwapInterval;
 
@@ -75,6 +78,8 @@ public:
     virtual void SetClearDepth(float depth);
     virtual void SetDepthWriteEnabled(bool enabled);
     virtual void SetDepthTestEnabled(bool enabled);
+    virtual void SetDepthFunction(MyRE::DepthFuncs func);
+    virtual void SetCullingEnabled(bool enabled);
     virtual void SetSwapInterval(int32 interval);
     virtual void SetBlendEnabled(bool enabled);
     virtual void SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor);
@@ -89,6 +94,11 @@ public:
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) = 0;
+
+    virtual void ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer) = 0;
+
+    virtual void SetPolygonMode(MyRE::PolygonDrawModes mode) = 0;
+    virtual void SetPolygonOffset(bool enabled, float factor, float units) = 0;
 
     // Textures/FBOs.
     virtual void SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag) = 0;

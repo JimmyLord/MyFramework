@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2018-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -104,6 +104,71 @@ namespace MyRE // MyRendererEnums
         WrapMode_Repeat,
         WrapMode_MirroredRepeat,
         WrapMode_NumTypes,
+    };
+
+    enum PixelFormats
+    {
+        PixelFormat_StencilIndex,
+        PixelFormat_DepthComponent,
+        PixelFormat_DepthStencil,
+        PixelFormat_Red,
+        PixelFormat_Green,
+        PixelFormat_Blue,
+        PixelFormat_RGB,
+        PixelFormat_BGR,
+        PixelFormat_RGBA,
+        PixelFormat_BGRA,
+        PixelFormat_NumTypes,
+    };
+
+    enum PixelDataTypes
+    {
+        PixelDataType_UByte,
+        PixelDataType_Byte,
+        PixelDataType_UShort,
+        PixelDataType_Short,
+        PixelDataType_UInt,
+        PixelDataType_Int,
+        PixelDataType_HalfFloat,
+        PixelDataType_Float,
+        PixelDataType_UByte_3_3_2,
+        PixelDataType_UByte_2_3_3_Rev,
+        PixelDataType_UShort_5_6_5,
+        PixelDataType_UShort_5_6_5_Rev,
+        PixelDataType_UShort_4_4_4_4,
+        PixelDataType_UShort_4_4_4_4_Rev,
+        PixelDataType_UShort_5_5_5_1,
+        PixelDataType_UShort_1_5_5_5_Rev,
+        PixelDataType_UInt_8_8_8_8,
+        PixelDataType_UInt_8_8_8_8_Rev,
+        PixelDataType_UInt_10_10_10_2,
+        PixelDataType_UInt_2_10_10_10_Rev,
+        PixelDataType_UInt_24_8,
+        PixelDataType_UInt_10f_11f_11f_Rev,
+        PixelDataType_UInt_5_9_9_9_Rev,
+        PixelDataType_Float_32_UInt_24_8_Rev,
+        PixelDataType_NumTypes,
+    };
+
+    enum DepthFuncs
+    {
+        DepthFunc_Never,
+        DepthFunc_Less,
+        DepthFunc_Equal,
+        DepthFunc_LEqual,
+        DepthFunc_Greater,
+        DepthFunc_NotEqual,
+        DepthFunc_GEqual,
+        DepthFunc_Always,
+        DepthFunc_NumTypes,
+    };
+
+    enum PolygonDrawModes
+    {
+        PolygonDrawMode_Point,
+        PolygonDrawMode_Line,
+        PolygonDrawMode_Fill,
+        PolygonDrawMode_NumModes,
     };
 
     extern const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes];

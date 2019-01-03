@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2018-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -102,6 +102,67 @@ GLint WrapModeConversionTable[MyRE::WrapMode_NumTypes] =
     GL_MIRRORED_REPEAT,
 };
 
+GLint PixelFormatConversionTable[MyRE::PixelFormat_NumTypes] =
+{
+    GL_STENCIL_INDEX,
+    GL_DEPTH_COMPONENT,
+    GL_DEPTH_STENCIL,
+    GL_RED,
+    GL_GREEN,
+    GL_BLUE,
+    GL_RGB,
+    GL_BGR,
+    GL_RGBA,
+    GL_BGRA,
+};
+
+GLint PixelDataTypeConversionTable[MyRE::PixelDataType_NumTypes] =
+{
+    GL_UNSIGNED_BYTE,
+    GL_BYTE,
+    GL_UNSIGNED_SHORT,
+    GL_SHORT,
+    GL_UNSIGNED_INT,
+    GL_INT,
+    GL_HALF_FLOAT,
+    GL_FLOAT,
+    GL_UNSIGNED_BYTE_3_3_2,
+    GL_UNSIGNED_BYTE_2_3_3_REV,
+    GL_UNSIGNED_SHORT_5_6_5,
+    GL_UNSIGNED_SHORT_5_6_5_REV,
+    GL_UNSIGNED_SHORT_4_4_4_4,
+    GL_UNSIGNED_SHORT_4_4_4_4_REV,
+    GL_UNSIGNED_SHORT_5_5_5_1,
+    GL_UNSIGNED_SHORT_1_5_5_5_REV,
+    GL_UNSIGNED_INT_8_8_8_8,
+    GL_UNSIGNED_INT_8_8_8_8_REV,
+    GL_UNSIGNED_INT_10_10_10_2,
+    GL_UNSIGNED_INT_2_10_10_10_REV,
+    GL_UNSIGNED_INT_24_8,
+    GL_UNSIGNED_INT_10F_11F_11F_REV,
+    GL_UNSIGNED_INT_5_9_9_9_REV,
+    GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+};
+
+GLint DepthFuncConversionTable[MyRE::DepthFunc_NumTypes] =
+{
+    GL_NEVER,
+    GL_LESS,
+    GL_EQUAL,
+    GL_LEQUAL,
+    GL_GREATER,
+    GL_NOTEQUAL,
+    GL_GEQUAL,
+    GL_ALWAYS,
+};
+
+GLint PolygonDrawModeConversionTable[MyRE::PolygonDrawMode_NumModes] =
+{
+    GL_POINT,
+    GL_LINE,
+    GL_FILL,
+};
+
 //====================================================================================================
 // Renderer_OpenGL.
 //====================================================================================================
@@ -188,6 +249,25 @@ void Renderer_OpenGL::SetDepthTestEnabled(bool enabled)
         glDisable( GL_DEPTH_TEST );
 
     checkGlError( "glEnable or glDisable( GL_DEPTH_TEST )" );
+}
+
+void Renderer_OpenGL::SetDepthFunction(MyRE::DepthFuncs func)
+{
+    Renderer_Base::SetDepthFunction( func );
+
+    glDepthFunc( DepthFuncConversionTable[func] );
+}
+
+void Renderer_OpenGL::SetCullingEnabled(bool enabled)
+{
+    Renderer_Base::SetCullingEnabled( enabled );
+
+    if( enabled )
+        glEnable( GL_CULL_FACE );
+    else
+        glDisable( GL_CULL_FACE );
+
+    checkGlError( "glEnable or glDisable( GL_CULL_FACE )" );
 }
 
 void Renderer_OpenGL::SetSwapInterval(int32 interval)
@@ -356,6 +436,32 @@ void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyR
     {
         g_GLStats.m_NumDrawCallsThisFrameSoFar++;
     }
+}
+
+void Renderer_OpenGL::ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer)
+{
+    glReadPixels( x, y, width, height, PixelFormatConversionTable[format], PixelDataTypeConversionTable[dataType], buffer );
+}
+
+void Renderer_OpenGL::SetPolygonMode(MyRE::PolygonDrawModes mode)
+{
+    glPolygonMode( GL_FRONT_AND_BACK, PolygonDrawModeConversionTable[mode] );
+}
+
+void Renderer_OpenGL::SetPolygonOffset(bool enabled, float factor, float units)
+{
+    if( enabled )
+    {
+        glEnable( GL_POLYGON_OFFSET_LINE );
+        glEnable( GL_POLYGON_OFFSET_FILL ); // Enabling GL_POLYGON_OFFSET_LINE doesn't work on my intel 4000.
+    }
+    else
+    {
+        glDisable( GL_POLYGON_OFFSET_FILL );
+        glDisable( GL_POLYGON_OFFSET_LINE );
+    }
+
+    glPolygonOffset( factor, units );
 }
 
 //====================================================================================================

@@ -59,12 +59,12 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
     g_pRenderer->SetBlendEnabled( true );
     g_pRenderer->SetBlendFunc( MyRE::BlendFactor_SrcAlpha, MyRE::BlendFactor_OneMinusSrcAlpha );
 
-    glDisable( GL_CULL_FACE );
+    g_pRenderer->SetCullingEnabled( false );
     g_pRenderer->SetDepthTestEnabled( false );
 
     g_pRenderer->DrawArrays( primitiveType, 0, vertexCount, true );
 
-    glEnable( GL_CULL_FACE );
+    g_pRenderer->SetCullingEnabled( true );
     g_pRenderer->SetDepthTestEnabled( true );
 
     // Always disable blending.
