@@ -45,7 +45,7 @@ void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Col
 
     // Setup our position attribute, pass in the array of verts, not using a VBO.
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    pShader->InitializeAttributeArray( pShader->m_aHandle_Position, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, (void*)vertices );
+    pShader->InitializeAttributeArray( pShader->m_aHandle_Position, 2, MyRE::AttributeType_Float, false, sizeof(float)*2, (void*)vertices );
 
     // Setup uniforms, mainly viewproj and tint.
     pShader->ProgramMaterialProperties( 0, m_pMaterial->m_ColorDiffuse, m_pMaterial->m_ColorSpecular, m_pMaterial->m_Shininess );

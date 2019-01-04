@@ -254,8 +254,8 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
     {
     case VertexFormat_Sprite:
         {
-            InitializeAttributeArray( m_aHandle_Position,    2, GL_FLOAT, GL_FALSE, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,x) );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,u) );
+            InitializeAttributeArray( m_aHandle_Position,    2, MyRE::AttributeType_Float, false, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,x) );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, sizeof(Vertex_Sprite), (void*)offsetof(Vertex_Sprite,u) );
             DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
@@ -265,7 +265,7 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZ:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZ), (void*)offsetof(Vertex_XYZ,x) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZ), (void*)offsetof(Vertex_XYZ,x) );
             DisableAttributeArray( m_aHandle_UVCoord,     Vector3(0,0,0) );
             DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
@@ -276,8 +276,8 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUV:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,x) );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,u) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,x) );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUV), (void*)offsetof(Vertex_XYZUV,u) );
             DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
@@ -287,10 +287,10 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUV_RGBA:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,x) );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,u) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,x) );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,u) );
             DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,r) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, sizeof(Vertex_XYZUV_RGBA), (void*)offsetof(Vertex_XYZUV_RGBA,r) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
             DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
         }
@@ -298,9 +298,9 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUVNorm:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,pos) );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,uv) );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,normal) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,pos) );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,uv) );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZUVNorm), (void*)offsetof(Vertex_XYZUVNorm,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
             DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
@@ -309,53 +309,53 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUVNorm_1Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,normal) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   1, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  1, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   1, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  1, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_1Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_2Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,normal) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   2, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   2, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_2Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_3Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,normal) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   3, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   3, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_3Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_4Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,normal) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   4, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   4, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  4, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_4Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZNorm:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,pos) );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,pos) );
             DisableAttributeArray( m_aHandle_UVCoord,     Vector3(0,0,0) );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT, GL_FALSE, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,normal) );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, sizeof(Vertex_XYZNorm), (void*)offsetof(Vertex_XYZNorm,normal) );
             DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
             DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
@@ -364,10 +364,10 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_PointSprite:
         {
-            InitializeAttributeArray( m_aHandle_Position,    2, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,x) );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT, GL_FALSE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,u) );
+            InitializeAttributeArray( m_aHandle_Position,    2, MyRE::AttributeType_Float, false, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,x) );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,u) );
             DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,r) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, sizeof(Vertex_PointSprite), (void*)offsetof(Vertex_PointSprite,r) );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
             DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
             //MyAssert(false); // I stopped using point sprites, so this doesn't have a handle ATM.
@@ -377,10 +377,10 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUVNorm_RGBA:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,pos)       );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,uv)        );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,normal)    );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,color)     );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,pos)       );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,uv)        );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,normal)    );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA,color)     );
             DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
             DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
         }
@@ -388,84 +388,86 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 
     case VertexFormat_XYZUVNorm_RGBA_1Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,normal) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,color)  );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   1, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  1, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,normal) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,color)  );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   1, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  1, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_1Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_RGBA_2Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,normal) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,color)  );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   2, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,normal) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,color)  );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   2, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_2Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_RGBA_3Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,normal) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,color)  );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   3, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,normal) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,color)  );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   3, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_3Bones,weight)    );
         }
         break;
 
     case VertexFormat_XYZUVNorm_RGBA_4Bones:
         {
-            InitializeAttributeArray( m_aHandle_Position,    3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,pos)    );
-            InitializeAttributeArray( m_aHandle_UVCoord,     2, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,uv)     );
-            InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,normal) );
-            InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,color)  );
-            InitializeAttributeArray( m_aHandle_BoneIndex,   4, GL_UNSIGNED_BYTE, GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,boneindex) );
-            InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,weight)    );
+            InitializeAttributeArray( m_aHandle_Position,    3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,pos)    );
+            InitializeAttributeArray( m_aHandle_UVCoord,     2, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,uv)     );
+            InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,normal) );
+            InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,color)  );
+            InitializeAttributeArray( m_aHandle_BoneIndex,   4, MyRE::AttributeType_UByte, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,boneindex) );
+            InitializeAttributeArray( m_aHandle_BoneWeight,  4, MyRE::AttributeType_Float, false, g_VertexFormatSizes[vertexFormat], (void*)offsetof(Vertex_XYZUVNorm_RGBA_4Bones,weight)    );
         }
         break;
 
     case VertexFormat_Dynamic:
         {
             int components = pVertexFormatDesc->num_position_components;
-            InitializeAttributeArray( m_aHandle_Position, components, GL_FLOAT,       GL_FALSE, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_pos );
+            InitializeAttributeArray( m_aHandle_Position, components, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_pos );
         
             for( int i=0; i<pVertexFormatDesc->num_uv_channels; i++ )
             {
                 if( pVertexFormatDesc->offset_uv[i] )
-                    InitializeAttributeArray( m_aHandle_UVCoord, 2, GL_FLOAT,         GL_FALSE, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_uv[i] );
+                    InitializeAttributeArray( m_aHandle_UVCoord, 2, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_uv[i] );
                 else
                     DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
             }
 
             if( pVertexFormatDesc->offset_normal )
-                InitializeAttributeArray( m_aHandle_Normal,      3, GL_FLOAT,         GL_FALSE, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_normal );
+                InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_normal );
             else
                 DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
 
             if( pVertexFormatDesc->offset_color )
-                InitializeAttributeArray( m_aHandle_VertexColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_color );
+                InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_color );
             else
                 DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
 
             if( pVertexFormatDesc->offset_boneindex )
-                InitializeAttributeArray( m_aHandle_BoneIndex,   4, GL_UNSIGNED_BYTE, GL_FALSE, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneindex );
+                InitializeAttributeArray( m_aHandle_BoneIndex,   4, MyRE::AttributeType_UByte, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneindex );
             else
                 DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
 
             if( pVertexFormatDesc->offset_boneweight )
-                InitializeAttributeArray( m_aHandle_BoneWeight,  4, GL_FLOAT,         GL_FALSE, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneweight );
+                InitializeAttributeArray( m_aHandle_BoneWeight,  4, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneweight );
             else
                 DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
         }
         break;
 
     case VertexFormat_None:
+        break;
+
     case VertexFormat_Invalid:
     default:
         {

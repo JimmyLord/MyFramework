@@ -27,12 +27,15 @@ Renderer_Base::Renderer_Base()
     m_DepthFunc = MyRE::DepthFunc_Less;
 
     m_CullingEnabled = false;
+    m_FrontFaceWinding = MyRE::FrontFaceWinding_CounterClockwise,
 
     m_SwapInterval = 1;
 
     m_BlendEnabled = false;
     m_BlendFunc_SrcFactor = MyRE::BlendFactor_One;
     m_BlendFunc_DstFactor = MyRE::BlendFactor_Zero;
+
+    m_LineWidth = 1.0f;
 }
 
 Renderer_Base::~Renderer_Base()
@@ -93,6 +96,11 @@ void Renderer_Base::SetCullingEnabled(bool enabled)
     m_CullingEnabled = enabled;
 }
 
+void Renderer_Base::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)
+{
+    m_FrontFaceWinding = winding;
+}
+
 void Renderer_Base::SetSwapInterval(int32 interval)
 {
     m_SwapInterval = interval;
@@ -107,4 +115,9 @@ void Renderer_Base::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactor
 {
     m_BlendFunc_SrcFactor = srcFactor;
     m_BlendFunc_DstFactor = dstFactor;
+}
+
+void Renderer_Base::SetLineWidth(float width)
+{
+    m_LineWidth = width;
 }

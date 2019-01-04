@@ -120,7 +120,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, MyRE::MinFilters
     return pFBO;
 }
 
-// return true if new texture was needed.
+// Returns true if new texture was needed.
 bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat colorFormat, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );
@@ -139,7 +139,7 @@ bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE
     return newTexNeeded;
 }
 
-// return true if new texture was needed.
+// Returns true if new texture was needed.
 bool TextureManager::ReSetupFBO(FBODefinition* pFBO, int width, int height, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, FBODefinition::FBOColorFormat* colorFormats, int numColorFormats, int depthBits, bool depthReadable)
 {
     //MyAssert( width > 0 && height > 0 );

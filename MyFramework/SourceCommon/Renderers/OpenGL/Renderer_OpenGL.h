@@ -51,9 +51,11 @@ public:
     virtual void SetDepthTestEnabled(bool enabled) override;
     virtual void SetDepthFunction(MyRE::DepthFuncs func) override;
     virtual void SetCullingEnabled(bool enabled) override;
+    virtual void SetFrontFaceWinding(MyRE::FrontFaceWindings winding) override;
     virtual void SetSwapInterval(int32 interval) override;
     virtual void SetBlendEnabled(bool enabled) override;
     virtual void SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor) override;
+    virtual void SetLineWidth(float width) override;
 
     // Actions.
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
@@ -74,6 +76,7 @@ public:
     // Textures/FBOs.
     virtual void SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag) override;
     virtual void SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT) override;
+    virtual void BindFramebuffer(GLuint framebuffer) override;
 };
 
 #endif //__Renderer_OpenGL_H__

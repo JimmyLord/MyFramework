@@ -77,10 +77,6 @@ public:
 
     GLint m_uHandle_ExposedUniforms[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
-protected:
-    void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
-    void InitializeVAO(GLuint vao);
-
 public:
     Shader_Base();
     Shader_Base(ShaderPassTypes type);
@@ -91,6 +87,8 @@ public:
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
     virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
+
+    void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
 
     bool CompileShader();
     bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);

@@ -24,6 +24,31 @@ namespace MyRE // MyRendererEnums
         PrimitiveType_Undefined,
     };
 
+    enum FrontFaceWindings
+    {
+        FrontFaceWinding_Clockwise,
+        FrontFaceWinding_CounterClockwise,
+        FrontFaceWinding_NumTypes,
+    };
+
+    enum AttributeTypes
+    {
+        AttributeType_Byte,
+        AttributeType_UByte,
+        AttributeType_Short,
+        AttributeType_UShort,
+        AttributeType_Int,
+        AttributeType_UInt,
+        AttributeType_HalfFloat,
+        AttributeType_Float,
+        AttributeType_Double,
+        AttributeType_Fixed,
+        AttributeType_Int_2_10_10_10_Rev,
+        AttributeType_Unsigned_Int_2_10_10_10_Rev,
+        AttributeType_Unsigned_Int_10f_11f_11f_Rev,
+        AttributeType_NumTypes,
+    };
+
     enum BufferTypes
     {
         BufferType_Vertex,

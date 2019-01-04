@@ -11,7 +11,6 @@
 #include "Screenshot.h"
 #include "MYFWWinMain.h"
 
-// TODO: Fix GL Includes.
 #include "../SourceWindows/GLExtensions.h"
 #include "../SourceWindows/WGLExtensions.h"
 

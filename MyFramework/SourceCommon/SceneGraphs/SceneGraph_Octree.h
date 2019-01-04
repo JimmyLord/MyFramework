@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -52,10 +52,10 @@ protected:
     void DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc);
 
 public:
-    SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz);
+    SceneGraph_Octree(uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     virtual ~SceneGraph_Octree();
 
-    void Resize(float minx, float miny, float minz, float maxx, float maxy, float maxz);
+    void Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
     virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
     virtual void RemoveObject(SceneGraphObject* pObject);

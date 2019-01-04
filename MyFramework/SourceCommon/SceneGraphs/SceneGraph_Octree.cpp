@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2017-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,11 +11,6 @@
 
 #include "SceneGraph_Base.h"
 #include "SceneGraph_Octree.h"
-
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
 
 OctreeNode::OctreeNode()
 {
@@ -55,28 +50,28 @@ void OctreeNode::Cleanup()
     m_pParentNode = nullptr;
 }
 
-SceneGraph_Octree::SceneGraph_Octree(unsigned int treedepth, float minx, float miny, float minz, float maxx, float maxy, float maxz)
+SceneGraph_Octree::SceneGraph_Octree(uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 {
-    m_MaxDepth = treedepth;
+    m_MaxDepth = treeDepth;
 
-    int maxnodes = 0;
-    int numatdepth = 1;
-    for( unsigned int i=0; i<treedepth; i++ )
+    int maxNodes = 0;
+    int numAtDepth = 1;
+    for( unsigned int i=0; i<treeDepth; i++ )
     {
-        maxnodes += numatdepth;
-        numatdepth *= 8;
+        maxNodes += numAtDepth;
+        numAtDepth *= 8;
     }
 
     m_Dirty = false;
 
-    m_OctreeNodePool.AllocateObjects( maxnodes );
+    m_OctreeNodePool.AllocateObjects( maxNodes );
 
     m_pRootNode = m_OctreeNodePool.GetObjectFromPool();
 
-    Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
-    Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
+    Vector3 halfSize( (maxX - minX)/2.0f, (maxY - minY)/2.0f, (maxZ - minZ)/2.0f );
+    Vector3 center( minX + halfSize.x, minY + halfSize.y, minZ + halfSize.z );
 
-    m_pRootNode->m_Bounds.Set( center, halfsize );
+    m_pRootNode->m_Bounds.Set( center, halfSize );
     m_pRootNode->m_pSceneGraph = this;
     m_pRootNode->m_NodeDepth = 0;
 }
@@ -88,22 +83,22 @@ SceneGraph_Octree::~SceneGraph_Octree()
 
 bool FitsInsideAABB(MyAABounds* pOuterBounds, MyAABounds* pInnerBounds, Vector3 innerOffset)
 {
-    Vector3 outercenter = pOuterBounds->GetCenter();
-    Vector3 outerhalfsize = pOuterBounds->GetHalfSize();
-    Vector3 innercenter = pInnerBounds->GetCenter();
-    Vector3 innerhalfsize = pInnerBounds->GetHalfSize();
+    Vector3 outerCenter = pOuterBounds->GetCenter();
+    Vector3 outerHalfSize = pOuterBounds->GetHalfSize();
+    Vector3 innerCenter = pInnerBounds->GetCenter();
+    Vector3 innerHalfSize = pInnerBounds->GetHalfSize();
 
-    Vector3 outermin = outercenter - outerhalfsize;
-    Vector3 outermax = outercenter + outerhalfsize;
-    Vector3 innermin = innercenter - innerhalfsize + innerOffset;
-    Vector3 innermax = innercenter + innerhalfsize + innerOffset;
+    Vector3 outerMin = outerCenter - outerHalfSize;
+    Vector3 outerMax = outerCenter + outerHalfSize;
+    Vector3 innerMin = innerCenter - innerHalfSize + innerOffset;
+    Vector3 innerMax = innerCenter + innerHalfSize + innerOffset;
     
-    if( innermin.x < outermin.x ) return false;
-    if( innermin.y < outermin.y ) return false;
-    if( innermin.z < outermin.z ) return false;
-    if( innermax.x > outermax.x ) return false;
-    if( innermax.y > outermax.y ) return false;
-    if( innermax.z > outermax.z ) return false;
+    if( innerMin.x < outerMin.x ) return false;
+    if( innerMin.y < outerMin.y ) return false;
+    if( innerMin.z < outerMin.z ) return false;
+    if( innerMax.x > outerMax.x ) return false;
+    if( innerMax.y > outerMax.y ) return false;
+    if( innerMax.z > outerMax.z ) return false;
 
     return true;
 }
@@ -118,17 +113,17 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
     if( pMatWorld )
         wvp = wvp * *pMatWorld;
 
-    Vector4 clippos[8];
+    Vector4 clipPos[8];
 
     // Transform AABB extents into clip space.
-    clippos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
-    clippos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
-    clippos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
-    clippos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
-    clippos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
-    clippos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
-    clippos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
-    clippos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
+    clipPos[0] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z - half.z, 1);
+    clipPos[1] = wvp * Vector4(center.x - half.x, center.y - half.y, center.z + half.z, 1);
+    clipPos[2] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z - half.z, 1);
+    clipPos[3] = wvp * Vector4(center.x - half.x, center.y + half.y, center.z + half.z, 1);
+    clipPos[4] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z - half.z, 1);
+    clipPos[5] = wvp * Vector4(center.x + half.x, center.y - half.y, center.z + half.z, 1);
+    clipPos[6] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z - half.z, 1);
+    clipPos[7] = wvp * Vector4(center.x + half.x, center.y + half.y, center.z + half.z, 1);
 
     // Check visibility two planes at a time.
     bool visible = true;
@@ -138,7 +133,7 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
         visible = false;
         for( int i=0; i<8; i++ )
         {
-            if( clippos[i][component] >= -clippos[i].w )
+            if( clipPos[i][component] >= -clipPos[i].w )
             {
                 visible = true; // This point is on the visible side of the plane, skip to next plane.
                 break;
@@ -151,7 +146,7 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
         visible = false;
         for( int i=0; i<8; i++ )
         {
-            if( clippos[i][component] <= clippos[i].w )
+            if( clipPos[i][component] <= clipPos[i].w )
             {
                 visible = true; // This point is on the visible side of the plane, skip to next plane.
                 break;
@@ -182,39 +177,39 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
         if( pObject->m_pMesh == nullptr )
             continue;
 
-        MyAABounds* meshbounds = pObject->m_pMesh->GetBounds();
-        Vector3 meshpos = pObject->m_pTransform->GetTranslation();
+        MyAABounds* meshBounds = pObject->m_pMesh->GetBounds();
+        Vector3 meshPos = pObject->m_pTransform->GetTranslation();
 
         for( int i=0; i<8; i++ )
         {
-            MyAABounds childbounds;
+            MyAABounds childBounds;
 
             if( pOctreeNode->m_pChildNodes[i] == nullptr )
             {
-                MyAABounds* currentbounds = &pOctreeNode->m_Bounds;
-                Vector3 center = currentbounds->GetCenter();
-                Vector3 quartersize = currentbounds->GetHalfSize()/2;
+                MyAABounds* currentBounds = &pOctreeNode->m_Bounds;
+                Vector3 center = currentBounds->GetCenter();
+                Vector3 quarterSize = currentBounds->GetHalfSize()/2;
 
-                if( i == 0 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y + quartersize.y, center.z + quartersize.z ), quartersize );
-                if( i == 1 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y + quartersize.y, center.z + quartersize.z ), quartersize );
-                if( i == 2 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y + quartersize.y, center.z - quartersize.z ), quartersize );
-                if( i == 3 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y + quartersize.y, center.z - quartersize.z ), quartersize );
-                if( i == 4 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y - quartersize.y, center.z + quartersize.z ), quartersize );
-                if( i == 5 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y - quartersize.y, center.z + quartersize.z ), quartersize );
-                if( i == 6 ) childbounds.Set( Vector3( center.x - quartersize.x, center.y - quartersize.y, center.z - quartersize.z ), quartersize );
-                if( i == 7 ) childbounds.Set( Vector3( center.x + quartersize.x, center.y - quartersize.y, center.z - quartersize.z ), quartersize );
+                if( i == 0 ) childBounds.Set( Vector3( center.x - quarterSize.x, center.y + quarterSize.y, center.z + quarterSize.z ), quarterSize );
+                if( i == 1 ) childBounds.Set( Vector3( center.x + quarterSize.x, center.y + quarterSize.y, center.z + quarterSize.z ), quarterSize );
+                if( i == 2 ) childBounds.Set( Vector3( center.x - quarterSize.x, center.y + quarterSize.y, center.z - quarterSize.z ), quarterSize );
+                if( i == 3 ) childBounds.Set( Vector3( center.x + quarterSize.x, center.y + quarterSize.y, center.z - quarterSize.z ), quarterSize );
+                if( i == 4 ) childBounds.Set( Vector3( center.x - quarterSize.x, center.y - quarterSize.y, center.z + quarterSize.z ), quarterSize );
+                if( i == 5 ) childBounds.Set( Vector3( center.x + quarterSize.x, center.y - quarterSize.y, center.z + quarterSize.z ), quarterSize );
+                if( i == 6 ) childBounds.Set( Vector3( center.x - quarterSize.x, center.y - quarterSize.y, center.z - quarterSize.z ), quarterSize );
+                if( i == 7 ) childBounds.Set( Vector3( center.x + quarterSize.x, center.y - quarterSize.y, center.z - quarterSize.z ), quarterSize );
             }
             else
             {
-                childbounds = pOctreeNode->m_pChildNodes[i]->m_Bounds;
+                childBounds = pOctreeNode->m_pChildNodes[i]->m_Bounds;
             }
 
-            if( FitsInsideAABB( &childbounds, meshbounds, meshpos ) )
+            if( FitsInsideAABB( &childBounds, meshBounds, meshPos ) )
             {
                 if( pOctreeNode->m_pChildNodes[i] == nullptr )
                 {
                     pOctreeNode->m_pChildNodes[i] = m_OctreeNodePool.GetObjectFromPool();
-                    pOctreeNode->m_pChildNodes[i]->m_Bounds = childbounds;
+                    pOctreeNode->m_pChildNodes[i]->m_Bounds = childBounds;
                     pOctreeNode->m_pChildNodes[i]->m_pParentNode = pOctreeNode;
                     pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = this;
                     pOctreeNode->m_pChildNodes[i]->m_NodeDepth = pOctreeNode->m_NodeDepth + 1;
@@ -243,10 +238,10 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
         if( pOctreeNode->m_pChildNodes[i] != nullptr )
         {
             // Move all SceneGraphObjects from each child node onto the tail of the root node.
-            TCPPListHead<SceneGraphObject*>* ChildObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
-            if( ChildObjectList->GetHead() )
+            TCPPListHead<SceneGraphObject*>* childObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
+            if( childObjectList->GetHead() )
             {
-                m_pRootNode->m_Renderables.BulkMoveTail( ChildObjectList->GetHead(), ChildObjectList->GetTail() );
+                m_pRootNode->m_Renderables.BulkMoveTail( childObjectList->GetHead(), childObjectList->GetTail() );
             }
 
             // Recurse through children.
@@ -261,21 +256,21 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
     }
 }
 
-void SceneGraph_Octree::Resize(float minx, float miny, float minz, float maxx, float maxy, float maxz)
+void SceneGraph_Octree::Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 {
-    MyAABounds newbounds;
-    Vector3 halfsize( (maxx - minx)/2.0f, (maxy - miny)/2.0f, (maxz - minz)/2.0f );
-    Vector3 center( minx + halfsize.x, miny + halfsize.y, minz + halfsize.z );
-    newbounds.Set( center, halfsize );
+    MyAABounds newBounds;
+    Vector3 halfSize( (maxX - minX)/2.0f, (maxY - minY)/2.0f, (maxZ - minZ)/2.0f );
+    Vector3 center( minX + halfSize.x, minY + halfSize.y, minZ + halfSize.z );
+    newBounds.Set( center, halfSize );
 
     // Only resize if the bounds changed.
-    if( newbounds != m_pRootNode->m_Bounds )
+    if( newBounds != m_pRootNode->m_Bounds )
     {
         //LOGInfo( LOGTag, "Recentering octree (%0.2f, %0.2f, %0.2f)\n", center.x, center.y, center.z );
 
         CollapseChildNodes( m_pRootNode );
 
-        m_pRootNode->m_Bounds.Set( center, halfsize );
+        m_pRootNode->m_Bounds.Set( center, halfSize );
 
         UpdateTree( m_pRootNode );
     }
@@ -342,8 +337,6 @@ void SceneGraph_Octree::ObjectMoved(SceneGraphObject* pObject)
 
 void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
 {
-    checkGlError( "Start of SceneGraph_Octree::Draw()" );
-
     if( m_Dirty )
     {
         UpdateTree( m_pRootNode );
@@ -357,7 +350,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
     // Draw all scene graph objects contained in this node.
 
     // If node is not in frustum and it's not the root node, return.
-    if( pOctreeNode != m_pRootNode && FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, 0 ) == false )
+    if( pOctreeNode != m_pRootNode && FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, nullptr ) == false )
         return;
 
     for( SceneGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
@@ -401,19 +394,13 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
             pMesh->PreDraw();
         }
 
-        checkGlError( "SceneGraph_Octree::Draw() before pSubmesh->Draw()" );
-
 #if MYFW_EDITOR
         bool hideFromDrawList = pObject->IsEditorObject();
 #else
         bool hideFromDrawList = false;
 #endif
-        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldtransform, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, 0, pShaderOverride, hideFromDrawList );
-
-        checkGlError( "SceneGraph_Octree::Draw() after pSubmesh->Draw()" );
+        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldtransform, camPos, camRot, lights, numlights, shadowlightVP, pShadowTex, nullptr, pShaderOverride, hideFromDrawList );
     }
-
-    checkGlError( "End of SceneGraph_Octree::Draw()" );
 
     // Recurse through children.
     for( int i=0; i<8; i++ )

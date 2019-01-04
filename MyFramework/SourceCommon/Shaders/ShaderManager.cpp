@@ -492,12 +492,14 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
     return true;
 }
 
-void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer)
+void BaseShader::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
 {
     if( index != -1 )
     {
+        extern GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes];
+
         MyEnableVertexAttribArray( index );
-        glVertexAttribPointer( index, size, type, normalized, stride, pointer );
+        glVertexAttribPointer( index, size, AttributeTypeConversionTable[type], normalized, stride, pointer );
     }
     else
     {
@@ -505,7 +507,7 @@ void BaseShader::InitializeAttributeArray(GLint index, GLint size, GLenum type, 
     }
 }
 
-void BaseShader::InitializeAttributeIArray(GLint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
+void BaseShader::InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer)
 {
     MyAssert( false ); // Not availabe with ES 2.0, so avoid it for now.
     //if( index != -1 )

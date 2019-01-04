@@ -52,12 +52,15 @@ protected:
     MyRE::DepthFuncs m_DepthFunc;
 
     bool m_CullingEnabled;
+    MyRE::FrontFaceWindings m_FrontFaceWinding;
 
     int32 m_SwapInterval;
 
     bool m_BlendEnabled;
     MyRE::BlendFactors m_BlendFunc_SrcFactor;
     MyRE::BlendFactors m_BlendFunc_DstFactor;
+
+    float m_LineWidth;
 
 public:
     Renderer_Base();
@@ -80,9 +83,11 @@ public:
     virtual void SetDepthTestEnabled(bool enabled);
     virtual void SetDepthFunction(MyRE::DepthFuncs func);
     virtual void SetCullingEnabled(bool enabled);
+    virtual void SetFrontFaceWinding(MyRE::FrontFaceWindings winding);
     virtual void SetSwapInterval(int32 interval);
     virtual void SetBlendEnabled(bool enabled);
     virtual void SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor);
+    virtual void SetLineWidth(float width);
 
     // Actions.
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) = 0;
@@ -103,6 +108,7 @@ public:
     // Textures/FBOs.
     virtual void SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag) = 0;
     virtual void SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT) = 0;
+    virtual void BindFramebuffer(GLuint framebuffer) = 0;
 };
 
 #endif //__Renderer_Base_H__

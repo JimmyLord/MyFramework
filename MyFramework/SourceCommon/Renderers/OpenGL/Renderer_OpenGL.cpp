@@ -36,6 +36,29 @@ GLint PrimitiveTypeConversionTable[MyRE::PrimitiveType_Undefined] =
     GL_TRIANGLE_FAN,
 };
 
+GLint FrontFaceWindingConversionTable[MyRE::FrontFaceWinding_NumTypes] =
+{
+    GL_CW,
+    GL_CCW,
+};
+
+GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes] =
+{
+    GL_BYTE,
+    GL_UNSIGNED_BYTE,
+    GL_SHORT,
+    GL_UNSIGNED_SHORT,
+    GL_INT,
+    GL_UNSIGNED_INT,
+    GL_HALF_FLOAT,
+    GL_FLOAT,
+    GL_DOUBLE,
+    GL_FIXED,
+    GL_INT_2_10_10_10_REV,
+    GL_UNSIGNED_INT_2_10_10_10_REV,
+    GL_UNSIGNED_INT_10F_11F_11F_REV,
+};
+
 GLint BufferTypeConversionTable[MyRE::BufferType_NumTypes] =
 {
     GL_ARRAY_BUFFER,
@@ -270,6 +293,13 @@ void Renderer_OpenGL::SetCullingEnabled(bool enabled)
     checkGlError( "glEnable or glDisable( GL_CULL_FACE )" );
 }
 
+void Renderer_OpenGL::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)
+{
+    Renderer_Base::SetFrontFaceWinding( winding );
+
+    glFrontFace( FrontFaceWindingConversionTable[winding] );
+}
+
 void Renderer_OpenGL::SetSwapInterval(int32 interval)
 {
     Renderer_Base::SetSwapInterval( interval );
@@ -299,6 +329,13 @@ void Renderer_OpenGL::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFact
     glBlendFunc( BlendFactorConversionTable[srcFactor], BlendFactorConversionTable[dstFactor] );
 
     checkGlError( "glBlendFunc" );
+}
+
+void Renderer_OpenGL::SetLineWidth(float width)
+{
+    Renderer_Base::SetLineWidth( width );
+
+    glLineWidth( width );
 }
 
 //====================================================================================================
@@ -495,4 +532,9 @@ void Renderer_OpenGL::SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapMo
     glBindTexture( GL_TEXTURE_2D, 0 );
 
     checkGlError( "SetTextureWrapMode" );
+}
+
+void Renderer_OpenGL::BindFramebuffer(GLuint framebuffer)
+{
+    MyBindFramebuffer( GL_FRAMEBUFFER, framebuffer, 0, 0 );
 }
