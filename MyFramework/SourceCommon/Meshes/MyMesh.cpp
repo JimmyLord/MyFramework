@@ -10,8 +10,8 @@
 #include "CommonHeader.h"
 #include "MyMesh.h"
 #include "MySubmesh.h"
-#include "../Renderers/Renderer_Enums.h"
-#include "../Renderers/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
 
 MyMesh::MyMesh()
 {

@@ -22,6 +22,7 @@ class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount
     friend class BufferManager;
     friend class PanelMemory;
     friend class Shader_Base;
+    friend class Shader_OpenGL;
 
 protected:
     GLuint m_BufferIDs[3]; // Up to 3 buffers created for double/triple buffering data.

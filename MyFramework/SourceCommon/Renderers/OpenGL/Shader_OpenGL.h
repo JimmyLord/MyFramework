@@ -7,20 +7,22 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __Shader_Base_H__
-#define __Shader_Base_H__
+#ifndef __Shader_OpenGL_H__
+#define __Shader_OpenGL_H__
+
+#include "../../Shaders/ShaderManager.h"
 
 class MyLight;
 class MaterialDefinition;
 class ExposedUniformValue;
 
-class Shader_Base : public BaseShader
+class Shader_OpenGL : public Shader_Base
 {
     static const int MAX_LIGHTS = 4;
 
 public:
     GLint m_aHandle_Position;
-    GLint m_aHandle_UVCoord; // TODO: make this an array.
+    GLint m_aHandle_UVCoord; // TODO: Make this an array.
     GLint m_aHandle_Normal;
     GLint m_aHandle_VertexColor;
     GLint m_aHandle_BoneIndex;
@@ -41,7 +43,7 @@ public:
     GLint m_uHandle_UVScale;
     GLint m_uHandle_UVOffset;
 
-    GLint m_uHandle_ShadowLightWVPT; // in 0 to 1 space(texture/uv? space), not -1 to 1
+    GLint m_uHandle_ShadowLightWVPT; // In 0 to 1 space(texture/uv? space), not -1 to 1.
     GLint m_uHandle_ShadowTexture;
 
     GLint m_uHandle_TextureColor;
@@ -71,48 +73,48 @@ public:
     GLint m_uHandle_DirLightColor;
 
     GLint m_uHandle_LightPos[MAX_LIGHTS];
-    GLint m_uHandle_LightDir[MAX_LIGHTS]; // for spotlights
+    GLint m_uHandle_LightDir[MAX_LIGHTS]; // For spotlights.
     GLint m_uHandle_LightColor[MAX_LIGHTS];
     GLint m_uHandle_LightAttenuation[MAX_LIGHTS];
 
     GLint m_uHandle_ExposedUniforms[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
 public:
-    Shader_Base();
-    Shader_Base(ShaderPassTypes type);
-    SetClassnameBase( "ShadBase" ); // only first 8 character count.
-    void Init_Shader_Base();
-    virtual ~Shader_Base();
+    Shader_OpenGL();
+    Shader_OpenGL(ShaderPassTypes type);
+    SetClassnameBase( "ShaderGL" ); // Only first 8 characters count.
+    void Init_Shader();
+    virtual ~Shader_OpenGL();
 
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
     virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
 
-    void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
+    virtual void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
 
-    bool CompileShader();
-    bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
-    bool Activate();
+    virtual bool CompileShader();
+    virtual bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
+    virtual bool Activate();
 
-    void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
-    void SetupDefaultAttributes(BufferDefinition* pVBO);
-    void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
-    void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
-    void ProgramTint(ColorByte tint);
-    void ProgramPointSize(float pointSize);
-    void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset);
-    void ProgramCamera(Vector3* pCamPos, Vector3* pCamRot);
-    void ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld);
-    void ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld);
-    void ProgramShadowLightTransform(MyMatrix* matShadowWVP);
-    void ProgramShadowLightTexture(TextureDefinition* pShadowTex);
-    void ProgramLightmap(TextureDefinition* pTexture);
-    void ProgramDepthmap(TextureDefinition* pTexture);
-    void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms);
-    void ProgramFramebufferSize(float width, float height);
-    void ProgramExposedUniforms(ExposedUniformValue* valueArray);
+    virtual void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
+    virtual void SetupDefaultAttributes(BufferDefinition* pVBO);
+    virtual void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
+    virtual void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
+    virtual void ProgramTint(ColorByte tint);
+    virtual void ProgramPointSize(float pointSize);
+    virtual void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset);
+    virtual void ProgramCamera(Vector3* pCamPos, Vector3* pCamRot);
+    virtual void ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld);
+    virtual void ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld);
+    virtual void ProgramShadowLightTransform(MyMatrix* matShadowWVP);
+    virtual void ProgramShadowLightTexture(TextureDefinition* pShadowTex);
+    virtual void ProgramLightmap(TextureDefinition* pTexture);
+    virtual void ProgramDepthmap(TextureDefinition* pTexture);
+    virtual void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms);
+    virtual void ProgramFramebufferSize(float width, float height);
+    virtual void ProgramExposedUniforms(ExposedUniformValue* valueArray);
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader);
 };
 
-#endif //__Shader_Base_H__
+#endif //__Shader_OpenGL_H__

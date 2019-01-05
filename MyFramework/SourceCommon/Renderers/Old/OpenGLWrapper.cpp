@@ -8,7 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderer_Enums.h"
+#include "../BaseClasses/Renderer_Enums.h"
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>

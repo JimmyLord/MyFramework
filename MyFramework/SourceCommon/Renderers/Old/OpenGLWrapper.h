@@ -10,7 +10,7 @@
 #ifndef __OpenGLWrapper_H__
 #define __OpenGLWrapper_H__
 
-#include "../Renderer_Enums.h"
+#include "../BaseClasses/Renderer_Enums.h"
 
 // TODO: Fix GL Includes.
 // Temp redefine of base GL types until all GL code is in Renderers/OpenGL

@@ -8,8 +8,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderer_Enums.h"
-#include "../Renderer_Base.h"
+#include "../BaseClasses/Renderer_Enums.h"
+#include "../BaseClasses/Renderer_Base.h"
 #include "Renderer_OpenGL.h"
 
 #include <gl/GL.h>

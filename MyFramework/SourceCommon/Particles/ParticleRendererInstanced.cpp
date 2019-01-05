@@ -12,11 +12,13 @@
 #if MYFW_USEINSTANCEDPARTICLES
 
 #include "ParticleRendererInstanced.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
+#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
@@ -142,7 +144,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     }
     MyAssert( m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShaderInstanced()->GlobalPass();
+    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShaderInstanced()->GlobalPass();
     if( pShader == nullptr )
         return;
 

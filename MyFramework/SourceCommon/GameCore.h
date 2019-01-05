@@ -10,7 +10,7 @@
 #ifndef __GameCore_H__
 #define __GameCore_H__
 
-#include "Renderers/Renderer_Base.h"
+#include "Renderers/BaseClasses/Renderer_Base.h"
 
 class GameCore;
 class GameLevel;

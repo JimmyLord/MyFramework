@@ -12,7 +12,7 @@
 #include "GameCore.h"
 #include "../SourceCommon/Input/GamepadManager.h"
 #include "../SourceWindows/GamepadManagerXInput.h"
-#include "Renderers/Renderer_Base.h"
+#include "Renderers/BaseClasses/Renderer_Base.h"
 #include "Renderers/OpenGL/Renderer_OpenGL.h"
 
 #if MYFW_EDITOR

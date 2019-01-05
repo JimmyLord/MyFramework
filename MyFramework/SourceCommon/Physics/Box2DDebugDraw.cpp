@@ -8,7 +8,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderers/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
 
 #include "Box2DDebugDraw.h"
 
@@ -16,6 +17,7 @@
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
+#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 Box2DDebugDraw::Box2DDebugDraw(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView)
 {
@@ -37,7 +39,7 @@ Box2DDebugDraw::~Box2DDebugDraw()
 void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, MyRE::PrimitiveTypes primitiveType, float pointorlinesize)
 {
     // Set the material to the correct color and draw the shape.
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass( 0, 0 );
+    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass( 0, 0 );
     if( pShader->Activate() == false )
         return;
 

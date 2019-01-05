@@ -8,13 +8,15 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderers/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
 #include "MySprite.h"
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
+#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 // These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
 //   for code to use them, you'd need to fill your vertex buffer in this order.
@@ -433,7 +435,7 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
     if( m_pMaterial->GetShader() == 0 )
         return false;
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return false;
 
@@ -505,7 +507,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = 0;
+    Shader_OpenGL* pShader = 0;
     if( pShaderOverride )
     {
         // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
@@ -513,7 +515,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         // TODO: this might fail with 1-3 bones,
         //       but should work with 0 bones since bone attribs are set to 100% weight on bone 0
         //       and bone 0 transform uniform is set to identity.
-        pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
+        pShader = (Shader_OpenGL*)pShaderOverride->GlobalPass( 0, 4 );
 
         MyAssert( pShader );
         if( pShader == 0 )
@@ -545,7 +547,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
             }
         }
 
-        pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass( numpointlights, 0 );
+        pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass( numpointlights, 0 );
 
         // pShader will be 0 if the current pass isn't supported/needed by the shader, i.e. doesn't render to shadow buffer.
         //MyAssert( pShader );

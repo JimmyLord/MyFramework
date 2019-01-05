@@ -520,7 +520,6 @@ typedef unsigned long   u_long;
 #include "Shaders/VertexFormatManager.h"
 #include "Shaders/ShaderGroup.h"
 #include "Shaders/ShaderManager.h"
-#include "Shaders/Shader_Base.h"
 #include "Shaders/ListOfShaders.h"
 
 #include "Meshes/MeshManager.h"

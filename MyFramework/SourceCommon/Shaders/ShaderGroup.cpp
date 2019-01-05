@@ -8,6 +8,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
+
+// TODO: Fix GL Includes.
+#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 ShaderGroupManager* g_pShaderGroupManager = nullptr;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
@@ -75,7 +79,7 @@ void ShaderGroup::Initialize()
                 if( m_pShaderAllocationFunction )
                     m_pShaderPasses[p][lc][bc] = m_pShaderAllocationFunction( (ShaderPassTypes)p );
                 else
-                    m_pShaderPasses[p][lc][bc] = MyNew Shader_Base( (ShaderPassTypes)p );
+                    m_pShaderPasses[p][lc][bc] = MyNew Shader_OpenGL( (ShaderPassTypes)p );
             }
         }
     }

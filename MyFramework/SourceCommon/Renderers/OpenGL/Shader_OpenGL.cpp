@@ -8,26 +8,28 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "ShaderManager.h"
-#include "VertexFormats.h"
+#include "../BaseClasses/Shader_Base.h"
+#include "../../Shaders/ShaderManager.h"
+#include "../../Shaders/VertexFormats.h"
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
+#include "GLHelpers.h"
+#include "Shader_OpenGL.h"
 
-Shader_Base::Shader_Base()
+Shader_OpenGL::Shader_OpenGL()
 {
-    Init_Shader_Base();
+    Init_Shader();
 }
 
-Shader_Base::Shader_Base(ShaderPassTypes type)
+Shader_OpenGL::Shader_OpenGL(ShaderPassTypes type)
 {
-    Init_Shader_Base();
+    Init_Shader();
     Init( type );
 }
 
-void Shader_Base::Init_Shader_Base()
+void Shader_OpenGL::Init_Shader()
 {
     ClassnameSanityCheck();
 
@@ -91,11 +93,11 @@ void Shader_Base::Init_Shader_Base()
     }
 }
 
-Shader_Base::~Shader_Base()
+Shader_OpenGL::~Shader_OpenGL()
 {
 }
 
-bool Shader_Base::LoadAndCompile(GLuint premadeProgramHandle)
+bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 {
     // Manually create a shader program here, so we can bind the attribute locations.
     GLuint programHandle = premadeProgramHandle;
@@ -194,7 +196,7 @@ bool Shader_Base::LoadAndCompile(GLuint premadeProgramHandle)
     return true;
 }
 
-void Shader_Base::DeactivateShader(BufferDefinition* pVBO, bool useVAOsIfAvailable)
+void Shader_OpenGL::DeactivateShader(BufferDefinition* pVBO, bool useVAOsIfAvailable)
 {
     if( pVBO && pVBO->m_CurrentVAOHandle )
     {
@@ -222,7 +224,7 @@ void Shader_Base::DeactivateShader(BufferDefinition* pVBO, bool useVAOsIfAvailab
     }
 }
 
-void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo)
+void Shader_OpenGL::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo)
 {
 #if USE_D3D
     MyAssert( false );
@@ -484,20 +486,20 @@ void Shader_Base::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFo
 #endif //USE_D3D
 }
 
-bool Shader_Base::DoVAORequirementsMatch(BaseShader* pShader)
+bool Shader_OpenGL::DoVAORequirementsMatch(BaseShader* pShader)
 {
     //BaseShader::DoVAORequirementsMatch( pShader );
 
     if( pShader->IsA( "ShadBase" ) )
     {
-        Shader_Base* pShader_Base = (Shader_Base*)pShader;
+        Shader_OpenGL* pShader_OpenGL = (Shader_OpenGL*)pShader;
 
-        if( pShader_Base->m_aHandle_Position     == m_aHandle_Position &&
-            pShader_Base->m_aHandle_UVCoord      == m_aHandle_UVCoord &&
-            pShader_Base->m_aHandle_Normal       == m_aHandle_Normal &&
-            pShader_Base->m_aHandle_VertexColor  == m_aHandle_VertexColor &&
-            pShader_Base->m_aHandle_BoneIndex    == m_aHandle_BoneIndex &&
-            pShader_Base->m_aHandle_BoneWeight   == m_aHandle_BoneWeight )
+        if( pShader_OpenGL->m_aHandle_Position     == m_aHandle_Position &&
+            pShader_OpenGL->m_aHandle_UVCoord      == m_aHandle_UVCoord &&
+            pShader_OpenGL->m_aHandle_Normal       == m_aHandle_Normal &&
+            pShader_OpenGL->m_aHandle_VertexColor  == m_aHandle_VertexColor &&
+            pShader_OpenGL->m_aHandle_BoneIndex    == m_aHandle_BoneIndex &&
+            pShader_OpenGL->m_aHandle_BoneWeight   == m_aHandle_BoneWeight )
         {
             return true;
         }
@@ -506,13 +508,13 @@ bool Shader_Base::DoVAORequirementsMatch(BaseShader* pShader)
     return false;
 }
 
-bool Shader_Base::CompileShader()
+bool Shader_OpenGL::CompileShader()
 {
     if( m_Initialized == false )
     {
         if( LoadAndCompile() == false )
         {
-            //LOGInfo( LOGTag, "Shader_Base::ActivateAndProgramShader - shader not ready.\n" );
+            //LOGInfo( LOGTag, "Shader_OpenGL::ActivateAndProgramShader - shader not ready.\n" );
             return false;
         }
     }
@@ -520,7 +522,7 @@ bool Shader_Base::CompileShader()
     return true;
 }
 
-bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial)
+bool Shader_OpenGL::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial)
 {
     MyAssert( pMaterial );
 
@@ -555,7 +557,7 @@ bool Shader_Base::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinit
     return true;
 }
 
-bool Shader_Base::Activate()
+bool Shader_OpenGL::Activate()
 {
     if( CompileShader() == false )
     {
@@ -569,7 +571,7 @@ bool Shader_Base::Activate()
     return true;
 }
 
-void Shader_Base::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable)
+void Shader_OpenGL::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable)
 {
     if( useVAOsIfAvailable == false || pVBO->m_VAOInitialized[pVBO->m_CurrentBufferIndex] == false )
     {
@@ -609,7 +611,7 @@ void Shader_Base::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO
     }
 }
 
-void Shader_Base::SetupDefaultAttributes(BufferDefinition* pVBO)
+void Shader_OpenGL::SetupDefaultAttributes(BufferDefinition* pVBO)
 {
     // TODO: find better way to handle default attributes, MySprite sets this to 0,0,-1
     //       so need to set since VAOs don't change these values
@@ -622,7 +624,7 @@ void Shader_Base::SetupDefaultAttributes(BufferDefinition* pVBO)
     }
 }
 
-void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
+void Shader_OpenGL::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
     if( m_uHandle_World != -1 )
     {
@@ -712,9 +714,9 @@ void Shader_Base::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     }
 }
 
-void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess)
+void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess)
 {
-    checkGlError( "Shader_Base::ProgramBaseUniforms start" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms start" );
 
 #if USE_D3D
     MyAssert( 0 );
@@ -726,9 +728,9 @@ void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorBy
     //m_ShaderConstants.tint.Set( tint.r, tint.g, tint.b, tint.a );
     //g_pD3DContext->UpdateSubresource( m_pConstantsBuffer.Get(), 0, NULL, &m_ShaderConstants, 0, 0 );
 #else
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
     if( m_uHandle_TextureColor != -1 )
     {
@@ -757,21 +759,21 @@ void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorBy
         }
     }
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
     ProgramTint( tint );
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
     if( m_uHandle_TextureSpecColor != -1 )
         glUniform4f( m_uHandle_TextureSpecColor, specularColor.r / 255.0f, specularColor.g / 255.0f, specularColor.b / 255.0f, specularColor.a / 255.0f );
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
     if( m_uHandle_Shininess != -1 )
         glUniform1f( m_uHandle_Shininess, shininess );
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
     if( m_uHandle_Time != -1 )
     {
@@ -779,17 +781,17 @@ void Shader_Base::ProgramMaterialProperties(TextureDefinition* pTexture, ColorBy
         glUniform1f( m_uHandle_Time, time );
     }
 
-    checkGlError( "Shader_Base::ProgramBaseUniforms end" );
+    checkGlError( "Shader_OpenGL::ProgramBaseUniforms end" );
 #endif //USE_D3D
 }
 
-void Shader_Base::ProgramTint(ColorByte tint)
+void Shader_OpenGL::ProgramTint(ColorByte tint)
 {
     if( m_uHandle_TextureTintColor != -1 )
         glUniform4f( m_uHandle_TextureTintColor, tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f, tint.a / 255.0f );
 }
 
-void Shader_Base::ProgramPointSize(float pointSize)
+void Shader_OpenGL::ProgramPointSize(float pointSize)
 {
     if( m_uHandle_PointSize != -1 )
     {
@@ -813,7 +815,7 @@ void Shader_Base::ProgramPointSize(float pointSize)
     }
 }
 
-void Shader_Base::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
+void Shader_OpenGL::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
 {
     if( m_uHandle_UVTransform != -1 )
     {
@@ -828,7 +830,7 @@ void Shader_Base::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
         glUniform2f( m_uHandle_UVOffset, offset.x, offset.y );
 }
 
-void Shader_Base::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
+void Shader_OpenGL::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
 {
 #if USE_D3D
     MyAssert( 0 );
@@ -863,7 +865,7 @@ void Shader_Base::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
     return;
 }
 
-void Shader_Base::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld)
+void Shader_OpenGL::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld)
 {
     if( m_uHandle_LSCameraPos != -1 )
     {
@@ -875,7 +877,7 @@ void Shader_Base::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverse
     }
 }
 
-void Shader_Base::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld)
+void Shader_OpenGL::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld)
 {
     int numDirs = 0;
     int numPoints = 0;
@@ -965,7 +967,7 @@ void Shader_Base::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* m
     return;
 }
 
-void Shader_Base::ProgramShadowLightTransform(MyMatrix* matShadowWVP)
+void Shader_OpenGL::ProgramShadowLightTransform(MyMatrix* matShadowWVP)
 {
     if( m_uHandle_ShadowLightWVPT != -1 )
     {
@@ -973,7 +975,7 @@ void Shader_Base::ProgramShadowLightTransform(MyMatrix* matShadowWVP)
     }
 }
 
-void Shader_Base::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
+void Shader_OpenGL::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
 {
     if( m_uHandle_ShadowTexture != -1 )
     {
@@ -987,7 +989,7 @@ void Shader_Base::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
     }
 }
 
-void Shader_Base::ProgramLightmap(TextureDefinition* pTexture)
+void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureLightmap != -1 )
     {
@@ -1001,7 +1003,7 @@ void Shader_Base::ProgramLightmap(TextureDefinition* pTexture)
     }
 }
 
-void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
+void Shader_OpenGL::ProgramDepthmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureDepth != -1 && pTexture != 0 )
     {
@@ -1015,7 +1017,7 @@ void Shader_Base::ProgramDepthmap(TextureDefinition* pTexture)
     }
 }
 
-void Shader_Base::ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms)
+void Shader_OpenGL::ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms)
 {
     // TODO: make this less rigid...
     // Blackberry has limit of 251 uniform vectors, 50*4 + extras is less than that.
@@ -1025,13 +1027,13 @@ void Shader_Base::ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms
         glUniformMatrix4fv( m_uHandle_BoneTransforms, numTransforms, GL_FALSE, &pTransforms[0].m11 );
 }
 
-void Shader_Base::ProgramFramebufferSize(float width, float height)
+void Shader_OpenGL::ProgramFramebufferSize(float width, float height)
 {
     if( m_uHandle_FramebufferSize != -1 )
         glUniform2f( m_uHandle_FramebufferSize, width, height );    
 }
 
-void Shader_Base::ProgramExposedUniforms(ExposedUniformValue* valueArray)
+void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
 {
     int numTexturesSet = 0;
 

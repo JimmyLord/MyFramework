@@ -8,14 +8,16 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderers/Renderer_Enums.h"
-#include "../Renderers/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
 #include "ParticleRenderer.h"
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
+#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 #define USE_INDEXED_TRIANGLES   1
 
@@ -289,7 +291,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
         m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
     MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
 
-    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 

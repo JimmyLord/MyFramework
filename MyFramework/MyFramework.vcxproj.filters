@@ -133,6 +133,9 @@
     <Filter Include="Source\Renderers\Old">
       <UniqueIdentifier>{1c434e93-7927-42d8-9515-c7412b3421eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Renderers\BaseClasses">
+      <UniqueIdentifier>{cf4abc3f-7e52-4bd0-8784-22bf8da2cf3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp">
@@ -275,9 +278,6 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Networking\GameService_MyServer.cpp">
       <Filter>Source\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\Shaders\Shader_Base.cpp">
-      <Filter>Source\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Shaders\VertexFormats.cpp">
       <Filter>Source\Shaders</Filter>
@@ -519,12 +519,6 @@
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.cpp">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\Renderers\Renderer_Base.cpp">
-      <Filter>Source\Renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\Renderers\Renderer_Enums.cpp">
-      <Filter>Source\Renderers</Filter>
-    </ClCompile>
     <ClCompile Include="SourceIOS\IOSFileLoader.cpp">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClCompile>
@@ -539,6 +533,18 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Renderers\OpenGL\GLHelpers.cpp">
       <Filter>Source\Renderers\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.cpp">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\BaseClasses\Renderer_Base.cpp">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.cpp">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\BaseClasses\Shader_Base.cpp">
+      <Filter>Source\Renderers\BaseClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -715,9 +721,6 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Networking\GameService_MyServer.h">
       <Filter>Source\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\Shaders\Shader_Base.h">
-      <Filter>Source\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="SourceEmscripten\SavedData.h">
       <Filter>Source-Platform\Source - Emscripten</Filter>
@@ -989,12 +992,6 @@
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.h">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCommon\Renderers\Renderer_Base.h">
-      <Filter>Source\Renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\Renderers\Renderer_Enums.h">
-      <Filter>Source\Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="SourceIOS\IOSFileLoader.h">
       <Filter>Source-Platform\Source - IOS</Filter>
     </ClInclude>
@@ -1006,6 +1003,18 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\OpenGL\GLHelpers.h">
       <Filter>Source\Renderers\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.h">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\BaseClasses\Renderer_Base.h">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.h">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\BaseClasses\Shader_Base.h">
+      <Filter>Source\Renderers\BaseClasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@
 #ifndef __Renderer_OpenGL_H__
 #define __Renderer_OpenGL_H__
 
-#include "../Renderer_Base.h"
+#include "../BaseClasses/Renderer_Base.h"
 
 // TODO: Fix GL Includes.
 // Temp redefine of base GL types until all GL code is in Renderers/OpenGL

@@ -8,7 +8,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "CommonHeader.h"
-#include "../Renderers/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Renderers/BaseClasses/Shader_Base.h"
 #include "SpriteBatch.h"
 
 // TODO: Fix GL Includes.
