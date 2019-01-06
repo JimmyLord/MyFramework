@@ -746,7 +746,7 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
     }
 
-    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
+    //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
 
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
@@ -867,7 +867,7 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
     }
 
-    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
+    //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
 
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
@@ -1001,7 +1001,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, bytesperindex, "MyMesh_Icosphere", "Indices" );
     }
 
-    m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
+    //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
     m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;

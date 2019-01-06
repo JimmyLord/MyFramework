@@ -17,6 +17,7 @@
 #include "../../GLExtensions.h"
 #include "GLHelpers.h"
 #include "Shader_OpenGL.h"
+#include "Buffer_OpenGL.h"
 
 Shader_OpenGL::Shader_OpenGL()
 {
@@ -198,7 +199,7 @@ bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 
 void Shader_OpenGL::DeactivateShader(BufferDefinition* pVBO, bool useVAOsIfAvailable)
 {
-    if( pVBO && pVBO->m_CurrentVAOHandle )
+    if( pVBO && ((Buffer_OpenGL*)pVBO->m_pBuffer)->m_CurrentVAOHandle )
     {
         glBindVertexArray( 0 );
     }
@@ -539,7 +540,9 @@ bool Shader_OpenGL::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefin
         //       so need to set since VAOs don't change these values.
         if( m_aHandle_Normal != -1 )
         {
-            if( pVBO->m_VertexFormat == VertexFormat_Sprite )
+            Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)pVBO->m_pBuffer;
+
+            if( pGLVBO->m_VertexFormat == VertexFormat_Sprite )
                 glVertexAttrib3f( m_aHandle_Normal, 0, 0, -1 );
             else
                 glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
@@ -573,20 +576,27 @@ bool Shader_OpenGL::Activate()
 
 void Shader_OpenGL::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable)
 {
-    if( useVAOsIfAvailable == false || pVBO->m_VAOInitialized[pVBO->m_CurrentBufferIndex] == false )
+    Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)pVBO->m_pBuffer;
+    Buffer_OpenGL* pGLIBO = 0;
+    if( pIBO )
+    {
+        pGLIBO = (Buffer_OpenGL*)pIBO->m_pBuffer;
+    }
+
+    if( useVAOsIfAvailable == false || pGLVBO->m_VAOInitialized[pGLVBO->m_CurrentBufferIndex] == false )
     {
         if( glBindVertexArray != 0 )
         {
             if( useVAOsIfAvailable )
             {
-                pVBO->m_VAOInitialized[pVBO->m_CurrentBufferIndex] = true;
+                pGLVBO->m_VAOInitialized[pGLVBO->m_CurrentBufferIndex] = true;
 
                 // First time using this VAO, so we create a VAO and set up all the attributes.
                 pVBO->CreateAndBindVAO();
 #if _DEBUG && MYFW_WINDOWS
-                pVBO->m_DEBUG_VBOUsedOnCreation[pVBO->m_CurrentBufferIndex] = pVBO->m_CurrentBufferID;
+                pGLVBO->m_DEBUG_VBOUsedOnCreation[pGLVBO->m_CurrentBufferIndex] = pGLVBO->m_CurrentBufferID;
                 if( pIBO )
-                    pVBO->m_DEBUG_IBOUsedOnCreation[pIBO->m_CurrentBufferIndex] = pIBO->m_CurrentBufferID;
+                    pGLVBO->m_DEBUG_IBOUsedOnCreation[pGLIBO->m_CurrentBufferIndex] = pGLIBO->m_CurrentBufferID;
 #endif
             }
             else
@@ -597,27 +607,29 @@ void Shader_OpenGL::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pI
         }
 
         //MyAssert( vbo->m_VertexFormat == VertexFormat_None || vertformat == vbo->m_VertexFormat );
-        MyAssert( pVBO->m_VertexFormat != VertexFormat_None );
-        InitializeAttributeArrays( pVBO->m_VertexFormat, pVBO->m_pFormatDesc, pVBO?pVBO->m_CurrentBufferID:0, pIBO?pIBO->m_CurrentBufferID:0 );
+        MyAssert( pGLVBO->m_VertexFormat != VertexFormat_None );
+        InitializeAttributeArrays( pGLVBO->m_VertexFormat, pGLVBO->m_pFormatDesc, pGLVBO?pGLVBO->m_CurrentBufferID:0, pGLIBO?pGLIBO->m_CurrentBufferID:0 );
     }
     else
     {
 #if _DEBUG && MYFW_WINDOWS
-        MyAssert( pVBO->m_DEBUG_VBOUsedOnCreation[pVBO->m_CurrentBufferIndex] == pVBO->m_CurrentBufferID );
-        if( pIBO )
-            MyAssert( pVBO->m_DEBUG_IBOUsedOnCreation[pIBO->m_CurrentBufferIndex] == pIBO->m_CurrentBufferID );
+        MyAssert( pGLVBO->m_DEBUG_VBOUsedOnCreation[pGLVBO->m_CurrentBufferIndex] == pGLVBO->m_CurrentBufferID );
+        if( pGLIBO )
+            MyAssert( pGLVBO->m_DEBUG_IBOUsedOnCreation[pGLIBO->m_CurrentBufferIndex] == pGLIBO->m_CurrentBufferID );
 #endif
-        glBindVertexArray( pVBO->m_CurrentVAOHandle );
+        glBindVertexArray( pGLVBO->m_CurrentVAOHandle );
     }
 }
 
 void Shader_OpenGL::SetupDefaultAttributes(BufferDefinition* pVBO)
 {
+    Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)pVBO->m_pBuffer;
+
     // TODO: find better way to handle default attributes, MySprite sets this to 0,0,-1
     //       so need to set since VAOs don't change these values
     if( m_aHandle_Normal != -1 )
     {
-        if( pVBO->m_VertexFormat == VertexFormat_Sprite )
+        if( pGLVBO->m_VertexFormat == VertexFormat_Sprite )
             glVertexAttrib3f( m_aHandle_Normal, 0, 0, -1 );
         else
             glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );

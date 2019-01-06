@@ -18,6 +18,7 @@
 #include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
 #include "../Renderers/OpenGL/Shader_OpenGL.h"
+#include "../Renderers/OpenGL/Buffer_OpenGL.h"
 
 #define USE_INDEXED_TRIANGLES   1
 
@@ -83,7 +84,8 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 
-    LOGInfo( LOGTag, "ParticleRenderer: m_pVertexBuffer->m_BufferID = %d\n", m_pVertexBuffer->m_CurrentBufferID );
+    //Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)m_pVertexBuffer->m_pBuffer;
+    //LOGInfo( LOGTag, "ParticleRenderer: m_pVertexBuffer->m_BufferID = %d\n", pGLVBO->m_CurrentBufferID );
 
     if( numindices != 0 )
     {

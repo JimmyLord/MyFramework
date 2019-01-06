@@ -36,26 +36,32 @@ Box2DDebugDraw::~Box2DDebugDraw()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, MyRE::PrimitiveTypes primitiveType, float pointorlinesize)
+void Box2DDebugDraw::Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, MyRE::PrimitiveTypes primitiveType, float pointOrLineSize)
 {
     // Set the material to the correct color and draw the shape.
     Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass( 0, 0 );
     if( pShader->Activate() == false )
         return;
 
+    checkGlError( "pShader->Activate" );
+
     m_pMaterial->SetColorDiffuse( ColorByte( (unsigned char)(color.r*255), (unsigned char)(color.g*255), (unsigned char)(color.b*255), alpha ) );
 
     // Setup our position attribute, pass in the array of verts, not using a VBO.
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    checkGlError( "glBindBuffer" );
+
     pShader->InitializeAttributeArray( pShader->m_aHandle_Position, 2, MyRE::AttributeType_Float, false, sizeof(float)*2, (void*)vertices );
+
+    checkGlError( "InitAttribArray" );
 
     // Setup uniforms, mainly viewproj and tint.
     pShader->ProgramMaterialProperties( 0, m_pMaterial->m_ColorDiffuse, m_pMaterial->m_ColorSpecular, m_pMaterial->m_Shininess );
     pShader->ProgramTransforms( m_pMatProj, m_pMatView, 0 );
 
-    glLineWidth( pointorlinesize );
+    glLineWidth( pointOrLineSize );
 #ifndef MYFW_OPENGLES2
-    glPointSize( pointorlinesize );
+    glPointSize( pointOrLineSize );
 #endif
 
     g_pRenderer->SetBlendEnabled( true );

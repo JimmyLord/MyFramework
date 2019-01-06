@@ -12,10 +12,11 @@
 
 class BufferManager;
 class RefCount;
+class Buffer_Base;
 
 extern BufferManager* g_pBufferManager;
 
-// ATM this whole buffer system creates a cpu memory block that mirrors what should be copied into OpenGL memory.
+// ATM this whole buffer system creates a cpu memory block that mirrors what should be copied into OpenGL managed memory.
 
 class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount
 {
@@ -25,41 +26,50 @@ class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount
     friend class Shader_OpenGL;
 
 protected:
-    GLuint m_BufferIDs[3]; // Up to 3 buffers created for double/triple buffering data.
-    GLuint m_VAOHandles[3]; // Used only for vbo's ATM.
-    bool m_VAOInitialized[3];
+    Buffer_Base* m_pBuffer;
+    //GLuint m_BufferIDs[3]; // Up to 3 buffers created for double/triple buffering data.
+    //GLuint m_VAOHandles[3]; // Used only for vbo's ATM.
+    //bool m_VAOInitialized[3];
 
-    unsigned int m_NumBuffersToUse;
-    unsigned int m_CurrentBufferIndex;
-    unsigned int m_NextBufferIndex;
+    //unsigned int m_NumBuffersToUse;
+    //unsigned int m_CurrentBufferIndex;
+    //unsigned int m_NextBufferIndex;
 
 public:
-#if _DEBUG && MYFW_WINDOWS
-    int m_DEBUG_CurrentVAOIndex;
-    GLuint m_DEBUG_VBOUsedOnCreation[3];
-    GLuint m_DEBUG_IBOUsedOnCreation[3];
-    int m_DEBUG_LastFrameUpdated;
-#endif
+//#if _DEBUG && MYFW_WINDOWS
+//    int m_DEBUG_CurrentVAOIndex;
+//    GLuint m_DEBUG_VBOUsedOnCreation[3];
+//    GLuint m_DEBUG_IBOUsedOnCreation[3];
+//    int m_DEBUG_LastFrameUpdated;
+//#endif
 
-    GLuint m_CurrentBufferID;
-    GLuint m_CurrentVAOHandle;
+    //GLuint m_CurrentBufferID;
+    //GLuint m_CurrentVAOHandle;
 
     char* m_pData;
     unsigned int m_DataSize;
-    union
-    {
-        VertexFormats m_VertexFormat; // sanity check for GL_ARRAY_BUFFER'S, if this is a vertex buffer.
-        int m_BytesPerIndex; // if this is an index buffer.
-    };
-    VertexFormat_Dynamic_Desc* m_pFormatDesc;
-    MyRE::BufferTypes m_BufferType;
-    MyRE::BufferUsages m_BufferUsage;
+    //MyRE::BufferTypes m_BufferType;
+    //union
+    //{
+    //    VertexFormats m_VertexFormat; // Sanity check for GL_ARRAY_BUFFER'S, if this is a vertex buffer.
+    //    int m_BytesPerIndex; // If this is an index buffer.
+    //};
+    //VertexFormat_Dynamic_Desc* m_pFormatDesc;
+    //MyRE::BufferUsages m_BufferUsage;
     bool m_Dirty;
 
 public:
     BufferDefinition();
     virtual ~BufferDefinition();
 
+    // Getters.
+    uint32 GetStride();
+    uint32 GetBytesPerIndex();
+    VertexFormats GetVertexFormat();
+    VertexFormat_Dynamic_Desc* GetFormatDesc();
+    uint32 GetMemoryUsage();
+
+    // Stubs, clean up.
     // Getters.
     MyRE::IndexTypes GetIBOType();
     void* GetData() { return m_pData; }

@@ -546,6 +546,12 @@
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Shader_Base.cpp">
       <Filter>Source\Renderers\BaseClasses</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\BaseClasses\Buffer_Base.cpp">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.cpp">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1015,6 +1021,12 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Shader_Base.h">
       <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\BaseClasses\Buffer_Base.h">
+      <Filter>Source\Renderers\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.h">
+      <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

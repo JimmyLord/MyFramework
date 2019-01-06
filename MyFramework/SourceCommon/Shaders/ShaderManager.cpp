@@ -494,12 +494,17 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
 
 void BaseShader::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
 {
+    checkGlError( "InitializeAttributeArray start" );
+
     if( index != -1 )
     {
         extern GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes];
 
-        MyEnableVertexAttribArray( index );
+        glEnableVertexAttribArray( index );
+        checkGlError( "glEnableVertexAttribArray" );
+
         glVertexAttribPointer( index, size, AttributeTypeConversionTable[type], normalized, stride, pointer );
+        checkGlError( "glVertexAttribPointer" );
     }
     else
     {

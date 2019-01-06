@@ -116,7 +116,9 @@ void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
             if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
             {
                 //m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-                m_SubmeshList[0]->m_NumIndicesToDraw = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
+                uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize;
+                uint32 bytesPerIndex = m_SubmeshList[0]->m_pIndexBuffer->GetBytesPerIndex();
+                m_SubmeshList[0]->m_NumIndicesToDraw = indexBufferSize / bytesPerIndex;
 
                 m_MeshReady = true;
             }
@@ -274,7 +276,9 @@ unsigned int MyMesh::GetNumIndices()
     if( m_SubmeshList[0]->m_pIndexBuffer == nullptr )
         return 0;
 
-    return m_SubmeshList[0]->m_pIndexBuffer->m_DataSize / m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex;
+    uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize;
+    uint32 bytesPerIndex = m_SubmeshList[0]->m_pIndexBuffer->GetBytesPerIndex();
+    return indexBufferSize / bytesPerIndex;
 }
 
 Vertex_Base* MyMesh::GetVerts(bool markdirty)
@@ -295,10 +299,10 @@ unsigned short* MyMesh::GetIndices(bool markdirty)
 
 unsigned int MyMesh::GetStride(unsigned int submeshindex)
 {
-    if( m_SubmeshList[submeshindex]->m_pVertexBuffer->m_VertexFormat == VertexFormat_Dynamic )
-        return m_SubmeshList[submeshindex]->m_pVertexBuffer->m_pFormatDesc->stride;
+    if( m_SubmeshList[submeshindex]->m_pVertexBuffer->GetVertexFormat() == VertexFormat_Dynamic )
+        return m_SubmeshList[submeshindex]->m_pVertexBuffer->GetFormatDesc()->stride;
 
-    return g_VertexFormatSizes[m_SubmeshList[submeshindex]->m_pVertexBuffer->m_VertexFormat];
+    return g_VertexFormatSizes[m_SubmeshList[submeshindex]->m_pVertexBuffer->GetVertexFormat()];
 }
 
 MaterialDefinition* MyMesh::GetMaterial(int submeshindex)

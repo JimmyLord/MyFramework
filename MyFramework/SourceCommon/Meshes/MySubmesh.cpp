@@ -54,10 +54,7 @@ void MySubmesh::SetMaterial(MaterialDefinition* pMaterial)
 
 unsigned int MySubmesh::GetStride()
 {
-    if( m_pVertexBuffer->m_VertexFormat == VertexFormat_Dynamic )
-        return m_pVertexBuffer->m_pFormatDesc->stride;
-
-    return g_VertexFormatSizes[m_pVertexBuffer->m_VertexFormat];
+    return m_pVertexBuffer->GetStride();
 }
 
 bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex)
@@ -201,7 +198,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     if( pIndexBuffer && pIndexBuffer->m_Dirty )
     {
         MyAssert( NumIndicesToDraw > 0 );
-        pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->m_BytesPerIndex );
+        pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->GetBytesPerIndex() );
     }
     MyAssert( ( pIndexBuffer == nullptr || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
 
@@ -254,8 +251,8 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
             return;
 
         int numboneinfluences = 0;
-        if( pVertexBuffer && pVertexBuffer->m_pFormatDesc )
-            numboneinfluences = pVertexBuffer->m_pFormatDesc->num_bone_influences;
+        if( pVertexBuffer && pVertexBuffer->GetFormatDesc() )
+            numboneinfluences = pVertexBuffer->GetFormatDesc()->num_bone_influences;
 
         int numdirlights = 0;
         int numpointlights = 0;

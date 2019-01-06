@@ -11,6 +11,7 @@
 #include "../BaseClasses/Renderer_Enums.h"
 #include "../BaseClasses/Renderer_Base.h"
 #include "Renderer_OpenGL.h"
+#include "Buffer_OpenGL.h"
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -382,10 +383,12 @@ void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisable
     checkGlError( "glViewport" );
 }
 
-void Renderer_OpenGL::BufferData(BufferDefinition* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData)
+void Renderer_OpenGL::BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData)
 {
-    GLenum target = BufferTypeConversionTable[pBuffer->m_BufferType];
-    GLenum usage = BufferUsageConversionTable[pBuffer->m_BufferUsage];
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
+
+    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
+    GLenum usage = BufferUsageConversionTable[pGLBuffer->m_BufferUsage];
 
     MyBindBuffer( target, bufferID );
     checkGlError( "MyBindBuffer" );
@@ -394,9 +397,11 @@ void Renderer_OpenGL::BufferData(BufferDefinition* pBuffer, GLuint bufferID, uin
     checkGlError( "glBufferData" );
 }
 
-void Renderer_OpenGL::BufferSubData(BufferDefinition* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
+void Renderer_OpenGL::BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
 {
-    GLenum target = BufferTypeConversionTable[pBuffer->m_BufferType];
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
+
+    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
 
     MyBindBuffer( target, bufferID );
     checkGlError( "MyBindBuffer" );

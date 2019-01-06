@@ -62,8 +62,8 @@ public:
     virtual void ClearScissorRegion() override;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
 
-    virtual void BufferData(BufferDefinition* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) override;
-    virtual void BufferSubData(BufferDefinition* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
+    virtual void BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) override;
+    virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;

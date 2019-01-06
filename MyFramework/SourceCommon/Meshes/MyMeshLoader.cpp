@@ -247,8 +247,8 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
                 //delete[] indices;
 
                 MyAssert( pSubmeshList->Count() > 0 );
-                pSubmesh->m_VertexFormat = (*ppVBO)->m_VertexFormat;
-                pSubmesh->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->m_BytesPerIndex;
+                pSubmesh->m_VertexFormat = (*ppVBO)->GetVertexFormat();
+                pSubmesh->m_NumIndicesToDraw = (*ppIBO)->m_DataSize / (*ppIBO)->GetBytesPerIndex();
             }
 
             // Get the next mesh from the cJSON array.

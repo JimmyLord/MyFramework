@@ -94,8 +94,8 @@ public:
     virtual void ClearScissorRegion() = 0;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) = 0;
 
-    virtual void BufferData(BufferDefinition* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) = 0;
-    virtual void BufferSubData(BufferDefinition* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) = 0;
+    virtual void BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) = 0;
+    virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) = 0;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) = 0;

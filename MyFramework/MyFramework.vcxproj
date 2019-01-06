@@ -1569,9 +1569,11 @@
     <ClCompile Include="SourceCommon\Physics\Box2DContactListener.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DDebugDraw.cpp" />
     <ClCompile Include="SourceCommon\Physics\Box2DWorld.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\BaseClasses\Buffer_Base.cpp" />
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Renderer_Base.cpp" />
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.cpp" />
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Shader_Base.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\Renderers\Old\DXWrapper.cpp">
@@ -2780,9 +2782,11 @@
     <ClInclude Include="SourceCommon\Physics\Box2DContactListener.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DDebugDraw.h" />
     <ClInclude Include="SourceCommon\Physics\Box2DWorld.h" />
+    <ClInclude Include="SourceCommon\Renderers\BaseClasses\Buffer_Base.h" />
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Renderer_Base.h" />
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.h" />
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Shader_Base.h" />
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\GLHelpers.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.h" />
     <ClInclude Include="SourceCommon\Renderers\Old\DXWrapper.h">
