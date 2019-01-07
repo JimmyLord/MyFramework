@@ -62,7 +62,7 @@ void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite_XYZVert
 {
     Vertex_XYZUV_RGBA* pSpriteVerts = (Vertex_XYZUV_RGBA*)pSprite->GetVerts( false );
     //MyMatrix spriteTransform = pSprite->GetPosition();
-    Vertex_XYZUV_RGBA* pBatchVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
+    Vertex_XYZUV_RGBA* pBatchVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     //MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
     if( m_NumSprites >= m_SpritesAllocated - 1 )
@@ -95,8 +95,6 @@ void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite_XYZVert
         pBatchVerts[m_NumSprites*4 + i].a = (unsigned char)(pBatchVerts[m_NumSprites*4 + i].a * color.a / 255.0f);
     }
 
-    m_pVertexBuffer->m_Dirty = true;
-
     m_NumSprites++;
 }
 
@@ -109,27 +107,23 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
     MyMatrix pos;
     pos.SetIdentity();
 
-    if( m_pVertexBuffer->m_Dirty )
+    if( m_pVertexBuffer->IsDirty() )
+    {
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_XYZUV_RGBA)*m_NumSprites*4 );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     checkGlError( "pre MyBindBuffer" );
-
-    //// update the vertex buffer with new verts data.
-    //MyBindBuffer( GL_ARRAY_BUFFER, m_pVertexBuffer->m_CurrentBufferID );
-    //checkGlError( "MyBindBuffer" );
-    //glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(Vertex_XYZUV_RGBA)*m_NumSprites*4, (void*)m_pVerts );
-    //checkGlError( "glBufferSubData" );
-    //MyBindBuffer( GL_ARRAY_BUFFER, 0 );
-    //checkGlError( "MyBindBuffer" );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
-    // Enable blending if necessary. TODO: sort draws and only set this once.
+    // Enable blending if necessary. TODO: Sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
         g_pRenderer->SetBlendEnabled( true );

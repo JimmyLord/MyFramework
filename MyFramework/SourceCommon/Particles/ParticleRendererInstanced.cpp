@@ -70,7 +70,7 @@ void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
 
     MyAssert( m_NumVertsAllocated == numverts );
 
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData();
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
     
     float halfsize = 0.5f;
     
@@ -102,7 +102,7 @@ void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)
         pVerts[3].x = +halfsize; pVerts[3].y = -halfsize; pVerts[3].z = 0; pVerts[3].u = 1; pVerts[3].v = 1;
     }
 
-    m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize, true );
+    m_pVertexBuffer->Rebuild();
 }
 
 void ParticleRendererInstanced::AddPoint(Vector2 pos, float rot, ColorByte color, float size)
@@ -137,12 +137,12 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
 
     int numparticles = m_ParticleCount;
 
-    if( m_pVertexBuffer->m_Dirty )
+    if( m_pVertexBuffer->IsDirty() )
     {
-        MyAssert( m_pVertexBuffer->m_DataSize != 0 );
-        m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
+        MyAssert( m_pVertexBuffer->GetDataSize() != 0 );
+        m_pVertexBuffer->Rebuild();
     }
-    MyAssert( m_pVertexBuffer->m_Dirty == false );
+    MyAssert( m_pVertexBuffer->IsDirty() == false );
 
     Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShaderInstanced()->GlobalPass();
     if( pShader == nullptr )

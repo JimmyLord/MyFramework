@@ -55,8 +55,8 @@ public:
     virtual MyRE::IndexTypes GetIBOType() override;
 
     // Other.
-    virtual void TempBufferData(unsigned int sizeInBytes, void* pData) override;
-    virtual void Rebuild(unsigned int offset, unsigned int sizeInBytes, bool forceRebuild, unsigned int bufferSize, void* pData) override;
+    virtual void TempBufferData(unsigned int bytesToBuffer, void* pData) override;
+    virtual void Rebuild(unsigned int offset, unsigned int bytesToBuffer, bool forceRebuild, unsigned int bufferSize, void* pData) override;
     virtual void Invalidate(bool cleanGLAllocs) override;
 
     virtual void CreateAndBindVAO() override;

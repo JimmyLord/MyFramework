@@ -199,6 +199,48 @@ Renderer_OpenGL::~Renderer_OpenGL()
 }
 
 //====================================================================================================
+//====================================================================================================
+// PROTECTED METHODS.
+//====================================================================================================
+//====================================================================================================
+
+//====================================================================================================
+// Buffering methods used by Buffer_OpenGL.
+//====================================================================================================
+void Renderer_OpenGL::BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData)
+{
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
+
+    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
+    GLenum usage = BufferUsageConversionTable[pGLBuffer->m_BufferUsage];
+
+    MyBindBuffer( target, bufferID );
+    checkGlError( "MyBindBuffer" );
+
+    glBufferData( target, sizeInBytes, pData, usage );
+    checkGlError( "glBufferData" );
+}
+
+void Renderer_OpenGL::BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
+{
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
+
+    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
+
+    MyBindBuffer( target, bufferID );
+    checkGlError( "MyBindBuffer" );
+
+    glBufferSubData( target, offset, sizeInBytes, pData );
+    checkGlError( "glBufferSubData" );
+}
+
+//====================================================================================================
+//====================================================================================================
+// PUBLIC METHODS.
+//====================================================================================================
+//====================================================================================================
+
+//====================================================================================================
 // Events.
 //====================================================================================================
 void Renderer_OpenGL::OnSurfaceCreated()
@@ -381,33 +423,6 @@ void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisable
     glViewport( pViewport->GetX(), pViewport->GetY(), pViewport->GetWidth(), pViewport->GetHeight() );
 
     checkGlError( "glViewport" );
-}
-
-void Renderer_OpenGL::BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData)
-{
-    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
-
-    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
-    GLenum usage = BufferUsageConversionTable[pGLBuffer->m_BufferUsage];
-
-    MyBindBuffer( target, bufferID );
-    checkGlError( "MyBindBuffer" );
-
-    glBufferData( target, sizeInBytes, pData, usage );
-    checkGlError( "glBufferData" );
-}
-
-void Renderer_OpenGL::BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
-{
-    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)(pBuffer);
-
-    GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
-
-    MyBindBuffer( target, bufferID );
-    checkGlError( "MyBindBuffer" );
-
-    glBufferSubData( target, offset, sizeInBytes, pData );
-    checkGlError( "glBufferSubData" );
 }
 
 bool ShouldDraw(bool hideFromDrawList)

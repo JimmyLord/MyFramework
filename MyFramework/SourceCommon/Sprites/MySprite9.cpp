@@ -119,10 +119,10 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, numindices*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "MySprite9", "Verts" );
     }
 
-    // fill vertex buffer with data and mark it dirty.
+    // Fill vertex buffer with data and mark it dirty.
     {
-        MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
-        Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
+        MyAssert( m_pVertexBuffer && m_pVertexBuffer->GetData( false ) );
+        Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->GetData( true );
 
         for( int y=0; y<4; y++ )
         {
@@ -149,8 +149,6 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
             pVerts[4*2+x].v = v3;
             pVerts[4*3+x].v = v4;
         }
-
-        m_pVertexBuffer->m_Dirty = true;
     }
 }
 
@@ -165,11 +163,15 @@ void MySprite9::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 
     MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
-    if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    if( m_pVertexBuffer->IsDirty() )
+    {
+        m_pVertexBuffer->Rebuild();
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )

@@ -171,8 +171,7 @@ void ParticleRenderer::AddPoint(Vector3 pos, float rot, ColorByte color, float s
     vertexnum *= 4;
 #endif
 
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     if( vertexnum < m_NumVertsAllocated )
     {
@@ -287,11 +286,15 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     numverts *= 4;
 #endif
 
-    if( m_pVertexBuffer->m_Dirty )
+    if( m_pVertexBuffer->IsDirty() )
+    {
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_XYZUV_RGBA)*numverts );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )

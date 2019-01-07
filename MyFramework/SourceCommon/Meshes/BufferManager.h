@@ -27,35 +27,8 @@ class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount
 
 protected:
     Buffer_Base* m_pBuffer;
-    //GLuint m_BufferIDs[3]; // Up to 3 buffers created for double/triple buffering data.
-    //GLuint m_VAOHandles[3]; // Used only for vbo's ATM.
-    //bool m_VAOInitialized[3];
-
-    //unsigned int m_NumBuffersToUse;
-    //unsigned int m_CurrentBufferIndex;
-    //unsigned int m_NextBufferIndex;
-
-public:
-//#if _DEBUG && MYFW_WINDOWS
-//    int m_DEBUG_CurrentVAOIndex;
-//    GLuint m_DEBUG_VBOUsedOnCreation[3];
-//    GLuint m_DEBUG_IBOUsedOnCreation[3];
-//    int m_DEBUG_LastFrameUpdated;
-//#endif
-
-    //GLuint m_CurrentBufferID;
-    //GLuint m_CurrentVAOHandle;
-
     char* m_pData;
     unsigned int m_DataSize;
-    //MyRE::BufferTypes m_BufferType;
-    //union
-    //{
-    //    VertexFormats m_VertexFormat; // Sanity check for GL_ARRAY_BUFFER'S, if this is a vertex buffer.
-    //    int m_BytesPerIndex; // If this is an index buffer.
-    //};
-    //VertexFormat_Dynamic_Desc* m_pFormatDesc;
-    //MyRE::BufferUsages m_BufferUsage;
     bool m_Dirty;
 
 public:
@@ -63,21 +36,24 @@ public:
     virtual ~BufferDefinition();
 
     // Getters.
-    uint32 GetStride();
-    uint32 GetBytesPerIndex();
+    bool IsDirty() { return m_Dirty; }
+    void* GetData(bool markDirty);
+    uint32 GetDataSize() { return m_DataSize; }
     VertexFormats GetVertexFormat();
     VertexFormat_Dynamic_Desc* GetFormatDesc();
+    uint32 GetStride();
+    uint32 GetBytesPerIndex();
     uint32 GetMemoryUsage();
 
     // Stubs, clean up.
     // Getters.
     MyRE::IndexTypes GetIBOType();
-    void* GetData() { return m_pData; }
 
     // Other.
-    void TempBufferData(unsigned int sizeinbytes, void* pData);
-    void Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild = false);
-    void Invalidate(bool cleanglallocs);
+    void TempBufferData(unsigned int sizeInBytes, void* pData);
+    void Rebuild();
+    void Rebuild(unsigned int offset, unsigned int sizeInBytes, bool forceRebuild = false);
+    void Invalidate(bool cleanGLAllocs);
 
     void CreateAndBindVAO();
     void ResetVAOs();

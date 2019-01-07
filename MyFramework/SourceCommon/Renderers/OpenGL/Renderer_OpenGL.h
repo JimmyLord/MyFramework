@@ -32,7 +32,13 @@ typedef void GLvoid;
 
 class Renderer_OpenGL : public Renderer_Base
 {
+    friend class Buffer_OpenGL;
+
 protected:
+    // Buffering methods used by Buffer_OpenGL.
+    virtual void BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) override;
+    virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
+
 public:
     Renderer_OpenGL();
     virtual ~Renderer_OpenGL();
@@ -61,9 +67,6 @@ public:
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
     virtual void ClearScissorRegion() override;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
-
-    virtual void BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) override;
-    virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;

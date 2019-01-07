@@ -67,10 +67,9 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
     }
 
-    // fill vertex buffer with data and mark it dirty.
-    MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    // Fill vertex buffer with data and mark it dirty.
+    MyAssert( m_pVertexBuffer && m_pVertexBuffer->GetData( false ) );
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     for( int i=0; i<4; i++ )
     {
@@ -117,7 +116,7 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
             xright -= spritew / 2.0f;
         }
 
-        // crop down the sprite left/right/top/bottom to sizes asked for with spx/epx and spy/epy
+        // Crop down the sprite left/right/top/bottom to sizes asked for with spx/epx and spy/epy.
         {
             xleft += spx*spritew;
             xright -= (1-epx)*spritew;
@@ -125,25 +124,25 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
             ybottom += (1-epy)*spriteh;
         }
 
-        // upper left
+        // Upper left.
         pVerts[0].x = xleft;
         pVerts[0].y = ytop;
         pVerts[0].u = uleft;
         pVerts[0].v = vtop;
 
-        // upper right
+        // Upper right.
         pVerts[1].x = xright;
         pVerts[1].y = ytop;
         pVerts[1].u = uright;
         pVerts[1].v = vtop;
 
-        // lower left
+        // Lower left.
         pVerts[2].x = xleft;
         pVerts[2].y = ybottom;
         pVerts[2].u = uleft;
         pVerts[2].v = vbottom;
 
-        // lower right
+        // Lower right.
         pVerts[3].x = xright;
         pVerts[3].y = ybottom;
         pVerts[3].u = uright;
@@ -161,7 +160,7 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
 
 void MySprite_XYZVertexColor::FlipX()
 {
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     float oldustart = pVerts[0].u;
     float olduend = pVerts[1].u;
@@ -170,8 +169,6 @@ void MySprite_XYZVertexColor::FlipX()
     pVerts[1].u = oldustart;
     pVerts[2].u = olduend;
     pVerts[3].u = oldustart;
-
-    m_pVertexBuffer->m_Dirty = true;
 }
 
 void MySprite_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride, bool hideFromDrawList)
@@ -181,18 +178,22 @@ void MySprite_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
 
 void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    MyAssert( pShaderOverride == 0 ); // TODO: support overriding shaders
+    MyAssert( pShaderOverride == 0 ); // TODO: Support overriding shaders
 
     if( m_pMaterial == 0 )
         return;
 
     MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
-    if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    if( m_pVertexBuffer->IsDirty() )
+    {
+        m_pVertexBuffer->Rebuild();
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     TextureDefinition* pTexture = GetTexture();
 
@@ -229,10 +230,9 @@ void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* 
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr )
 {
-    MyAssert( m_pVertexBuffer->m_pData );
+    MyAssert( m_pVertexBuffer->GetData( false ) );
 
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     pVerts[0].r = tl.r;
     pVerts[0].g = tl.g;
@@ -257,10 +257,9 @@ void MySprite_XYZVertexColor::SetVertexColors( ColorByte bl, ColorByte br, Color
 
 void MySprite_XYZVertexColor::SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr )
 {
-    MyAssert( m_pVertexBuffer->m_pData );
+    MyAssert( m_pVertexBuffer->GetData( false ) );
 
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->m_pData;
-    m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_pVertexBuffer->GetData( true );
 
     pVerts[0].r = (unsigned char)(tl.r * 255.0f);
     pVerts[0].g = (unsigned char)(tl.g * 255.0f);

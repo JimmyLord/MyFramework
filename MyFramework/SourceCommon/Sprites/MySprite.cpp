@@ -74,7 +74,7 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
     //m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
 
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
-    memcpy( pVerts, pSprite->m_pVertexBuffer->m_pData, sizeof(Vertex_Sprite)*4);
+    memcpy( pVerts, pSprite->m_pVertexBuffer->GetData( false ), sizeof(Vertex_Sprite)*4);
     m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, category, "MySprite-Verts" );
 
     m_pIndexBuffer->AddRef();
@@ -131,10 +131,10 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
             m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }
 
-        // fill vertex buffer with data and mark it dirty.
+        // Fill vertex buffer with data and mark it dirty.
         {
-            MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
-            Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
+            MyAssert( m_pVertexBuffer && m_pVertexBuffer->GetData( false ) );
+            Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->GetData( true );
 
             float uleft = startu;
             float uright = endu;
@@ -199,8 +199,6 @@ void MySprite::CreateSubsection(const char* category, float spritew, float sprit
                 pVerts[2].x = xright;
                 pVerts[3].x = xleft;
             }
-
-            m_pVertexBuffer->m_Dirty = true;
         }
 
         m_SpriteSize.Set( spritew, spriteh );
@@ -247,10 +245,10 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
             m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite-Indices" );
         }
 
-        // fill vertex buffer with data and mark it dirty.
+        // Fill vertex buffer with data and mark it dirty.
         {
-            MyAssert( m_pVertexBuffer && m_pVertexBuffer->m_pData );
-            Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
+            MyAssert( m_pVertexBuffer && m_pVertexBuffer->GetData( false ) );
+            Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->GetData( true );
 
             float uleft = startu;
             float uright = endu;
@@ -307,8 +305,6 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
             pVerts[3].y = ybottom;
             pVerts[3].u = uright;
             pVerts[3].v = vbottom;
-
-            m_pVertexBuffer->m_Dirty = true;
         }
 
         m_SpriteSize.Set( spritew, spriteh );
@@ -396,7 +392,7 @@ void MySprite::CreateInPlace(const char* category, float x, float y, float sprit
 
 void MySprite::FlipX()
 {
-    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_pVertexBuffer->GetData( true );
 
     float oldustart = pVerts[0].u;
     float olduend = pVerts[1].u;
@@ -405,8 +401,6 @@ void MySprite::FlipX()
     pVerts[1].u = oldustart;
     pVerts[2].u = olduend;
     pVerts[3].u = oldustart;
-
-    m_pVertexBuffer->m_Dirty = true;
 }
 
 //void MySprite::SetMaterial(MaterialDefinition* pMaterial)
@@ -426,11 +420,15 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
 
     MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
-    if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    if( m_pVertexBuffer->IsDirty() )
+    {
+        m_pVertexBuffer->Rebuild();
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     if( m_pMaterial->GetShader() == 0 )
         return false;
@@ -501,11 +499,15 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
 
     MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
 
-    if( m_pVertexBuffer->m_Dirty )
-        m_pVertexBuffer->Rebuild( 0, m_pVertexBuffer->m_DataSize );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
+    if( m_pVertexBuffer->IsDirty() )
+    {
+        m_pVertexBuffer->Rebuild();
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     Shader_OpenGL* pShader = 0;
     if( pShaderOverride )
@@ -587,14 +589,11 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
     }
 }
 
-Vertex_Base* MySprite::GetVerts(bool markdirty)
+Vertex_Base* MySprite::GetVerts(bool markDirty)
 {
     MyAssert( m_pVertexBuffer );
 
-    if( markdirty )
-        m_pVertexBuffer->m_Dirty = true;
-
-    return (Vertex_Base*)m_pVertexBuffer->m_pData;
+    return (Vertex_Base*)m_pVertexBuffer->GetData( markDirty );
 }
 
 TextureDefinition* MySprite::GetTexture()

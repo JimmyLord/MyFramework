@@ -116,7 +116,7 @@ void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
             if( m_SubmeshList[0]->m_pVertexBuffer && m_SubmeshList[0]->m_pIndexBuffer )
             {
                 //m_VertexFormat = m_pVertexBuffer->m_VertexFormat;
-                uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize;
+                uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->GetDataSize();
                 uint32 bytesPerIndex = m_SubmeshList[0]->m_pIndexBuffer->GetBytesPerIndex();
                 m_SubmeshList[0]->m_NumIndicesToDraw = indexBufferSize / bytesPerIndex;
 
@@ -268,7 +268,7 @@ unsigned short MyMesh::GetNumVerts()
     if( m_SubmeshList[0]->m_pVertexBuffer == nullptr )
         return 0;
 
-    return (unsigned short)( m_SubmeshList[0]->m_pVertexBuffer->m_DataSize / GetStride( 0 ) );
+    return (unsigned short)( m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() / GetStride( 0 ) );
 }
 
 unsigned int MyMesh::GetNumIndices()
@@ -276,25 +276,19 @@ unsigned int MyMesh::GetNumIndices()
     if( m_SubmeshList[0]->m_pIndexBuffer == nullptr )
         return 0;
 
-    uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->m_DataSize;
+    uint32 indexBufferSize = m_SubmeshList[0]->m_pIndexBuffer->GetDataSize();
     uint32 bytesPerIndex = m_SubmeshList[0]->m_pIndexBuffer->GetBytesPerIndex();
     return indexBufferSize / bytesPerIndex;
 }
 
-Vertex_Base* MyMesh::GetVerts(bool markdirty)
+Vertex_Base* MyMesh::GetVerts(bool markDirty)
 {
-    if( markdirty )
-        m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
-
-    return (Vertex_Base*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    return (Vertex_Base*)m_SubmeshList[0]->m_pVertexBuffer->GetData( markDirty );
 }
 
-unsigned short* MyMesh::GetIndices(bool markdirty)
+unsigned short* MyMesh::GetIndices(bool markDirty)
 {
-    if( markdirty )
-        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
-
-    return (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    return (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( markDirty );
 }
 
 unsigned int MyMesh::GetStride(unsigned int submeshindex)
@@ -441,7 +435,7 @@ void MyMesh::RebuildIndices()
 {
     for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
     {
-        m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->m_DataSize );
+        m_SubmeshList[i]->m_pIndexBuffer->Rebuild( 0, m_SubmeshList[i]->m_pIndexBuffer->GetDataSize() );
     }
 }
 

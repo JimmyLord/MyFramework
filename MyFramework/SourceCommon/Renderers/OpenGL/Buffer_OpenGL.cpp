@@ -67,9 +67,9 @@ MyRE::IndexTypes Buffer_OpenGL::GetIBOType()
 }
 
 // Copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
-void Buffer_OpenGL::TempBufferData(unsigned int sizeInBytes, void* pData)
+void Buffer_OpenGL::TempBufferData(unsigned int bytesToBuffer, void* pData)
 {
-    MyAssert( pData != nullptr && sizeInBytes != 0 );
+    MyAssert( pData != nullptr && bytesToBuffer != 0 );
 
     if( m_BufferIDs[m_NextBufferIndex] == 0 )
     {
@@ -77,7 +77,7 @@ void Buffer_OpenGL::TempBufferData(unsigned int sizeInBytes, void* pData)
         checkGlError( "glGenBuffers" );
     }
 
-    g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeInBytes, pData );
+    g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], bytesToBuffer, pData );
 
     m_CurrentBufferID = m_BufferIDs[m_NextBufferIndex];
     m_CurrentVAOHandle = m_VAOHandles[m_NextBufferIndex];
@@ -93,7 +93,7 @@ void Buffer_OpenGL::TempBufferData(unsigned int sizeInBytes, void* pData)
     checkGlError( "Buffer_OpenGL::TempBufferData" );
 }
 
-void Buffer_OpenGL::Rebuild(unsigned int offset, unsigned int sizeInBytes, bool forceRebuild, unsigned int bufferSize, void* pData)
+void Buffer_OpenGL::Rebuild(unsigned int offset, unsigned int bytesToBuffer, bool forceRebuild, unsigned int bufferSize, void* pData)
 {
     checkGlError( "Buffer_OpenGL::Rebuild" );
 
@@ -102,24 +102,31 @@ void Buffer_OpenGL::Rebuild(unsigned int offset, unsigned int sizeInBytes, bool 
         glGenBuffers( 1, &m_BufferIDs[m_NextBufferIndex] );
         checkGlError( "glGenBuffers" );
 
-        g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeInBytes, pData );
+        g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], bytesToBuffer, pData );
 
-        //LOGInfo( LOGTag, "creating buffer - %d - target:%d\n", m_BufferIDs[m_NextBufferIndex], m_Target );
+        //LOGInfo( LOGTag, "Creating buffer - %d - Target:%d\n", m_BufferIDs[m_NextBufferIndex], m_Target );
     }
     else
     {
-        //LOGInfo( LOGTag, "Buffer_OpenGL::Rebuild() rebuilding sizeinbytes(%d) m_DataSize(%d)\n", sizeinbytes, m_DataSize );
-
-        if( sizeInBytes > bufferSize )
+        //LOGInfo( LOGTag, "Buffer_OpenGL::Rebuild() rebuilding bytesToBuffer(%d) m_DataSize(%d)\n", bytesToBuffer, m_DataSize );
+        
+        if( bytesToBuffer > bufferSize )
         {
-            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeInBytes, pData );
+            // TODO: Test this code, it makes little sense, offset is ignored.
+            MyAssert( offset == 0 );
+
+            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], bytesToBuffer, pData );
         }
         else
         {
+            // TODO: Test this code, it makes little sense, offset is ignored on iOS and glBufferSubData might overrun the old buffer size.
+            MyAssert( offset == 0 );
+            MyAssert( offset + bytesToBuffer <= bufferSize );
+
 #if MYFW_IOS
-            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], sizeInBytes, m_pData );
+            g_pRenderer->BufferData( this, m_BufferIDs[m_NextBufferIndex], bytesToBuffer, m_pData );
 #else
-            g_pRenderer->BufferSubData( this, m_BufferIDs[m_NextBufferIndex], offset, sizeInBytes, pData );
+            g_pRenderer->BufferSubData( this, m_BufferIDs[m_NextBufferIndex], offset, bytesToBuffer, pData );
 #endif
         }
 
@@ -134,10 +141,10 @@ void Buffer_OpenGL::Rebuild(unsigned int offset, unsigned int sizeInBytes, bool 
         m_DEBUG_LastFrameUpdated = g_GLStats.m_NumFramesDrawn;
 #endif
 
-        //if( sizeinbytes > m_DataSize )
-        //    LOGError( LOGTag, "glBufferSubData sizeinbytes(%d) > m_DataSize(%d)\n", sizeinbytes, m_DataSize );
+        //if( bytesToBuffer > m_DataSize )
+        //    LOGError( LOGTag, "glBufferSubData bytesToBuffer(%d) > m_DataSize(%d)\n", bytesToBuffer, m_DataSize );
         //if( checkGlError( "Buffer_OpenGL::Rebuild glBufferSubData" ) == true )
-        //    LOGError( LOGTag, "glBufferSubData - offset(%d), size(%d), m_DataSize(%d)\n", offset, sizeinbytes, m_DataSize );
+        //    LOGError( LOGTag, "glBufferSubData - offset(%d), size(%d), m_DataSize(%d)\n", offset, bytesToBuffer, m_DataSize );
     }
 
     m_CurrentBufferID = m_BufferIDs[m_NextBufferIndex];

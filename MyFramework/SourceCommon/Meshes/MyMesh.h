@@ -97,8 +97,8 @@ public:
 
     unsigned short GetNumVerts();
     unsigned int GetNumIndices();
-    Vertex_Base* GetVerts(bool markdirty);
-    unsigned short* GetIndices(bool markdirty);
+    Vertex_Base* GetVerts(bool markDirty);
+    unsigned short* GetIndices(bool markDirty);
     unsigned int GetStride(unsigned int submeshindex);
 
     unsigned int GetAnimationCount() { return m_pAnimations.Count(); }

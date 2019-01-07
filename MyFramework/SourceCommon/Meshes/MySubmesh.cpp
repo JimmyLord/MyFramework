@@ -61,11 +61,16 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
 {
     MaterialDefinition* pMaterial = m_pMaterial;
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
-    int PointSize = m_PointSize;        
+    int pointSize = m_PointSize;        
 
     if( pShader->Activate() == false )
     {
         return false; // Shader wasn't ready.
+    }
+
+    if( pMaterial == 0 )
+    {
+        return false;
     }
 
     pShader->ProgramMaterialProperties( pMaterial->GetTextureColor(), pMaterial->m_ColorDiffuse, pMaterial->m_ColorSpecular, pMaterial->m_Shininess );
@@ -77,7 +82,7 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
     pShader->ProgramCamera( pCamPos, pCamRot );
 
     if( primitiveType == MyRE::PrimitiveType_Points )
-        pShader->ProgramPointSize( (float)PointSize );
+        pShader->ProgramPointSize( (float)pointSize );
 
     if( pShadowTex != nullptr )
     {
@@ -153,10 +158,10 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     BufferDefinition* pVertexBuffer = m_pVertexBuffer;
     BufferDefinition* pIndexBuffer = m_pIndexBuffer;
     //MaterialDefinition* pMaterial = m_pMaterial;
-    int NumVertsToDraw = m_NumVertsToDraw;
-    int NumIndicesToDraw = m_NumIndicesToDraw;
+    int numVertsToDraw = m_NumVertsToDraw;
+    int numIndicesToDraw = m_NumIndicesToDraw;
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
-    int PointSize = m_PointSize;        
+    int pointSize = m_PointSize;        
 
 #if MYFW_EDITOR
     MaterialDefinition* pMaterial = m_pMaterial;
@@ -172,12 +177,12 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
 
     if( pIndexBuffer )
     {
-        if( NumIndicesToDraw == 0 )
+        if( numIndicesToDraw == 0 )
             return;
     }
     else if( pVertexBuffer )
     {
-        if( NumVertsToDraw == 0 )
+        if( numVertsToDraw == 0 )
             return;
     }
 
@@ -190,17 +195,17 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
 
     MyAssert( pVertexBuffer );
 
-    if( pVertexBuffer->m_Dirty )
+    if( pVertexBuffer->IsDirty() )
     {
-        MyAssert( NumVertsToDraw > 0 );
-        pVertexBuffer->Rebuild( 0, NumVertsToDraw * GetStride() );
+        MyAssert( numVertsToDraw > 0 );
+        pVertexBuffer->Rebuild( 0, numVertsToDraw * GetStride() );
     }
-    if( pIndexBuffer && pIndexBuffer->m_Dirty )
+    if( pIndexBuffer && pIndexBuffer->IsDirty() )
     {
-        MyAssert( NumIndicesToDraw > 0 );
-        pIndexBuffer->Rebuild( 0, NumIndicesToDraw*pIndexBuffer->GetBytesPerIndex() );
+        MyAssert( numIndicesToDraw > 0 );
+        pIndexBuffer->Rebuild( 0, numIndicesToDraw*pIndexBuffer->GetBytesPerIndex() );
     }
-    MyAssert( ( pIndexBuffer == nullptr || pIndexBuffer->m_Dirty == false ) && pVertexBuffer->m_Dirty == false );
+    MyAssert( ( pIndexBuffer == nullptr || pIndexBuffer->IsDirty() == false ) && pVertexBuffer->IsDirty() == false );
 
     if( pShaderOverride )
     {
@@ -235,9 +240,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
         }
 
         if( pIndexBuffer )
-            g_pRenderer->DrawElements( primitiveType, NumIndicesToDraw, IBOType, 0, hideFromDrawList );
+            g_pRenderer->DrawElements( primitiveType, numIndicesToDraw, IBOType, 0, hideFromDrawList );
         else
-            g_pRenderer->DrawArrays( primitiveType, 0, NumVertsToDraw, hideFromDrawList );
+            g_pRenderer->DrawArrays( primitiveType, 0, numVertsToDraw, hideFromDrawList );
 
         // Always disable blending.
         g_pRenderer->SetBlendEnabled( false );
@@ -290,9 +295,9 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
                 }
 
                 if( pIndexBuffer )
-                    g_pRenderer->DrawElements( primitiveType, NumIndicesToDraw, IBOType, 0, hideFromDrawList );
+                    g_pRenderer->DrawElements( primitiveType, numIndicesToDraw, IBOType, 0, hideFromDrawList );
                 else
-                    g_pRenderer->DrawArrays( primitiveType, 0, NumVertsToDraw, hideFromDrawList );
+                    g_pRenderer->DrawArrays( primitiveType, 0, numVertsToDraw, hideFromDrawList );
 
                 pShader->DeactivateShader( pVertexBuffer, true );
 

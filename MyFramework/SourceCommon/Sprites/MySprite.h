@@ -71,7 +71,7 @@ public:
     virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride = 0, bool hideFromDrawList = false);
     virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
-    Vertex_Base* GetVerts(bool markdirty);
+    Vertex_Base* GetVerts(bool markDirty);
 
     TextureDefinition* GetTexture();
     //ColorByte GetTint() { return m_Tint; }

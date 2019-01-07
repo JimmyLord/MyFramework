@@ -37,9 +37,35 @@ BufferDefinition::~BufferDefinition()
     this->Remove();
 }
 
+void* BufferDefinition::GetData(bool markDirty = false)
+{
+    if( markDirty )
+        m_Dirty = true;
+
+    return m_pData;
+}
+
+VertexFormats BufferDefinition::GetVertexFormat()
+{
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
+
+    MyAssert( pGLBuffer->m_BufferType == MyRE::BufferType_Vertex );
+
+    return pGLBuffer->m_VertexFormat;
+}
+
+VertexFormat_Dynamic_Desc* BufferDefinition::GetFormatDesc()
+{
+    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
+
+    return pGLBuffer->m_pFormatDesc;
+}
+
 uint32 BufferDefinition::GetStride()
 {
     Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
+
+    MyAssert( pGLBuffer->m_BufferType == MyRE::BufferType_Vertex );
 
     if( pGLBuffer->m_VertexFormat == VertexFormat_Dynamic )
         return pGLBuffer->m_pFormatDesc->stride;
@@ -51,21 +77,9 @@ uint32 BufferDefinition::GetBytesPerIndex()
 {
     Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
 
+    MyAssert( pGLBuffer->m_BufferType == MyRE::BufferType_Index );
+
     return pGLBuffer->m_BytesPerIndex;
-}
-
-VertexFormats BufferDefinition::GetVertexFormat()
-{
-    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
-
-    return pGLBuffer->m_VertexFormat;
-}
-
-VertexFormat_Dynamic_Desc* BufferDefinition::GetFormatDesc()
-{
-    Buffer_OpenGL* pGLBuffer = (Buffer_OpenGL*)m_pBuffer;
-
-    return pGLBuffer->m_pFormatDesc;
 }
 
 uint32 BufferDefinition::GetMemoryUsage()
@@ -80,38 +94,53 @@ MyRE::IndexTypes BufferDefinition::GetIBOType()
     return m_pBuffer->GetIBOType();
 }
 
-// Copy data into the gl buffer, but don't store the pointer or size so it can't be rebuilt.
-void BufferDefinition::TempBufferData(unsigned int sizeinbytes, void* pData)
+// Copy data into the GL buffer, but don't store the pointer or size so it can't be rebuilt.
+void BufferDefinition::TempBufferData(unsigned int sizeInBytes, void* pData)
 {
-    return m_pBuffer->TempBufferData( sizeinbytes, pData );
+    m_pBuffer->TempBufferData( sizeInBytes, pData );
 
     m_Dirty = false;
 }
 
-void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeinbytes, bool forcerebuild)
+void BufferDefinition::Rebuild()
+{
+    // Rebuffer all data.
+    Rebuild( 0, UINT_MAX, false );
+}
+
+void BufferDefinition::Rebuild(unsigned int offset, unsigned int sizeInBytes, bool forceRebuild)
 {
     if( g_pGameCore->IsGLSurfaceIsValid() == false )
         return;
 
-    if( m_Dirty == false && forcerebuild == false )
+    if( m_Dirty == false && forceRebuild == false )
         return;
 
     if( m_DataSize == 0 )
         return;
 
-    m_pBuffer->Rebuild( offset, sizeinbytes, forcerebuild, m_DataSize, m_pData );
-
-    if( sizeinbytes > m_DataSize )
+    if( sizeInBytes == UINT_MAX )
     {
-        m_DataSize = sizeinbytes;
+        // Rebuffer all data.
+        m_pBuffer->Rebuild( 0, m_DataSize, forceRebuild, m_DataSize, m_pData );
+    }
+    else
+    {
+        // Rebuffer as much as was requested.
+        m_pBuffer->Rebuild( offset, sizeInBytes, forceRebuild, m_DataSize, m_pData );
+
+        if( sizeInBytes > m_DataSize )
+        {
+            m_DataSize = sizeInBytes;
+        }
     }
 
     m_Dirty = false;
 }
 
-void BufferDefinition::Invalidate(bool cleanglallocs)
+void BufferDefinition::Invalidate(bool cleanGLAllocs)
 {
-    m_pBuffer->Invalidate( cleanglallocs );
+    m_pBuffer->Invalidate( cleanGLAllocs );
 
     m_Dirty = true;
 }
@@ -170,13 +199,17 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, MyRE
     {
         m_pData = (char*)pData;
         for( unsigned int i=0; i<pGLBuffer->m_NumBuffersToUse; i++ )
+        {
             Rebuild( 0, m_DataSize, true );
+        }
     }
     else
     {
         m_pData = nullptr;
         for( unsigned int i=0; i<pGLBuffer->m_NumBuffersToUse; i++ )
+        {
             Rebuild( 0, m_DataSize, true );
+        }
         m_pData = (char*)pData;
         m_Dirty = true;
     }

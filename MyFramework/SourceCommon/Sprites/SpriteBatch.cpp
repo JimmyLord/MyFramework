@@ -75,7 +75,7 @@ void SpriteBatch::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
 {
     Vertex_Sprite* pSpriteVerts = (Vertex_Sprite*)pSprite->GetVerts( false );
     MyMatrix spriteTransform = *pMatWorld; //pSprite->GetPosition();
-    Vertex_Sprite* pBatchVerts = (Vertex_Sprite*)m_pVertexBuffer->m_pData;
+    Vertex_Sprite* pBatchVerts = (Vertex_Sprite*)m_pVertexBuffer->GetData( true );
 
     MyAssert( m_NumSprites < m_SpritesAllocated - 1 );
     if( m_NumSprites >= m_SpritesAllocated - 1 )
@@ -94,8 +94,6 @@ void SpriteBatch::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
         //pBatchVerts[m_NumSprites*4 + i].y += spriteTransform.m42;
     }
 
-    m_pVertexBuffer->m_Dirty = true;
-
     m_NumSprites++;
 }
 
@@ -108,22 +106,21 @@ void SpriteBatch::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
     MyMatrix pos;
     pos.SetIdentity();
 
-    if( m_pVertexBuffer->m_Dirty )
+    if( m_pVertexBuffer->IsDirty() )
+    {
         m_pVertexBuffer->Rebuild( 0, sizeof(Vertex_Sprite)*m_NumSprites*4 );
-    if( m_pIndexBuffer->m_Dirty )
-        m_pIndexBuffer->Rebuild( 0, m_pIndexBuffer->m_DataSize );
-    MyAssert( m_pIndexBuffer->m_Dirty == false && m_pVertexBuffer->m_Dirty == false );
-
-    //// update the vertex buffer with new verts data.
-    //MyBindBuffer( GL_ARRAY_BUFFER, m_pVertexBuffer->m_CurrentBufferID );
-    //glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts );
-    ////glBufferData( GL_ARRAY_BUFFER, sizeof(Vertex_Sprite)*m_NumSprites*4, (void*)m_pVerts, GL_DYNAMIC_DRAW );
+    }
+    if( m_pIndexBuffer->IsDirty() )
+    {
+        m_pIndexBuffer->Rebuild();
+    }
+    MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
-    // Enable blending if necessary. TODO: sort draws and only set this once.
+    // Enable blending if necessary. TODO: Sort draws and only set this once.
     if( m_pMaterial->IsTransparent( pShader ) )
     {
         g_pRenderer->SetBlendEnabled( true );

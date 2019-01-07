@@ -36,7 +36,7 @@ void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, nullptr, "MyMesh_ScreenSpaceQuad", "Verts" );
     }
 
-    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     if( pVerts )
     {
@@ -79,8 +79,8 @@ void MyMesh::CreateBox(float boxWidth, float boxHeight, float boxDepth, float st
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Box", "Indices" );
     }
 
-    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     if( pVerts && pIndices )
     {
@@ -226,11 +226,8 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDept
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
     }
 
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
-    m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
-
-    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     if( pVerts && pIndices )
     {
@@ -350,9 +347,7 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
 {
     MyAssert( m_SubmeshList.Count() == 1 );
 
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
-
-    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
+    Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     int side;
 
@@ -436,8 +431,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Cylinder", "Indices" );
     }
 
-    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     GLushort vertnum = 0;
 
@@ -729,7 +724,7 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
     }
 
     // Delete the old buffers, if we want a plane with more.
-    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
@@ -738,7 +733,7 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
     }
 
-    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
+    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned short* pIndices = MyNew unsigned short[numindices];
@@ -748,14 +743,12 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
 
     //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
 
-    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     unsigned short* pIndices = nullptr;
     //if( createtriangles )
     {
-        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
-        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
+        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     }
 
     for( int y = 0; y < vertCount.y; y++ )
@@ -850,7 +843,7 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
     }
 
     // Delete the old buffers, if we want a plane with more.
-    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_XYZUV)*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
@@ -859,7 +852,7 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
     }
 
-    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
+    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned short* pIndices = MyNew unsigned short[numindices];
@@ -869,14 +862,12 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
 
     //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
 
-    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     unsigned short* pIndices = nullptr;
     //if( createtriangles )
     {
-        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
-        m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
+        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     }
 
     // Loop through the quads.
@@ -984,7 +975,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
     uint32 vertexSize = sizeof(Vertex_XYZUVNorm);
 
     // Delete the old buffers, if we want an icosphere with more.
-    if( vertexSize*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( vertexSize*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = vertexFormat;
@@ -993,7 +984,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, vertexFormat, nullptr, "MyMesh_Icosphere", "Verts" );
     }
 
-    if( bytesperindex*numindices > m_SubmeshList[0]->m_pIndexBuffer->m_DataSize )
+    if( bytesperindex*numindices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
         unsigned char* pIndices = MyNew unsigned char[numindices];
@@ -1003,12 +994,10 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
 
     //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
 
-    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     unsigned char* pIndices = nullptr;
-    pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
-    m_SubmeshList[0]->m_pIndexBuffer->m_Dirty = true;
+    pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     // Create 12 vertices of a icosahedron.
     float t = (1.0f + sqrt(5.0f)) / 2.0f;
@@ -1219,7 +1208,7 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberOfSegments)
     m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleFan;
 
     // Delete the old buffers, if we want an circle with more verts.
-    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
@@ -1228,8 +1217,7 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberOfSegments)
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, nullptr, "MyMesh_2dCircle", "Verts" );
     }
 
-    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     float anglechange = -2.0f * PI / numverts;
 
@@ -1268,7 +1256,7 @@ void MyMesh::Create2DArc(Vector3 origin, float startAngle, float endAngle, float
     m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleStrip;
 
     // Delete the old buffers, if we want an circle with more verts.
-    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_Sprite)*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
@@ -1277,8 +1265,7 @@ void MyMesh::Create2DArc(Vector3 origin, float startAngle, float endAngle, float
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, nullptr, "MyMesh_2dCircle", "Verts" );
     }
 
-    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     float percentofcircle = (startAngle - endAngle)/360.0f;
     float anglechange = (PI*2 * percentofcircle) / numberOfSegments * -1;
@@ -1341,7 +1328,7 @@ void MyMesh::CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount
     }
 
     // Delete the old buffers, if we want a plane with more.
-    if( sizeof(Vertex_XYZUV_RGBA)*numverts > m_SubmeshList[0]->m_pVertexBuffer->m_DataSize )
+    if( sizeof(Vertex_XYZUV_RGBA)*numverts > m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
         m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
         m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
@@ -1350,8 +1337,7 @@ void MyMesh::CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount
             MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, nullptr, "MyMesh_Grass", "Verts" );
     }
 
-    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    m_SubmeshList[0]->m_pVertexBuffer->m_Dirty = true;
+    Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
     for( int y = 0; y < bladeCount.y; y++ )
     {
@@ -1415,8 +1401,8 @@ void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfNumBa
 
     m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Lines;
 
-    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->m_pData;
-    unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->m_pData;
+    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
+    unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     unsigned char vertnum = 0;
     int indexnum = 0;
