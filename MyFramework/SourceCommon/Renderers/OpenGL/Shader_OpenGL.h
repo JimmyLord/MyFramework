@@ -10,7 +10,7 @@
 #ifndef __Shader_OpenGL_H__
 #define __Shader_OpenGL_H__
 
-#include "../../Shaders/ShaderManager.h"
+#include "../BaseClasses/Shader_Base.h"
 
 class MyLight;
 class MaterialDefinition;
@@ -86,35 +86,36 @@ public:
     void Init_Shader();
     virtual ~Shader_OpenGL();
 
-    virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
+    virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0) override;
 
-    virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true);
+    virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true) override;
 
-    virtual void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo);
+    virtual void InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo) override;
 
-    virtual bool CompileShader();
-    virtual bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial);
-    virtual bool Activate();
+    virtual bool CompileShader() override;
+    virtual bool ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefinition* pIBO, MyRE::IndexTypes IBOType, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, MaterialDefinition* pMaterial) override;
+    virtual bool Activate() override;
 
-    virtual void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable);
-    virtual void SetupDefaultAttributes(BufferDefinition* pVBO);
-    virtual void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld);
-    virtual void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess);
-    virtual void ProgramTint(ColorByte tint);
-    virtual void ProgramPointSize(float pointSize);
-    virtual void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset);
-    virtual void ProgramCamera(Vector3* pCamPos, Vector3* pCamRot);
-    virtual void ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld);
-    virtual void ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld);
-    virtual void ProgramShadowLightTransform(MyMatrix* matShadowWVP);
-    virtual void ProgramShadowLightTexture(TextureDefinition* pShadowTex);
-    virtual void ProgramLightmap(TextureDefinition* pTexture);
-    virtual void ProgramDepthmap(TextureDefinition* pTexture);
-    virtual void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms);
-    virtual void ProgramFramebufferSize(float width, float height);
-    virtual void ProgramExposedUniforms(ExposedUniformValue* valueArray);
+    virtual void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable) override;
+    virtual void SetupDefaultAttributes(BufferDefinition* pVBO) override;
+    virtual void SetDefaultAttribute_Normal(Vector3 value) override;
+    virtual void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld) override;
+    virtual void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess) override;
+    virtual void ProgramTint(ColorByte tint) override;
+    virtual void ProgramPointSize(float pointSize) override;
+    virtual void ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset) override;
+    virtual void ProgramCamera(Vector3* pCamPos, Vector3* pCamRot) override;
+    virtual void ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld) override;
+    virtual void ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld) override;
+    virtual void ProgramShadowLightTransform(MyMatrix* matShadowWVP) override;
+    virtual void ProgramShadowLightTexture(TextureDefinition* pShadowTex) override;
+    virtual void ProgramLightmap(TextureDefinition* pTexture) override;
+    virtual void ProgramDepthmap(TextureDefinition* pTexture) override;
+    virtual void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms) override;
+    virtual void ProgramFramebufferSize(float width, float height) override;
+    virtual void ProgramExposedUniforms(ExposedUniformValue* valueArray) override;
 
-    virtual bool DoVAORequirementsMatch(BaseShader* pShader);
+    virtual bool DoVAORequirementsMatch(BaseShader* pShader) override;
 };
 
 #endif //__Shader_OpenGL_H__

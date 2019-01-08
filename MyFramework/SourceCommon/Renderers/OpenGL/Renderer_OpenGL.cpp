@@ -12,6 +12,7 @@
 #include "../BaseClasses/Renderer_Base.h"
 #include "Renderer_OpenGL.h"
 #include "Buffer_OpenGL.h"
+#include "Shader_OpenGL.h"
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -215,10 +216,9 @@ void Renderer_OpenGL::BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 s
     GLenum usage = BufferUsageConversionTable[pGLBuffer->m_BufferUsage];
 
     MyBindBuffer( target, bufferID );
-    checkGlError( "MyBindBuffer" );
-
     glBufferData( target, sizeInBytes, pData, usage );
-    checkGlError( "glBufferData" );
+    
+    checkGlError( "BufferData" );
 }
 
 void Renderer_OpenGL::BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData)
@@ -228,10 +228,9 @@ void Renderer_OpenGL::BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint3
     GLenum target = BufferTypeConversionTable[pGLBuffer->m_BufferType];
 
     MyBindBuffer( target, bufferID );
-    checkGlError( "MyBindBuffer" );
-
     glBufferSubData( target, offset, sizeInBytes, pData );
-    checkGlError( "glBufferSubData" );
+
+    checkGlError( "BufferSubData" );
 }
 
 //====================================================================================================
@@ -255,7 +254,7 @@ void Renderer_OpenGL::OnSurfaceCreated()
     glClearColor( m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a );
     glClearDepth( m_ClearDepth );
 
-    checkGlError( "OnSurfaceCreated\n" );
+    checkGlError( "OnSurfaceCreated" );
 }
 
 void Renderer_OpenGL::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 height)
@@ -272,7 +271,7 @@ void Renderer_OpenGL::OnSurfaceChanged(uint32 x, uint32 y, uint32 width, uint32 
 
     glViewport( x, y, width, height );
 
-    checkGlError( "glViewport" );
+    checkGlError( "OnSurfaceChanged" );
 }
 
 //====================================================================================================
@@ -284,7 +283,7 @@ void Renderer_OpenGL::SetClearColor(ColorFloat color)
 
     glClearColor( color.r, color.g, color.b, color.a );
 
-    checkGlError( "glClearColor" );
+    checkGlError( "SetClearColor" );
 }
 
 void Renderer_OpenGL::SetClearDepth(float depth)
@@ -293,7 +292,7 @@ void Renderer_OpenGL::SetClearDepth(float depth)
 
     glClearDepth( depth );
 
-    checkGlError( "glClearDepth" );
+    checkGlError( "SetClearDepth" );
 }
 
 void Renderer_OpenGL::SetDepthWriteEnabled(bool enabled)
@@ -302,7 +301,7 @@ void Renderer_OpenGL::SetDepthWriteEnabled(bool enabled)
 
     glDepthMask( enabled );
 
-    checkGlError( "glClearDepth" );
+    checkGlError( "SetDepthWriteEnabled" );
 }
 
 void Renderer_OpenGL::SetDepthTestEnabled(bool enabled)
@@ -314,7 +313,7 @@ void Renderer_OpenGL::SetDepthTestEnabled(bool enabled)
     else
         glDisable( GL_DEPTH_TEST );
 
-    checkGlError( "glEnable or glDisable( GL_DEPTH_TEST )" );
+    checkGlError( "SetDepthTestEnabled" );
 }
 
 void Renderer_OpenGL::SetDepthFunction(MyRE::DepthFuncs func)
@@ -322,6 +321,8 @@ void Renderer_OpenGL::SetDepthFunction(MyRE::DepthFuncs func)
     Renderer_Base::SetDepthFunction( func );
 
     glDepthFunc( DepthFuncConversionTable[func] );
+
+    checkGlError( "SetDepthFunction" );
 }
 
 void Renderer_OpenGL::SetCullingEnabled(bool enabled)
@@ -333,7 +334,7 @@ void Renderer_OpenGL::SetCullingEnabled(bool enabled)
     else
         glDisable( GL_CULL_FACE );
 
-    checkGlError( "glEnable or glDisable( GL_CULL_FACE )" );
+    checkGlError( "SetCullingEnabled" );
 }
 
 void Renderer_OpenGL::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)
@@ -341,6 +342,8 @@ void Renderer_OpenGL::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)
     Renderer_Base::SetFrontFaceWinding( winding );
 
     glFrontFace( FrontFaceWindingConversionTable[winding] );
+
+    checkGlError( "SetFrontFaceWinding" );
 }
 
 void Renderer_OpenGL::SetSwapInterval(int32 interval)
@@ -350,7 +353,7 @@ void Renderer_OpenGL::SetSwapInterval(int32 interval)
     if( wglSwapInterval )
         wglSwapInterval( interval );
 
-    checkGlError( "wglSwapInterval" );
+    checkGlError( "SetSwapInterval" );
 }
 
 void Renderer_OpenGL::SetBlendEnabled(bool enabled)
@@ -362,7 +365,7 @@ void Renderer_OpenGL::SetBlendEnabled(bool enabled)
     else
         glDisable( GL_BLEND );
 
-    checkGlError( "glEnable or glDisable( GL_BLEND )" );
+    checkGlError( "SetBlendEnabled" );
 }
 
 void Renderer_OpenGL::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor)
@@ -371,7 +374,7 @@ void Renderer_OpenGL::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFact
 
     glBlendFunc( BlendFactorConversionTable[srcFactor], BlendFactorConversionTable[dstFactor] );
 
-    checkGlError( "glBlendFunc" );
+    checkGlError( "SetBlendFunc" );
 }
 
 void Renderer_OpenGL::SetLineWidth(float width)
@@ -379,11 +382,18 @@ void Renderer_OpenGL::SetLineWidth(float width)
     Renderer_Base::SetLineWidth( width );
 
     glLineWidth( width );
+
+    checkGlError( "SetLineWidth" );
 }
 
 //====================================================================================================
 // Actions.
 //====================================================================================================
+Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType)
+{
+    return MyNew Shader_OpenGL( passType );
+}
+
 void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil)
 {
     GLbitfield flags = 0;
@@ -393,14 +403,14 @@ void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearS
 
     glClear( flags );
 
-    checkGlError( "glClear" );
+    checkGlError( "ClearBuffers" );
 }
 
 void Renderer_OpenGL::ClearScissorRegion()
 {
     glDisable( GL_SCISSOR_TEST );
 
-    checkGlError( "glDisable( GL_SCISSOR_TEST )" );
+    checkGlError( "ClearScissorRegion" );
 }
 
 void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded)
@@ -422,7 +432,7 @@ void Renderer_OpenGL::EnableViewport(MyViewport* pViewport, bool enableOrDisable
 
     glViewport( pViewport->GetX(), pViewport->GetY(), pViewport->GetWidth(), pViewport->GetHeight() );
 
-    checkGlError( "glViewport" );
+    checkGlError( "EnableViewport" );
 }
 
 bool ShouldDraw(bool hideFromDrawList)
@@ -465,15 +475,15 @@ void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei
 
     if( draw )
     {
-        checkGlError( "glDrawArrays Before" );
         glDrawArrays( PrimitiveTypeConversionTable[mode], first, count );
-        checkGlError( "glDrawArrays After" );
     }
 
     if( hideFromDrawList == false )
     {
         g_GLStats.m_NumDrawCallsThisFrameSoFar++;
     }
+
+    checkGlError( "glDrawArrays" );
 }
 
 void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList)
@@ -484,25 +494,83 @@ void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyR
     
     if( draw )
     {
-        checkGlError( "glDrawElements Before" );
         glDrawElements( PrimitiveTypeConversionTable[mode], count, IndexTypeConversionTable[IBOType], indices );
-        checkGlError( "glDrawElements After" );
     }
 
     if( hideFromDrawList == false )
     {
         g_GLStats.m_NumDrawCallsThisFrameSoFar++;
     }
+
+    checkGlError( "DrawElements" );
+}
+
+void Renderer_OpenGL::TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw)
+{
+    Shader_OpenGL* pGLShader = (Shader_OpenGL*)pShader;
+
+    GLint aiposloc = glGetAttribLocation( pGLShader->m_ProgramHandle, "ai_Position" );
+    GLint aiscaleloc = glGetAttribLocation( pGLShader->m_ProgramHandle, "ai_Scale" );
+    GLint aicolorloc = glGetAttribLocation( pGLShader->m_ProgramHandle, "ai_Color" );
+
+    {
+        if( aiposloc != -1 )
+        {
+            glVertexAttribPointer( aiposloc, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleInstanceData), (void*)0 );
+            glEnableVertexAttribArray( aiposloc );
+            glVertexAttribDivisor( aiposloc, 1 );
+        }
+
+        if( aiscaleloc != -1 )
+        {
+            glVertexAttribPointer( aiscaleloc, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleInstanceData), (void*)12 );
+            glEnableVertexAttribArray( aiscaleloc );
+            glVertexAttribDivisor( aiscaleloc, 1 );
+        }
+
+        if( aicolorloc != -1 )
+        {
+            glVertexAttribPointer( aicolorloc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ParticleInstanceData), (void*)16 );
+            glEnableVertexAttribArray( aicolorloc );
+            glVertexAttribDivisor( aicolorloc, 1 );
+        }
+    }
+
+    checkGlError( "before glDrawArraysInstanced() in TempHack_SetupAndDrawInstanced()" );
+
+    glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4, numInstancesToDraw );
+
+    checkGlError( "after glDrawArraysInstanced() in TempHack_SetupAndDrawInstanced()" );
+
+    if( aiposloc != -1 )
+        glVertexAttribDivisor( aiposloc, 0 );
+    if( aiscaleloc != -1 )
+        glVertexAttribDivisor( aiscaleloc, 0 );
+    if( aicolorloc != -1 )
+        glVertexAttribDivisor( aicolorloc, 0 );
+
+    if( aiposloc != -1 )
+        glDisableVertexAttribArray( aiposloc );
+    if( aiscaleloc != -1 )
+        glDisableVertexAttribArray( aiscaleloc );
+    if( aicolorloc != -1 )
+        glDisableVertexAttribArray( aicolorloc );
+
+    checkGlError( "after glVertexAttribDivisor() in TempHack_SetupAndDrawInstanced()" );
 }
 
 void Renderer_OpenGL::ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer)
 {
     glReadPixels( x, y, width, height, PixelFormatConversionTable[format], PixelDataTypeConversionTable[dataType], buffer );
+
+    checkGlError( "ReadPixels" );
 }
 
 void Renderer_OpenGL::SetPolygonMode(MyRE::PolygonDrawModes mode)
 {
     glPolygonMode( GL_FRONT_AND_BACK, PolygonDrawModeConversionTable[mode] );
+
+    checkGlError( "SetPolygonMode" );
 }
 
 void Renderer_OpenGL::SetPolygonOffset(bool enabled, float factor, float units)
@@ -519,6 +587,8 @@ void Renderer_OpenGL::SetPolygonOffset(bool enabled, float factor, float units)
     }
 
     glPolygonOffset( factor, units );
+
+    checkGlError( "SetPolygonOffset" );
 }
 
 //====================================================================================================

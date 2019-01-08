@@ -12,7 +12,6 @@
 #include "../../Shaders/ShaderManager.h"
 #include "../../Shaders/VertexFormats.h"
 
-// TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "GLHelpers.h"
@@ -194,6 +193,8 @@ bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 
     m_Initialized = true;
 
+    checkGlError( "LoadAndCompile" );
+
     return true;
 }
 
@@ -223,6 +224,8 @@ void Shader_OpenGL::DeactivateShader(BufferDefinition* pVBO, bool useVAOsIfAvail
         //MyBindBuffer( GL_ARRAY_BUFFER, 0 );
         //MyBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     }
+
+    checkGlError( "DeactivateShader" );
 }
 
 void Shader_OpenGL::InitializeAttributeArrays(VertexFormats vertexFormat, VertexFormat_Dynamic_Desc* pVertexFormatDesc, GLuint vbo, GLuint ibo)
@@ -557,6 +560,8 @@ bool Shader_OpenGL::ActivateAndProgramShader(BufferDefinition* pVBO, BufferDefin
 
     ProgramExposedUniforms( pMaterial->m_UniformValues );
 
+    checkGlError( "ActivateAndProgramShader" );
+
     return true;
 }
 
@@ -619,6 +624,8 @@ void Shader_OpenGL::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pI
 #endif
         glBindVertexArray( pGLVBO->m_CurrentVAOHandle );
     }
+
+    checkGlError( "SetupAttributes" );
 }
 
 void Shader_OpenGL::SetupDefaultAttributes(BufferDefinition* pVBO)
@@ -634,6 +641,19 @@ void Shader_OpenGL::SetupDefaultAttributes(BufferDefinition* pVBO)
         else
             glVertexAttrib3f( m_aHandle_Normal, 0, 1, 0 );
     }
+
+    checkGlError( "SetupDefaultAttributes" );
+}
+
+void Shader_OpenGL::SetDefaultAttribute_Normal(Vector3 value)
+{
+    // Our VBO doesn't have normals, so set normals to face forward.
+    if( m_aHandle_Normal != -1 )
+    {
+        glVertexAttrib3f( m_aHandle_Normal, value.x, value.y, value.z );
+    }
+
+    checkGlError( "SetDefaultAttribute_Normal" );
 }
 
 void Shader_OpenGL::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
@@ -724,6 +744,8 @@ void Shader_OpenGL::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, My
         temp.Inverse();
         glUniformMatrix4fv( m_uHandle_InverseProj, 1, false, (GLfloat*)&temp.m11 );
     }
+
+    checkGlError( "ProgramTransforms" );
 }
 
 void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess)
@@ -801,6 +823,8 @@ void Shader_OpenGL::ProgramTint(ColorByte tint)
 {
     if( m_uHandle_TextureTintColor != -1 )
         glUniform4f( m_uHandle_TextureTintColor, tint.r / 255.0f, tint.g / 255.0f, tint.b / 255.0f, tint.a / 255.0f );
+
+    checkGlError( "ProgramTint" );
 }
 
 void Shader_OpenGL::ProgramPointSize(float pointSize)
@@ -825,6 +849,8 @@ void Shader_OpenGL::ProgramPointSize(float pointSize)
         glPointSize( pointSize );
 #endif
     }
+
+    checkGlError( "ProgramPointSize" );
 }
 
 void Shader_OpenGL::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
@@ -840,6 +866,8 @@ void Shader_OpenGL::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
     
     if( m_uHandle_UVOffset != -1 )
         glUniform2f( m_uHandle_UVOffset, offset.x, offset.y );
+
+    checkGlError( "ProgramUVScaleAndOffset" );
 }
 
 void Shader_OpenGL::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
@@ -874,7 +902,7 @@ void Shader_OpenGL::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
     }
 #endif
 
-    return;
+    checkGlError( "ProgramCamera" );
 }
 
 void Shader_OpenGL::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInverseWorld)
@@ -887,6 +915,8 @@ void Shader_OpenGL::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInver
         Vector3 LScampos = *matInverseWorld * *pCamPos;
         glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
     }
+
+    checkGlError( "ProgramLocalSpaceCamera" );
 }
 
 void Shader_OpenGL::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix* matInverseWorld)
@@ -976,7 +1006,7 @@ void Shader_OpenGL::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix*
     }
 #endif
 
-    return;
+    checkGlError( "ProgramLights" );
 }
 
 void Shader_OpenGL::ProgramShadowLightTransform(MyMatrix* matShadowWVP)
@@ -985,6 +1015,8 @@ void Shader_OpenGL::ProgramShadowLightTransform(MyMatrix* matShadowWVP)
     {
         glUniformMatrix4fv( m_uHandle_ShadowLightWVPT, 1, false, (GLfloat*)&matShadowWVP->m11 );
     }
+
+    checkGlError( "ProgramShadowLightTransform" );
 }
 
 void Shader_OpenGL::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
@@ -999,6 +1031,8 @@ void Shader_OpenGL::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
 
         glUniform1i( m_uHandle_ShadowTexture, 1 );
     }
+
+    checkGlError( "ProgramShadowLightTexture" );
 }
 
 void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
@@ -1013,6 +1047,8 @@ void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
 
         glUniform1i( m_uHandle_TextureLightmap, 2 );
     }
+
+    checkGlError( "ProgramLightmap" );
 }
 
 void Shader_OpenGL::ProgramDepthmap(TextureDefinition* pTexture)
@@ -1027,6 +1063,8 @@ void Shader_OpenGL::ProgramDepthmap(TextureDefinition* pTexture)
 
         glUniform1i( m_uHandle_TextureDepth, 3 );
     }
+
+    checkGlError( "ProgramDepthmap" );
 }
 
 void Shader_OpenGL::ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms)
@@ -1037,12 +1075,16 @@ void Shader_OpenGL::ProgramBoneTransforms(MyMatrix* pTransforms, int numTransfor
 
     if( m_uHandle_BoneTransforms != -1 )
         glUniformMatrix4fv( m_uHandle_BoneTransforms, numTransforms, GL_FALSE, &pTransforms[0].m11 );
+
+    checkGlError( "ProgramBoneTransforms" );
 }
 
 void Shader_OpenGL::ProgramFramebufferSize(float width, float height)
 {
     if( m_uHandle_FramebufferSize != -1 )
         glUniform2f( m_uHandle_FramebufferSize, width, height );    
+
+    checkGlError( "ProgramFramebufferSize" );
 }
 
 void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
@@ -1098,4 +1140,6 @@ void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
             break;
         }
     }
+
+    checkGlError( "ProgramExposedUniforms" );
 }

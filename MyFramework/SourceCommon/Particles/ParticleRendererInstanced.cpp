@@ -14,12 +14,6 @@
 #include "ParticleRendererInstanced.h"
 #include "../Renderers/BaseClasses/Shader_Base.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-#include "../Renderers/OpenGL/Shader_OpenGL.h"
-
 ParticleRendererInstanced::ParticleRendererInstanced(bool creatematerial)
 : ParticleRenderer( creatematerial )
 {
@@ -144,7 +138,7 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
     }
     MyAssert( m_pVertexBuffer->IsDirty() == false );
 
-    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShaderInstanced()->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShaderInstanced()->GlobalPass();
     if( pShader == nullptr )
         return;
 
@@ -170,59 +164,13 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
             m_pVertexBuffer, m_pIndexBuffer, MyRE::IndexType_U16,
             pMatProj, pMatView, nullptr, m_pMaterial ) )
     {
-        GLint aiposloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Position" );
-        GLint aiscaleloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Scale" );
-        GLint aicolorloc = glGetAttribLocation( pShader->m_ProgramHandle, "ai_Color" );
-
-        {
-            m_pInstancedAttributesBuffer->TempBufferData( sizeof(ParticleInstanceData) * m_ParticleCount, m_pParticleData );
-
-            if( aiposloc != -1 )
-            {
-                glVertexAttribPointer( aiposloc, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleInstanceData), (void*)0 );
-                glEnableVertexAttribArray( aiposloc );
-                glVertexAttribDivisor( aiposloc, 1 );
-            }
-
-            if( aiscaleloc != -1 )
-            {
-                glVertexAttribPointer( aiscaleloc, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleInstanceData), (void*)12 );
-                glEnableVertexAttribArray( aiscaleloc );
-                glVertexAttribDivisor( aiscaleloc, 1 );
-            }
-
-            if( aicolorloc != -1 )
-            {
-                glVertexAttribPointer( aicolorloc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ParticleInstanceData), (void*)16 );
-                glEnableVertexAttribArray( aicolorloc );
-                glVertexAttribDivisor( aicolorloc, 1 );
-            }
-        }
+        m_pInstancedAttributesBuffer->TempBufferData( sizeof(ParticleInstanceData) * m_ParticleCount, m_pParticleData );
 
         pShader->ProgramCamera( nullptr, &camrot );
 
-        checkGlError( "before glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
+        g_pRenderer->TempHack_SetupAndDrawInstanced( pShader, m_ParticleCount );
 
-        glDrawArraysInstanced( GL_TRIANGLE_STRIP, 0, 4, m_ParticleCount );
         pShader->DeactivateShader( m_pVertexBuffer, true );
-
-        checkGlError( "after glDrawArraysInstanced() in ParticleRenderInstanced::Draw()" );
-
-        if( aiposloc != -1 )
-            glVertexAttribDivisor( aiposloc, 0 );
-        if( aiscaleloc != -1 )
-            glVertexAttribDivisor( aiscaleloc, 0 );
-        if( aicolorloc != -1 )
-            glVertexAttribDivisor( aicolorloc, 0 );
-
-        if( aiposloc != -1 )
-            glDisableVertexAttribArray( aiposloc );
-        if( aiscaleloc != -1 )
-            glDisableVertexAttribArray( aiscaleloc );
-        if( aicolorloc != -1 )
-            glDisableVertexAttribArray( aicolorloc );
-
-        checkGlError( "after glVertexAttribDivisor() in ParticleRenderInstanced::Draw()" );
     }
 
     // Always disable blending.
@@ -236,8 +184,6 @@ void ParticleRendererInstanced::DrawParticles(Vector3 campos, Vector3 camrot, My
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);
 #endif
     }
-
-    checkGlError( "end of ParticleRenderInstanced::Draw()" );
 
     return;
 }

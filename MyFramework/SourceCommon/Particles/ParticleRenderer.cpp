@@ -13,13 +13,6 @@
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "ParticleRenderer.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-#include "../Renderers/OpenGL/Shader_OpenGL.h"
-#include "../Renderers/OpenGL/Buffer_OpenGL.h"
-
 #define USE_INDEXED_TRIANGLES   1
 
 ParticleRenderer::ParticleRenderer(bool creatematerial)
@@ -63,8 +56,6 @@ ParticleRenderer::~ParticleRenderer()
 
 void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category)
 {
-    checkGlError( "Start of ParticleRenderer::AllocateVertices()" );
-
     LOGInfo( LOGTag, "ParticleRenderer: Allocating %d Verts\n", numpoints );
 
     MyAssert( m_pVertexBuffer == 0 );
@@ -102,8 +93,6 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
         m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, 2, category, "Particles-Indices" );
     }
-
-    checkGlError( "End of ParticleRenderer::AllocateVertices()" );
 }
 
 void ParticleRenderer::RebuildParticleQuad(MyMatrix* matrot)
@@ -256,8 +245,6 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 || m_ParticleCount == 0 )
         return;
 
-    checkGlError( "Start of ParticleRenderer::DrawParticles()" );
-
     //glEnable(GL_TEXTURE_2D);
 #if MYFW_WINDOWS
 //#define GL_POINT_SPRITE 0x8861
@@ -296,7 +283,7 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
     }
     MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
-    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return;
 
@@ -341,8 +328,6 @@ void ParticleRenderer::DrawParticles(Vector3 campos, Vector3 camrot, MyMatrix* p
         g_pD3DContext->OMSetBlendState( g_pD3DBlendStateEnabled.Get(), blendfactor, 0xfff);
 #endif
     }
-
-    checkGlError( "End of ParticleRenderer::DrawParticles()" );
 
     return;
 }

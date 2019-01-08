@@ -90,6 +90,8 @@ public:
     virtual void SetLineWidth(float width);
 
     // Actions.
+    virtual Shader_Base* CreateShader(ShaderPassTypes passType) = 0;
+
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) = 0;
     virtual void ClearScissorRegion() = 0;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) = 0;
@@ -99,6 +101,7 @@ public:
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) = 0;
+    virtual void TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw) = 0;
 
     virtual void ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer) = 0;
 

@@ -12,11 +12,11 @@
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "MySprite.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-#include "../Renderers/OpenGL/Shader_OpenGL.h"
+//// TODO: Fix GL Includes.
+//#include <gl/GL.h>
+//#include "../../GLExtensions.h"
+//#include "../Renderers/OpenGL/GLHelpers.h"
+//#include "../Renderers/OpenGL/Shader_OpenGL.h"
 
 // These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
 //   for code to use them, you'd need to fill your vertex buffer in this order.
@@ -413,8 +413,6 @@ void MySprite::FlipX()
 
 bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld)
 {
-    checkGlError( "start of MySprite::Setup()" );
-
     if( m_pMaterial == 0 )
         return false;
 
@@ -433,7 +431,7 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
     if( m_pMaterial->GetShader() == 0 )
         return false;
 
-    Shader_OpenGL* pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass();
+    Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )
         return false;
 
@@ -449,15 +447,10 @@ bool MySprite::Setup(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld
                         pMatProj, pMatView, pMatWorld, m_pMaterial );
 
     // Our VBO doesn't have normals, so set normals to face forward.
-    if( pShader->m_aHandle_Normal != -1 )
-    {
-        glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
-    }
+    pShader->SetDefaultAttribute_Normal( Vector3( 0, 0, -1 ) );
 
     // Always disable blending.
     g_pRenderer->SetBlendEnabled( false );
-
-    checkGlError( "end of MySprite::Setup()" );
 
     return activated;
 }
@@ -509,7 +502,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
     }
     MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
 
-    Shader_OpenGL* pShader = 0;
+    Shader_Base* pShader = 0;
     if( pShaderOverride )
     {
         // if an override for the shader is sent in, it's already active and doesn't want anything other than position set.
@@ -517,7 +510,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
         // TODO: this might fail with 1-3 bones,
         //       but should work with 0 bones since bone attribs are set to 100% weight on bone 0
         //       and bone 0 transform uniform is set to identity.
-        pShader = (Shader_OpenGL*)pShaderOverride->GlobalPass( 0, 4 );
+        pShader = (Shader_Base*)pShaderOverride->GlobalPass( 0, 4 );
 
         MyAssert( pShader );
         if( pShader == 0 )
@@ -549,7 +542,7 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
             }
         }
 
-        pShader = (Shader_OpenGL*)m_pMaterial->GetShader()->GlobalPass( numpointlights, 0 );
+        pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass( numpointlights, 0 );
 
         // pShader will be 0 if the current pass isn't supported/needed by the shader, i.e. doesn't render to shadow buffer.
         //MyAssert( pShader );
@@ -570,13 +563,9 @@ void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMat
             // Our VBO doesn't have normals, so set normals to face forward.
             // TODO: find better way to handle default attributes, ActivateAndProgramShader sets this to 0,1,0
             //       so need to set since VAOs don't change these values
-            if( pShader->m_aHandle_Normal != -1 )
-            {
-                glVertexAttrib3f( pShader->m_aHandle_Normal, 0, 0, -1 );
-            }
+            pShader->SetDefaultAttribute_Normal( Vector3( 0, 0, -1 ) );
 
             pShader->ProgramLights( lightptrs, numlights, 0 );
-            checkGlError( "Drawing Mesh ProgramLights()" );
 
             pShader->ProgramFramebufferSize( (float)g_GLStats.m_CurrentFramebufferWidth, (float)g_GLStats.m_CurrentFramebufferHeight );
 

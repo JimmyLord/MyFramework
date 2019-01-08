@@ -61,7 +61,7 @@ bool MySubmesh::SetupShader(Shader_Base* pShader, MyMesh* pMesh, MyMatrix* pMatW
 {
     MaterialDefinition* pMaterial = m_pMaterial;
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
-    int pointSize = m_PointSize;        
+    int pointSize = m_PointSize;
 
     if( pShader->Activate() == false )
     {

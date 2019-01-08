@@ -42,6 +42,7 @@ public:
 
     virtual void SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable) = 0;
     virtual void SetupDefaultAttributes(BufferDefinition* pVBO) = 0;
+    virtual void SetDefaultAttribute_Normal(Vector3 value) = 0;
     virtual void ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld) = 0;
     virtual void ProgramMaterialProperties(TextureDefinition* pTexture, ColorByte tint, ColorByte specularColor, float shininess) = 0;
     virtual void ProgramTint(ColorByte tint) = 0;

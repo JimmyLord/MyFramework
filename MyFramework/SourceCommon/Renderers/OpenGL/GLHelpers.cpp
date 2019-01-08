@@ -9,7 +9,6 @@
 
 #include "CommonHeader.h"
 
-// TODO: Fix GL Includes.
 #include <gl/GL.h>
 #include "../../GLExtensions.h"
 #include "GLHelpers.h"

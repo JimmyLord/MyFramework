@@ -201,6 +201,8 @@ void Buffer_OpenGL::Invalidate(bool cleanGLAllocs)
 #endif
 
     m_CurrentBufferID = 0;
+
+    checkGlError( "Invalidate" );
 }
 
 void Buffer_OpenGL::CreateAndBindVAO()
@@ -223,6 +225,8 @@ void Buffer_OpenGL::CreateAndBindVAO()
     MyBindBuffer( GL_ARRAY_BUFFER, 0 );
     MyBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     // ~HACK
+
+    checkGlError( "CreateAndBindVAO" );
 }
 
 void Buffer_OpenGL::ResetVAOs()

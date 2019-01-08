@@ -64,12 +64,15 @@ public:
     virtual void SetLineWidth(float width) override;
 
     // Actions.
+    virtual Shader_Base* CreateShader(ShaderPassTypes passType) override;
+
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
     virtual void ClearScissorRegion() override;
     virtual void EnableViewport(MyViewport* pViewport, bool enableOrDisableScissorIfNeeded) override;
 
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) override;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) override;
+    virtual void TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw) override;
 
     virtual void ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer) override;
 
