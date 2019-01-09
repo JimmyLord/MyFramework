@@ -1143,3 +1143,91 @@ void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
 
     checkGlError( "ProgramExposedUniforms" );
 }
+
+void Shader_OpenGL::ProgramDeferredRenderingUniforms(FBODefinition* pGBuffer, float nearZ, float farZ, MyMatrix* pCameraTransform, ColorFloat clearColor)
+{
+    // TODO: Not this...
+    GLint uTextureSize = glGetUniformLocation( m_ProgramHandle, "u_TextureSize" );
+    GLint uViewportSize = glGetUniformLocation( m_ProgramHandle, "u_ViewportSize" );
+    GLint uZNear = glGetUniformLocation( m_ProgramHandle, "u_ZNear" );
+    GLint uZFar = glGetUniformLocation( m_ProgramHandle, "u_ZFar" );
+    GLint uCamAt = glGetUniformLocation( m_ProgramHandle, "u_CamAt" );
+    GLint uCamRight = glGetUniformLocation( m_ProgramHandle, "u_CamRight" );
+    GLint uCamUp = glGetUniformLocation( m_ProgramHandle, "u_CamUp" );
+    GLint uAlbedo = glGetUniformLocation( m_ProgramHandle, "u_TextureAlbedo" );
+    GLint uPosition = glGetUniformLocation( m_ProgramHandle, "u_TexturePositionShine" );
+    GLint uNormal = glGetUniformLocation( m_ProgramHandle, "u_TextureNormal" );
+    GLint uDepth = glGetUniformLocation( m_ProgramHandle, "u_TextureDepth" );
+    GLint uClearColor = glGetUniformLocation( m_ProgramHandle, "u_ClearColor" );
+
+    if( uTextureSize != -1 )
+    {
+        glUniform2f( uTextureSize, (float)pGBuffer->GetTextureWidth(), (float)pGBuffer->GetTextureHeight() );
+    }
+
+    if( uViewportSize != -1 )
+    {
+        glUniform2f( uViewportSize, (float)pGBuffer->GetWidth(), (float)pGBuffer->GetHeight() );
+    }
+
+    if( uZNear != -1 )
+    {
+        glUniform1f( uZNear, nearZ );
+    }
+
+    if( uZFar != -1 )
+    {
+        glUniform1f( uZFar, farZ );
+    }
+
+    if( uCamAt != -1 )
+    {
+        Vector3 at = pCameraTransform->GetAt();
+        glUniform3fv( uCamAt, 1, &at.x );
+    }
+
+    if( uCamRight != -1 )
+    {
+        Vector3 right = pCameraTransform->GetRight();
+        glUniform3fv( uCamRight, 1, &right.x );
+    }
+
+    if( uCamUp != -1 )
+    {
+        Vector3 up = pCameraTransform->GetUp();
+        glUniform3fv( uCamUp, 1, &up.x );
+    }
+
+    if( uAlbedo != -1 )
+    {
+        MyActiveTexture( GL_TEXTURE0 + 4 );
+        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 0 )->GetTextureID() );
+        glUniform1i( uAlbedo, 4 );
+    }
+
+    if( uPosition != -1 )
+    {
+        MyActiveTexture( GL_TEXTURE0 + 5 );
+        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 1 )->GetTextureID() );
+        glUniform1i( uPosition, 5 );
+    }
+
+    if( uNormal != -1 )
+    {
+        MyActiveTexture( GL_TEXTURE0 + 6 );
+        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 2 )->GetTextureID() );
+        glUniform1i( uNormal, 6 );
+    }
+
+    if( uDepth != -1 )
+    {
+        MyActiveTexture( GL_TEXTURE0 + 7 );
+        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetDepthTexture()->GetTextureID() );
+        glUniform1i( uDepth, 7 );
+    }
+
+    if( uClearColor != -1 )
+    {
+        glUniform4f( uClearColor, clearColor.r, clearColor.g, clearColor.b, clearColor.a );
+    }
+}

@@ -44,6 +44,13 @@ GLint FrontFaceWindingConversionTable[MyRE::FrontFaceWinding_NumTypes] =
     GL_CCW,
 };
 
+GLint CullModeConversionTable[MyRE::CullMode_NumModes] =
+{
+    GL_FRONT,
+    GL_BACK,
+    GL_FRONT_AND_BACK,
+};
+
 GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes] =
 {
     GL_BYTE,
@@ -335,6 +342,15 @@ void Renderer_OpenGL::SetCullingEnabled(bool enabled)
         glDisable( GL_CULL_FACE );
 
     checkGlError( "SetCullingEnabled" );
+}
+
+void Renderer_OpenGL::SetCullMode(MyRE::CullModes mode)
+{
+    Renderer_Base::SetCullMode( mode );
+
+    glCullFace( CullModeConversionTable[mode] );
+
+    checkGlError( "SetCullMode" );
 }
 
 void Renderer_OpenGL::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)

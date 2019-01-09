@@ -57,6 +57,7 @@ public:
     virtual void SetDepthTestEnabled(bool enabled) override;
     virtual void SetDepthFunction(MyRE::DepthFuncs func) override;
     virtual void SetCullingEnabled(bool enabled) override;
+    virtual void SetCullMode(MyRE::CullModes mode) override;
     virtual void SetFrontFaceWinding(MyRE::FrontFaceWindings winding) override;
     virtual void SetSwapInterval(int32 interval) override;
     virtual void SetBlendEnabled(bool enabled) override;

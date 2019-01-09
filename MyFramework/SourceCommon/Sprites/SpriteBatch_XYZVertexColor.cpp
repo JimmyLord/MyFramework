@@ -12,11 +12,6 @@
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "SpriteBatch_XYZVertexColor.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-
 SpriteBatch_XYZVertexColor::SpriteBatch_XYZVertexColor()
 {
 }
@@ -116,8 +111,6 @@ void SpriteBatch_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
         m_pIndexBuffer->Rebuild();
     }
     MyAssert( m_pVertexBuffer->IsDirty() == false && m_pIndexBuffer->IsDirty() == false );
-
-    checkGlError( "pre MyBindBuffer" );
 
     Shader_Base* pShader = (Shader_Base*)m_pMaterial->GetShader()->GlobalPass();
     if( pShader == 0 )

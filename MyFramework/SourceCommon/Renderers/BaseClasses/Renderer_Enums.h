@@ -31,6 +31,14 @@ namespace MyRE // MyRendererEnums
         FrontFaceWinding_NumTypes,
     };
 
+    enum CullModes
+    {
+        CullMode_Front,
+        CullMode_Back,
+        CullMode_FrontAndBack,
+        CullMode_NumModes,
+    };
+
     enum AttributeTypes
     {
         AttributeType_Byte,

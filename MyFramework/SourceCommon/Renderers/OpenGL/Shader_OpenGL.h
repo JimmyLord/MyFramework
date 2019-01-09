@@ -114,6 +114,7 @@ public:
     virtual void ProgramBoneTransforms(MyMatrix* pTransforms, int numTransforms) override;
     virtual void ProgramFramebufferSize(float width, float height) override;
     virtual void ProgramExposedUniforms(ExposedUniformValue* valueArray) override;
+    virtual void ProgramDeferredRenderingUniforms(FBODefinition* pGBuffer, float nearZ, float farZ, MyMatrix* pCameraTransform, ColorFloat clearColor) override;
 
     virtual bool DoVAORequirementsMatch(BaseShader* pShader) override;
 };

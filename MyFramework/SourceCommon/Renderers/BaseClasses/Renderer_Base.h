@@ -53,6 +53,7 @@ protected:
 
     bool m_CullingEnabled;
     MyRE::FrontFaceWindings m_FrontFaceWinding;
+    MyRE::CullModes m_CullMode;
 
     int32 m_SwapInterval;
 
@@ -83,6 +84,7 @@ public:
     virtual void SetDepthTestEnabled(bool enabled);
     virtual void SetDepthFunction(MyRE::DepthFuncs func);
     virtual void SetCullingEnabled(bool enabled);
+    virtual void SetCullMode(MyRE::CullModes mode);
     virtual void SetFrontFaceWinding(MyRE::FrontFaceWindings winding);
     virtual void SetSwapInterval(int32 interval);
     virtual void SetBlendEnabled(bool enabled);

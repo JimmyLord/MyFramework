@@ -27,7 +27,8 @@ Renderer_Base::Renderer_Base()
     m_DepthFunc = MyRE::DepthFunc_Less;
 
     m_CullingEnabled = false;
-    m_FrontFaceWinding = MyRE::FrontFaceWinding_CounterClockwise,
+    m_CullMode = MyRE::CullMode_Back;
+    m_FrontFaceWinding = MyRE::FrontFaceWinding_CounterClockwise;
 
     m_SwapInterval = 1;
 
@@ -94,6 +95,11 @@ void Renderer_Base::SetDepthFunction(MyRE::DepthFuncs func)
 void Renderer_Base::SetCullingEnabled(bool enabled)
 {
     m_CullingEnabled = enabled;
+}
+
+void Renderer_Base::SetCullMode(MyRE::CullModes mode)
+{
+    m_CullMode = mode;
 }
 
 void Renderer_Base::SetFrontFaceWinding(MyRE::FrontFaceWindings winding)
