@@ -62,6 +62,7 @@ protected:
     MyRE::BlendFactors m_BlendFunc_DstFactor;
 
     float m_LineWidth;
+    float m_PointSize;
 
 public:
     Renderer_Base();
@@ -90,6 +91,7 @@ public:
     virtual void SetBlendEnabled(bool enabled);
     virtual void SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactors dstFactor);
     virtual void SetLineWidth(float width);
+    virtual void SetPointSize(float size);
 
     // Actions.
     virtual Shader_Base* CreateShader(ShaderPassTypes passType) = 0;
@@ -104,6 +106,7 @@ public:
     virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;
     virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) = 0;
     virtual void TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw) = 0;
+    virtual void TempHack_UnbindVBOAndIBO() = 0;
 
     virtual void ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer) = 0;
 

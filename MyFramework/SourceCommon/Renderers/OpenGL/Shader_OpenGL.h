@@ -21,6 +21,11 @@ class Shader_OpenGL : public Shader_Base
     static const int MAX_LIGHTS = 4;
 
 public:
+    //unsigned int m_ProgramHandle;
+    //unsigned int m_VertexShaderHandle;
+    //unsigned int m_GeometryShaderHandle;
+    //unsigned int m_FragmentShaderHandle;
+
     GLint m_aHandle_Position;
     GLint m_aHandle_UVCoord; // TODO: Make this an array.
     GLint m_aHandle_Normal;
@@ -86,6 +91,13 @@ public:
     void Init_Shader();
     virtual ~Shader_OpenGL();
 
+    // Overrides from BaseShader.
+    virtual void Invalidate(bool cleanGLAllocs) override;
+    virtual void CleanGLAllocations() override;
+
+    virtual int GetAttributeIndex(Attributes attribute) override;
+
+    // Overrides from Shader_Base.
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0) override;
 
     virtual void DeactivateShader(BufferDefinition* pVBO = 0, bool useVAOsIfAvailable = true) override;

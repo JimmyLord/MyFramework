@@ -37,6 +37,7 @@ Renderer_Base::Renderer_Base()
     m_BlendFunc_DstFactor = MyRE::BlendFactor_Zero;
 
     m_LineWidth = 1.0f;
+    m_PointSize = 1.0f;
 }
 
 Renderer_Base::~Renderer_Base()
@@ -126,4 +127,9 @@ void Renderer_Base::SetBlendFunc(MyRE::BlendFactors srcFactor, MyRE::BlendFactor
 void Renderer_Base::SetLineWidth(float width)
 {
     m_LineWidth = width;
+}
+
+void Renderer_Base::SetPointSize(float size)
+{
+    m_PointSize = size;
 }

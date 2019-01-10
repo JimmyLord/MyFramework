@@ -18,6 +18,16 @@ extern ShaderManager* g_pShaderManager;
 class BaseShader : public TCPPListNode<BaseShader*>
 {
 public:
+    enum Attributes
+    {
+        Attribute_Position,
+        Attribute_UVCoord,
+        Attribute_Normal,
+        Attribute_VertexColor,
+        Attribute_BoneIndex,
+        Attribute_BoneWeight,
+    };
+
     bool m_Initialized;
     bool m_ShaderFailedToCompile;
 
@@ -67,6 +77,8 @@ public:
     virtual void LoadFromFile();
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
+    virtual int GetAttributeIndex(Attributes attribute) = 0;
+    void InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer);
     void InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer);
     void DisableAttributeArray(GLint index, Vector3 value);

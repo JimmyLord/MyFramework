@@ -76,11 +76,6 @@ void BaseShader::Init_BaseShader()
     m_pGSPredefinitions = nullptr;
     m_pFSPredefinitions = nullptr;
 
-    m_ProgramHandle = 0;
-    m_VertexShaderHandle = 0;
-    m_GeometryShaderHandle = 0;
-    m_FragmentShaderHandle = 0;
-
     g_pShaderManager->AddShader( this );
 }
 
@@ -153,11 +148,6 @@ void BaseShader::Invalidate(bool cleanGLAllocs)
     }
     m_Initialized = false;
 
-    m_ProgramHandle = 0;
-    m_VertexShaderHandle = 0;
-    m_GeometryShaderHandle = 0;
-    m_FragmentShaderHandle = 0;
-
     m_ShaderFailedToCompile = false;
 }
 
@@ -165,33 +155,6 @@ void BaseShader::CleanGLAllocations()
 {
     if( m_Initialized )
     {
-        m_Initialized = false;
-
-        checkGlError( "start of BaseShader::CleanGLAllocations" );
-
-        if( m_VertexShaderHandle )
-            glDetachShader( m_ProgramHandle, m_VertexShaderHandle );
-        if( m_GeometryShaderHandle )
-            glDetachShader( m_ProgramHandle, m_GeometryShaderHandle );
-        if( m_FragmentShaderHandle )
-            glDetachShader( m_ProgramHandle, m_FragmentShaderHandle );    
-
-        checkGlError( "BaseShader::CleanGLAllocations" );
-
-        glDeleteShader( m_VertexShaderHandle );
-        glDeleteShader( m_GeometryShaderHandle );
-        glDeleteShader( m_FragmentShaderHandle );
-
-        checkGlError( "BaseShader::CleanGLAllocations" );
-
-        glDeleteProgram( m_ProgramHandle );
-
-        checkGlError( "end of BaseShader::CleanGLAllocations" );
-
-        m_ProgramHandle = 0;
-        m_VertexShaderHandle = 0;
-        m_GeometryShaderHandle = 0;
-        m_FragmentShaderHandle = 0;
     }
 
     m_ShaderFailedToCompile = false;
@@ -490,6 +453,11 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
     g_pEventManager->SendEventNow( pEvent );
 
     return true;
+}
+
+void BaseShader::InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
+{
+    InitializeAttributeArray( GetAttributeIndex( attribute ), size, type, normalized, stride, pointer );
 }
 
 void BaseShader::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)

@@ -33,6 +33,11 @@ void Shader_OpenGL::Init_Shader()
 {
     ClassnameSanityCheck();
 
+    m_ProgramHandle = 0;
+    m_VertexShaderHandle = 0;
+    m_GeometryShaderHandle = 0;
+    m_FragmentShaderHandle = 0;
+
     m_aHandle_Position = -1;
     m_aHandle_UVCoord = -1;
     m_aHandle_Normal = -1;
@@ -97,6 +102,74 @@ Shader_OpenGL::~Shader_OpenGL()
 {
 }
 
+void Shader_OpenGL::Invalidate(bool cleanGLAllocs)
+{
+    BaseShader::Invalidate( cleanGLAllocs );
+    
+    m_ProgramHandle = 0;
+    m_VertexShaderHandle = 0;
+    m_GeometryShaderHandle = 0;
+    m_FragmentShaderHandle = 0;
+}
+
+void Shader_OpenGL::CleanGLAllocations()
+{
+    BaseShader::CleanGLAllocations();
+
+    if( m_Initialized )
+    {
+        m_Initialized = false;
+
+        checkGlError( "start of BaseShader::CleanGLAllocations" );
+
+        if( m_VertexShaderHandle )
+            glDetachShader( m_ProgramHandle, m_VertexShaderHandle );
+        if( m_GeometryShaderHandle )
+            glDetachShader( m_ProgramHandle, m_GeometryShaderHandle );
+        if( m_FragmentShaderHandle )
+            glDetachShader( m_ProgramHandle, m_FragmentShaderHandle );    
+
+        checkGlError( "BaseShader::CleanGLAllocations" );
+
+        glDeleteShader( m_VertexShaderHandle );
+        glDeleteShader( m_GeometryShaderHandle );
+        glDeleteShader( m_FragmentShaderHandle );
+
+        checkGlError( "BaseShader::CleanGLAllocations" );
+
+        glDeleteProgram( m_ProgramHandle );
+
+        checkGlError( "end of BaseShader::CleanGLAllocations" );
+
+        m_ProgramHandle = 0;
+        m_VertexShaderHandle = 0;
+        m_GeometryShaderHandle = 0;
+        m_FragmentShaderHandle = 0;
+    }
+}
+
+int Shader_OpenGL::GetAttributeIndex(Attributes attribute)
+{
+    switch( attribute )
+    {
+    case Attribute_Position:
+        return m_aHandle_Position;
+    case Attribute_UVCoord:
+        return m_aHandle_UVCoord;
+    case Attribute_Normal:
+        return m_aHandle_Normal;
+    case Attribute_VertexColor:
+        return m_aHandle_VertexColor;
+    case Attribute_BoneIndex:
+        return m_aHandle_BoneIndex;
+    case Attribute_BoneWeight:
+        return m_aHandle_BoneWeight;
+    }
+
+    MyAssert( false );
+    return -1;
+}
+
 bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 {
     // Manually create a shader program here, so we can bind the attribute locations.
@@ -113,7 +186,7 @@ bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
     int positionIndex = 0;
 #endif
 
-    // Explicit binding of locations.
+    // Explicit binding of attribute locations.
     glBindAttribLocation( programHandle, positionIndex, "a_Position" );
     glBindAttribLocation( programHandle, 2, "a_UVCoord" );
     glBindAttribLocation( programHandle, 3, "a_Normal" );

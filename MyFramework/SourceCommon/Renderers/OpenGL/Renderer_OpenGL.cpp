@@ -402,6 +402,15 @@ void Renderer_OpenGL::SetLineWidth(float width)
     checkGlError( "SetLineWidth" );
 }
 
+void Renderer_OpenGL::SetPointSize(float size)
+{
+    Renderer_Base::SetPointSize( size );
+
+    glPointSize( size );
+
+    checkGlError( "SetPointSize" );
+}
+
 //====================================================================================================
 // Actions.
 //====================================================================================================
@@ -573,6 +582,12 @@ void Renderer_OpenGL::TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint3
         glDisableVertexAttribArray( aicolorloc );
 
     checkGlError( "after glVertexAttribDivisor() in TempHack_SetupAndDrawInstanced()" );
+}
+
+void Renderer_OpenGL::TempHack_UnbindVBOAndIBO()
+{
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
 void Renderer_OpenGL::ReadPixels(int x, int y, uint32 width, uint32 height, MyRE::PixelFormats format, MyRE::PixelDataTypes dataType, void* buffer)
