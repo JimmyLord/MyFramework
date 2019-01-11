@@ -73,16 +73,18 @@ public:
     virtual void Invalidate(bool cleanGLAllocs);
     virtual void CleanGLAllocations();
 
+    virtual void CreateProgram(int VSPreLen, const char* pVSPre, int GSPreLen, const char* pGSPre, int FSPreLen, const char* pFSPre, int numChunks, const char** ppStrings, int* pLengths, GLuint premadeProgramHandle) = 0;
+
     virtual void LoadFromFile(const char* filename);
     virtual void LoadFromFile();
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
     virtual int GetAttributeIndex(Attributes attribute) = 0;
-    void InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer);
-    void InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer);
-    void InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer);
-    void DisableAttributeArray(GLint index, Vector3 value);
-    void DisableAttributeArray(GLint index, Vector4 value);
+    virtual void InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) = 0;
+    virtual void InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) = 0;
+    virtual void InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer) = 0;
+    virtual void DisableAttributeArray(GLint index, Vector3 value) = 0;
+    virtual void DisableAttributeArray(GLint index, Vector4 value) = 0;
 
     virtual void DeactivateShader(BufferDefinition* vbo = nullptr, bool useVAOsIfAvailable = true);
 

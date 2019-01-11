@@ -10,8 +10,6 @@
 #include "CommonHeader.h"
 
 // TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
 #include "../Renderers/OpenGL/GLHelpers.h"
 
 ShaderManager* g_pShaderManager = nullptr;
@@ -360,15 +358,13 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
             // Actually create and compile the shader objects.
             if( createGeometryShader )
             {
-                m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
-                                                 VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
-                                                 numChunks, pStrings, pLengths, premadeProgramHandle );
+                CreateProgram( VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
+                               numChunks, pStrings, pLengths, premadeProgramHandle );
             }
             else
             {
-                m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
-                                                 VSPreLen, pVSPre, FSPreLen, pFSPre,
-                                                 numChunks, pStrings, pLengths, premadeProgramHandle );
+                CreateProgram( VSPreLen, pVSPre, 0, 0, FSPreLen, pFSPre,
+                               numChunks, pStrings, pLengths, premadeProgramHandle );
             }
 
             delete[] pStrings;
@@ -436,10 +432,8 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
         pLengths[2] = brokenShaderStringLen;
 
         // Compiling failed, so fallback on a default "broken" shader effect.
-        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
-                                         (int)strlen( VERTEXPREDEFINES ), VERTEXPREDEFINES, (int)strlen( FRAGMENTPREDEFINES ), FRAGMENTPREDEFINES,
-                                         //1, &pBrokenShaderString, &brokenShaderStringLen, premadeProgramHandle );
-                                         numChunks, pStrings, pLengths, premadeProgramHandle );
+        CreateProgram( (int)strlen( VERTEXPREDEFINES ), VERTEXPREDEFINES, 0, 0, (int)strlen( FRAGMENTPREDEFINES ), FRAGMENTPREDEFINES,
+                       numChunks, pStrings, pLengths, premadeProgramHandle );
 
         //return false;
     }
@@ -453,67 +447,6 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
     g_pEventManager->SendEventNow( pEvent );
 
     return true;
-}
-
-void BaseShader::InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
-{
-    InitializeAttributeArray( GetAttributeIndex( attribute ), size, type, normalized, stride, pointer );
-}
-
-void BaseShader::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
-{
-    checkGlError( "InitializeAttributeArray start" );
-
-    if( index != -1 )
-    {
-        extern GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes];
-
-        glEnableVertexAttribArray( index );
-        checkGlError( "glEnableVertexAttribArray" );
-
-        glVertexAttribPointer( index, size, AttributeTypeConversionTable[type], normalized, stride, pointer );
-        checkGlError( "glVertexAttribPointer" );
-    }
-    else
-    {
-        //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
-    }
-}
-
-void BaseShader::InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer)
-{
-    MyAssert( false ); // Not availabe with ES 2.0, so avoid it for now.
-    //if( index != -1 )
-    //{
-    //    MyEnableVertexAttribArray( index );
-    //    glVertexAttribIPointer( index, size, type, stride, pointer );
-    //}
-    //else
-    //{
-    //    //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
-    //}
-}
-
-void BaseShader::DisableAttributeArray(GLint index, Vector3 value)
-{
-    if( index != -1 )
-    {
-        MyDisableVertexAttribArray( index );
-
-        // TODO: Set this attribute override value in the MyMesh object.
-        glVertexAttrib3fv( index, &value.x );
-    }
-}
-
-void BaseShader::DisableAttributeArray(GLint index, Vector4 value)
-{
-    if( index != -1 )
-    {
-        MyDisableVertexAttribArray( index );
-
-        // TODO: Set this attribute override value in the MyMesh object.
-        glVertexAttrib4fv( index, &value.x );
-    }
 }
 
 void BaseShader::DeactivateShader(BufferDefinition* vbo, bool useVAOsIfAvailable)

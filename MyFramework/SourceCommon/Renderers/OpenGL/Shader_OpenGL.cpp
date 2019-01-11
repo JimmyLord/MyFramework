@@ -148,6 +148,22 @@ void Shader_OpenGL::CleanGLAllocations()
     }
 }
 
+void Shader_OpenGL::CreateProgram(int VSPreLen, const char* pVSPre, int GSPreLen, const char* pGSPre, int FSPreLen, const char* pFSPre, int numChunks, const char** ppStrings, int* pLengths, GLuint premadeProgramHandle)
+{
+    if( GSPreLen != 0 )
+    {
+        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_GeometryShaderHandle, &m_FragmentShaderHandle,
+                                         VSPreLen, pVSPre, GSPreLen, pGSPre, FSPreLen, pFSPre,
+                                         numChunks, ppStrings, pLengths, premadeProgramHandle );
+    }
+    else
+    {
+        m_ProgramHandle = createProgram( &m_VertexShaderHandle, &m_FragmentShaderHandle,
+                                         VSPreLen, pVSPre, FSPreLen, pFSPre,
+                                         numChunks, ppStrings, pLengths, premadeProgramHandle );
+    }
+}
+
 int Shader_OpenGL::GetAttributeIndex(Attributes attribute)
 {
     switch( attribute )
@@ -168,6 +184,67 @@ int Shader_OpenGL::GetAttributeIndex(Attributes attribute)
 
     MyAssert( false );
     return -1;
+}
+
+void Shader_OpenGL::InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
+{
+    InitializeAttributeArray( GetAttributeIndex( attribute ), size, type, normalized, stride, pointer );
+}
+
+void Shader_OpenGL::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
+{
+    checkGlError( "InitializeAttributeArray start" );
+
+    if( index != -1 )
+    {
+        extern GLint AttributeTypeConversionTable[MyRE::AttributeType_NumTypes];
+
+        glEnableVertexAttribArray( index );
+        checkGlError( "glEnableVertexAttribArray" );
+
+        glVertexAttribPointer( index, size, AttributeTypeConversionTable[type], normalized, stride, pointer );
+        checkGlError( "glVertexAttribPointer" );
+    }
+    else
+    {
+        //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
+    }
+}
+
+void Shader_OpenGL::InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer)
+{
+    MyAssert( false ); // Not available with ES 2.0, so avoid it for now.
+    //if( index != -1 )
+    //{
+    //    MyEnableVertexAttribArray( index );
+    //    glVertexAttribIPointer( index, size, type, stride, pointer );
+    //}
+    //else
+    //{
+    //    //LOGInfo( LOGTag, "Shader_Base - Failed to initialize vertex attribute array - %d\n", index );
+    //}
+}
+
+void Shader_OpenGL::DisableAttributeArray(GLint index, Vector3 value)
+{
+    if( index != -1 )
+    {
+        MyDisableVertexAttribArray( index );
+
+        // TODO: Set this attribute override value in the MyMesh object.
+        glVertexAttrib3fv( index, &value.x );
+    }
+}
+
+void Shader_OpenGL::DisableAttributeArray(GLint index, Vector4 value)
+{
+    if( index != -1 )
+    {
+        MyDisableVertexAttribArray( index );
+
+        // TODO: Set this attribute override value in the MyMesh object.
+        glVertexAttrib4fv( index, &value.x );
+    }
 }
 
 bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
