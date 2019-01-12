@@ -108,7 +108,6 @@ void FontManager::Tick()
         // when the font texture is loaded, move the font to the other list and mark it fully loaded.
         if( pFontDef->m_pTextureDef && pFontDef->m_pTextureDef->IsFullyLoaded() )
         {
-            MyAssert( pFontDef->m_pTextureDef->GetTextureID() != 0 );
             pFontDef->m_FullyLoaded = true;
             m_FontsLoaded.MoveTail( pFontDef );
         }

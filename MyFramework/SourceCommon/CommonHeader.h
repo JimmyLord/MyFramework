@@ -486,6 +486,7 @@ typedef unsigned long   u_long;
 #endif
 
 #include "Renderers/Old/OpenGLWrapper.h"
+#include "Renderers/BaseClasses/Renderer_Enums.h"
 
 #define PI 3.1415926535897932384626433832795f
 

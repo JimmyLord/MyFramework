@@ -80,9 +80,9 @@ public:
     virtual bool LoadAndCompile(GLuint premadeProgramHandle = 0);
 
     virtual int GetAttributeIndex(Attributes attribute) = 0;
-    virtual void InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) = 0;
-    virtual void InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) = 0;
-    virtual void InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer) = 0;
+    virtual void InitializeAttributeArray(Attributes attribute, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer) = 0;
+    virtual void InitializeAttributeArray(GLint index, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer) = 0;
+    virtual void InitializeAttributeIArray(GLint index, uint32 size, MyRE::AttributeTypes type, uint32 stride, const void* pointer) = 0;
     virtual void DisableAttributeArray(GLint index, Vector3 value) = 0;
     virtual void DisableAttributeArray(GLint index, Vector4 value) = 0;
 

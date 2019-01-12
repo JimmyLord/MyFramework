@@ -17,6 +17,7 @@
 #include "GLHelpers.h"
 #include "Shader_OpenGL.h"
 #include "Buffer_OpenGL.h"
+#include "Texture_OpenGL.h"
 
 Shader_OpenGL::Shader_OpenGL()
 {
@@ -186,12 +187,12 @@ int Shader_OpenGL::GetAttributeIndex(Attributes attribute)
     return -1;
 }
 
-void Shader_OpenGL::InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
+void Shader_OpenGL::InitializeAttributeArray(Attributes attribute, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer)
 {
     InitializeAttributeArray( GetAttributeIndex( attribute ), size, type, normalized, stride, pointer );
 }
 
-void Shader_OpenGL::InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer)
+void Shader_OpenGL::InitializeAttributeArray(GLint index, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer)
 {
     checkGlError( "InitializeAttributeArray start" );
 
@@ -211,7 +212,7 @@ void Shader_OpenGL::InitializeAttributeArray(GLint index, GLint size, MyRE::Attr
     }
 }
 
-void Shader_OpenGL::InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer)
+void Shader_OpenGL::InitializeAttributeIArray(GLint index, uint32 size, MyRE::AttributeTypes type, uint32 stride, const void* pointer)
 {
     MyAssert( false ); // Not available with ES 2.0, so avoid it for now.
     //if( index != -1 )
@@ -251,7 +252,7 @@ bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 {
     // Manually create a shader program here, so we can bind the attribute locations.
     GLuint programHandle = premadeProgramHandle;
-    if( premadeProgramHandle == 0 )
+    if( premadeProgramHandle == nullptr )
         programHandle = glCreateProgram();
 
 #if MYFW_WINDOWS
@@ -732,7 +733,7 @@ bool Shader_OpenGL::Activate()
 void Shader_OpenGL::SetupAttributes(BufferDefinition* pVBO, BufferDefinition* pIBO, bool useVAOsIfAvailable)
 {
     Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)pVBO->m_pBuffer;
-    Buffer_OpenGL* pGLIBO = 0;
+    Buffer_OpenGL* pGLIBO = nullptr;
     if( pIBO )
     {
         pGLIBO = (Buffer_OpenGL*)pIBO->m_pBuffer;
@@ -835,7 +836,7 @@ void Shader_OpenGL::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, My
         }
     }
 
-    MyMatrix* pMatViewProj = 0;
+    MyMatrix* pMatViewProj = nullptr;
     MyMatrix temp;
 
     if( pMatProj && pMatView )
@@ -903,7 +904,7 @@ void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, Color
     checkGlError( "Shader_OpenGL::ProgramBaseUniforms start" );
 
 #if USE_D3D
-    MyAssert( 0 );
+    MyAssert( false );
     //MyMatrix temp = *pMatWorld;
     //temp.Multiply( matViewProj );
 
@@ -919,11 +920,13 @@ void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, Color
     if( m_uHandle_TextureColor != -1 )
     {
         // If the shader wants a texture and we didn't pass one in, use a default texture.
-        if( pTexture == 0 )
+        if( pTexture == nullptr )
             pTexture = g_pTextureManager->GetErrorTexture();
 
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
         MyActiveTexture( GL_TEXTURE0 + 0 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureColor, 0 );
 
@@ -1023,17 +1026,17 @@ void Shader_OpenGL::ProgramUVScaleAndOffset(Vector2 scale, Vector2 offset)
 void Shader_OpenGL::ProgramCamera(Vector3* pCamPos, Vector3* pCamRot)
 {
 #if USE_D3D
-    MyAssert( 0 );
+    MyAssert( false );
 #else
     if( m_uHandle_WSCameraPos != -1 )
     {
-        MyAssert( pCamPos != 0 );
+        MyAssert( pCamPos != nullptr );
         glUniform3f( m_uHandle_WSCameraPos, pCamPos->x, pCamPos->y, pCamPos->z );
     }
 
     if( m_uHandle_CameraAngle != -1 )
     {
-        MyAssert( pCamRot != 0 );
+        MyAssert( pCamRot != nullptr );
         glUniform3f( m_uHandle_CameraAngle, pCamRot->x * PI/180.0f, pCamRot->y * PI/180.0f, pCamRot->z * PI/180.0f );
     }
 
@@ -1059,8 +1062,8 @@ void Shader_OpenGL::ProgramLocalSpaceCamera(Vector3* pCamPos, MyMatrix* matInver
 {
     if( m_uHandle_LSCameraPos != -1 )
     {
-        MyAssert( pCamPos != 0 );
-        MyAssert( matInverseWorld != 0 );
+        MyAssert( pCamPos != nullptr );
+        MyAssert( matInverseWorld != nullptr );
 
         Vector3 LScampos = *matInverseWorld * *pCamPos;
         glUniform3f( m_uHandle_LSCameraPos, LScampos.x, LScampos.y, LScampos.z );
@@ -1084,7 +1087,7 @@ void Shader_OpenGL::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix*
         MyAssert( pLightPtrs );
 
 #if USE_D3D
-        MyAssert( 0 );
+        MyAssert( false );
 #else
         for( int i=0; i<numLights; i++ )
         {
@@ -1111,7 +1114,7 @@ void Shader_OpenGL::ProgramLights(MyLight** pLightPtrs, int numLights, MyMatrix*
 
                 if( m_uHandle_LightPos[numPoints] != -1 )
                 {
-                    //MyAssert( matInverseWorld != 0 );
+                    //MyAssert( matInverseWorld != nullptr );
 
                     //Vector3 LSlightpos = *matInverseWorld * lightptrs[i]->m_Position;
                     //glUniform3f( m_uHandle_LightPos[i], LSlightpos.x, LSlightpos.y, LSlightpos.z );
@@ -1173,11 +1176,13 @@ void Shader_OpenGL::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
 {
     if( m_uHandle_ShadowTexture != -1 )
     {
-        if( pShadowTex == 0 )
+        if( pShadowTex == nullptr )
             pShadowTex = g_pTextureManager->GetErrorTexture();
 
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pShadowTex;
+
         MyActiveTexture( GL_TEXTURE0 + 1 );
-        glBindTexture( GL_TEXTURE_2D, pShadowTex->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_ShadowTexture, 1 );
     }
@@ -1189,11 +1194,13 @@ void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
 {
     if( m_uHandle_TextureLightmap != -1 )
     {
-        if( pTexture == 0 )
+        if( pTexture == nullptr )
             pTexture = g_pTextureManager->GetErrorTexture();
 
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
         MyActiveTexture( GL_TEXTURE0 + 2 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureLightmap, 2 );
     }
@@ -1203,13 +1210,15 @@ void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
 
 void Shader_OpenGL::ProgramDepthmap(TextureDefinition* pTexture)
 {
-    if( m_uHandle_TextureDepth != -1 && pTexture != 0 )
+    if( m_uHandle_TextureDepth != -1 && pTexture != nullptr )
     {
-        if( pTexture == 0 )
+        if( pTexture == nullptr )
             pTexture = g_pTextureManager->GetErrorTexture();
 
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
         MyActiveTexture( GL_TEXTURE0 + 3 );
-        glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
 
         glUniform1i( m_uHandle_TextureDepth, 3 );
     }
@@ -1241,7 +1250,7 @@ void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
 {
     int numTexturesSet = 0;
 
-    if( m_pFile == 0 )
+    if( m_pFile == nullptr )
         return;
 
     for( unsigned int i=0; i<m_pFile->m_NumExposedUniforms; i++ )
@@ -1271,13 +1280,15 @@ void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
         case ExposedUniformType_Sampler2D:
             {
                 TextureDefinition* pTexture = valueArray[i].m_pTexture;
-                if( pTexture == 0 )
+                if( pTexture == nullptr )
                     pTexture = g_pTextureManager->GetErrorTexture();
 
                 if( pTexture )
                 {
+                    Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
                     MyActiveTexture( GL_TEXTURE0 + 4 + numTexturesSet );
-                    glBindTexture( GL_TEXTURE_2D, pTexture->GetTextureID() );
+                    glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
                     glUniform1i( m_uHandle_ExposedUniforms[i], 4 + numTexturesSet );
                     numTexturesSet++;
                 }
@@ -1350,29 +1361,37 @@ void Shader_OpenGL::ProgramDeferredRenderingUniforms(FBODefinition* pGBuffer, fl
 
     if( uAlbedo != -1 )
     {
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pGBuffer->GetColorTexture( 0 );
+
         MyActiveTexture( GL_TEXTURE0 + 4 );
-        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 0 )->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
         glUniform1i( uAlbedo, 4 );
     }
 
     if( uPosition != -1 )
     {
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pGBuffer->GetColorTexture( 1 );
+
         MyActiveTexture( GL_TEXTURE0 + 5 );
-        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 1 )->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
         glUniform1i( uPosition, 5 );
     }
 
     if( uNormal != -1 )
     {
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pGBuffer->GetColorTexture( 2 );
+
         MyActiveTexture( GL_TEXTURE0 + 6 );
-        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetColorTexture( 2 )->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
         glUniform1i( uNormal, 6 );
     }
 
     if( uDepth != -1 )
     {
+        Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pGBuffer->GetDepthTexture();
+
         MyActiveTexture( GL_TEXTURE0 + 7 );
-        glBindTexture( GL_TEXTURE_2D, pGBuffer->GetDepthTexture()->GetTextureID() );
+        glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
         glUniform1i( uDepth, 7 );
     }
 

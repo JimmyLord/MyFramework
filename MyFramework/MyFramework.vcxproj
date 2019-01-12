@@ -1590,6 +1590,7 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Renderers\Old\OpenGLWrapper.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
     <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp" />
@@ -2803,6 +2804,7 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\Old\OpenGLWrapper.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.h" />
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.h" />
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Base.h" />
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h" />
     <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h" />

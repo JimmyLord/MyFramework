@@ -13,11 +13,6 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-
 #pragma warning( push )
 #pragma warning( disable : 4996 )
 #include "../../Libraries/LodePNG/lodepng.h"
@@ -32,7 +27,6 @@ TextureDefinition::TextureDefinition(bool freeOnceLoaded)
 
     m_Filename[0] = '\0';
     m_pFile = nullptr;
-    m_TextureID = 0;
 
     m_MemoryUsed = 0;
 
@@ -61,8 +55,6 @@ TextureDefinition::~TextureDefinition()
     {
         g_pFileManager->FreeFile( m_pFile );
     }
-
-    Invalidate( true );
 }
 
 #if MYFW_EDITOR
@@ -89,16 +81,6 @@ void TextureDefinition::OnPopupClick(TextureDefinition* pTexture, int id)
 }
 #endif //MYFW_EDITOR
 
-void TextureDefinition::Invalidate(bool cleanGLAllocs)
-{
-    if( cleanGLAllocs && m_TextureID != 0 )
-    {
-        glDeleteTextures( 1, &m_TextureID );
-    }
-
-    m_TextureID = 0;
-}
-
 void TextureDefinition::FinishLoadingFileAndGenerateTexture()
 {
     //LOGInfo( LOGTag, "FinishLoadingFileAndGenerateTexture texturedef(%d)", this );
@@ -120,21 +102,9 @@ void TextureDefinition::FinishLoadingFileAndGenerateTexture()
     unsigned int error = lodepng_decode32( &pngbuffer, &width, &height, buffer, length );
     MyAssert( error == 0 );
 
-    GLuint textureHandle = 0;
-    glGenTextures( 1, &textureHandle );
-    MyAssert( textureHandle != 0 );
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, textureHandle );
+    GenerateTexture( pngbuffer, width, height );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pngbuffer );
-    checkGlError( "glTexImage2D" );
     free( pngbuffer );
 
-    g_pRenderer->SetTextureMinMagFilters( textureHandle, m_MinFilter, m_MagFilter );
-    g_pRenderer->SetTextureWrapModes( textureHandle, m_WrapS, m_WrapT );
-
-    m_Width = width;
-    m_Height = height;
-
-    m_TextureID = textureHandle;
+    m_FullyLoaded = true;
 }

@@ -13,11 +13,6 @@
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
 
-// TODO: Fix GL Includes.
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
-#include "../Renderers/OpenGL/GLHelpers.h"
-
 TextureManager* g_pTextureManager = nullptr;
 
 TextureManager::TextureManager()
@@ -65,7 +60,7 @@ TextureDefinition* TextureManager::CreateTexture(MyFileObject* pFile, MyRE::MinF
     }
 
     // Create a new texture and add it to m_TexturesStillLoading.
-    pTextureDef = MyNew TextureDefinition();
+    pTextureDef = g_pRenderer->CreateTexture();
     pTextureDef->m_ManagedByTextureManager = true;
     strcpy_s( pTextureDef->m_Filename, MAX_PATH, pFile->GetFullPath() );
     pTextureDef->m_MinFilter = minFilter;
@@ -222,10 +217,10 @@ void TextureManager::Tick()
         //LOGInfo( LOGTag, "Loading Texture: %s\n", pTextureDef->m_Filename );
 
         // If we have an opengl texture, then nothing to do.  this shouldn't happen, loaded textures should be in "m_LoadedTextures".
-        MyAssert( pTextureDef->m_TextureID == 0 );
-        if( pTextureDef->m_TextureID != 0 )
+        MyAssert( pTextureDef->IsFullyLoaded() == false );
+        if( pTextureDef->IsFullyLoaded() != false )
         {
-            LOGInfo( LOGTag, "Loading Texture: Already had a texture id?!? pTextureDef->m_TextureID != 0\n" );
+            LOGInfo( LOGTag, "Loading Texture: Already had a texture id? pTextureDef->IsFullyLoaded() != false\n" );
             continue;
         }
 
@@ -265,7 +260,7 @@ void TextureManager::Tick()
                 pTextureDef->FinishLoadingFileAndGenerateTexture();
                 //LOGInfo( LOGTag, "Loading Texture: FinishLoadingFileAndGenerateTexture\n" );
 
-                if( pTextureDef->m_TextureID != 0 )
+                if( pTextureDef->IsFullyLoaded() == true )
                 {
                     //LOGInfo( LOGTag, "Loading Texture: textureLoaded = true\n" );
                     textureLoaded = true;
@@ -295,8 +290,6 @@ void TextureManager::Tick()
                 g_pFileManager->FreeFile( pTextureDef->m_pFile );
 
             m_LoadedTextures.MoveTail( pTextureDef );
-
-            pTextureDef->m_FullyLoaded = true;
 
             //LOGInfo( LOGTag, "pTextureDef->m_FullyLoaded = true %s\n", pTextureDef->m_Filename );
         }
@@ -410,58 +403,9 @@ TextureDefinition* TextureManager::GetErrorTexture()
     // If the error texture isn't created, create it.
     if( m_pErrorTexture == nullptr )
     {
-        m_pErrorTexture = MyNew TextureDefinition();
+        m_pErrorTexture = g_pRenderer->CreateTexture();
 
-        m_pErrorTexture->m_ManagedByTextureManager = true;
-        m_pErrorTexture->m_MinFilter = MyRE::MinFilter_Nearest;
-        m_pErrorTexture->m_MagFilter = MyRE::MagFilter_Nearest;
-        m_pErrorTexture->m_WrapS = MyRE::WrapMode_Repeat;
-        m_pErrorTexture->m_WrapT = MyRE::WrapMode_Repeat;
-
-        unsigned int width = 64;
-        unsigned int height = 64;
-        unsigned char* pixelbuffer = MyNew unsigned char[width*height*4];
-
-        for( unsigned int y=0; y<height; y++ )
-        {
-            for( unsigned int x=0; x<width; x++ )
-            {
-                if( (x+y)%2 == 0 )
-                {
-                    pixelbuffer[(y*width+x)*4 + 0] = 0;
-                    pixelbuffer[(y*width+x)*4 + 1] = 0;
-                    pixelbuffer[(y*width+x)*4 + 2] = 255;
-                    pixelbuffer[(y*width+x)*4 + 3] = 255;
-                }
-                else
-                {
-                    pixelbuffer[(y*width+x)*4 + 0] = 0;
-                    pixelbuffer[(y*width+x)*4 + 1] = 0;
-                    pixelbuffer[(y*width+x)*4 + 2] = 0;
-                    pixelbuffer[(y*width+x)*4 + 3] = 255;
-                }
-            }
-        }
-
-        GLuint textureHandle = 0;
-        glGenTextures( 1, &textureHandle );
-        MyAssert( textureHandle != 0 );
-        glActiveTexture( GL_TEXTURE0 );
-        glBindTexture( GL_TEXTURE_2D, textureHandle );
-
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelbuffer );
-        checkGlError( "glTexImage2D" );
-        glBindTexture( GL_TEXTURE_2D, 0 );
-
-        delete[] pixelbuffer;
-
-        g_pRenderer->SetTextureMinMagFilters( textureHandle, MyRE::MinFilter_Nearest, MyRE::MagFilter_Nearest );
-        g_pRenderer->SetTextureWrapModes( textureHandle, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
-
-        m_pErrorTexture->m_Width = width;
-        m_pErrorTexture->m_Height = height;
-
-        m_pErrorTexture->m_TextureID = textureHandle;
+        m_pErrorTexture->GenerateErrorTexture();
 
         m_LoadedTextures.AddTail( m_pErrorTexture );
     }

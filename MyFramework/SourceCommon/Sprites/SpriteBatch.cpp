@@ -94,8 +94,8 @@ void SpriteBatch::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)
 
 void SpriteBatch::Draw(MyMatrix* pMatProj, MyMatrix* pMatView)
 {
-    if( m_pMaterial == 0 || m_pMaterial->GetTextureColor() == 0 || m_pMaterial->GetTextureColor()->GetTextureID() == 0 ||
-        m_pMaterial->GetShader() == 0 || m_NumSprites == 0 )
+    if( m_pMaterial == nullptr || m_pMaterial->GetTextureColor() == nullptr || m_pMaterial->GetTextureColor()->IsFullyLoaded() == false ||
+        m_pMaterial->GetShader() == nullptr || m_NumSprites == 0 )
         return;
 
     MyMatrix pos;

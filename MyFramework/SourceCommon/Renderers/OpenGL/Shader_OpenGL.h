@@ -98,9 +98,9 @@ public:
     virtual void CreateProgram(int VSPreLen, const char* pVSPre, int GSPreLen, const char* pGSPre, int FSPreLen, const char* pFSPre, int numChunks, const char** ppStrings, int* pLengths, GLuint premadeProgramHandle) override;
 
     virtual int GetAttributeIndex(Attributes attribute) override;
-    virtual void InitializeAttributeArray(Attributes attribute, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) override;
-    virtual void InitializeAttributeArray(GLint index, GLint size, MyRE::AttributeTypes type, GLboolean normalized, GLsizei stride, const void* pointer) override;
-    virtual void InitializeAttributeIArray(GLint index, GLint size, MyRE::AttributeTypes type, GLsizei stride, const void* pointer) override;
+    virtual void InitializeAttributeArray(Attributes attribute, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer) override;
+    virtual void InitializeAttributeArray(GLint index, uint32 size, MyRE::AttributeTypes type, bool normalized, uint32 stride, const void* pointer) override;
+    virtual void InitializeAttributeIArray(GLint index, uint32 size, MyRE::AttributeTypes type, uint32 stride, const void* pointer) override;
     virtual void DisableAttributeArray(GLint index, Vector3 value) override;
     virtual void DisableAttributeArray(GLint index, Vector4 value) override;
 

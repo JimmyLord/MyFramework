@@ -95,6 +95,7 @@ public:
 
     // Actions.
     virtual Shader_Base* CreateShader(ShaderPassTypes passType) = 0;
+    virtual TextureDefinition* CreateTexture() = 0;
 
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) = 0;
     virtual void ClearScissorRegion() = 0;
@@ -103,8 +104,8 @@ public:
     virtual void BufferData(Buffer_Base* pBuffer, GLuint bufferID, uint32 sizeInBytes, void* pData) = 0;
     virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) = 0;
 
-    virtual void DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList) = 0;
-    virtual void DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList) = 0;
+    virtual void DrawElements(MyRE::PrimitiveTypes mode, uint32 count, MyRE::IndexTypes IBOType, const void* indices, bool hideFromDrawList) = 0;
+    virtual void DrawArrays(MyRE::PrimitiveTypes mode, uint32 first, uint32 count, bool hideFromDrawList) = 0;
     virtual void TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw) = 0;
     virtual void TempHack_UnbindVBOAndIBO() = 0;
 
@@ -114,8 +115,8 @@ public:
     virtual void SetPolygonOffset(bool enabled, float factor, float units) = 0;
 
     // Textures/FBOs.
-    virtual void SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag) = 0;
-    virtual void SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT) = 0;
+    virtual void SetTextureMinMagFilters(TextureDefinition* pTexture, MyRE::MinFilters min, MyRE::MagFilters mag) = 0;
+    virtual void SetTextureWrapModes(TextureDefinition* pTexture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT) = 0;
     virtual void BindFramebuffer(GLuint framebuffer) = 0;
 };
 

@@ -13,6 +13,7 @@
 #include "Renderer_OpenGL.h"
 #include "Buffer_OpenGL.h"
 #include "Shader_OpenGL.h"
+#include "Texture_OpenGL.h"
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -419,6 +420,11 @@ Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType)
     return MyNew Shader_OpenGL( passType );
 }
 
+TextureDefinition* Renderer_OpenGL::CreateTexture()
+{
+    return MyNew Texture_OpenGL();
+}
+
 void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil)
 {
     GLbitfield flags = 0;
@@ -492,7 +498,7 @@ bool ShouldDraw(bool hideFromDrawList)
     return draw;
 }
 
-void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei count, bool hideFromDrawList)
+void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, uint32 first, uint32 count, bool hideFromDrawList)
 {
     MyAssert( mode < MyRE::PrimitiveType_Undefined );
 
@@ -511,7 +517,7 @@ void Renderer_OpenGL::DrawArrays(MyRE::PrimitiveTypes mode, GLint first, GLsizei
     checkGlError( "glDrawArrays" );
 }
 
-void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, GLsizei count, MyRE::IndexTypes IBOType, const GLvoid* indices, bool hideFromDrawList)
+void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, uint32 count, MyRE::IndexTypes IBOType, const void* indices, bool hideFromDrawList)
 {
     MyAssert( mode < MyRE::PrimitiveType_Undefined );
 
@@ -625,14 +631,16 @@ void Renderer_OpenGL::SetPolygonOffset(bool enabled, float factor, float units)
 //====================================================================================================
 // Textures/FBOs.
 //====================================================================================================
-void Renderer_OpenGL::SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters min, MyRE::MagFilters mag)
+void Renderer_OpenGL::SetTextureMinMagFilters(TextureDefinition* pTexture, MyRE::MinFilters min, MyRE::MagFilters mag)
 {
-    MyAssert( texture != 0 );
+    MyAssert( pTexture != nullptr );
     MyAssert( min < MyRE::MinFilter_NumTypes );
     MyAssert( mag < MyRE::MagFilter_NumTypes );
 
+    Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
     // Note: This does not preserve the current texture bindings.
-    glBindTexture( GL_TEXTURE_2D, texture );
+    glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, MinFilterConversionTable[min] );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, MagFilterConversionTable[mag] );
     glBindTexture( GL_TEXTURE_2D, 0 );
@@ -640,14 +648,16 @@ void Renderer_OpenGL::SetTextureMinMagFilters(GLuint texture, MyRE::MinFilters m
     checkGlError( "SetTextureMinMagFilters" );
 }
 
-void Renderer_OpenGL::SetTextureWrapModes(GLuint texture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT)
+void Renderer_OpenGL::SetTextureWrapModes(TextureDefinition* pTexture, MyRE::WrapModes wrapModeS, MyRE::WrapModes wrapModeT)
 {
-    MyAssert( texture != 0 );
+    MyAssert( pTexture != nullptr );
     MyAssert( wrapModeS < MyRE::WrapMode_NumTypes );
     MyAssert( wrapModeT < MyRE::WrapMode_NumTypes );
 
+    Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
+
     // Note: This does not preserve the current texture bindings.
-    glBindTexture( GL_TEXTURE_2D, texture );
+    glBindTexture( GL_TEXTURE_2D, pGLTexture->GetTextureID() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, WrapModeConversionTable[wrapModeS] );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, WrapModeConversionTable[wrapModeT] );
     glBindTexture( GL_TEXTURE_2D, 0 );

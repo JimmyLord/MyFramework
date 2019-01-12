@@ -28,7 +28,6 @@ protected:
 
     char m_Filename[MAX_PATH];
     MyFileObject* m_pFile;
-    GLuint m_TextureID;
 
     uint32 m_MemoryUsed;
 
@@ -41,6 +40,9 @@ protected:
     MyRE::WrapModes m_WrapS;
     MyRE::WrapModes m_WrapT;
 
+    virtual void GenerateTexture(unsigned char* pImageBuffer, uint32 width, uint32 height) = 0;
+    virtual void GenerateErrorTexture() = 0;
+
 public:
     TextureDefinition(bool freeOnceLoaded = false);
     virtual ~TextureDefinition();
@@ -49,11 +51,10 @@ public:
     void Lua_Release() { Release(); }
 
     // Getters.
-    bool IsFullyLoaded() { return m_FullyLoaded; }
+    virtual bool IsFullyLoaded() { return m_FullyLoaded; }
 
     const char* GetFilename() { return (const char*)m_Filename; }
     MyFileObject* GetFile() { return m_pFile; }
-    GLuint GetTextureID() { return m_TextureID; }
 
     unsigned int GetMemoryUsed() { return m_MemoryUsed; }
 
@@ -63,7 +64,7 @@ public:
     // Methods.
     bool QueryFreeWhenCreated() { return m_FreeFileFromRamWhenTextureCreated; }
     
-    void Invalidate(bool cleanGLAllocs);
+    virtual void Invalidate(bool cleanGLAllocs) = 0;
 
     void FinishLoadingFileAndGenerateTexture();
 
