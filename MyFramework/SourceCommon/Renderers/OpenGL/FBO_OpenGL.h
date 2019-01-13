@@ -7,28 +7,30 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __Texture_OpenGL_H__
-#define __Texture_OpenGL_H__
+#ifndef __FBO_OpenGL_H__
+#define __FBO_OpenGL_H__
 
-class Texture_OpenGL : public TextureDefinition
+class FBO_OpenGL : public FBODefinition
 {
-    friend class FBO_OpenGL;
+    friend class FBODefinition;
 
 protected:
-    GLuint m_TextureID;
+    GLuint m_FrameBufferID;
 
 public:
-    Texture_OpenGL();
-    virtual ~Texture_OpenGL();
+    FBO_OpenGL();
+    virtual ~FBO_OpenGL();
 
     // Getters.
     virtual bool IsFullyLoaded() override;
-    GLuint GetTextureID();
+    GLuint GetFrameBufferID();
 
     // Actions.
-    virtual void GenerateTexture(unsigned char* pImageBuffer, uint32 width, uint32 height) override;
-    virtual void GenerateErrorTexture() override;
+    virtual bool GenerateFrameBuffer() override;
     virtual void Invalidate(bool cleanGLAllocs) override;
+
+    virtual void Bind(bool storeFramebufferID) override;
+    virtual void Unbind(bool restoreLastFramebufferID) override;
 };
 
-#endif //__Texture_OpenGL_H__
+#endif //__FBO_OpenGL_H__

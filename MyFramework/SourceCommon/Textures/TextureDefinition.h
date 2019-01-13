@@ -18,6 +18,7 @@ class TextureDefinition : public TCPPListNode<TextureDefinition*>, public RefCou
 {
     friend class TextureManager;
     friend class FBODefinition;
+    friend class FBO_OpenGL;
 
 protected:
     bool m_FreeFileFromRamWhenTextureCreated;

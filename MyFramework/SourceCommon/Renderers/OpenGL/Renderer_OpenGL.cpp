@@ -12,6 +12,7 @@
 #include "../BaseClasses/Renderer_Base.h"
 #include "Renderer_OpenGL.h"
 #include "Buffer_OpenGL.h"
+#include "FBO_OpenGL.h"
 #include "Shader_OpenGL.h"
 #include "Texture_OpenGL.h"
 
@@ -423,6 +424,11 @@ Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType)
 TextureDefinition* Renderer_OpenGL::CreateTexture()
 {
     return MyNew Texture_OpenGL();
+}
+
+FBODefinition* Renderer_OpenGL::CreateFBO()
+{
+    return MyNew FBO_OpenGL();
 }
 
 void Renderer_OpenGL::ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil)

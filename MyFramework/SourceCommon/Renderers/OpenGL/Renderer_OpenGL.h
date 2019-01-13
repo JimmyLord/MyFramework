@@ -68,6 +68,7 @@ public:
     // Actions.
     virtual Shader_Base* CreateShader(ShaderPassTypes passType) override;
     virtual TextureDefinition* CreateTexture() override;
+    virtual FBODefinition* CreateFBO() override;
 
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) override;
     virtual void ClearScissorRegion() override;

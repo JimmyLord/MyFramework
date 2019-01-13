@@ -1574,6 +1574,7 @@
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.cpp" />
     <ClCompile Include="SourceCommon\Renderers\BaseClasses\Shader_Base.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.cpp" />
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\GLHelpers.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\Renderers\Old\DXWrapper.cpp">
@@ -2788,6 +2789,7 @@
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Renderer_Enums.h" />
     <ClInclude Include="SourceCommon\Renderers\BaseClasses\Shader_Base.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Buffer_OpenGL.h" />
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\GLHelpers.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Shader_OpenGL.h" />
     <ClInclude Include="SourceCommon\Renderers\Old\DXWrapper.h">

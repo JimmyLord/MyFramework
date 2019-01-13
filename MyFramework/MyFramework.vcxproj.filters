@@ -555,6 +555,9 @@
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.cpp">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.cpp">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\CommonHeader.h">
@@ -1032,6 +1035,9 @@
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.h">
+      <Filter>Source\Renderers\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.h">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>

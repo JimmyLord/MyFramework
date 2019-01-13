@@ -87,7 +87,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, MyRE::MinFilters
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
-    FBODefinition* pFBO = MyNew FBODefinition();
+    FBODefinition* pFBO = g_pRenderer->CreateFBO();
     bool newtexneeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormat, depthBits, depthReadable );
     pFBO->m_OnlyFreeOnShutdown = onlyFreeOnShutdown;
 
@@ -103,7 +103,7 @@ FBODefinition* TextureManager::CreateFBO(int width, int height, MyRE::MinFilters
 {
     //LOGInfo( LOGTag, "CreateFBO - %dx%d\n", width, height );
 
-    FBODefinition* pFBO = MyNew FBODefinition();
+    FBODefinition* pFBO = g_pRenderer->CreateFBO();
     bool newTexNeeded = pFBO->Setup( width, height, minFilter, magFilter, colorFormats, numColorFormats, depthBits, depthReadable );
     pFBO->m_OnlyFreeOnShutdown = onlyFreeOnShutdown;
 

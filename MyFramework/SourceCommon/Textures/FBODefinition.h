@@ -14,6 +14,7 @@ class FBODefinition : public TCPPListNode<FBODefinition*>, public RefCount
 {
     friend class TextureManager;
 
+protected:
     static const int MAX_COLOR_TEXTURES = 4;
 
 public:
@@ -37,7 +38,6 @@ protected:
     unsigned int m_NumColorTextures;
     TextureDefinition* m_pColorTextures[MAX_COLOR_TEXTURES];
     TextureDefinition* m_pDepthTexture;
-    GLuint m_FrameBufferID;
 
     unsigned int m_Width; // size requested, mainly used by glViewport call.
     unsigned int m_Height;
@@ -64,19 +64,18 @@ protected: // Limiting access of setup, creation and destruction to TextureManag
 
     bool Create();
 
-    void Invalidate(bool cleanGLAllocs);
+    virtual bool GenerateFrameBuffer() = 0;
+    virtual void Invalidate(bool cleanGLAllocs) = 0;
 
 public:
     bool IsFullyLoaded() { return m_FullyLoaded; }
 
-    void Bind(bool storeFramebufferID);
-    void Unbind(bool restoreLastFramebufferID);
+    virtual void Bind(bool storeFramebufferID) = 0;
+    virtual void Unbind(bool restoreLastFramebufferID) = 0;
 
     // Getters
     TextureDefinition* GetColorTexture(int index) { return m_pColorTextures[index]; }
     TextureDefinition* GetDepthTexture() { return m_pDepthTexture; }
-
-    GLuint GetFrameBufferID() { return m_FrameBufferID; }
 
     unsigned int GetWidth() { return m_Width; }
     unsigned int GetHeight() { return m_Height; }

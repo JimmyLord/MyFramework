@@ -96,6 +96,7 @@ public:
     // Actions.
     virtual Shader_Base* CreateShader(ShaderPassTypes passType) = 0;
     virtual TextureDefinition* CreateTexture() = 0;
+    virtual FBODefinition* CreateFBO() = 0;
 
     virtual void ClearBuffers(bool clearColor, bool clearDepth, bool clearStencil) = 0;
     virtual void ClearScissorRegion() = 0;
