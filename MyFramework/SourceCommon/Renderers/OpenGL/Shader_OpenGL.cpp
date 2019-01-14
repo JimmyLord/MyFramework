@@ -915,8 +915,6 @@ void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, Color
 #else
     checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
 
-    checkGlError( "Shader_OpenGL::ProgramBaseUniforms" );
-
     if( m_uHandle_TextureColor != -1 )
     {
         // If the shader wants a texture and we didn't pass one in, use a default texture.

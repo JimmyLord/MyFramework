@@ -41,11 +41,10 @@ GLuint Texture_OpenGL::GetTextureID()
 
 void Texture_OpenGL::GenerateTexture(unsigned char* pImageBuffer, uint32 width, uint32 height)
 {
-    GLuint textureHandle = 0;
-    glGenTextures( 1, &textureHandle );
-    MyAssert( textureHandle != 0 );
+    glGenTextures( 1, &m_TextureID );
+    MyAssert( m_TextureID != 0 );
     glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, textureHandle );
+    glBindTexture( GL_TEXTURE_2D, m_TextureID );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pImageBuffer );
     checkGlError( "glTexImage2D" );
@@ -55,8 +54,6 @@ void Texture_OpenGL::GenerateTexture(unsigned char* pImageBuffer, uint32 width, 
 
     m_Width = width;
     m_Height = height;
-
-    m_TextureID = textureHandle;
 }
 
 void Texture_OpenGL::GenerateErrorTexture()

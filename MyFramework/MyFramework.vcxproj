@@ -1497,6 +1497,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|PNaCl'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EditorRelease|PNaCl'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Core\GameCore.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\ColorStructs.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\MyMatrix.cpp" />
     <ClCompile Include="SourceCommon\DataTypes\MyQuaternion.cpp" />
@@ -1508,7 +1509,6 @@
     <ClCompile Include="SourceCommon\Events\MyEvent.cpp" />
     <ClCompile Include="SourceCommon\Fonts\BMFont.cpp" />
     <ClCompile Include="SourceCommon\Fonts\FontManager.cpp" />
-    <ClCompile Include="SourceCommon\GameCore.cpp" />
     <ClCompile Include="SourceCommon\Helpers\ExternalTools.cpp" />
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp" />
     <ClCompile Include="SourceCommon\Helpers\FileManager.cpp" />
@@ -2707,6 +2707,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SourceCommon\Core\GameCore.h" />
+    <ClInclude Include="SourceCommon\MyFramework.h" />
     <ClInclude Include="SourceCommon\CommonHeader.h" />
     <ClInclude Include="SourceCommon\DataTypes\ColorStructs.h" />
     <ClInclude Include="SourceCommon\DataTypes\CPPList.h" />
@@ -2723,7 +2725,6 @@
     <ClInclude Include="SourceCommon\Events\MyEvent.h" />
     <ClInclude Include="SourceCommon\Fonts\BMFont.h" />
     <ClInclude Include="SourceCommon\Fonts\FontManager.h" />
-    <ClInclude Include="SourceCommon\GameCore.h" />
     <ClInclude Include="SourceCommon\GL\glext.h" />
     <ClInclude Include="SourceCommon\Helpers\ExternalTools.h" />
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h" />

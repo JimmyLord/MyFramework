@@ -136,13 +136,13 @@
     <Filter Include="Source\Renderers\BaseClasses">
       <UniqueIdentifier>{cf4abc3f-7e52-4bd0-8784-22bf8da2cf3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{79792542-a24b-40ac-9d98-2df9e3bfbf90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceCommon\Helpers\MessageLog.cpp">
       <Filter>Source\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\GameCore.cpp">
-      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="SourceCommon\Helpers\MyMemory.cpp">
       <Filter>Source\Helpers</Filter>
@@ -170,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Meshes\MyMesh.cpp">
       <Filter>Source\Meshes</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\CommonHeader.cpp">
-      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="SourceAndroid\SavedData.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
@@ -558,19 +555,19 @@
     <ClCompile Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.cpp">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\CommonHeader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\Core\GameCore.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SourceCommon\CommonHeader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h">
       <Filter>Source\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h">
       <Filter>Source\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\GameCore.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\Helpers\MyMemory.h">
       <Filter>Source\Helpers</Filter>
@@ -1039,6 +1036,15 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.h">
       <Filter>Source\Renderers\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\CommonHeader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Core\GameCore.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\MyFramework.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

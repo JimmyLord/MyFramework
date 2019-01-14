@@ -7,34 +7,18 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __CommonHeader_H__
-#define __CommonHeader_H__
-
-//#ifdef __WXMSW__
-//    #include <wx/msw/msvcrt.h>      // redefines the new() operator
-//#endif
-
-//#if MYFW_WINDOWS && _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <malloc.h>
-//#include <stdlib.h>
-//#include <crtdbg.h>
-//#ifndef DBG_NEW
-//    #ifdef new
-//        #undef new
-//    #endif
-//    #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-//    #define new DBG_NEW
-//#endif
-//#endif //MYFW_WINDOWS && _DEBUG
-
-//#include "../../../MyLocalInclude.h"
+#ifndef __MyFrameworkPCH_H__
+#define __MyFrameworkPCH_H__
 
 #define USE_OPENGL 1
 #define USE_PTHREAD 1
 #if MYFW_WINDOWS
 #define USE_GEOMETRY_SHADER 1
 #endif
+
+//============================================================================================================
+// Enable/Disable specific Windows warnings.
+//============================================================================================================
 
 #if MYFW_WINDOWS
 #pragma warning( 3 : 4061 ) // enumerator in switch statement is not explicitly handled by a case label
@@ -118,26 +102,8 @@
 //#pragma warning( disable : 4996 ) // deprecated function
 #endif
 
-#if MYFW_WP8
-//#include <wrl/client.h>
-//#include <d3d11_1.h>
-//#include <DirectXMath.h>
-//#include <memory>
-//#include <agile.h>
-#include <WinSock2.h>
-#undef WIN32
-#undef USE_OPENGL
-#define USE_D3D 1
-#include "GraphicsWrappers/Old/DXWrapper.h"
-#undef WIN32
-#endif
-
-#if !MYFW_WINDOWS
-#define MAX_PATH PATH_MAX
-#endif
-
 //============================================================================================================
-// Basic data types
+// Basic data types.
 //============================================================================================================
 
 #include <stdio.h>
@@ -156,42 +122,6 @@
 #include <map>
 #include <list>
 #endif
-
-#include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
-
-#include "DataTypes/MyTypes.h"
-
-#include "Memory/MyStackAllocator.h"
-
-#include "Helpers/MyAssert.h"
-
-#include "../../Libraries/cJSON/cJSON.h"
-#include "JSON/cJSONHelpers.h"
-
-#include "DataTypes/CPPList.h"
-#include "DataTypes/TCPPList.h"
-#include "Helpers/TypeInfo.h"
-#include "Helpers/RefCount.h"
-#include "Helpers/MyMemory.h"
-#include "Helpers/Utility.h"
-#include "DataTypes/Vector.h"
-#include "DataTypes/MyQuaternion.h"
-#include "DataTypes/MyMatrix.h"
-#include "DataTypes/Plane.h"
-#include "DataTypes/ColorStructs.h"
-#include "DataTypes/MyList.h"
-#include "DataTypes/MyAABounds.h"
-
-#include "Helpers/MessageLog.h"
-#include "DataTypes/MyActivePool.h"
-
-#include "../../Libraries/Box2D/Box2D/Box2D.h"
-#include "Physics/Box2DContactListener.h"
-#include "Physics/Box2DWorld.h"
-
-#include "Events/EventTypeManager.h"
-#include "Events/MyEvent.h"
-#include "Events/EventManager.h"
 
 #if MYFW_WINDOWS
 #if _MSC_VER >= 1910 // VS2017+
@@ -223,8 +153,12 @@ typedef unsigned char byte;
 #define snprintf_s _snprintf_s
 #endif
 
+#if !MYFW_WINDOWS
+#define MAX_PATH PATH_MAX
+#endif
+
 //============================================================================================================
-// Base networking includes
+// Base networking includes.
 //============================================================================================================
 
 #if !MYFW_WINDOWS && !MYFW_WP8 && !MYFW_NACL
@@ -253,14 +187,12 @@ typedef int socklen_t;
 #endif
 
 //============================================================================================================
-// Platform specific includes
+// Platform specific includes.
 //============================================================================================================
 
 #if MYFW_EDITOR
-#include "../SourceEditor/EditorViewTypes.h"
 #if MYFW_WINDOWS && MYFW_USING_IMGUI
 #include <direct.h>
-#include "../SourceWindows/MYFWWinMain.h"
 #endif // MYFW_WINDOWS && MYFW_USING_IMGUI
 #endif // MYFW_EDITOR
 
@@ -280,11 +212,6 @@ typedef int socklen_t;
 #include "ppapi/cpp/graphics_3d.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/size.h"
-#include "../SourceNaCL/GLExtensions.h"
-#include "../SourceNaCL/NaCLFileObject.h"
-#include "../SourceNaCL/SoundPlayer.h"
-#include "../SourceNaCL/SavedData.h"
-#include "../SourceNaCL/NaCLWebRequest.h"
 #endif
 
 #if MYFW_BLACKBERRY
@@ -296,7 +223,6 @@ typedef int socklen_t;
 #define USE_SCORELOOP 0
 #include <bps/bps.h>
 #include <bps/paymentservice.h>
-#include "../SourceBlackBerry/IAPManager.h"
 #endif //MYFW_BLACKBERRY10
 #include <pthread.h>
 #include <screen/screen.h>
@@ -309,13 +235,6 @@ typedef int socklen_t;
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include "../SourceBlackBerry/GLExtensions.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceBlackBerry/SavedData.h"
-#include "Networking/WebRequest.h"
-#include "../SourceBlackBerry/MediaPlayer.h"
-#include "Networking/GameService_ScoreLoop.h"
-#include "../SourceBlackBerry/BBM.h"
 #endif
 
 #if MYFW_BADA
@@ -327,10 +246,6 @@ typedef int socklen_t;
 #include <FSysSystemTime.h>
 #include <FGraphicsOpengl2.h>
 using namespace Osp::Graphics::Opengl;
-#include "../SourceBada/TextureLoader.h"
-#include "../SourceBada/SoundPlayer.h"
-#include "../SourceBada/SavedData.h"
-#include "../SourceBada/WebRequest.h"
 #endif
 
 #if MYFW_ANDROID
@@ -345,17 +260,6 @@ using namespace Osp::Graphics::Opengl;
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <EGL/egl.h>
-#include "../SourceAndroid/GLExtensions.h"
-#include "../SourceAndroid/IAPManagerAndroid.h"
-#include "../SourceAndroid/AndroidFileLoader.h"
-#if 0
-#include "../SourceAndroid/SoundPlayer.h"
-#else
-#include "../SourceAndroid/SoundPlayerOpenSL.h"
-#endif
-#include "../SourceAndroid/JavaInterfaceCPP.h"
-#include "../SourceAndroid/SavedData.h"
-#include "Networking/WebRequest.h"
 #endif
 
 #if MYFW_EMSCRIPTEN
@@ -370,10 +274,6 @@ typedef unsigned long   u_long;
 #include <sys/time.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include "../SourceAndroid/GLExtensions.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceEmscripten/SavedData.h"
-#include "../SourceEmscripten/WebRequest.h"
 #endif
 
 #if MYFW_IOS
@@ -393,12 +293,6 @@ typedef unsigned long   u_long;
 #include <OpenGLES/ES3/glext.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include "../SourceIOS/IAPManagerIOS.h"
-#include "../SourceIOS/IOSFileLoader.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceIOS/SavedData.h"
-#include "Networking/WebRequest.h"
-#include "../SourceIOS/GameCenter.h"
 #endif
 
 #if MYFW_OSX
@@ -419,27 +313,22 @@ typedef unsigned long   u_long;
 #include <OpenGL/gl.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
-#include "../SourceIOS/IOSFileLoader.h"
-//#include "../SourceWindows/TextureLoader.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceIOS/SavedData.h"
-//#include "../SourceWindows/SavedData.h"
-#include "Networking/WebRequest.h"
-//#include "../SourceIOS/GameCenter.h"
 #endif
 
 #if MYFW_WP8
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 0
-#include "../SourceWP8/TextureLoader.h"
-//#include "../SourceWP8/MySaveFileObject_LocalStorage.h"
-#if USE_OPENAL
-    #include "Sound/SoundPlayerOpenAL.h"
-#else
-    #include "../SourceWP8/SoundPlayer.h"
-#endif
-#include "../SourceWP8/SavedData.h"
-#include "Networking/WebRequest.h"
+//#include <wrl/client.h>
+//#include <d3d11_1.h>
+//#include <DirectXMath.h>
+//#include <memory>
+//#include <agile.h>
+#include <WinSock2.h>
+#undef WIN32
+#undef USE_OPENGL
+#define USE_D3D 1
+#include "GraphicsWrappers/Old/DXWrapper.h"
+#undef WIN32
 #endif
 
 #if MYFW_WINDOWS
@@ -449,131 +338,32 @@ typedef unsigned long   u_long;
 #pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
 #include <xaudio2.h>
 #pragma warning( pop )
-#if USE_OPENAL
-    #include "Sound/SoundPlayerOpenAL.h"
-#else
-    //#include "../SourceWindows/SoundPlayerSDL.h"
-    #include "../SourceWindows/SoundPlayerXAudio.h"
-#endif
-#include "../SourceWindows/SavedData.h"
-//#include "../SourceWindows/winpthreads/winpthreads.h"
-#if WINVER >= 0x0602
-#define _TIMESPEC_DEFINED
-#endif
 #include "../../Libraries/pthreads-w32/include/pthread.h"
-#include "Networking/WebRequest.h"
 #endif
 
 #if MYFW_LINUX
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include "../SourceLinux/GLExtensions.h"
 #define USE_OPENAL 1
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceLinux/SavedData.h"
-#include "Networking/WebRequest.h"
-#include <pthread.h>
 #endif
 
 //============================================================================================================
-// Common framework includes
+// Library includes.
 //============================================================================================================
 
-#if MYFW_WINDOWS
-#define MYFW_USEINSTANCEDPARTICLES  1
-#else
-#define MYFW_USEINSTANCEDPARTICLES  0
-#endif
-
-#include "Renderers/Old/OpenGLWrapper.h"
-#include "Renderers/BaseClasses/Renderer_Enums.h"
-
-#define PI 3.1415926535897932384626433832795f
-
-#define Justify_Top         0x01
-#define Justify_Bottom      0x02
-#define Justify_CenterY     0x04
-#define Justify_Left        0x08
-#define Justify_Right       0x10
-#define Justify_CenterX     0x20
-#define Justify_Center      (Justify_CenterX|Justify_CenterY)
-#define Justify_TopLeft     (Justify_Left|Justify_Top)
-#define Justify_TopRight    (Justify_Right|Justify_Top)
-#define Justify_BottomLeft  (Justify_Left|Justify_Bottom)
-#define Justify_BottomRight (Justify_Right|Justify_Bottom)
-#define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
-#define Justify_CenterRight (Justify_Right|Justify_CenterY)
-
-#include "Multithreading/MyThread.h"
-#include "Multithreading/MyJobManager.h"
-
-#include "Helpers/MyFileObject.h"
-#include "Shaders/MyFileObjectShader.h"
-#include "Helpers/FileManager.h"
-#include "Helpers/MyTime.h"
-#include "Helpers/ExternalTools.h"
-
+#include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
+#include "../../Libraries/cJSON/cJSON.h"
+#include "../../Libraries/Box2D/Box2D/Box2D.h"
 #include "../../Libraries/mtrand/mtrand.h"
 
-#include "Helpers/MyTweener.h"
-
-#include "Shaders/VertexFormats.h"
-#include "Shaders/VertexFormatManager.h"
-#include "Shaders/ShaderGroup.h"
-#include "Shaders/ShaderManager.h"
-#include "Shaders/ListOfShaders.h"
-
-#include "Meshes/MeshManager.h"
-#include "Meshes/OBJLoader.h"
-#include "Meshes/MyAnimation.h"
-#include "Meshes/MyMesh.h"
-#include "Meshes/MySubmesh.h"
-#include "Meshes/BufferManager.h"
-#include "Meshes/MyLight.h"
-#include "Meshes/LightManager.h"
-
-#include "Sprites/MySprite.h"
-#include "Sprites/MySprite_XYZVertexColor.h"
-//#include "Sprites/MySprite9.h"
-#include "Sprites/SpriteBatch.h"
-#include "Sprites/SpriteBatch_XYZVertexColor.h"
-#include "Sprites/AnimatedSprite.h"
-#include "Sprites/AnimationKeys.h"
-#include "Sprites/SpriteSheet.h"
-#include "Sprites/SpriteSheet_XYZVertexColor.h"
-
-#include "SceneGraphs/SceneGraph_Base.h"
-
-#include "Fonts/BMFont.h"
-#include "Fonts/FontManager.h"
-
-#include "Textures/FBODefinition.h"
-#include "Textures/TextureDefinition.h"
-#include "Textures/TextureManager.h"
-#include "Textures/MaterialDefinition.h"
-#include "Textures/MaterialManager.h"
-
-#include "Sprites/My2DAnimInfo.h" // requires MaterialDefinition
-
-#include "Networking/StunClient.h"
-#include "Networking/GameServiceManager.h"
-
-#include "Particles/ParticleRenderer.h"
-#include "Particles/ParticleRendererInstanced.h"
-
-#include "Sound/SoundManager.h"
-
-#include "GameCore.h"
-
-#if MYFW_USING_WX
-#include "../SourceWidgets/MYFWMainWx.h"
-#include "../SourceWidgets/PanelObjectList.h"
-#include "../SourceWidgets/PanelMemory.h"
-#include "../SourceWidgets/PanelWatch.h"
+#if MYFW_WINDOWS
+#include "../../Libraries/pthreads-w32/include/pthread.h"
 #endif
 
-#if MYFW_EDITOR
-#include "../SourceEditor/DragAndDropHackery.h"
-#endif
+//============================================================================================================
+// TODO: Remove this include.
+//============================================================================================================
 
-#endif //__CommonHeader_H__
+#include "MyFramework.h"
+
+#endif //__MyFrameworkPCH_H__

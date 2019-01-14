@@ -17,7 +17,7 @@
 #include "OpenGLContext.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/mouse_lock.h"
-#include "../SourceCommon/GameCore.h"
+#include "../SourceCommon/Core/GameCore.h"
 
 class GameCore;
 class MainInstance;

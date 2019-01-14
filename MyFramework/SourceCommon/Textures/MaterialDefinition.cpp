@@ -708,7 +708,7 @@ bool MaterialDefinition::IsTransparent(BaseShader* pShader)
     if( m_BlendType == MyRE::MaterialBlendType_On )
         return true;
 
-    // check the shader
+    // Check the shader.
     if( m_BlendType == MyRE::MaterialBlendType_UseShaderValue )
     {
         return pShader->m_BlendType == MyRE::MaterialBlendType_On ? true : false;

@@ -8,7 +8,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "../SourceCommon/CommonHeader.h"
-#include "../SourceCommon/GameCore.h"
+#include "../SourceCommon/Core/GameCore.h"
 
 #include "MainInstance.h"
 

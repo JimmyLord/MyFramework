@@ -10,7 +10,7 @@
 #include "CommonHeader.h"
 
 #include "IAPManagerIOS.h"
-#include "GameCore.h"
+#include "Core/GameCore.h"
 
 #import <StoreKit/StoreKit.h>
 
