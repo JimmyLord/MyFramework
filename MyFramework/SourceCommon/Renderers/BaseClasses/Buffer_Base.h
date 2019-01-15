@@ -10,6 +10,9 @@
 #ifndef __Buffer_Base_H__
 #define __Buffer_Base_H__
 
+#include "Renderer_Enums.h"
+#include "../../Shaders/VertexFormats.h"
+
 class Buffer_Base
 {
 protected:

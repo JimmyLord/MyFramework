@@ -7,10 +7,14 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
+#include "MySprite9.h"
+#include "../DataTypes/ColorStructs.h"
+#include "../Meshes/BufferManager.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 #include "../Renderers/BaseClasses/Shader_Base.h"
-#include "MySprite9.h"
+#include "../Textures/MaterialDefinition.h"
 
 MySprite9::MySprite9()
 {

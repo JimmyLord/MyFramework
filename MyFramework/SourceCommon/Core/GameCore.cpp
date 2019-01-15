@@ -7,13 +7,33 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 #include "GameCore.h"
+#include "../DataTypes/MyTypes.h"
+#include "../Events/EventManager.h"
+#include "../Events/EventTypeManager.h"
+#include "../Fonts/FontManager.h"
+#include "../Helpers/ExternalTools.h"
+#include "../Helpers/FileManager.h"
+#include "../Helpers/MyTime.h"
+#include "../Meshes/BufferManager.h"
+#include "../Meshes/LightManager.h"
+#include "../Meshes/MeshManager.h"
+#include "../Multithreading/MyJobManager.h"
+#include "../Networking/GameServiceManager.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Renderers/Old/OpenGLWrapper.h" // TODO: Fix this dependency.
+#include "../Renderers/OpenGL/Renderer_OpenGL.h"
+#include "../Shaders/ShaderManager.h"
+#include "../Shaders/VertexFormatManager.h"
+#include "../Sound/SoundManager.h"
 #include "../SourceCommon/Input/GamepadManager.h"
 #include "../SourceWindows/GamepadManagerXInput.h"
-#include "Renderers/BaseClasses/Renderer_Base.h"
-#include "Renderers/OpenGL/Renderer_OpenGL.h"
+#include "../Textures/MaterialManager.h"
+#include "../Textures/TextureManager.h"
+
+#include "../../SourceWindows/SoundPlayerXAudio.h" // TODO: Fix this dependency.
 
 #if MYFW_EDITOR
 #include "../SourceEditor/CommandStack.h"
@@ -173,7 +193,7 @@ void GameCore::OneTimeInit()
     double time = MyTime_GetSystemTime(true);
     unsigned int seed = (unsigned int)time;
 #else
-    double time = MyTime_GetSystemTime(true) * 10000000;
+    double time = MyTime_GetSystemTime( true ) * 10000000;
     unsigned int seed = (unsigned int)fmod(time,100000);
 #endif
     LOGInfo( LOGTag, "Seeding random: %d\n", seed );

@@ -10,8 +10,11 @@
 #ifndef __ShaderManager_H__
 #define __ShaderManager_H__
 
-class ShaderManager;
+#include "ShaderGroup.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
 class BufferDefinition;
+class ShaderManager;
 
 extern ShaderManager* g_pShaderManager;
 

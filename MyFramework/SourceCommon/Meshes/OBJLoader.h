@@ -10,6 +10,7 @@
 #ifndef __OBJLoader_H__
 #define __OBJLoader_H__
 
+class MyAABounds;
 class MySubmesh;
 
 #if _DEBUG

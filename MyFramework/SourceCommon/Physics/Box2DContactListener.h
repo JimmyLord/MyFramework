@@ -10,6 +10,8 @@
 #ifndef __Box2DContactListener_H__
 #define __Box2DContactListener_H__
 
+#include "../../../Libraries/Box2D/Box2D/Dynamics/b2WorldCallbacks.h"
+
 class Box2DContactListener : public b2ContactListener
 {
 public:

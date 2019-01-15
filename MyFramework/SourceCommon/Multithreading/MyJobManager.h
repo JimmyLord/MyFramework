@@ -10,6 +10,7 @@
 // tutorial: https://vichargrave.github.io/articles/2013-01/multithreaded-work-queue-in-cpp
 
 class MyJobManager;
+class MyThread;
 
 extern MyJobManager* g_pJobManager;
 

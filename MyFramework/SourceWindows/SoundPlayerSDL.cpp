@@ -7,7 +7,7 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 #include "../SourceWindows/SDL-1.2.15/include/SDL.h"
 #include "../SourceWindows/SDL_mixer-1.2.12/include/SDL_mixer.h"

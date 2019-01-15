@@ -10,11 +10,13 @@
 #ifndef __MySprite_XYZVertexColor_H__
 #define __MySprite_XYZVertexColor_H__
 
-class Shader_TextureVertexColor;
-class TextureDefinition;
-struct Vertex_Sprite;
+#include "../DataTypes/ColorStructs.h"
+#include "../Sprites/MySprite.h"
 
 class MySprite_XYZVertexColor;
+class Shader_TextureVertexColor;
+class TextureDefinition;
+
 typedef MySprite_XYZVertexColor* MySprite_XYZVertexColorPtr;
 
 class MySprite_XYZVertexColor : public MySprite

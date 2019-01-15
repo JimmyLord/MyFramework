@@ -10,10 +10,14 @@
 #ifndef __MySubmesh_H__
 #define __MySubmesh_H__
 
-class MaterialDefinition;
-class TextureDefinition;
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
 class BufferDefinition;
+class MaterialDefinition;
 class MyLight;
+class Shader_Base;
+class ShaderGroup;
+class TextureDefinition;
 
 class MySubmesh
 {

@@ -7,7 +7,9 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
+#include "MyQuaternion.h"
 
 // From gmtl - http://ggt.sourceforge.net/html/QuatOps_8h-source.html
 MyQuat MyQuat::Lerp(MyQuat start, MyQuat end, float perc)

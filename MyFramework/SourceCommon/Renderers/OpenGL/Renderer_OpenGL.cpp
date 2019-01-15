@@ -7,24 +7,19 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
-#include "../BaseClasses/Renderer_Enums.h"
-#include "../BaseClasses/Renderer_Base.h"
-#include "Renderer_OpenGL.h"
+#include "MyFrameworkPCH.h"
+
 #include "Buffer_OpenGL.h"
 #include "FBO_OpenGL.h"
+#include "GLHelpers.h"
+#include "Renderer_OpenGL.h"
 #include "Shader_OpenGL.h"
 #include "Texture_OpenGL.h"
-
-#include <gl/GL.h>
-#include <gl/GLU.h>
-
-#if MYFW_WINDOWS
-#include "../SourceWindows/GLExtensions.h"
-#include "../SourceWindows/WGLExtensions.h"
-#endif //MYFW_WINDOWS
-
-#include "GLHelpers.h"
+#include "../BaseClasses/Renderer_Base.h"
+#include "../BaseClasses/Renderer_Enums.h"
+#include "../Old/OpenGLWrapper.h"
+#include "../../DataTypes/ColorStructs.h"
+#include "../../Particles/ParticleRendererInstanced.h"
 
 //====================================================================================================
 // Enum Conversions.
@@ -544,6 +539,7 @@ void Renderer_OpenGL::DrawElements(MyRE::PrimitiveTypes mode, uint32 count, MyRE
 
 void Renderer_OpenGL::TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint32 numInstancesToDraw)
 {
+#if MYFW_USEINSTANCEDPARTICLES
     Shader_OpenGL* pGLShader = (Shader_OpenGL*)pShader;
 
     GLint aiposloc = glGetAttribLocation( pGLShader->m_ProgramHandle, "ai_Position" );
@@ -594,6 +590,7 @@ void Renderer_OpenGL::TempHack_SetupAndDrawInstanced(Shader_Base* pShader, uint3
         glDisableVertexAttribArray( aicolorloc );
 
     checkGlError( "after glVertexAttribDivisor() in TempHack_SetupAndDrawInstanced()" );
+#endif //MYFW_USEINSTANCEDPARTICLES
 }
 
 void Renderer_OpenGL::TempHack_UnbindVBOAndIBO()

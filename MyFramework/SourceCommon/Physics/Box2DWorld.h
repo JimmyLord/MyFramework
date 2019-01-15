@@ -10,8 +10,11 @@
 #ifndef __Box2DWorld_H__
 #define __Box2DWorld_H__
 
-class Box2DWorld;
+class b2Body;
+class b2World;
+class Box2DContactListener;
 class Box2DDebugDraw;
+class Box2DWorld;
 class MaterialDefinition;
 
 class Box2DWorld

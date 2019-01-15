@@ -10,6 +10,17 @@
 #ifndef __SceneGraph_Flat_H__
 #define __SceneGraph_Flat_H__
 
+#include "SceneGraph_Base.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
+class MaterialDefinition;
+class MyMatrix;
+class MyMesh;
+class MySubmesh;
+class SceneGraphObject;
+class ShaderGroup;
+class Vector3;
+
 class SceneGraph_Flat : public SceneGraph_Base
 {
 protected:

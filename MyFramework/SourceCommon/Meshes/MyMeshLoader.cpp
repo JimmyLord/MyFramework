@@ -7,7 +7,17 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
+#include "BufferManager.h"
+#include "MyAnimation.h"
+#include "MyMesh.h"
+#include "MySubmesh.h"
+#include "../DataTypes/MyAABounds.h"
+#include "../JSON/cJSONHelpers.h"
+#include "../Shaders/VertexFormatManager.h"
+#include "../Textures/MaterialDefinition.h"
+#include "../Textures/MaterialManager.h"
 
 void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {

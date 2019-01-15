@@ -10,6 +10,8 @@
 #ifndef __Vector_H__
 #define __Vector_H__
 
+#include "../Helpers/Utility.h"
+
 class Vector2
 {
 public:

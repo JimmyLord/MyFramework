@@ -10,9 +10,11 @@
 #ifndef __SpriteBatch_XYZVertexColor_H__
 #define __SpriteBatch_XYZVertexColor_H__
 
+#include "SpriteBatch.h"
+
 class BaseShader;
+class MySprite_XYZVertexColor;
 class TextureDefinition;
-struct Vertex_Base;
 
 class SpriteBatch_XYZVertexColor : public SpriteBatch
 {

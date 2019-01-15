@@ -10,9 +10,9 @@
 #ifndef __FileManager_H__
 #define __FileManager_H__
 
-class MySaveFileObject;
 class FileManager;
 class MyFileObject;
+class MySaveFileObject;
 class TextureDefinition;
 
 extern FileManager* g_pFileManager;

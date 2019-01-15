@@ -10,9 +10,12 @@
 #ifndef __TextureDefinition_H__
 #define __TextureDefinition_H__
 
-class TextureManager;
-class RefCount;
+#include "Renderers/BaseClasses/Renderer_Enums.h"
+
 class FBODefinition;
+class MyFileObject;
+class RefCount;
+class TextureManager;
 
 class TextureDefinition : public TCPPListNode<TextureDefinition*>, public RefCount
 {

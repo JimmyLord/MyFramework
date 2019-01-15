@@ -7,10 +7,16 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
+#include "MySprite.h"
 #include "SpriteSheet.h"
 #include "../Helpers/FileManager.h"
+#include "../JSON/cJSONHelpers.h"
+#include "../Textures/MaterialDefinition.h"
+#include "../Textures/MaterialManager.h"
+#include "../Textures/TextureDefinition.h"
+#include "../Textures/TextureManager.h"
 
 SpriteSheet::SpriteSheet()
 {
@@ -19,7 +25,7 @@ SpriteSheet::SpriteSheet()
     m_pSpriteNames = 0;
     m_pSpriteUVs = 0;
 
-    m_pSprites = 0;
+    m_ppSpriteArray = 0;
     m_pMaterialList = 0;
 
     m_NumSprites = 0;
@@ -45,9 +51,9 @@ SpriteSheet::~SpriteSheet()
 
     for( uint32 i=0; i<m_NumSprites; i++ )
     {
-        if( m_pSprites && m_pSprites[i] )
+        if( m_ppSpriteArray && m_ppSpriteArray[i] )
         {
-            m_pSprites[i]->Release();
+            m_ppSpriteArray[i]->Release();
         }
 
         if( m_pMaterialList && m_pMaterialList[i] )
@@ -56,7 +62,7 @@ SpriteSheet::~SpriteSheet()
         }
     }
 
-    SAFE_DELETE_ARRAY( m_pSprites );
+    SAFE_DELETE_ARRAY( m_ppSpriteArray );
     SAFE_DELETE_ARRAY( m_pMaterialList );
     SAFE_RELEASE( m_pJSONFile );
     SAFE_RELEASE( m_pMaterial );
@@ -65,7 +71,7 @@ SpriteSheet::~SpriteSheet()
 void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
     MyAssert( m_pMaterial == 0 );
-    MyAssert( m_pSprites == 0 );
+    MyAssert( m_ppSpriteArray == 0 );
     MyAssert( m_pMaterialList == 0 );
 
     MyFileObject* pFile = RequestFile( fullpath );
@@ -76,7 +82,7 @@ void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFi
 void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
     MyAssert( m_pMaterial == 0 );
-    MyAssert( m_pSprites == 0 );
+    MyAssert( m_ppSpriteArray == 0 );
     MyAssert( m_pMaterialList == 0 );
 
     LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->GetFullPath() );
@@ -245,9 +251,9 @@ void SpriteSheet::FinishLoadingFile()
 
                             if( m_CreateSprites )
                             {
-                                MyAssert( m_pSprites[i] );
+                                MyAssert( m_ppSpriteArray[i] );
 
-                                m_pSprites[i]->CreateSubsection( "SpriteSheet",
+                                m_ppSpriteArray[i]->CreateSubsection( "SpriteSheet",
                                                 (float)originalW * m_SpriteScale, (float)originalH * m_SpriteScale,
                                                 (posX-trimX+offset)/sheetW, (posX-trimX+originalW-offset)/sheetW,
                                                 (posY-trimY+offset)/sheetH, (posY-trimY+originalH-offset)/sheetH,
@@ -395,7 +401,7 @@ void SpriteSheet::FinishLoadingFile()
 
                                     if( m_CreateSprites )
                                     {
-                                        m_pSprites[i]->CreateSubsection( "SpriteSheet",
+                                        m_ppSpriteArray[i]->CreateSubsection( "SpriteSheet",
                                                         (float)w * m_SpriteScale, (float)h * m_SpriteScale,
                                                         (x+offset)/sheetw, (x+w-offset)/sheetw,
                                                         (y+offset)/sheeth, (y+h-offset)/sheeth,
@@ -435,13 +441,13 @@ void SpriteSheet::CreateSprites()
     if( m_CreateSprites == false )
         return;
 
-    MyAssert( m_pSprites == 0 );
+    MyAssert( m_ppSpriteArray == 0 );
 
-    m_pSprites = MyNew MySprite*[m_NumSprites];
+    m_ppSpriteArray = MyNew MySprite*[m_NumSprites];
     for( uint32 i=0; i<m_NumSprites; i++ )
     {
-        m_pSprites[i] = MyNew MySprite( false );
-        m_pSprites[i]->SetMaterial( m_pMaterial );
+        m_ppSpriteArray[i] = MyNew MySprite( false );
+        m_ppSpriteArray[i]->SetMaterial( m_pMaterial );
     }
 }
 
@@ -492,13 +498,13 @@ MySprite* SpriteSheet::GetSpriteByIndex(uint32 index)
 {
     MyAssert( index < m_NumSprites );
 
-    return m_pSprites[index];
+    return m_ppSpriteArray[index];
 }
 
 MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
 {
-    MyAssert( m_pSprites != 0 );
-    if( m_pSprites == 0 )
+    MyAssert( m_ppSpriteArray != 0 );
+    if( m_ppSpriteArray == 0 )
         return 0;
 
 #define MAX_MESSAGE 1024
@@ -515,7 +521,7 @@ MySprite* SpriteSheet::GetSpriteByName(const char* name, ...)
     if( index == -1 )
         return 0;
     else
-        return m_pSprites[index];
+        return m_ppSpriteArray[index];
 }
 
 void SpriteSheet::CreateNewSpritesFromOtherSheet(SpriteSheet* sourcesheet, float sx, float ex, float sy, float ey)

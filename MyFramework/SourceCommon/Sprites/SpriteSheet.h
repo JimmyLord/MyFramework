@@ -10,8 +10,12 @@
 #ifndef __SpriteSheet_H__
 #define __SpriteSheet_H__
 
-class MySprite;
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
+class MaterialDefinition;
 class MyFileObject;
+class MySprite;
+class ShaderGroup;
 class TextureDefinition;
 
 class SpriteSheet
@@ -29,7 +33,7 @@ protected:
     MyFileObject* m_pJSONFile;
     MaterialDefinition* m_pMaterial;
 
-    MySpritePtr* m_pSprites;
+    MySprite** m_ppSpriteArray;
     MaterialDefinition** m_pMaterialList;
 
     float m_SpriteScale;

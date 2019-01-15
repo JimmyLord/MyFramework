@@ -10,10 +10,12 @@
 #ifndef __TextureManager_H__
 #define __TextureManager_H__
 
+#include "FBODefinition.h"
+
+class FBODefinition;
+class RefCount;
 class TextureDefinition;
 class TextureManager;
-class RefCount;
-class FBODefinition;
 
 extern TextureManager* g_pTextureManager;
 

@@ -10,6 +10,8 @@
 #ifndef __MyAnimation_H__
 #define __MyAnimation_H__
 
+#include "../DataTypes/MyQuaternion.h"
+
 class MyChannel
 {
 public:

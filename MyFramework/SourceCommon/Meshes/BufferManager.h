@@ -10,6 +10,9 @@
 #ifndef __BufferManager_H__
 #define __BufferManager_H__
 
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "../Shaders/VertexFormats.h"
+
 class BufferManager;
 class RefCount;
 class Buffer_Base;

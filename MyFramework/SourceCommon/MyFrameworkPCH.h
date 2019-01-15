@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -115,6 +115,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <float.h>
 
 #if MYFW_EDITOR
 #include <vector>
@@ -186,32 +187,40 @@ typedef int socklen_t;
 //#include <errno.h> // for EISCONN, EINPROGRESS, EWOULDBLOCK, EALREADY, EINVAL, EISCONN, etc...
 #endif
 
-//============================================================================================================
-// Platform specific includes.
-//============================================================================================================
-
 #if MYFW_EDITOR
 #if MYFW_WINDOWS && MYFW_USING_IMGUI
 #include <direct.h>
 #endif // MYFW_WINDOWS && MYFW_USING_IMGUI
 #endif // MYFW_EDITOR
 
-#if MYFW_NACL
+//============================================================================================================
+// Platform specific includes.
+//============================================================================================================
+
+#if MYFW_ANDROID
 #define MYFW_OPENGLES2 1
-#define USE_LOADWAVESFROMFILESYSTEM 1
-#define USE_OPENAL 0
-#include <GLES2/gl2.h>
-#if !MYFW_PPAPI
-#include <sys/time.h>
-#else //MYFW_PPAPI
+#undef USE_PTHREAD
+#define USE_PTHREAD 0
+#include <jni.h>
 #include <time.h>
-#endif //MYFW_PPAPI
+#include <android/log.h>
 #include <pthread.h>
-#include "ppapi/c/ppb_opengles2.h"
-#include "ppapi/cpp/graphics_3d_client.h"
-#include "ppapi/cpp/graphics_3d.h"
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/size.h"
+//#include <GL/gl.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <EGL/egl.h>
+#include "../SourceAndroid/GLExtensions.h"
+#endif
+
+#if MYFW_BADA
+#include <FBase.h>
+#include <FSystem.h>
+#include <FGraphics.h>
+#include <FUi.h>
+#include <FApp.h>
+#include <FSysSystemTime.h>
+#include <FGraphicsOpengl2.h>
+using namespace Osp::Graphics::Opengl;
 #endif
 
 #if MYFW_BLACKBERRY
@@ -235,31 +244,7 @@ typedef int socklen_t;
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#endif
-
-#if MYFW_BADA
-#include <FBase.h>
-#include <FSystem.h>
-#include <FGraphics.h>
-#include <FUi.h>
-#include <FApp.h>
-#include <FSysSystemTime.h>
-#include <FGraphicsOpengl2.h>
-using namespace Osp::Graphics::Opengl;
-#endif
-
-#if MYFW_ANDROID
-#define MYFW_OPENGLES2 1
-#undef USE_PTHREAD
-#define USE_PTHREAD 0
-#include <jni.h>
-#include <time.h>
-#include <android/log.h>
-#include <pthread.h>
-//#include <GL/gl.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <EGL/egl.h>
+#include "../SourceBlackBerry/GLExtensions.h"
 #endif
 
 #if MYFW_EMSCRIPTEN
@@ -274,6 +259,7 @@ typedef unsigned long   u_long;
 #include <sys/time.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include "../SourceAndroid/GLExtensions.h"
 #endif
 
 #if MYFW_IOS
@@ -293,6 +279,32 @@ typedef unsigned long   u_long;
 #include <OpenGLES/ES3/glext.h>
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
+#endif
+
+#if MYFW_LINUX
+#define USE_OPENAL 1
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include "../SourceLinux/GLExtensions.h"
+#endif
+
+#if MYFW_NACL
+#define MYFW_OPENGLES2 1
+#define USE_LOADWAVESFROMFILESYSTEM 1
+#define USE_OPENAL 0
+#include <GLES2/gl2.h>
+#if !MYFW_PPAPI
+#include <sys/time.h>
+#else //MYFW_PPAPI
+#include <time.h>
+#endif //MYFW_PPAPI
+#include <pthread.h>
+#include "ppapi/c/ppb_opengles2.h"
+#include "ppapi/cpp/graphics_3d_client.h"
+#include "ppapi/cpp/graphics_3d.h"
+#include "ppapi/cpp/instance.h"
+#include "ppapi/cpp/size.h"
+#include "../SourceNaCL/GLExtensions.h"
 #endif
 
 #if MYFW_OSX
@@ -315,6 +327,19 @@ typedef unsigned long   u_long;
 #include <OpenAL/alc.h>
 #endif
 
+#if MYFW_WINDOWS
+#define USE_LOADWAVESFROMFILESYSTEM 1 // set to 0 for SDL, 1 for XAudio
+#define USE_OPENAL 0
+#pragma warning( push )
+#pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
+#include <xaudio2.h>
+#pragma warning( pop )
+#include "../../Libraries/pthreads-w32/include/pthread.h"
+#include <GL/gl.h>
+#include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/WGLExtensions.h"
+#endif
+
 #if MYFW_WP8
 #define USE_LOADWAVESFROMFILESYSTEM 1
 #define USE_OPENAL 0
@@ -331,29 +356,12 @@ typedef unsigned long   u_long;
 #undef WIN32
 #endif
 
-#if MYFW_WINDOWS
-#define USE_LOADWAVESFROMFILESYSTEM 1 // set to 0 for SDL, 1 for XAudio
-#define USE_OPENAL 0
-#pragma warning( push )
-#pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
-#include <xaudio2.h>
-#pragma warning( pop )
-#include "../../Libraries/pthreads-w32/include/pthread.h"
-#endif
-
-#if MYFW_LINUX
-#include <GL/gl.h>
-#include <GL/glext.h>
-#define USE_OPENAL 1
-#endif
-
 //============================================================================================================
 // Library includes.
 //============================================================================================================
 
 #include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
 #include "../../Libraries/cJSON/cJSON.h"
-#include "../../Libraries/Box2D/Box2D/Box2D.h"
 #include "../../Libraries/mtrand/mtrand.h"
 
 #if MYFW_WINDOWS
@@ -361,9 +369,38 @@ typedef unsigned long   u_long;
 #endif
 
 //============================================================================================================
-// TODO: Remove this include.
+// Core framework includes.
 //============================================================================================================
 
-#include "MyFramework.h"
+#define PI 3.1415926535897932384626433832795f
+
+#define Justify_Top         0x01
+#define Justify_Bottom      0x02
+#define Justify_CenterY     0x04
+#define Justify_Left        0x08
+#define Justify_Right       0x10
+#define Justify_CenterX     0x20
+#define Justify_Center      (Justify_CenterX|Justify_CenterY)
+#define Justify_TopLeft     (Justify_Left|Justify_Top)
+#define Justify_TopRight    (Justify_Right|Justify_Top)
+#define Justify_BottomLeft  (Justify_Left|Justify_Bottom)
+#define Justify_BottomRight (Justify_Right|Justify_Bottom)
+#define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
+#define Justify_CenterRight (Justify_Right|Justify_CenterY)
+
+#include "DataTypes/CPPList.h"
+#include "DataTypes/TCPPList.h"
+
+#include "Helpers/MyAssert.h"
+#include "Helpers/MyMemory.h"
+
+#include "DataTypes/MyTypes.h"
+#include "DataTypes/MyList.h"
+#include "DataTypes/MyMatrix.h"
+#include "DataTypes/Vector.h"
+
+#include "Helpers/MessageLog.h"
+#include "Helpers/RefCount.h"
+#include "Helpers/TypeInfo.h"
 
 #endif //__MyFrameworkPCH_H__

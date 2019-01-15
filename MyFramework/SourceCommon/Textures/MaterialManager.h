@@ -10,6 +10,7 @@
 #ifndef __MaterialManager_H__
 #define __MaterialManager_H__
 
+class MaterialDefinition;
 class MaterialManager;
 class TextureDefinition;
 

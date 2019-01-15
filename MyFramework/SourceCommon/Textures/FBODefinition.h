@@ -10,6 +10,10 @@
 #ifndef __FBODefinition_H__
 #define __FBODefinition_H__
 
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
+class TextureDefinition;
+
 class FBODefinition : public TCPPListNode<FBODefinition*>, public RefCount
 {
     friend class TextureManager;
@@ -68,7 +72,7 @@ protected: // Limiting access of setup, creation and destruction to TextureManag
     virtual void Invalidate(bool cleanGLAllocs) = 0;
 
 public:
-    bool IsFullyLoaded() { return m_FullyLoaded; }
+    virtual bool IsFullyLoaded() { return m_FullyLoaded; }
 
     virtual void Bind(bool storeFramebufferID) = 0;
     virtual void Unbind(bool restoreLastFramebufferID) = 0;

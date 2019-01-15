@@ -10,10 +10,10 @@
 #ifndef __SoundPlayerXAudio_H__
 #define __SoundPlayerXAudio_H__
 
+#include "../SourceCommon/DataTypes/MyActivePool.h"
 #include "../SourceCommon/Sound/WaveLoader.h"
 
 class MyFileObject;
-struct SoundObject;
 class SoundChannel;
 class VoiceCallback;
 class SoundPlayer;
@@ -22,7 +22,7 @@ struct IXAudio2;
 struct IXAudio2SourceVoice;
 struct IXAudio2MasteringVoice;
 
-struct SoundObject : public TCPPListNode<SoundObject*>, public RefCount
+class SoundObject : public TCPPListNode<SoundObject*>, public RefCount
 {
 protected:
     MyFileObject* m_pFile;

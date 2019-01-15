@@ -10,7 +10,16 @@
 #ifndef __Renderer_Base_H__
 #define __Renderer_Base_H__
 
+#include "Renderer_Enums.h"
+#include "../../DataTypes/ColorStructs.h"
+#include "../../Shaders/ShaderGroup.h"
+
+class Buffer_Base;
+class FBODefinition;
 class Renderer_Base;
+class Shader_Base;
+class TextureDefinition;
+
 extern Renderer_Base* g_pRenderer;
 
 class MyViewport

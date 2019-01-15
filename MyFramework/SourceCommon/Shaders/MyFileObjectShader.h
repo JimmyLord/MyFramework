@@ -10,6 +10,8 @@
 #ifndef __MyFileObjectShader_H__
 #define __MyFileObjectShader_H__
 
+#include "../Helpers/MyFileObject.h"
+
 class MyFileObjectShader;
 
 struct IncludeFileInfo

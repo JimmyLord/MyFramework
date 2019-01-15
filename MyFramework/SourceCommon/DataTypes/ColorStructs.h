@@ -10,6 +10,8 @@
 #ifndef __ColorStructs_H__
 #define __ColorStructs_H__
 
+#include "../Helpers/Utility.h"
+
 class ColorByte;
 class ColorFloat;
 

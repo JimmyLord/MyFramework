@@ -10,11 +10,15 @@
 #ifndef __SoundManager_H__
 #define __SoundManager_H__
 
+#include "../DataTypes/MyActivePool.h"
+
+class MyFileObject;
+class SoundCue;
+class SoundManager;
+class SoundObject;
+
 static const int MAX_SOUND_CUE_NAME_LEN = 32;
 static const int NUM_SOUND_CUES_TO_POOL = 128;
-
-class SoundManager;
-class SoundCue;
 
 typedef void (*SoundCueCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
 struct SoundCueCallbackStruct

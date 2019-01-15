@@ -7,10 +7,14 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
-#include "SceneGraph_Base.h"
 #include "SceneGraph_Octree.h"
+#include "../DataTypes/MyAABounds.h"
+#include "../DataTypes/MyActivePool.h"
+#include "../Meshes/LightManager.h"
+#include "../Meshes/MyMesh.h"
+#include "../Meshes/MySubmesh.h"
 
 OctreeNode::OctreeNode()
 {

@@ -10,6 +10,8 @@
 #ifndef __VertexFormats_H__
 #define __VertexFormats_H__
 
+#include "../DataTypes/ColorStructs.h"
+
 enum VertexFormats // ADDING_NEW_VertexFormat
 {
     VertexFormat_Invalid = -1,

@@ -7,17 +7,22 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
-#include "../BaseClasses/Shader_Base.h"
-#include "../../Shaders/ShaderManager.h"
-#include "../../Shaders/VertexFormats.h"
+#include "MyFrameworkPCH.h"
 
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
+#include "Buffer_OpenGL.h"
 #include "GLHelpers.h"
 #include "Shader_OpenGL.h"
-#include "Buffer_OpenGL.h"
 #include "Texture_OpenGL.h"
+#include "../BaseClasses/Shader_Base.h"
+#include "../Old/OpenGLWrapper.h"
+#include "../../DataTypes/ColorStructs.h"
+#include "../../Helpers/MyTime.h"
+#include "../../Meshes/BufferManager.h"
+#include "../../Meshes/MyLight.h"
+#include "../../Shaders/ShaderManager.h"
+#include "../../Shaders/VertexFormats.h"
+#include "../../Textures/MaterialDefinition.h"
+#include "../../Textures/TextureManager.h"
 
 Shader_OpenGL::Shader_OpenGL()
 {
@@ -252,7 +257,7 @@ bool Shader_OpenGL::LoadAndCompile(GLuint premadeProgramHandle)
 {
     // Manually create a shader program here, so we can bind the attribute locations.
     GLuint programHandle = premadeProgramHandle;
-    if( premadeProgramHandle == nullptr )
+    if( premadeProgramHandle == 0 )
         programHandle = glCreateProgram();
 
 #if MYFW_WINDOWS

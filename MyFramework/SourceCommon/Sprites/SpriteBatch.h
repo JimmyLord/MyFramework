@@ -11,8 +11,10 @@
 #define __SpriteBatch_H__
 
 class BaseShader;
+class BufferDefinition;
+class MaterialDefinition;
+class MySprite;
 class TextureDefinition;
-struct Vertex_Base;
 
 class SpriteBatch
 {

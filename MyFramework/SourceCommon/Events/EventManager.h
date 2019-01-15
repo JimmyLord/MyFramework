@@ -10,7 +10,11 @@
 #ifndef __EventManager_H__
 #define __EventManager_H__
 
+#include "MyEvent.h"
+#include "../DataTypes/MyActivePool.h"
+
 class EventManager;
+class MyEvent;
 
 extern EventManager* g_pEventManager;
 

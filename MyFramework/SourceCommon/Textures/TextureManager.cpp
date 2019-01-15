@@ -7,11 +7,13 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 #include "TextureDefinition.h"
 #include "TextureManager.h"
 #include "../Helpers/FileManager.h"
+#include "../Helpers/MyFileObject.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
 
 TextureManager* g_pTextureManager = nullptr;
 

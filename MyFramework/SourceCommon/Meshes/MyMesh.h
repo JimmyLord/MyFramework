@@ -10,11 +10,20 @@
 #ifndef __MyMesh_H__
 #define __MyMesh_H__
 
-class MaterialDefinition;
-class TextureDefinition;
+#include "../DataTypes/ColorStructs.h"
+#include "../DataTypes/MyAABounds.h"
+#include "../Shaders/VertexFormats.h"
+
 class BufferDefinition;
+class MaterialDefinition;
+class MyAnimation;
+class MyAnimationTimeline;
+class MyFileObject;
 class MyLight;
 class MySubmesh;
+class Shader_Base;
+class ShaderGroup;
+class TextureDefinition;
 
 struct MySkeletonNode
 {

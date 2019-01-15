@@ -10,6 +10,11 @@
 #ifndef __SceneGraph_Octree_H__
 #define __SceneGraph_Octree_H__
 
+#include "SceneGraph_Base.h"
+#include "../DataTypes/MyAABounds.h"
+#include "../DataTypes/MyActivePool.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
 class SceneGraph_Octree;
 
 class OctreeNode

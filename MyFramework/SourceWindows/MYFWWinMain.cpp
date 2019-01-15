@@ -7,12 +7,20 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
-#include "Screenshot.h"
-#include "MYFWWinMain.h"
+#include "MyFrameworkPCH.h"
 
-#include "../SourceWindows/GLExtensions.h"
-#include "../SourceWindows/WGLExtensions.h"
+#include "GLExtensions.h"
+#include "MYFWWinMain.h"
+#include "Screenshot.h"
+#include "WGLExtensions.h"
+#include "../SourceCommon/Core/GameCore.h"
+#include "../SourceCommon/Helpers/ExternalTools.h"
+#include "../SourceCommon/Helpers/MyTime.h"
+#include "../SourceCommon/JSON/cJSONHelpers.h"
+#include "../SourceCommon/Meshes/BufferManager.h"
+#include "../SourceCommon/Renderers/BaseClasses/Renderer_Enums.h"
+#include "../SourceCommon/Shaders/ShaderManager.h"
+#include "../SourceCommon/Textures/TextureManager.h"
 
 // Initialize opengl window on windows, huge chunks taken from nehe
 //    http://nehe.gamedev.net/tutorial/creating_an_opengl_window_%28win32%29/13001/

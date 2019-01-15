@@ -10,10 +10,11 @@
 #ifndef __AnimatedSprite_H__
 #define __AnimatedSprite_H__
 
-class KeyTranslation;
-class KeyScale;
 class KeyAlpha;
 class KeyRotation;
+class KeyScale;
+class KeyTranslation;
+class MySprite;
 
 class AnimatedSpriteAnchorPoint
 {

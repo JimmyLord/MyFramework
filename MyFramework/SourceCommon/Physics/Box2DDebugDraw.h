@@ -10,6 +10,12 @@
 #ifndef __Box2DDebugDraw_H__
 #define __Box2DDebugDraw_H__
 
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "../../../Libraries/Box2D/Box2D/Common/b2Draw.h"
+
+class MaterialDefinition;
+class MyMatrix;
+
 class Box2DDebugDraw : public b2Draw
 {
 public:

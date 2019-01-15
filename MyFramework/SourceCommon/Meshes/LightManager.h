@@ -10,7 +10,10 @@
 #ifndef __LightManager_H__
 #define __LightManager_H__
 
+#include "MyLight.h"
+
 class LightManager;
+class MyLight;
 
 extern LightManager* g_pLightManager;
 

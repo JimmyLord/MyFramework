@@ -555,11 +555,11 @@
     <ClCompile Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.cpp">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\CommonHeader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="SourceCommon\Core\GameCore.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\MyFrameworkPCH.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1037,13 +1037,13 @@
     <ClInclude Include="SourceCommon\Renderers\OpenGL\FBO_OpenGL.h">
       <Filter>Source\Renderers\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCommon\CommonHeader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\Core\GameCore.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
     <ClInclude Include="SourceCommon\MyFramework.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\MyFrameworkPCH.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

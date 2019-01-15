@@ -7,10 +7,14 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 #include "FontManager.h"
+#include "../Fonts/BMFont.h"
 #include "../Helpers/FileManager.h"
+#include "../Helpers/MyFileObject.h"
+#include "../Textures/TextureDefinition.h"
+#include "../Textures/TextureManager.h"
 
 FontManager* g_pFontManager = 0;
 

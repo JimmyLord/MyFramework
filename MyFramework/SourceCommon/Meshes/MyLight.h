@@ -10,6 +10,8 @@
 #ifndef __MyLight_H__
 #define __MyLight_H__
 
+#include "../DataTypes/ColorStructs.h"
+
 enum LightTypes
 {
     LightType_Directional,

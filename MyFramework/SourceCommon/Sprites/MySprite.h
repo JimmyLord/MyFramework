@@ -10,14 +10,14 @@
 #ifndef __MySprite_H__
 #define __MySprite_H__
 
-class BaseShader;
-class TextureDefinition;
-class BufferDefinition;
-struct Vertex_Base;
-class ShaderGroup;
+#include "../Meshes/MySubmesh.h"
+#include "../Shaders/VertexFormats.h"
 
+class BaseShader;
+class BufferDefinition;
 class MySprite;
-typedef MySprite* MySpritePtr;
+class ShaderGroup;
+class TextureDefinition;
 
 extern char g_SpriteVertexIndices[6];
 

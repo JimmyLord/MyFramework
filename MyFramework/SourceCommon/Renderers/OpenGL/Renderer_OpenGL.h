@@ -11,6 +11,7 @@
 #define __Renderer_OpenGL_H__
 
 #include "../BaseClasses/Renderer_Base.h"
+#include "../../DataTypes/ColorStructs.h"
 
 // TODO: Fix GL Includes.
 // Temp redefine of base GL types until all GL code is in Renderers/OpenGL

@@ -16,36 +16,25 @@
 // C/C++/Library framework includes.
 //============================================================================================================
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 //============================================================================================================
 // Core framework includes.
 //============================================================================================================
 
-#include "DataTypes/MyTypes.h"
+//#include "DataTypes/MyTypes.h"
 
 #include "Memory/MyStackAllocator.h"
 
-#include "Helpers/MyAssert.h"
-
 #include "JSON/cJSONHelpers.h"
 
-#include "DataTypes/CPPList.h"
-#include "DataTypes/TCPPList.h"
-#include "Helpers/TypeInfo.h"
-#include "Helpers/RefCount.h"
-#include "Helpers/MyMemory.h"
 #include "Helpers/Utility.h"
-#include "DataTypes/Vector.h"
-#include "DataTypes/MyQuaternion.h"
-#include "DataTypes/MyMatrix.h"
-#include "DataTypes/Plane.h"
-#include "DataTypes/ColorStructs.h"
-#include "DataTypes/MyList.h"
-#include "DataTypes/MyAABounds.h"
 
-#include "Helpers/MessageLog.h"
+#include "DataTypes/ColorStructs.h"
+#include "DataTypes/MyAABounds.h"
 #include "DataTypes/MyActivePool.h"
+#include "DataTypes/MyQuaternion.h"
+#include "DataTypes/Plane.h"
 
 #include "Physics/Box2DContactListener.h"
 #include "Physics/Box2DWorld.h"
@@ -54,10 +43,6 @@
 #include "Events/MyEvent.h"
 #include "Events/EventManager.h"
 
-//============================================================================================================
-// Platform specific Framework includes.
-//============================================================================================================
-
 #if MYFW_EDITOR
 #include "../SourceEditor/EditorViewTypes.h"
 #if MYFW_WINDOWS && MYFW_USING_IMGUI
@@ -65,36 +50,13 @@
 #endif // MYFW_WINDOWS && MYFW_USING_IMGUI
 #endif // MYFW_EDITOR
 
-#if MYFW_NACL
-#include "../SourceNaCL/GLExtensions.h"
-#include "../SourceNaCL/NaCLFileObject.h"
-#include "../SourceNaCL/SoundPlayer.h"
-#include "../SourceNaCL/SavedData.h"
-#include "../SourceNaCL/NaCLWebRequest.h"
-#endif
+//============================================================================================================
+// Platform specific Framework includes.
+//============================================================================================================
 
-#if MYFW_BLACKBERRY
-#if MYFW_BLACKBERRY10
-#include "../SourceBlackBerry/IAPManager.h"
-#endif //MYFW_BLACKBERRY10
-#include "../SourceBlackBerry/GLExtensions.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceBlackBerry/SavedData.h"
-#include "Networking/WebRequest.h"
-#include "../SourceBlackBerry/MediaPlayer.h"
-#include "Networking/GameService_ScoreLoop.h"
-#include "../SourceBlackBerry/BBM.h"
-#endif
-
-#if MYFW_BADA
-#include "../SourceBada/TextureLoader.h"
-#include "../SourceBada/SoundPlayer.h"
-#include "../SourceBada/SavedData.h"
-#include "../SourceBada/WebRequest.h"
-#endif
+// TODO: Fix these includes so there are common base classes.
 
 #if MYFW_ANDROID
-#include "../SourceAndroid/GLExtensions.h"
 #include "../SourceAndroid/IAPManagerAndroid.h"
 #include "../SourceAndroid/AndroidFileLoader.h"
 #if 0
@@ -107,8 +69,26 @@
 #include "Networking/WebRequest.h"
 #endif
 
+#if MYFW_BADA
+#include "../SourceBada/TextureLoader.h"
+#include "../SourceBada/SoundPlayer.h"
+#include "../SourceBada/SavedData.h"
+#include "../SourceBada/WebRequest.h"
+#endif
+
+#if MYFW_BLACKBERRY
+#if MYFW_BLACKBERRY10
+#include "../SourceBlackBerry/IAPManager.h"
+#endif //MYFW_BLACKBERRY10
+#include "Sound/SoundPlayerOpenAL.h"
+#include "../SourceBlackBerry/SavedData.h"
+#include "Networking/WebRequest.h"
+#include "../SourceBlackBerry/MediaPlayer.h"
+#include "Networking/GameService_ScoreLoop.h"
+#include "../SourceBlackBerry/BBM.h"
+#endif
+
 #if MYFW_EMSCRIPTEN
-#include "../SourceAndroid/GLExtensions.h"
 #include "Sound/SoundPlayerOpenAL.h"
 #include "../SourceEmscripten/SavedData.h"
 #include "../SourceEmscripten/WebRequest.h"
@@ -123,6 +103,20 @@
 #include "../SourceIOS/GameCenter.h"
 #endif
 
+#if MYFW_LINUX
+#include "Sound/SoundPlayerOpenAL.h"
+#include "../SourceLinux/SavedData.h"
+#include "Networking/WebRequest.h"
+#include <pthread.h>
+#endif
+
+#if MYFW_NACL
+#include "../SourceNaCL/NaCLFileObject.h"
+#include "../SourceNaCL/SoundPlayer.h"
+#include "../SourceNaCL/SavedData.h"
+#include "../SourceNaCL/NaCLWebRequest.h"
+#endif
+
 #if MYFW_OSX
 #include "../SourceIOS/IOSFileLoader.h"
 //#include "../SourceWindows/TextureLoader.h"
@@ -131,18 +125,6 @@
 //#include "../SourceWindows/SavedData.h"
 #include "Networking/WebRequest.h"
 //#include "../SourceIOS/GameCenter.h"
-#endif
-
-#if MYFW_WP8
-#include "../SourceWP8/TextureLoader.h"
-//#include "../SourceWP8/MySaveFileObject_LocalStorage.h"
-#if USE_OPENAL
-    #include "Sound/SoundPlayerOpenAL.h"
-#else
-    #include "../SourceWP8/SoundPlayer.h"
-#endif
-#include "../SourceWP8/SavedData.h"
-#include "Networking/WebRequest.h"
 #endif
 
 #if MYFW_WINDOWS
@@ -160,13 +142,23 @@
 #include "Networking/WebRequest.h"
 #endif
 
-#if MYFW_LINUX
-#include "../SourceLinux/GLExtensions.h"
-#include "Sound/SoundPlayerOpenAL.h"
-#include "../SourceLinux/SavedData.h"
-#include "Networking/WebRequest.h"
-#include <pthread.h>
+#if MYFW_WP8
+#include "../SourceWP8/TextureLoader.h"
+//#include "../SourceWP8/MySaveFileObject_LocalStorage.h"
+#if USE_OPENAL
+    #include "Sound/SoundPlayerOpenAL.h"
+#else
+    #include "../SourceWP8/SoundPlayer.h"
 #endif
+#include "../SourceWP8/SavedData.h"
+#include "Networking/WebRequest.h"
+#endif
+
+//============================================================================================================
+// Library includes.
+//============================================================================================================
+
+#include "../../Libraries/Box2D/Box2D/Box2D.h"
 
 //============================================================================================================
 // Common Framework includes.
@@ -180,22 +172,6 @@
 
 #include "Renderers/Old/OpenGLWrapper.h"
 #include "Renderers/BaseClasses/Renderer_Enums.h"
-
-#define PI 3.1415926535897932384626433832795f
-
-#define Justify_Top         0x01
-#define Justify_Bottom      0x02
-#define Justify_CenterY     0x04
-#define Justify_Left        0x08
-#define Justify_Right       0x10
-#define Justify_CenterX     0x20
-#define Justify_Center      (Justify_CenterX|Justify_CenterY)
-#define Justify_TopLeft     (Justify_Left|Justify_Top)
-#define Justify_TopRight    (Justify_Right|Justify_Top)
-#define Justify_BottomLeft  (Justify_Left|Justify_Bottom)
-#define Justify_BottomRight (Justify_Right|Justify_Bottom)
-#define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
-#define Justify_CenterRight (Justify_Right|Justify_CenterY)
 
 #include "Multithreading/MyThread.h"
 #include "Multithreading/MyJobManager.h"

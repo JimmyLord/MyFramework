@@ -10,6 +10,8 @@
 #ifndef __FBO_OpenGL_H__
 #define __FBO_OpenGL_H__
 
+#include "../../Textures/FBODefinition.h"
+
 class FBO_OpenGL : public FBODefinition
 {
     friend class FBODefinition;

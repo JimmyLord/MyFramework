@@ -7,10 +7,12 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
-#include "Box2DWorld.h"
 #include "Box2DDebugDraw.h"
+#include "Box2DContactListener.h"
+#include "Box2DWorld.h"
+#include "../../../Libraries/Box2D/Box2D/Box2D.h"
 
 Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener)
 {

@@ -10,9 +10,10 @@
 #ifndef __FontManager_H__
 #define __FontManager_H__
 
-class FontManager;
-class TextureDefinition;
 class BMFont;
+class FontManager;
+class MyFileObject;
+class TextureDefinition;
 
 extern FontManager* g_pFontManager;
 

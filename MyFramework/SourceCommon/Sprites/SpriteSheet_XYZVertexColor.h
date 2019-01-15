@@ -10,8 +10,8 @@
 #ifndef __SpriteSheet_XYZVertexColor_H__
 #define __SpriteSheet_XYZVertexColor_H__
 
-class MySprite;
 class MyFileObject;
+class MySprite;
 class TextureDefinition;
 
 class SpriteSheet_XYZVertexColor : public SpriteSheet
@@ -29,11 +29,11 @@ public:
     
     virtual void CreateSprites()
     {
-        m_pSprites = (MySpritePtr*)MyNew MySprite_XYZVertexColorPtr[m_NumSprites];
+        m_ppSpriteArray = (MySprite**)MyNew MySprite_XYZVertexColorPtr[m_NumSprites];
         for( uint32 i=0; i<m_NumSprites; i++ )
         {
-            m_pSprites[i] = MyNew MySprite_XYZVertexColor( false );
-            m_pSprites[i]->SetMaterial( m_pMaterial );
+            m_ppSpriteArray[i] = MyNew MySprite_XYZVertexColor( false );
+            m_ppSpriteArray[i]->SetMaterial( m_pMaterial );
         }
     }
 };

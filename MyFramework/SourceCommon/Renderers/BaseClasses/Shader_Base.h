@@ -10,11 +10,15 @@
 #ifndef __Shader_Base_H__
 #define __Shader_Base_H__
 
+#include "../../DataTypes/ColorStructs.h"
 #include "../../Shaders/ShaderManager.h"
+#include "../../Shaders/VertexFormats.h"
 
+class ExposedUniformValue;
+class FBODefinition;
 class MyLight;
 class MaterialDefinition;
-class ExposedUniformValue;
+class TextureDefinition;
 
 class Shader_Base : public BaseShader
 {

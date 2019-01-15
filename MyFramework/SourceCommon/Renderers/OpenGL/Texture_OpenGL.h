@@ -10,6 +10,8 @@
 #ifndef __Texture_OpenGL_H__
 #define __Texture_OpenGL_H__
 
+#include "../../Textures/TextureDefinition.h"
+
 class Texture_OpenGL : public TextureDefinition
 {
     friend class FBO_OpenGL;

@@ -10,6 +10,10 @@
 #ifndef __ParticleRenderer_H__
 #define __ParticleRenderer_H__
 
+#include "../DataTypes/ColorStructs.h"
+#include "../Meshes/MySubmesh.h"
+#include "../Shaders/VertexFormats.h"
+
 class ParticleRenderer : public MySubmesh
 {
 protected:

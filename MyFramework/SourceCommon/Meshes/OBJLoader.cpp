@@ -7,8 +7,14 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
 #include "OBJLoader.h"
+#include "../DataTypes/MyAABounds.h"
+#include "../Helpers/MyTime.h"
+#include "../Meshes/BufferManager.h"
+#include "../Meshes/MySubmesh.h"
+#include "../Shaders/VertexFormats.h"
 
 // This code is assuming a list of faces longer than 3 is a triangle fan and turns it into a list of tris.
 // TODO: OBJs can have concave face lists... so this is a step better, but still broken.

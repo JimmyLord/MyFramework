@@ -12,13 +12,14 @@
 
 #include "Renderers/BaseClasses/Renderer_Base.h"
 
+class BMFont;
 class GameCore;
 class GameLevel;
-class BMFont;
-class SoundPlayer;
-class SoundManager;
-class Renderer_Base;
+class MyJobManager;
 class MyViewport;
+class SoundManager;
+class SoundPlayer;
+class Renderer_Base;
 #if MYFW_EDITOR
 class CommandStack;
 #endif

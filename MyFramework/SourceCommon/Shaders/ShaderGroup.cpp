@@ -7,8 +7,13 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
+#include "../Helpers/FileManager.h"
+#include "../Helpers/MyFileObject.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
 #include "../Renderers/BaseClasses/Shader_Base.h"
+#include "../Shaders/MyFileObjectShader.h"
 
 ShaderGroupManager* g_pShaderGroupManager = nullptr;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
@@ -80,6 +85,16 @@ void ShaderGroup::Initialize()
             }
         }
     }
+}
+
+const char* ShaderGroup::GetName()
+{
+    return m_pFile->GetFilenameWithoutExtension();
+}
+
+MyFileObjectShader* ShaderGroup::GetFile()
+{
+    return m_pFile;
 }
 
 bool ShaderGroup::ContainsShader(BaseShader* pShader)

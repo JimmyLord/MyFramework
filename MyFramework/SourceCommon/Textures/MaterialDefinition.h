@@ -10,8 +10,15 @@
 #ifndef __MaterialDefinition_H__
 #define __MaterialDefinition_H__
 
-class MaterialManager;
+#include "../DataTypes/ColorStructs.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "../Shaders/MyFileObjectShader.h"
+
+class BaseShader;
 class EditorMainFrame_ImGui;
+class MaterialManager;
+class ShaderGroup;
+class TextureDefinition;
 
 class ExposedUniformValue
 {

@@ -10,9 +10,12 @@
 #ifndef __MySprite9_H__
 #define __MySprite9_H__
 
+#include "../DataTypes/ColorStructs.h"
+
 class BaseShader;
+class BufferDefinition;
+class MaterialDefinition;
 class TextureDefinition;
-struct Vertex_Base;
 
 class MySprite9
 {

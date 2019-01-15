@@ -10,6 +10,8 @@
 #ifndef __VertexFormatManager_H__
 #define __VertexFormatManager_H__
 
+#include "VertexFormats.h"
+
 class VertexFormatManager;
 
 extern VertexFormatManager* g_pVertexFormatManager;

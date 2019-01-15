@@ -25,7 +25,7 @@
 bool g_Android_ExitOnBackButton = true;
 
 #include "JavaInterfaceCPP.h"
-#include "../SourceCommon/CommonHeader.h"
+#include "../SourceCommon/MyFrameworkPCH.h"
 
 struct AndroidTouchEvent
 {

@@ -7,10 +7,16 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
+#include "MySprite.h"
+#include "../Meshes/BufferManager.h"
+#include "../Meshes/MyLight.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 #include "../Renderers/BaseClasses/Shader_Base.h"
-#include "MySprite.h"
+#include "../Renderers/Old/OpenGLWrapper.h" // TODO: Fix this dependency.
+#include "../Textures/MaterialDefinition.h"
+#include "../Textures/MaterialManager.h"
 
 // These are 2 sets of indices for sprites, one winding clockwise, the other counter clockwise.
 //   for code to use them, you'd need to fill your vertex buffer in this order.

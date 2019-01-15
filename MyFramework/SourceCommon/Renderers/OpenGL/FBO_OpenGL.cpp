@@ -7,14 +7,15 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
-#include <gl/GL.h>
-#include "../../GLExtensions.h"
 #include "GLHelpers.h"
 #include "FBO_OpenGL.h"
 #include "Buffer_OpenGL.h"
 #include "Texture_OpenGL.h"
+#include "../BaseClasses/Renderer_Base.h"
+#include "../Old/OpenGLWrapper.h"
+#include "../../GLExtensions.h"
 
 FBO_OpenGL::FBO_OpenGL()
 {
@@ -180,7 +181,7 @@ bool FBO_OpenGL::GenerateFrameBuffer()
 #endif
 
             case FBOColorFormat_None:
-                assert( false );
+                MyAssert( false );
             }
 
             MyAssert( format != 0 );

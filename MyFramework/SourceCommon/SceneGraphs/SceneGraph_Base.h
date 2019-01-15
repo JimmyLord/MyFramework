@@ -10,9 +10,15 @@
 #ifndef __SceneGraph_Base_H__
 #define __SceneGraph_Base_H__
 
-class MyMesh;
+#include "../DataTypes/MyActivePool.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
+
 class MaterialDefinition;
+class MyMesh;
+class MySubmesh;
 class SceneGraphObject;
+class ShaderGroup;
+class TextureDefinition;
 
 enum SceneGraphFlags
 {

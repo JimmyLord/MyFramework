@@ -7,8 +7,10 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __MYMEMORY_H__
-#define __MYMEMORY_H__
+#ifndef __MyMemory_H__
+#define __MyMemory_H__
+
+#include "../DataTypes/MyTypes.h"
 
 #define SAFE_DELETE(x) { delete x; x = nullptr; }
 #define SAFE_DELETE_ARRAY(x) { delete[] x; x = nullptr; }
@@ -69,4 +71,4 @@ void operator delete[](void* ptr);
 
 #endif //MYFW_WINDOWS
 
-#endif //__MYMEMORY_H__
+#endif //__MyMemory_H__

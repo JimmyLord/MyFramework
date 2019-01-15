@@ -7,8 +7,10 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
 #include "VertexFormatManager.h"
+#include "VertexFormats.h"
 
 VertexFormatManager* g_pVertexFormatManager = 0;
 
@@ -20,7 +22,9 @@ VertexFormatManager::VertexFormatManager()
 VertexFormatManager::~VertexFormatManager()
 {
     while( m_pDynamicVertexFormatDesc.Count() )
+    {
         delete m_pDynamicVertexFormatDesc.RemoveIndex( 0 );
+    }
 }
 
 VertexFormat_Dynamic_Desc* VertexFormatManager::FindDynamicVertexFormat(int numuvs, bool normals, bool tangents, bool bitangents, bool color, int boneinfluences)

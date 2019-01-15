@@ -10,6 +10,8 @@
 #ifndef __MyFileObject_H__
 #define __MyFileObject_H__
 
+#include "../DataTypes/MyActivePool.h"
+
 class MyFileObject;
 
 #if MYFW_EDITOR

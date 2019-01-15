@@ -7,8 +7,13 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
 #include "GameServiceManager.h"
+#include "WebRequest.h"
+#include "../Core/GameCore.h"
+#include "../DataTypes/MyActivePool.h"
+#include "../Helpers/MyTime.h"
 
 GameServiceManager* g_pGameServiceManager = 0;
 

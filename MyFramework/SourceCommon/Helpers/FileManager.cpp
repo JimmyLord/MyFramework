@@ -7,8 +7,13 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
+
 #include "FileManager.h"
+#include "../Helpers/MyFileObject.h"
+#include "../Shaders/MyFileObjectShader.h"
+
+#include "../../SourceWindows/SavedData.h" // TODO: Fix this dependency.
 #if MYFW_NACL
 #include "../../SourceNaCL/MainInstance.h"
 #endif //MYFW_NACL

@@ -10,6 +10,9 @@
 #ifndef __BMFont_H__
 #define __BMFont_H__
 
+#include "../Shaders/VertexFormats.h"
+#include "../DataTypes/ColorStructs.h"
+
 class BMFont
 {
 protected:

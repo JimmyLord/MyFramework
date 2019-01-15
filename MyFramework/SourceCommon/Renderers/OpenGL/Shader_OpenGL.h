@@ -11,6 +11,8 @@
 #define __Shader_OpenGL_H__
 
 #include "../BaseClasses/Shader_Base.h"
+#include "../../DataTypes/ColorStructs.h"
+#include "../../Shaders/MyFileObjectShader.h"
 
 class MyLight;
 class MaterialDefinition;

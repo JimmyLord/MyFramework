@@ -11,6 +11,7 @@
 #define __MeshManager_H__
 
 class MeshManager;
+class MyFileObject;
 class MyMesh;
 
 extern MeshManager* g_pMeshManager;

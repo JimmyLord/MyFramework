@@ -7,10 +7,13 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "CommonHeader.h"
+#include "MyFrameworkPCH.h"
 
 #include "MaterialDefinition.h"
 #include "MaterialManager.h"
+#include "../Events/MyEvent.h"
+#include "../Events/EventManager.h"
+#include "../Events/EventTypeManager.h"
 #include "../Helpers/FileManager.h"
 
 MaterialManager* g_pMaterialManager = nullptr;

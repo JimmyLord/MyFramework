@@ -10,9 +10,11 @@
 #ifndef __ShaderGroup_H__
 #define __ShaderGroup_H__
 
-class ShaderGroup;
-class Shader_Base;
 class BaseShader;
+class MyFileObject;
+class MyFileObjectShader;
+class Shader_Base;
+class ShaderGroup;
 class ShaderGroupManager;
 
 enum ShaderPassTypes
@@ -55,8 +57,8 @@ public:
 
     ~ShaderGroup();
 
-    const char* GetName() { return m_pFile->GetFilenameWithoutExtension(); }
-    MyFileObjectShader* GetFile() { return m_pFile; }
+    const char* GetName();
+    MyFileObjectShader* GetFile();
 
     bool ContainsShader(BaseShader* pShader);
 
