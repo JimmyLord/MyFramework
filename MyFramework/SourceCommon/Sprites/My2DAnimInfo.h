@@ -12,6 +12,7 @@
 
 class MaterialDefinition;
 class MyFileObject;
+class SpriteSheet;
 
 //====================================================================================================
 // My2DAnimationFrame

@@ -9,6 +9,10 @@
 
 #include "MyFrameworkPCH.h"
 
+#include "../Meshes/BufferManager.h"
+#include "../Renderers/BaseClasses/Renderer_Base.h"
+#include "../Textures/MaterialDefinition.h"
+
 #if MYFW_USEINSTANCEDPARTICLES
 
 #include "ParticleRendererInstanced.h"

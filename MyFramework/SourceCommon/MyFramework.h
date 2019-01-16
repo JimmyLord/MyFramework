@@ -164,12 +164,6 @@
 // Common Framework includes.
 //============================================================================================================
 
-#if MYFW_WINDOWS
-#define MYFW_USEINSTANCEDPARTICLES  1
-#else
-#define MYFW_USEINSTANCEDPARTICLES  0
-#endif
-
 #include "Renderers/Old/OpenGLWrapper.h"
 #include "Renderers/BaseClasses/Renderer_Enums.h"
 

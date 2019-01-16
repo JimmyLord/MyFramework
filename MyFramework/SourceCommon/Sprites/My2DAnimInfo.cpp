@@ -11,6 +11,7 @@
 
 #include "My2DAnimInfo.h"
 #include "../JSON/cJSONHelpers.h"
+#include "../Sprites/SpriteSheet.h"
 #include "../Textures/MaterialDefinition.h"
 #include "../Textures/MaterialManager.h"
 

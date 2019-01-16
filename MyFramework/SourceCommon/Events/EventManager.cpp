@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "EventManager.h"
+#include "EventTypeManager.h"
 #include "../Helpers/FileManager.h"
 
 EventManager* g_pEventManager = 0;

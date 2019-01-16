@@ -19,6 +19,7 @@
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "../Renderers/Old/OpenGLWrapper.h" // TODO: Fix this dependency.
 #include "../Textures/MaterialDefinition.h"
+#include "../Textures/MaterialManager.h"
 
 MySubmesh::MySubmesh()
 {

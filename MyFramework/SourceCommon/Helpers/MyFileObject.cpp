@@ -9,6 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
+#include "FileManager.h"
 #include "MyFileObject.h"
 
 MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;

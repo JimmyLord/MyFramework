@@ -11,12 +11,8 @@
 #define __EditorCommands_H__
 
 class EditorCommand;
-#if MYFW_USING_WX
-class EditorCommand_PanelWatchNumberValueChanged;
-class EditorCommand_PanelWatchColorChanged;
-class EditorCommand_PanelWatchPointerChanged;
-#endif //MYFW_USING_WX
 class EditorCommand_UnloadSoundCues;
+class SoundCue;
 
 class EditorCommand
 {
@@ -47,82 +43,10 @@ public:
 
 //====================================================================================================
 
-#if MYFW_USING_WX
-class EditorCommand_PanelWatchNumberValueChanged : public EditorCommand
-{
-protected:
-    double m_Difference;
-    PanelWatch_Types m_Type;
-    void* m_Pointer;
-    int m_ControlID;
-    bool m_DirectlyChanged;
-
-    PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
-    void* m_pCallbackObj;
-
-public:
-    EditorCommand_PanelWatchNumberValueChanged(double difference, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
-    virtual ~EditorCommand_PanelWatchNumberValueChanged();
-
-    virtual void Do();
-    virtual void Undo();
-    virtual EditorCommand* Repeat();
-};
-
-//====================================================================================================
-
-class EditorCommand_PanelWatchColorChanged : public EditorCommand
-{
-protected:
-    ColorFloat m_NewColor;
-    ColorFloat m_OldColor;
-    PanelWatch_Types m_Type;
-    void* m_Pointer;
-    int m_ControlID;
-    bool m_DirectlyChanged;
-
-    PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
-    void* m_pCallbackObj;
-
-public:
-    EditorCommand_PanelWatchColorChanged(ColorFloat newcolor, PanelWatch_Types type, void* pointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
-    virtual ~EditorCommand_PanelWatchColorChanged();
-
-    virtual void Do();
-    virtual void Undo();
-    virtual EditorCommand* Repeat();
-};
-
-//====================================================================================================
-
-class EditorCommand_PanelWatchPointerChanged : public EditorCommand
-{
-protected:
-    void* m_NewValue;
-    void* m_OldValue;
-    PanelWatch_Types m_Type;
-    void** m_pPointer;
-    int m_ControlID;
-    bool m_DirectlyChanged;
-
-    PanelWatchCallbackValueChanged m_pOnValueChangedCallBackFunc;
-    void* m_pCallbackObj;
-
-public:
-    EditorCommand_PanelWatchPointerChanged(void* newvalue, PanelWatch_Types type, void** ppointer, int controlid, bool directlychanged, PanelWatchCallbackValueChanged callbackfunc, void* callbackobj);
-    virtual ~EditorCommand_PanelWatchPointerChanged();
-
-    virtual void Do();
-    virtual void Undo();
-    virtual EditorCommand* Repeat();
-};
-#endif //MYFW_USING_WX
-//====================================================================================================
-
 class EditorCommand_UnloadSoundCues : public EditorCommand
 {
 protected:
-    // IF this is in undo stack, then this stores the only reference to the unloaded sound cue.
+    // If this is in undo stack, then this stores the only reference to the unloaded sound cue.
     std::vector<SoundCue*> m_SoundCues;
     bool m_ReleaseSoundCuesWhenDestroyed;
 

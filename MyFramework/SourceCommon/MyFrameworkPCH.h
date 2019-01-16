@@ -106,22 +106,23 @@
 // Basic data types.
 //============================================================================================================
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdint.h> // For uintptr_t
-#include <stddef.h>
-#include <math.h>
-#include <string.h>
 #include <ctype.h>
-#include <limits.h>
 #include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h> // For uintptr_t
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #if MYFW_EDITOR
-#include <vector>
-#include <string>
-#include <map>
+#include <algorithm>
 #include <list>
+#include <map>
+#include <string>
+#include <vector>
 #endif
 
 #if MYFW_WINDOWS
@@ -387,6 +388,12 @@ typedef unsigned long   u_long;
 #define Justify_BottomRight (Justify_Right|Justify_Bottom)
 #define Justify_CenterLeft  (Justify_Left|Justify_CenterY)
 #define Justify_CenterRight (Justify_Right|Justify_CenterY)
+
+#if MYFW_WINDOWS
+#define MYFW_USEINSTANCEDPARTICLES  1
+#else
+#define MYFW_USEINSTANCEDPARTICLES  0
+#endif
 
 #include "DataTypes/CPPList.h"
 #include "DataTypes/TCPPList.h"

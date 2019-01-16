@@ -1,6 +1,6 @@
 MyFramework
 ===========
-A cross-platform C++/OpenGL framework for games
+A cross-platform C++/OpenGL framework for games.
 
 Currently supports the following platforms:
 - Windows

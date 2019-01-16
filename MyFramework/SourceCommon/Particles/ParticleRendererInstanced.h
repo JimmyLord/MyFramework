@@ -10,6 +10,8 @@
 #ifndef __ParticleRendererInstanced_H__
 #define __ParticleRendererInstanced_H__
 
+#include "../Particles/ParticleRenderer.h"
+
 #if MYFW_USEINSTANCEDPARTICLES
 
 struct ParticleInstanceData

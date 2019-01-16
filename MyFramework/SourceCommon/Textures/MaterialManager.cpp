@@ -15,6 +15,7 @@
 #include "../Events/EventManager.h"
 #include "../Events/EventTypeManager.h"
 #include "../Helpers/FileManager.h"
+#include "../Shaders/ShaderGroup.h"
 
 MaterialManager* g_pMaterialManager = nullptr;
 
