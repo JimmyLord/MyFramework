@@ -766,6 +766,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:
         {
+            // Tell Windows we want mouse messages (i.e. mouse button up) from outside the window.
+            SetCapture( hWnd );
+
             g_MouseButtonStates[0] = true;
         }
         return 0;
@@ -773,11 +776,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONUP:
         {
             g_MouseButtonStates[0] = false;
+
+            // If all 3 mouse buttons are up, release capture.
+            if( g_MouseButtonStates[0] == false && g_MouseButtonStates[1] == false && g_MouseButtonStates[2] == false )
+            {
+                ReleaseCapture();
+            }
         }
         return 0;
 
     case WM_RBUTTONDOWN:
         {
+            // Tell Windows we want mouse messages (i.e. mouse button up) from outside the window.
+            SetCapture( hWnd );
+
             g_MouseButtonStates[1] = true;
         }
         return 0;
@@ -785,11 +797,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP:
         {
             g_MouseButtonStates[1] = false;
+
+            // If all 3 mouse buttons are up, release capture.
+            if( g_MouseButtonStates[0] == false && g_MouseButtonStates[1] == false && g_MouseButtonStates[2] == false )
+            {
+                ReleaseCapture();
+            }
         }
         return 0;
 
     case WM_MBUTTONDOWN:
         {
+            // Tell Windows we want mouse messages (i.e. mouse button up) from outside the window.
+            SetCapture( hWnd );
+
             g_MouseButtonStates[2] = true;
         }
         return 0;
@@ -797,6 +818,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_MBUTTONUP:
         {
             g_MouseButtonStates[2] = false;
+
+            // If all 3 mouse buttons are up, release capture.
+            if( g_MouseButtonStates[0] == false && g_MouseButtonStates[1] == false && g_MouseButtonStates[2] == false )
+            {
+                ReleaseCapture();
+            }
         }
         return 0;
 
