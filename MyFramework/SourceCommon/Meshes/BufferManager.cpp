@@ -180,11 +180,16 @@ void BufferDefinition::InitializeBuffer(void* pData, unsigned int dataSize, MyRE
         dataSizeChanged = true;
 
         // Delete old data block if necessary.
-        SAFE_DELETE_ARRAY( m_pData );
+        if( m_pData != pData )
+        {
+            SAFE_DELETE_ARRAY( m_pData );
+        }
 
         // If no data block was passed in, allocate one if dataSize isn't 0.
         if( pData == nullptr && dataSize != 0 )
+        {
             pData = MyNew char[dataSize];
+        }
     }
 
     m_pBuffer->InitializeBuffer( dataSizeChanged, pData, dataSize, bufferType, bufferUsage, bufferData, numBuffersToAllocate, format, pVertexFormatDesc, category, desc );

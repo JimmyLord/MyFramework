@@ -10,8 +10,8 @@
 #include "MyFrameworkPCH.h"
 
 #include "MyMatrix.h"
-#include "../DataTypes/MyQuaternion.h"
-#include "../DataTypes/Vector.h"
+#include "MyQuaternion.h"
+#include "Vector.h"
 
 void MyMatrix::SetIdentity()
 {
@@ -293,7 +293,7 @@ void MyMatrix::CreateFrustum(float left, float right, float bottom, float top, f
 
 void MyMatrix::CreatePerspectiveVFoV(float vertfovdegrees, float aspect, float nearZ, float farZ)
 {
-    GLfloat frustumRight, frustumTop;
+    float frustumRight, frustumTop;
    
     frustumTop = tanf( vertfovdegrees/2 * PI/180.0f ) * nearZ;
     frustumRight = frustumTop * aspect;
@@ -303,7 +303,7 @@ void MyMatrix::CreatePerspectiveVFoV(float vertfovdegrees, float aspect, float n
 
 void MyMatrix::CreatePerspectiveHFoV(float horfovdegrees, float aspect, float nearZ, float farZ)
 {
-    GLfloat frustumRight, frustumTop;
+    float frustumRight, frustumTop;
    
     frustumRight = tanf( horfovdegrees/2 * PI/180.0f ) * nearZ;
     frustumTop = frustumRight / aspect;

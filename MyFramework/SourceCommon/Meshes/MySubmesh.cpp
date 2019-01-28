@@ -246,7 +246,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
             pShader->ProgramBoneTransforms( &identitymat, 1 );
         }
 
-        if( pIndexBuffer )
+        if( pIndexBuffer && numIndicesToDraw > 0 )
             g_pRenderer->DrawElements( primitiveType, numIndicesToDraw, IBOType, 0, hideFromDrawList );
         else
             g_pRenderer->DrawArrays( primitiveType, 0, numVertsToDraw, hideFromDrawList );
@@ -301,7 +301,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
                     IBOType = pIndexBuffer->GetIBOType();
                 }
 
-                if( pIndexBuffer )
+                if( pIndexBuffer && numIndicesToDraw > 0 )
                     g_pRenderer->DrawElements( primitiveType, numIndicesToDraw, IBOType, 0, hideFromDrawList );
                 else
                     g_pRenderer->DrawArrays( primitiveType, 0, numVertsToDraw, hideFromDrawList );
