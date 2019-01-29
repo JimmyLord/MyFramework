@@ -54,6 +54,18 @@ template <class MyType> void MyClamp(MyType &value, MyType min, MyType max)
         value = max;
 }
 
+template <class MyType> void MyClampMin(MyType &value, MyType min)
+{
+    if( value < min )
+        value = min;
+}
+
+template <class MyType> void MyClampMax(MyType &value, MyType max)
+{
+    if( value > max )
+        value = max;
+}
+
 template <class MyType> MyType MyClamp_Return(MyType value, MyType min, MyType max)
 {
     MyType temp = value;
