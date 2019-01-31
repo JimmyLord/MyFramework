@@ -15,11 +15,11 @@ class DragAndDropTreeMarker;
 
 extern PanelObjectList* g_pPanelObjectList;
 
-typedef void (*PanelObjectListObjectCallback)(void* pObjectPtr);
-typedef void (*PanelObjectListObjectCallbackLeftClick)(void* pObjectPtr, wxTreeItemId id, unsigned int count);
-typedef void (*PanelObjectListObjectCallbackRightClick)(void* pObjectPtr, wxTreeItemId id);
-typedef void (*PanelObjectListObjectCallbackDropTarget)(void* pObjectPtr, wxTreeItemId id, int controlid, int x, int y);
-typedef void (*PanelObjectListObjectCallbackLabelEdit)(void* pObjectPtr, wxTreeItemId id, wxString);
+typedef void PanelObjectListObjectCallback(void* pObjectPtr);
+typedef void PanelObjectListObjectCallbackLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count);
+typedef void PanelObjectListObjectCallbackRightClick(void* pObjectPtr, wxTreeItemId id);
+typedef void PanelObjectListObjectCallbackDropTarget(void* pObjectPtr, wxTreeItemId id, int controlid, int x, int y);
+typedef void PanelObjectListObjectCallbackLabelEdit(void* pObjectPtr, wxTreeItemId id, wxString);
 
 typedef void (*PanelObjectListCallback)(void* pObjectPtr);
 
@@ -56,11 +56,11 @@ public:
     void* m_pObject;
     void* m_pUserData;
 
-    PanelObjectListObjectCallbackLeftClick m_pLeftClickFunction;
-    PanelObjectListObjectCallbackRightClick m_pRightClickFunction;
-    PanelObjectListObjectCallback m_pDragFunction;
-    PanelObjectListObjectCallbackDropTarget m_pDropFunction;
-    PanelObjectListObjectCallbackLabelEdit m_pLabelEditFunction;
+    PanelObjectListObjectCallbackLeftClick* m_pLeftClickFunction;
+    PanelObjectListObjectCallbackRightClick* m_pRightClickFunction;
+    PanelObjectListObjectCallback* m_pDragFunction;
+    PanelObjectListObjectCallbackDropTarget* m_pDropFunction;
+    PanelObjectListObjectCallbackLabelEdit* m_pLabelEditFunction;
 
     // a different object can receive the callback function if needed.
     void* m_pObject_LeftClick;
@@ -129,12 +129,12 @@ public:
 
     //void Refresh();
     wxTreeItemId GetTreeRoot();
-    void SetTreeRootData(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
-    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
+    void SetTreeRootData(void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, const char* category, const char* desc, int iconindex = -1);
+    wxTreeItemId AddObject(void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, wxTreeItemId parentid, const char* desc, int iconindex = -1);
 
     void SetIcon(wxTreeItemId id, int iconindex);
-    void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListObjectCallback pDragFunction, PanelObjectListObjectCallbackDropTarget pDropFunction);
+    void SetDragAndDropFunctions(wxTreeItemId id, PanelObjectListObjectCallback* pDragFunction, PanelObjectListObjectCallbackDropTarget* pDropFunction);
     void SetLabelEditFunction(wxTreeItemId id, PanelObjectListObjectCallbackLabelEdit pLabelEditFunction);
     void SetCustomObjectForCallback_LeftClick(wxTreeItemId id, void* pObject);
     void SetCustomObjectForCallback_RightClick(wxTreeItemId id, void* pObject);

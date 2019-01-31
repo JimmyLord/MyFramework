@@ -9,7 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
-MessageLogCallbackFunction g_pMessageLogCallbackFunction = 0;
+MessageLogCallbackFunction* g_pMessageLogCallbackFunction = 0;
 
 #if MYFW_WINDOWS || (MYFW_WP8 && _DEBUG)
 

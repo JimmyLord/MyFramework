@@ -12,7 +12,7 @@
 #include "EventManager.h"
 #include "MyEvent.h"
 
-EventTypeHashFunction g_pEventTypeHashFunc = &hash_djb2;
+EventTypeHashFunction* g_pEventTypeHashFunc = &hash_djb2;
 
 MyEvent::MyEvent()
 {

@@ -18,14 +18,14 @@ class MyEvent;
 
 extern EventManager* g_pEventManager;
 
-typedef bool (*EventCallbackFunc)(void* pObjectPtr, MyEvent* pEvent);
+typedef bool EventCallbackFunc(void* pObjectPtr, MyEvent* pEvent);
 
 class MyEventHandler
 {
 public:
     EventHashType m_EventTypeHash; // Either from EventTypes enum or calculated via hash (hash_djb).
     void* m_pObject;
-    EventCallbackFunc m_pOnEventFunction;
+    EventCallbackFunc* m_pOnEventFunction;
 
 public:
     MyEventHandler()
@@ -65,12 +65,12 @@ public:
     void Tick(float deltaTime);
 
     MyEvent* CreateNewEvent(const char* name);
-    void RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
-    void UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction);
+    void RegisterForEvents(const char* name, void* pObject, EventCallbackFunc* pOnEventFunction);
+    void UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc* pOnEventFunction);
 
     MyEvent* CreateNewEvent(EventHashType hash);
-    void RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction);
-    void UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction);
+    void RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc* pOnEventFunction);
+    void UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc* pOnEventFunction);
 
     void QueueEvent(MyEvent* pEvent);
     void SendEventNow(MyEvent* pEvent);

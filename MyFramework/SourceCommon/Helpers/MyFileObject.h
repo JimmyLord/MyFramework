@@ -18,13 +18,13 @@ class MyFileObject;
 char* PlatformSpecific_LoadFile(const char* filename, int* length = nullptr, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif
 
-typedef void (*PanelObjectListObjectCallback)(void*);
+typedef void PanelObjectListObjectCallback(void*);
 
-typedef void (*FileFinishedLoadingCallbackFunc)(void* pObjectPtr, MyFileObject* pFile);
+typedef void FileFinishedLoadingCallbackFunc(void* pObjectPtr, MyFileObject* pFile);
 struct FileFinishedLoadingCallbackStruct : public TCPPListNode<FileFinishedLoadingCallbackStruct*>
 {
     void* pObj;
-    FileFinishedLoadingCallbackFunc pFunc;
+    FileFinishedLoadingCallbackFunc* pFunc;
 };
 
 extern MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;
@@ -112,7 +112,7 @@ public:
 #endif
 
     // Callbacks
-    void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback);
+    void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc* pCallback);
     void UnregisterFileFinishedLoadingCallback(void* pObj);
 
 protected:
@@ -161,9 +161,9 @@ public:
     static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
     void OnDrag();
 
-    PanelObjectListObjectCallback m_CustomLeftClickCallback;
+    PanelObjectListObjectCallback* m_CustomLeftClickCallback;
     void* m_CustomLeftClickObject;
-    void SetCustomLeftClickCallback(PanelObjectListObjectCallback callback, void* object);
+    void SetCustomLeftClickCallback(PanelObjectListObjectCallback* callback, void* object);
 #endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };

@@ -256,7 +256,7 @@ MaterialDefinition* MaterialManager::FindMaterialByFilename(const char* fullpath
     return nullptr;
 }
 
-void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback)
+void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc* pCallback)
 {
     MyAssert( pObj != nullptr );
     MyAssert( pCallback != nullptr );

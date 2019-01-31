@@ -11,8 +11,8 @@
 #define __MyEvent_H__
 
 #define EventHashType uint32
-typedef EventHashType (*EventTypeHashFunction)(const char* str);
-extern EventTypeHashFunction g_pEventTypeHashFunc;
+typedef EventHashType EventTypeHashFunction(const char* str);
+extern EventTypeHashFunction* g_pEventTypeHashFunc;
 
 struct MyEventArgument
 {

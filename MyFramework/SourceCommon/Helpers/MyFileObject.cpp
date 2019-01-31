@@ -245,7 +245,7 @@ const char* MyFileObject::GetFilename()
     return 0;
 }
 
-void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc pCallback)
+void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc* pCallback)
 {
     MyAssert( pCallback != nullptr );
 

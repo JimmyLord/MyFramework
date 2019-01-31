@@ -22,9 +22,9 @@ MySaveFileObject* CreatePlatformSpecificSaveFile();
 MyFileObject* RequestFile(const char* filename);
 #endif
 
-typedef void (*FileManager_OnFileUpdated_CallbackFunction)(MyFileObject* pFile);
-typedef void (*FileManager_Editor_OnFileUnloaded_CallbackFunction)(void* pObject, MyFileObject* pFile);
-typedef void (*FileManager_Editor_OnFindAllReferences_CallbackFunction)(void* pObject, MyFileObject* pFile);
+typedef void FileManager_OnFileUpdated_CallbackFunction(MyFileObject* pFile);
+typedef void FileManager_Editor_OnFileUnloaded_CallbackFunction(void* pObject, MyFileObject* pFile);
+typedef void FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);
 
 class FileManager
 {
@@ -70,7 +70,7 @@ public:
     void ReloadFile(MyFileObject* pFile);
     void FinishSuccessfullyLoadingFile(MyFileObject* pFile);
     void Tick();
-    int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc);
+    int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc);
 
     MyFileObject* GetFirstFileLoaded() { return m_FilesLoaded.GetHead(); }
     MyFileObject* GetFirstFileStillLoading() { return m_FilesStillLoading.GetHead(); }
@@ -80,19 +80,19 @@ public:
 #if MYFW_EDITOR
 protected:
     void* m_pFileUnloadedCallbackObj;
-    FileManager_Editor_OnFileUnloaded_CallbackFunction m_pFileUnloadedCallbackFunc;
+    FileManager_Editor_OnFileUnloaded_CallbackFunction* m_pFileUnloadedCallbackFunc;
 
     void* m_pFindAllReferencesCallbackObj;
-    FileManager_Editor_OnFindAllReferences_CallbackFunction m_pFindAllReferencesCallbackFunc;    
+    FileManager_Editor_OnFindAllReferences_CallbackFunction* m_pFindAllReferencesCallbackFunc;    
 
 public:
     bool DoesFileExist(const char* fullpath);
     MyFileObject* LoadFileNow(const char* fullpath);
 
-    void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc);
+    void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction* pFunc);
     void Editor_UnloadFile(MyFileObject* pFile);
 
-    void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc);
+    void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction* pFunc);
     void Editor_FindAllReferences(MyFileObject* pFile);
 
     void SortFileLists();

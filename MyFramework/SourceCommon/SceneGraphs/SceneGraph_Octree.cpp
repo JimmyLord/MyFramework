@@ -339,7 +339,7 @@ void SceneGraph_Octree::ObjectMoved(SceneGraphObject* pObject)
     m_pRootNode->m_Renderables.MoveTail( pObject );
 }
 
-void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
 {
     if( m_Dirty )
     {
@@ -349,7 +349,7 @@ void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawO
     DrawNode( m_pRootNode, drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatProj, pMatView, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
 }
 
-void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc)
+void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
 {
     // Draw all scene graph objects contained in this node.
 

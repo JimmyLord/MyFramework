@@ -16,11 +16,11 @@ class TextureDefinition;
 
 extern MaterialManager* g_pMaterialManager;
 
-typedef void (*MaterialCreatedCallbackFunc)(void* pObjectPtr, MaterialDefinition* pMaterial);
+typedef void MaterialCreatedCallbackFunc(void* pObjectPtr, MaterialDefinition* pMaterial);
 struct MaterialCreatedCallbackStruct
 {
     void* pObj;
-    MaterialCreatedCallbackFunc pFunc;
+    MaterialCreatedCallbackFunc* pFunc;
 };
 
 class MaterialManager
@@ -54,7 +54,7 @@ public:
     void FreeAllMaterials();
 
     // Callbacks.
-    void RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc pCallback);
+    void RegisterMaterialCreatedCallback(void* pObj, MaterialCreatedCallbackFunc* pCallback);
 
 #if MYFW_EDITOR
     void SaveAllMaterials(bool saveunchanged = false);

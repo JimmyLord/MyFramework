@@ -494,7 +494,7 @@ int SoundManager::PlayCue(SoundCue* pCue)
     return g_pGameCore->GetSoundPlayer()->PlaySound( pSoundObject );
 }
 
-void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback)
+void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc* pCallback)
 {
     MyAssert( pCallback != nullptr );
     MyAssert( m_pSoundCueCreatedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );
@@ -506,7 +506,7 @@ void SoundManager::RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackF
     m_pSoundCueCreatedCallbackList.Add( callbackstruct );
 }
 
-void SoundManager::RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback)
+void SoundManager::RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc* pCallback)
 {
     MyAssert( pCallback != nullptr );
     MyAssert( m_pSoundCueUnloadedCallbackList.Count() < (unsigned int)MAX_REGISTERED_CALLBACKS );

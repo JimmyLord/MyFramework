@@ -353,7 +353,7 @@ void FileManager::Tick()
 #endif
 }
 
-int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction pCallbackFunc)
+int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc)
 {
     int numfilesupdated = 0;
 
@@ -453,7 +453,7 @@ MyFileObject* FileManager::LoadFileNow(const char* fullpath)
     return pFile;
 }
 
-void FileManager::RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction pFunc)
+void FileManager::RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction* pFunc)
 {
     m_pFileUnloadedCallbackObj = pObject;
     m_pFileUnloadedCallbackFunc = pFunc;
@@ -467,7 +467,7 @@ void FileManager::Editor_UnloadFile(MyFileObject* pFile)
     }
 }
 
-void FileManager::RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction pFunc)
+void FileManager::RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction* pFunc)
 {
     m_pFindAllReferencesCallbackObj = pObject;
     m_pFindAllReferencesCallbackFunc = pFunc;

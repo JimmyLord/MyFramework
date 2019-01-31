@@ -30,7 +30,7 @@ extern ShaderGroupManager* g_pShaderGroupManager;
 extern const char* g_ShaderPassDefines[ShaderPass_NumTypes];
 extern ShaderPassTypes g_ActiveShaderPass;
 
-typedef Shader_Base* (*ShaderGroupShaderAllocationFunction)(ShaderPassTypes passtype);
+typedef Shader_Base* ShaderGroupShaderAllocationFunction(ShaderPassTypes passtype);
 
 class ShaderGroup : public TCPPListNode<ShaderGroup*>, public RefCount
 {
@@ -42,7 +42,7 @@ protected:
     MyFileObjectShader* m_pFile;
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
 
-    ShaderGroupShaderAllocationFunction m_pShaderAllocationFunction;
+    ShaderGroupShaderAllocationFunction* m_pShaderAllocationFunction;
 
 protected:
     void Initialize();
@@ -52,8 +52,8 @@ public:
     ShaderGroup();
     ShaderGroup(const char* pFilename);
     ShaderGroup(MyFileObject* pFile);
-    ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);
-    void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc);
+    ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc);
+    void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc);
 
     ~ShaderGroup();
 

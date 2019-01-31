@@ -261,7 +261,7 @@ void PanelMemory::UpdateRootNodeBufferCount()
     m_pNotebook->SetPageText( PanelMemoryPage_Buffers, tempstr );
 }
 
-void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::AddTexture(TextureDefinition* pTextureDef, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pTextureDef != 0 );
 
@@ -368,7 +368,7 @@ wxTreeItemId PanelMemory::FindMaterialCategory(const char* category)
     return idcategory;
 }
 
-void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::AddMaterial(MaterialDefinition* pMaterial, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pMaterial != 0 );
 
@@ -427,7 +427,7 @@ void PanelMemory::RemoveMaterial(MaterialDefinition* pMaterial)
     }
 }
 
-void PanelMemory::SetMaterialPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::SetMaterialPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -502,7 +502,7 @@ wxTreeItemId PanelMemory::FindFile(MyFileObject* pFile)
     return id;
 }
 
-void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::AddFile(MyFileObject* pFile, const char* category, const char* desc, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pFile != 0 );
 
@@ -573,7 +573,7 @@ void PanelMemory::RemoveFile(MyFileObject* pFile)
     }
 }
 
-void PanelMemory::SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::SetFilePanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -787,7 +787,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
     m_pNotebook->SetPageText( PanelMemoryPage_DrawCalls, tempstr );
 }
 
-void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::AddShaderGroup(ShaderGroup* pShaderGroup, const char* category, const char* desc, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pShaderGroup != 0 );
 
@@ -880,7 +880,7 @@ wxTreeItemId PanelMemory::FindSoundCue(SoundCue* pSoundCue)
     return id;
 }
 
-wxTreeItemId PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListObjectCallback pDragFunction)
+wxTreeItemId PanelMemory::AddSoundCue(SoundCue* pSoundCue, const char* category, const char* desc, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pSoundCue != 0 );
 
@@ -945,7 +945,7 @@ void PanelMemory::UpdateRootNodeSoundCueCount()
     m_pNotebook->SetPageText( PanelMemoryPage_SoundCues, tempstr );
 }
 
-wxTreeItemId PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListObjectCallback pDragFunction)
+wxTreeItemId PanelMemory::AddSoundObject(SoundObject* pSound, SoundCue* pSoundCue, const char* desc, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pSound != 0 );
     MyAssert( pSoundCue != 0 );
@@ -996,7 +996,7 @@ void PanelMemory::RemoveSoundObject(SoundObject* pSound)
     }
 }
 
-void PanelMemory::SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick pLeftClickFunction, PanelObjectListObjectCallbackRightClick pRightClickFunction, PanelObjectListObjectCallback pDragFunction)
+void PanelMemory::SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, PanelObjectListObjectCallbackLeftClick* pLeftClickFunction, PanelObjectListObjectCallbackRightClick* pRightClickFunction, PanelObjectListObjectCallback* pDragFunction)
 {
     MyAssert( pObject != 0 );
 
@@ -1015,7 +1015,7 @@ void PanelMemory::SetSoundPanelCallbacks(wxTreeItemId treeid, void* pObject, Pan
     }
 }
 
-void PanelMemory::SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListObjectCallbackLabelEdit pLabelEditFunction)
+void PanelMemory::SetLabelEditFunction(wxTreeCtrl* pTree, void* pObject, PanelObjectListObjectCallbackLabelEdit* pLabelEditFunction)
 {
     wxTreeItemId idroot = pTree->GetRootItem();
     wxTreeItemId id = FindObject( pTree, pObject, idroot );

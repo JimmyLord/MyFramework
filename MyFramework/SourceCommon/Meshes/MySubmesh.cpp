@@ -168,23 +168,29 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     int numVertsToDraw = m_NumVertsToDraw;
     int numIndicesToDraw = m_NumIndicesToDraw;
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
-    int pointSize = m_PointSize;        
+    int pointSize = m_PointSize;
+
+    MaterialDefinition* pMaterial = m_pMaterial;
 
 #if MYFW_EDITOR
-    MaterialDefinition* pMaterial = m_pMaterial;
     if( pMaterial == nullptr )
     {
         pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
     }
 #else
-    MaterialDefinition* pMaterial = m_pMaterial;
     if( pMaterial == nullptr && pShaderOverride == nullptr )
         return;
 #endif //MYFW_EDITOR
 
-    if( pIndexBuffer )
+    // Some meshes might have an unused index buffer if the primitive type was changes in the editor.
+    if( numIndicesToDraw == 0 )
     {
-        if( numIndicesToDraw == 0 )
+        pIndexBuffer = nullptr;
+    }
+
+    if( numIndicesToDraw > 0 )
+    {
+        if( pIndexBuffer == 0 )
             return;
     }
     else if( pVertexBuffer )
@@ -212,7 +218,7 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
         MyAssert( numIndicesToDraw > 0 );
         pIndexBuffer->Rebuild( 0, numIndicesToDraw*pIndexBuffer->GetBytesPerIndex() );
     }
-    MyAssert( ( pIndexBuffer == nullptr || pIndexBuffer->IsDirty() == false ) && pVertexBuffer->IsDirty() == false );
+    MyAssert( ( numIndicesToDraw == 0 || pIndexBuffer == nullptr || pIndexBuffer->IsDirty() == false ) && pVertexBuffer->IsDirty() == false );
 
     if( pShaderOverride )
     {
@@ -295,16 +301,15 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
                 SetupAttributes( pShader );
                 SetupMeshSpecificShaderUniforms( pShader, pMatProj, pMatView, pMatWorld, &matInverseWorld, pCamPos, pLightPtrs, numLights, shadowLightVP );
 
-                MyRE::IndexTypes IBOType = MyRE::IndexType_Undefined;
-                if( pIndexBuffer != nullptr )
+                if( numIndicesToDraw > 0 )
                 {
-                    IBOType = pIndexBuffer->GetIBOType();
-                }
-
-                if( pIndexBuffer && numIndicesToDraw > 0 )
+                    MyRE::IndexTypes IBOType = pIndexBuffer->GetIBOType();
                     g_pRenderer->DrawElements( primitiveType, numIndicesToDraw, IBOType, 0, hideFromDrawList );
+                }
                 else
+                {
                     g_pRenderer->DrawArrays( primitiveType, 0, numVertsToDraw, hideFromDrawList );
+                }
 
                 pShader->DeactivateShader( pVertexBuffer, true );
 

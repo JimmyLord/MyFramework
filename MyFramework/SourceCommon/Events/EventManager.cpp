@@ -65,7 +65,7 @@ MyEvent* EventManager::CreateNewEvent(const char* name)
     return CreateNewEvent( type );
 }
 
-void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallbackFunc* pOnEventFunction)
 {
 #if MYFW_EDITOR
     // Currently a safety check for duplicate hashes, so only done in editor mode.
@@ -80,7 +80,7 @@ void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallb
     RegisterForEvents( type, pObject, pOnEventFunction );
 }
 
-void EventManager::UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::UnregisterForEvents(const char* name, void* pObject, EventCallbackFunc* pOnEventFunction)
 {
     EventHashType type = g_pEventTypeHashFunc( name );
     return UnregisterForEvents( type, pObject, pOnEventFunction );
@@ -96,7 +96,7 @@ MyEvent* EventManager::CreateNewEvent(EventHashType hash)
     return pEvent;
 }
 
-void EventManager::RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::RegisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc* pOnEventFunction)
 {
     MyEventHandler* pEventHandler = m_pEventHandlerPool.GetObjectFromPool();
     
@@ -115,7 +115,7 @@ void EventManager::RegisterForEvents(EventHashType hash, void* pObject, EventCal
     }
 }
 
-void EventManager::UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc pOnEventFunction)
+void EventManager::UnregisterForEvents(EventHashType hash, void* pObject, EventCallbackFunc* pOnEventFunction)
 {
     for( unsigned int i=0; i<m_NumEventHandlers; i++ )
     {

@@ -20,11 +20,11 @@ class SoundObject;
 static const int MAX_SOUND_CUE_NAME_LEN = 32;
 static const int NUM_SOUND_CUES_TO_POOL = 128;
 
-typedef void (*SoundCueCallbackFunc)(void* pObjectPtr, SoundCue* pSoundCue);
+typedef void SoundCueCallbackFunc(void* pObjectPtr, SoundCue* pSoundCue);
 struct SoundCueCallbackStruct
 {
     void* pObj;
-    SoundCueCallbackFunc pFunc;
+    SoundCueCallbackFunc* pFunc;
 };
 
 class SoundCue : public TCPPListNode<SoundCue*>, public RefCount
@@ -105,8 +105,8 @@ public:
     SoundCue* GetCuesStillLoading() { return (SoundCue*)m_CuesStillLoading.GetHead(); }
 
     // Callbacks.
-    void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc pCallback);
-    void RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc pCallback);
+    void RegisterSoundCueCreatedCallback(void* pObj, SoundCueCallbackFunc* pCallback);
+    void RegisterSoundCueUnloadedCallback(void* pObj, SoundCueCallbackFunc* pCallback);
 
 #if MYFW_EDITOR
 protected:

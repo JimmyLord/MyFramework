@@ -12,8 +12,8 @@
 
 #define LOGTag "Flathead"
 
-typedef void (*MessageLogCallbackFunction)(int logtype, const char* tag, const char* message);
-extern MessageLogCallbackFunction g_pMessageLogCallbackFunction;
+typedef void MessageLogCallbackFunction(int logtype, const char* tag, const char* message);
+extern MessageLogCallbackFunction* g_pMessageLogCallbackFunction;
 
 #if MYFW_ANDROID
 

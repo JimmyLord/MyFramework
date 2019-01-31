@@ -42,7 +42,7 @@ struct MySkeletonNode
     ~MySkeletonNode() { delete[] m_Name; }
 };
 
-typedef void (*SetupCustomUniformsCallbackFunc)(void* pObjectPtr, Shader_Base* pShader);
+typedef void SetupCustomUniformsCallbackFunc(void* pObjectPtr, Shader_Base* pShader);
 
 class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
 {
@@ -65,7 +65,7 @@ protected:
     MyFileObject* m_pAnimationControlFile; // .myaniminfo file that holds control info for the animation data.
 
     // Custom uniform setup before final draw is called. TODO: replace this with custom uniform array in material.
-    SetupCustomUniformsCallbackFunc m_pSetupCustomUniformsCallback;
+    SetupCustomUniformsCallbackFunc* m_pSetupCustomUniformsCallback;
     void* m_pSetupCustomUniformsObjectPtr;
 
     MyList<MySubmesh*> m_SubmeshList;
@@ -147,7 +147,7 @@ public:
     void SaveAnimationControlFile();
 #endif
 
-    void RegisterSetupCustomUniformsCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc pCallback);
+    void RegisterSetupCustomUniformsCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc* pCallback);
 
     // Shape creation functions.  Defined in MyMeshShapes.cpp
     void CreateClipSpaceQuad(Vector2 maxUV);

@@ -43,12 +43,12 @@ ShaderGroup::ShaderGroup(MyFileObject* pFile)
     Create( pFile, 0 );
 }
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
+ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc)
 {
     Create( pFile, pFunc );
 }
 
-void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction pFunc)
+void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc)
 {
     if( pFile && pFile->IsA( "MyFileShader" ) == false )
     {

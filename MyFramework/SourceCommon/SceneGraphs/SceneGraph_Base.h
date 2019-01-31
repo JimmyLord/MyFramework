@@ -34,7 +34,7 @@ enum EmissiveDrawOptions
     EmissiveDrawOption_OnlyEmissives,
 };
 
-typedef void (*PreDrawCallbackFunctionPtr)(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
+typedef void PreDrawCallbackFunctionPtr(SceneGraphObject* pObject, ShaderGroup* pShaderOverride);
 
 class SceneGraphObject : public TCPPListNode<SceneGraphObject*>
 {
@@ -99,7 +99,7 @@ public:
     virtual void ObjectMoved(SceneGraphObject* pObject) = 0;
 
     bool ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender);
-    virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr pPreDrawCallbackFunc) = 0;
+    virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc) = 0;
 };
 
 #endif //__SceneGraph_Base_H__
