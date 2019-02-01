@@ -698,16 +698,16 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
 
 void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount, Vector2 uvStart, Vector2 uvRange, bool createTriangles)
 {
-    int numverts = vertCount.x * vertCount.y;
-    if( numverts < 0 || numverts > 65535 )
+    int numVerts = vertCount.x * vertCount.y;
+    if( numVerts < 0 || numVerts > 65535 )
         return;
 
     //LOGInfo( LOGTag, "MyMesh::CreatePlane\n" );
 
-    unsigned int numtris = (vertCount.x - 1) * (vertCount.y - 1) * 2;
-    unsigned int numindices = numtris * 3;
+    unsigned int numTris = (vertCount.x - 1) * (vertCount.y - 1) * 2;
+    unsigned int numIndices = numTris * 3;
     if( createTriangles == false )
-        numindices = numverts;
+        numIndices = numVerts;
 
     if( m_SubmeshList.Length() == 0 )
     {
@@ -715,8 +715,8 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
     }
     MyAssert( m_SubmeshList.Count() == 1 );
 
-    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
-    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numVerts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numIndices;
 
     if( m_SubmeshList[0]->m_pVertexBuffer == nullptr )
     {
@@ -728,33 +728,33 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
         m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
     }
 
-    // Delete the old buffers, if we want a plane with more.
+    // Delete the old vertex buffer, if we want a plane with more.
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
-    if( sizeof(Vertex_XYZUV)*numverts != m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
-        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-        pVerts = MyNew Vertex_XYZUV[numverts];
+        if( sizeof(Vertex_XYZUV)*numVerts != m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
+        {
+            m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+            pVerts = MyNew Vertex_XYZUV[numVerts];
+        }
+
+        // Reinitialize the vertex buffer, since we might be changing vertexformat or other properties.
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numVerts,
+            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
     }
 
-    // Reinitialize the vertex buffer, since we might be changing vertexformat or other properties.
-    m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
-    m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts,
-        MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
-
-    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
+    // Delete the old index buffer, if we want a plane with more.
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     {
-        m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
-        unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices,
+        if( sizeof(unsigned short)*numIndices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
+        {
+            m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
+            pIndices = MyNew unsigned short[numIndices];
+        }
+
+        // Reinitialize the index buffer, since we might be changing the bytes per index or other properties.
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numIndices,
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
-    }
-
-    //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
-
-    unsigned short* pIndices = nullptr;
-    //if( createtriangles )
-    {
-        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     }
 
     for( int y = 0; y < vertCount.y; y++ )
@@ -781,16 +781,16 @@ void MyMesh::CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount,
         {
             for( int x = 0; x < vertCount.x - 1; x++ )
             {
-                int elementindex = (y * (vertCount.x-1) + x) * 6;
-                unsigned short vertexindex = (unsigned short)(y * vertCount.x + x);
+                int elementIndex = (y * (vertCount.x-1) + x) * 6;
+                unsigned short vertexIndex = (unsigned short)(y * vertCount.x + x);
 
-                pIndices[ elementindex + 0 ] = vertexindex + 0;
-                pIndices[ elementindex + 1 ] = vertexindex + 1;
-                pIndices[ elementindex + 2 ] = vertexindex + (unsigned short)vertCount.x;
+                pIndices[ elementIndex + 0 ] = vertexIndex + 0;
+                pIndices[ elementIndex + 1 ] = vertexIndex + 1;
+                pIndices[ elementIndex + 2 ] = vertexIndex + (unsigned short)vertCount.x;
 
-                pIndices[ elementindex + 3 ] = vertexindex + 1;
-                pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertCount.x + 1;
-                pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertCount.x;
+                pIndices[ elementIndex + 3 ] = vertexIndex + 1;
+                pIndices[ elementIndex + 4 ] = vertexIndex + (unsigned short)vertCount.x + 1;
+                pIndices[ elementIndex + 5 ] = vertexIndex + (unsigned short)vertCount.x;
             }
         }
     }
@@ -815,14 +815,14 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
 {
     //LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared\n" );
 
-    unsigned int numquads = (vertCount.x - 1) * (vertCount.y - 1);
-    unsigned int numtris = numquads * 2;
-    unsigned int numverts = numquads * 4;
-    unsigned int numindices = numtris * 3;
+    unsigned int numQuads = (vertCount.x - 1) * (vertCount.y - 1);
+    unsigned int numTris = numQuads * 2;
+    unsigned int numVerts = numQuads * 4;
+    unsigned int numIndices = numTris * 3;
 
-    if( numverts > 65535 )
+    if( numVerts > 65535 )
     {
-        LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared - too many verts needed for unsigned short indices - %d\n", numverts );
+        LOGInfo( LOGTag, "MyMesh::CreatePlaneUVsNotShared - too many verts needed for unsigned short indices - %d\n", numVerts );
         return;
     }
 
@@ -835,8 +835,8 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
     }
     MyAssert( m_SubmeshList.Count() == 1 );
 
-    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numverts;
-    m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
+    m_SubmeshList[0]->m_NumVertsToDraw = (unsigned short)numVerts;
+    m_SubmeshList[0]->m_NumIndicesToDraw = numIndices;
 
     if( m_SubmeshList[0]->m_pVertexBuffer == nullptr )
     {
@@ -850,31 +850,31 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
 
     // Delete the old buffers, if we want a plane with more.
     Vertex_XYZUV* pVerts = (Vertex_XYZUV*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
-    if( sizeof(Vertex_XYZUV)*numverts != m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
     {
-        m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-        pVerts = MyNew Vertex_XYZUV[numverts];
+        if( sizeof(Vertex_XYZUV)*numVerts != m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
+        {
+            m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
+            pVerts = MyNew Vertex_XYZUV[numVerts];
+        }
+
+        // Reinitialize the vertex buffer, since we might be changing vertexformat or other properties.
+        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
+        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numVerts,
+            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
     }
 
-    // Reinitialize the vertex buffer, since we might be changing vertexformat or other properties.
-    m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV;
-    m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV)*numverts,
-        MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV, nullptr, "MyMesh_Plane", "Verts" );
-
-    if( sizeof(unsigned short)*numindices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
+    // Delete the old index buffer, if we want a plane with more.
+    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     {
-        m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
-        unsigned short* pIndices = MyNew unsigned short[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numindices,
+        if( sizeof(unsigned short)*numIndices > m_SubmeshList[0]->m_pIndexBuffer->GetDataSize() )
+        {
+            m_SubmeshList[0]->m_pIndexBuffer->FreeBufferedData();
+            pIndices = MyNew unsigned short[numIndices];
+        }
+
+        // Reinitialize the index buffer, since we might be changing the bytes per index or other properties.
+        m_SubmeshList[0]->m_pIndexBuffer->InitializeBuffer( pIndices, sizeof(unsigned short)*numIndices,
             MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Plane", "Indices" );
-    }
-
-    //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = 2;
-
-    unsigned short* pIndices = nullptr;
-    //if( createtriangles )
-    {
-        pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
     }
 
     // Loop through the quads.
@@ -923,26 +923,6 @@ void MyMesh::CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2In
             //    pIndices[index] = index;
         }
     }
-
-    //if( createtriangles )
-    //{
-    //    for( int y = 0; y < vertcount.y - 1; y++ )
-    //    {
-    //        for( int x = 0; x < vertcount.x - 1; x++ )
-    //        {
-    //            int elementindex = (y * (vertcount.x-1) + x) * 6;
-    //            unsigned short vertexindex = (unsigned short)(y * vertcount.x + x);
-
-    //            pIndices[ elementindex + 0 ] = vertexindex + 0;
-    //            pIndices[ elementindex + 1 ] = vertexindex + (unsigned short)vertcount.x;
-    //            pIndices[ elementindex + 2 ] = vertexindex + 1;
-
-    //            pIndices[ elementindex + 3 ] = vertexindex + 1;
-    //            pIndices[ elementindex + 4 ] = vertexindex + (unsigned short)vertcount.x;
-    //            pIndices[ elementindex + 5 ] = vertexindex + (unsigned short)vertcount.x + 1;
-    //        }
-    //    }
-    //}
 
     Vector3 center( topLeftPos.x + size.x/2, topLeftPos.y, topLeftPos.z + size.y/ 2 );
     m_AABounds.Set( center, Vector3(size.x/2, 0, size.y/2) );
