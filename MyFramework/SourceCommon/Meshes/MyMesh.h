@@ -12,6 +12,7 @@
 
 #include "../DataTypes/ColorStructs.h"
 #include "../DataTypes/MyAABounds.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
 #include "../Shaders/VertexFormats.h"
 
 class BufferDefinition;
@@ -150,6 +151,11 @@ public:
     void RegisterSetupCustomUniformsCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc* pCallback);
 
     // Shape creation functions.  Defined in MyMeshShapes.cpp
+private:
+    void CreateShapeBuffers(bool createIndexBuffer);
+    void RebuildShapeBuffers(uint32 numVerts, VertexFormats vertexFormat, MyRE::PrimitiveTypes primitiveType, uint32 numIndices, MyRE::IndexTypes indexType, const char* category);
+
+public:
     void CreateClipSpaceQuad(Vector2 maxUV);
     void CreateBox(float boxWidth, float boxHeight, float boxDepth, float startU, float endU, float startV, float endV, unsigned char justificationFlags, Vector3 offset);
     void CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDepth, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV, unsigned char justificationFlags);

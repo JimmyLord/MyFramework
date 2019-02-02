@@ -14,6 +14,13 @@
 
 namespace MyRE // MyRendererEnums
 {
+    const int IndexTypeByteSizes[MyRE::IndexType_NumTypes] =
+    {
+        1,
+        2,
+        4,
+    };
+
     const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes] =
     {
         "Use Shader Setting",

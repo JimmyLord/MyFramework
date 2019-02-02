@@ -77,7 +77,8 @@ namespace MyRE // MyRendererEnums
         IndexType_U8,
         IndexType_U16,
         IndexType_U32,
-        IndexType_Undefined,
+        IndexType_NumTypes,
+        IndexType_Undefined = IndexType_NumTypes,
     };
 
     enum MaterialBlendTypes
@@ -205,6 +206,7 @@ namespace MyRE // MyRendererEnums
     };
 
     extern const char* MaterialBlendTypeStrings[MyRE::MaterialBlendType_NumTypes];
+    extern const int IndexTypeByteSizes[MyRE::IndexType_NumTypes];
 } //namespace MyRE
 
 #endif //__Renderer_Enums_H__
