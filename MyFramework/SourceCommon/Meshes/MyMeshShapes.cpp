@@ -88,26 +88,11 @@ void MyMesh::RebuildShapeBuffers(uint32 numVerts, VertexFormats vertexFormat, My
 
 void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
+    unsigned short numVerts = 4;
+    unsigned int numIndices = 0;
 
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == nullptr );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == nullptr );
-
-    unsigned short numverts = 4;
-    unsigned int numindices = 0;
-
-    // Create a vertex buffer and reinitialize the submesh, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_Sprite;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_TriangleStrip;
-
-        Vertex_Sprite* pVerts = MyNew Vertex_Sprite[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*24,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_Sprite, nullptr, "MyMesh_ScreenSpaceQuad", "Verts" );
-    }
+    // Reinitialize the submesh properties along with the vertex buffer.
+    RebuildShapeBuffers( numVerts, VertexFormat_Sprite, MyRE::PrimitiveType_TriangleStrip, 0, MyRE::IndexType_Undefined, "MyMesh_ScreenSpaceQuad" );
 
     Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
@@ -126,35 +111,14 @@ void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
 
 void MyMesh::CreateBox(float boxWidth, float boxHeight, float boxDepth, float startU, float endU, float startV, float endV, unsigned char justificationFlags, Vector3 offset)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
+    unsigned short numVerts = 24;
+    unsigned int numIndices = 36;
 
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == nullptr );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == nullptr );
-
-    unsigned short numverts = 24;
-    unsigned int numindices = 36;
-
-    // Create a vertex buffer and reinitialize the submesh, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Triangles;
-
-        Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*24,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUVNorm, nullptr, "MyMesh_Box", "Verts" );
-    }
-
-    {
-        unsigned short* pIndices = MyNew unsigned short[36];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36,
-            MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Box", "Indices" );
-    }
+    // Reinitialize the submesh properties along with the vertex and index buffers.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZUVNorm, MyRE::PrimitiveType_Triangles, numIndices, MyRE::IndexType_U8, "MyMesh_Box" );
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
-    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
+    unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     if( pVerts && pIndices )
     {
@@ -199,7 +163,7 @@ void MyMesh::CreateBox(float boxWidth, float boxHeight, float boxDepth, float st
         zfront += offset.z;
         zback += offset.z;
 
-        GLushort side;
+        unsigned char side;
 
         // Front.
         side = 0;
@@ -274,35 +238,14 @@ void MyMesh::CreateBox(float boxWidth, float boxHeight, float boxDepth, float st
 
 void MyMesh::CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDepth, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV, unsigned char justificationFlags)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
+    unsigned short numVerts = 24;
+    unsigned int numIndices = 36;
 
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == nullptr );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == nullptr );
-
-    unsigned short numverts = 24;
-    unsigned int numindices = 36;
-
-    // Create a vertex buffer and reinitialize the submesh, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Triangles;
-
-        Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[24];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*24,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 2, VertexFormat_XYZUV_RGBA, nullptr, "MyMesh_BoxXYZUVRGBA", "Verts" );
-    }
-
-    {
-        unsigned short* pIndices = MyNew unsigned short[36];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*36,
-            MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_BoxXYZUVRGBA", "Indices" );
-    }
+    // Reinitialize the submesh properties along with the vertex and index buffers.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZUV_RGBA, MyRE::PrimitiveType_Triangles, numIndices, MyRE::IndexType_U8, "MyMesh_BoxXYZUVRGBA" );
 
     Vertex_XYZUV_RGBA_Alt* pVerts = (Vertex_XYZUV_RGBA_Alt*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
-    unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
+    unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
 
     if( pVerts && pIndices )
     {
@@ -345,7 +288,7 @@ void MyMesh::CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDept
             xright -= boxWidth / 2.0f;
         }
 
-        GLushort side;
+        unsigned char side;
 
         // Front.
         side = 0;
@@ -473,12 +416,6 @@ void MyMesh::SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorB
 
 void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edgeRadius, float height, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
-
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == nullptr );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == nullptr );
-
     float uperc, vperc;
 
     unsigned short topverts = numSegments + 1;
@@ -486,26 +423,11 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
     unsigned short sideverts = (numSegments + 1) * 2; // +1 since I'm doubling a column of verts to allow mapping from atlas.
     unsigned int numtris = numSegments * 8;
 
-    unsigned short numverts = (topverts + edgeverts)*2 + sideverts;
-    unsigned int numindices = numtris*3;
+    unsigned short numVerts = (topverts + edgeverts)*2 + sideverts;
+    unsigned int numIndices = numtris*3;
 
-    // Create a vertex buffer and reinitialize the submesh, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUVNorm;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Triangles;
-
-        Vertex_XYZUVNorm* pVerts = MyNew Vertex_XYZUVNorm[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUVNorm)*numverts,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUVNorm, nullptr, "MyMesh_Cylinder", "Verts" );
-    }
-
-    {
-        unsigned short* pIndices = MyNew unsigned short[numtris*3];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned short)*numtris*3,
-            MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 2, "MyMesh_Cylinder", "Indices" );
-    }
+    // Reinitialize the submesh properties along with the vertex and index buffers.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZUVNorm, MyRE::PrimitiveType_Triangles, numIndices, MyRE::IndexType_U16, "MyMesh_Cylinder" );
 
     Vertex_XYZUVNorm* pVerts = (Vertex_XYZUVNorm*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
     unsigned short* pIndices = (unsigned short*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
@@ -1129,7 +1051,7 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberOfSegments)
     int numVerts = numberOfSegments;
 
     // Reinitialize the submesh properties along with the vertex buffer.
-    RebuildShapeBuffers( numVerts, VertexFormat_Sprite, MyRE::PrimitiveType_TriangleFan, 0, MyRE::IndexType_Undefined, "MyMesh_2dCircle" );
+    RebuildShapeBuffers( numVerts, VertexFormat_Sprite, MyRE::PrimitiveType_TriangleFan, 0, MyRE::IndexType_Undefined, "MyMesh_2DCircle" );
 
     Vertex_Sprite* pVerts = (Vertex_Sprite*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
 
@@ -1199,30 +1121,13 @@ void MyMesh::CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount
 {
     LOGInfo( LOGTag, "MyMesh::CreateGrass numverts: %d,%d\n", bladeCount.x, bladeCount.y );
 
-    CreateShapeBuffers( false );
+    int numVerts = bladeCount.x * bladeCount.y * 3;
+    unsigned int numIndices = 0;
+
+    // Reinitialize the submesh properties along with the vertex buffer.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZUV_RGBA, MyRE::PrimitiveType_Triangles, 0, MyRE::IndexType_Undefined, "MyMesh_Grass" );
 
     Vertex_XYZUV_RGBA* pVerts = (Vertex_XYZUV_RGBA*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
-
-    int numverts = bladeCount.x * bladeCount.y * 3;
-    unsigned int numindices = 0;
-
-    // Reinitialize the vertex buffer, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts;
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZUV_RGBA;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Triangles;
-    
-        // Delete the old buffers, if we want a grass plane with more.
-        if( sizeof(Vertex_XYZUV_RGBA)*numverts != m_SubmeshList[0]->m_pVertexBuffer->GetDataSize() )
-        {
-            m_SubmeshList[0]->m_pVertexBuffer->FreeBufferedData();
-            pVerts = MyNew Vertex_XYZUV_RGBA[numverts];
-        }
-
-        m_SubmeshList[0]->m_pVertexBuffer->InitializeBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, nullptr, "MyMesh_Grass", "Verts" );
-    }
 
     for( int y = 0; y < bladeCount.y; y++ )
     {
@@ -1258,32 +1163,11 @@ void MyMesh::CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount
 
 void MyMesh::CreateEditorLineGridXZ(Vector3 center, float spacing, int halfNumBars)
 {
-    CreateSubmeshes( 1 );
-    MyAssert( m_SubmeshList.Count() == 1 );
+    unsigned char numVerts = (unsigned char)((halfNumBars*2+1) * 2 * 2);
+    unsigned int numIndices = (halfNumBars*2+1) * 2 * 2; // halfNumBars*2+1centerline * 2axis * 2indicesperline.
 
-    MyAssert( m_SubmeshList[0]->m_pVertexBuffer == nullptr );
-    MyAssert( m_SubmeshList[0]->m_pIndexBuffer == nullptr );
-
-    unsigned char numverts = (unsigned char)((halfNumBars*2+1) * 2 * 2);
-    unsigned int numindices = (halfNumBars*2+1) * 2 * 2; // halfNumBars*2+1centerline * 2axis * 2indicesperline.
-
-    // Create a vertex buffer and reinitialize the submesh, since we might be changing vertexformat or other properties.
-    {
-        m_SubmeshList[0]->m_NumVertsToDraw = numverts; // Not optimizing reuse of corner verts.
-        m_SubmeshList[0]->m_NumIndicesToDraw = numindices;
-        m_SubmeshList[0]->m_VertexFormat = VertexFormat_XYZ;
-        m_SubmeshList[0]->m_PrimitiveType = MyRE::PrimitiveType_Lines;
-        
-        Vertex_XYZ* pVerts = MyNew Vertex_XYZ[numverts];
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZ)*numverts,
-            MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZ, nullptr, "MyMesh_GridPlane", "Verts" );
-    }
-
-    {
-        unsigned char* pIndices = MyNew unsigned char[numindices];
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(unsigned char)*numindices,
-            MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, false, 1, 1, "MyMesh_GridPlane", "Indices" );
-    }
+    // Reinitialize the submesh properties along with the vertex and index buffers.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZ, MyRE::PrimitiveType_Lines, numIndices, MyRE::IndexType_U8, "MyMesh_GridPlane" );
 
     Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
     unsigned char* pIndices = (unsigned char*)m_SubmeshList[0]->m_pIndexBuffer->GetData( true );
