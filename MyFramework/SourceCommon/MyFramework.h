@@ -136,9 +136,6 @@
 #endif
 #include "../SourceWindows/SavedData.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"
-#if WINVER >= 0x0602
-#define _TIMESPEC_DEFINED
-#endif
 #include "Networking/WebRequest.h"
 #endif
 

@@ -335,7 +335,6 @@ typedef unsigned long   u_long;
 #pragma warning(disable:4005) // xaudio includes urlmon.h which was already included by something earlier.
 #include <xaudio2.h>
 #pragma warning( pop )
-#include "../../Libraries/pthreads-w32/include/pthread.h"
 #include <GL/gl.h>
 #include "../SourceWindows/GLExtensions.h"
 #include "../SourceWindows/WGLExtensions.h"
@@ -366,6 +365,9 @@ typedef unsigned long   u_long;
 #include "../../Libraries/mtrand/mtrand.h"
 
 #if MYFW_WINDOWS
+#if WINVER >= 0x0602
+#define _TIMESPEC_DEFINED
+#endif
 #include "../../Libraries/pthreads-w32/include/pthread.h"
 #endif
 
