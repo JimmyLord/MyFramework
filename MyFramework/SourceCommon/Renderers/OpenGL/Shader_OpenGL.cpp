@@ -595,33 +595,33 @@ void Shader_OpenGL::InitializeAttributeArrays(VertexFormats vertexFormat, Vertex
     case VertexFormat_Dynamic:
         {
             int components = pVertexFormatDesc->num_position_components;
-            InitializeAttributeArray( m_aHandle_Position, components, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_pos );
+            InitializeAttributeArray( m_aHandle_Position, components, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_pos );
         
             for( int i=0; i<pVertexFormatDesc->num_uv_channels; i++ )
             {
                 if( pVertexFormatDesc->offset_uv[i] )
-                    InitializeAttributeArray( m_aHandle_UVCoord, 2, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_uv[i] );
+                    InitializeAttributeArray( m_aHandle_UVCoord, 2, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_uv[i] );
                 else
                     DisableAttributeArray( m_aHandle_UVCoord, Vector3(0,0,0) );
             }
 
             if( pVertexFormatDesc->offset_normal )
-                InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_normal );
+                InitializeAttributeArray( m_aHandle_Normal,      3, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_normal );
             else
                 DisableAttributeArray( m_aHandle_Normal,      Vector3(0,1,0) );
 
             if( pVertexFormatDesc->offset_color )
-                InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_color );
+                InitializeAttributeArray( m_aHandle_VertexColor, 4, MyRE::AttributeType_UByte,  true, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_color );
             else
                 DisableAttributeArray( m_aHandle_VertexColor, Vector4(0,0,0,1) );
 
             if( pVertexFormatDesc->offset_boneindex )
-                InitializeAttributeArray( m_aHandle_BoneIndex,   4, MyRE::AttributeType_UByte, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneindex );
+                InitializeAttributeArray( m_aHandle_BoneIndex,   4, MyRE::AttributeType_UByte, false, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_boneindex );
             else
                 DisableAttributeArray( m_aHandle_BoneIndex,   Vector4(0,0,0,0) );
 
             if( pVertexFormatDesc->offset_boneweight )
-                InitializeAttributeArray( m_aHandle_BoneWeight,  4, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(unsigned long)pVertexFormatDesc->offset_boneweight );
+                InitializeAttributeArray( m_aHandle_BoneWeight,  4, MyRE::AttributeType_Float, false, pVertexFormatDesc->stride, (void*)(size_t)pVertexFormatDesc->offset_boneweight );
             else
                 DisableAttributeArray( m_aHandle_BoneWeight,  Vector4(1,0,0,0) );
         }
