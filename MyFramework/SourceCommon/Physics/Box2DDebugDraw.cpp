@@ -88,8 +88,8 @@ void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Co
     b2Vec2 vertices[vertexCount];
     for( int i=0; i<vertexCount; i++ )
     {
-        vertices[i].x = center.x + cos( i*anglechange ) * radius;
-        vertices[i].y = center.y + sin( i*anglechange ) * radius;
+        vertices[i].x = center.x + cosf( i*anglechange ) * radius;
+        vertices[i].y = center.y + sinf( i*anglechange ) * radius;
     }
 	
     Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );
@@ -103,8 +103,8 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const
     b2Vec2 vertices[vertexCount];
     for( int i=0; i<vertexCount; i++ )
     {
-        vertices[i].x = center.x + cos( i*anglechange ) * radius;
-        vertices[i].y = center.y + sin( i*anglechange ) * radius;
+        vertices[i].x = center.x + cosf( i*anglechange ) * radius;
+        vertices[i].y = center.y + sinf( i*anglechange ) * radius;
     }
 	
     Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );

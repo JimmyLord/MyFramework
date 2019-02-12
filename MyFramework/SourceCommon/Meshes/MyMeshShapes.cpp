@@ -471,8 +471,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
         float radians = radianspersegment * i;
 
         // inner vert
-        pVerts[vertnum].pos.x = cos( radians ) * (radius - edgeRadius);
-        pVerts[vertnum].pos.z = sin( radians ) * (radius - edgeRadius) * flipz;
+        pVerts[vertnum].pos.x = cosf( radians ) * (radius - edgeRadius);
+        pVerts[vertnum].pos.z = sinf( radians ) * (radius - edgeRadius) * flipz;
         pVerts[vertnum].pos.y = height;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
@@ -484,8 +484,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
         vertnum++;
 
         // Outer vert.
-        pVerts[vertnum].pos.x = cos( radians ) * (radius);
-        pVerts[vertnum].pos.z = sin( radians ) * (radius) * flipz;
+        pVerts[vertnum].pos.x = cosf( radians ) * (radius);
+        pVerts[vertnum].pos.z = sinf( radians ) * (radius) * flipz;
         pVerts[vertnum].pos.y = height;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
@@ -511,8 +511,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
         float radians = radianspersegment * i;
 
         // Inner vert.
-        pVerts[vertnum].pos.x = cos( radians ) * (radius - edgeRadius);
-        pVerts[vertnum].pos.z = sin( radians ) * (radius - edgeRadius) * flipz;
+        pVerts[vertnum].pos.x = cosf( radians ) * (radius - edgeRadius);
+        pVerts[vertnum].pos.z = sinf( radians ) * (radius - edgeRadius) * flipz;
         pVerts[vertnum].pos.y = 0;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
@@ -524,8 +524,8 @@ void MyMesh::CreateCylinder(float radius, unsigned short numSegments, float edge
         vertnum++;
 
         // Outer vert.
-        pVerts[vertnum].pos.x = cos( radians ) * (radius);
-        pVerts[vertnum].pos.z = sin( radians ) * (radius) * flipz;
+        pVerts[vertnum].pos.x = cosf( radians ) * (radius);
+        pVerts[vertnum].pos.z = sinf( radians ) * (radius) * flipz;
         pVerts[vertnum].pos.y = 0;
 
         uperc = (pVerts[vertnum].pos.x + radius) / (radius*2);
@@ -859,7 +859,7 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
     //m_SubmeshList[0]->m_pIndexBuffer->m_BytesPerIndex = bytesperindex;
 
     // Create 12 vertices of a icosahedron.
-    float t = (1.0f + sqrt(5.0f)) / 2.0f;
+    float t = (1.0f + sqrtf(5.0f)) / 2.0f;
 
     pVerts[ 0].pos.Set( -1,  t,  0 );
     pVerts[ 1].pos.Set(  1,  t,  0 );
@@ -1059,11 +1059,11 @@ void MyMesh::Create2DCircle(float radius, unsigned int numberOfSegments)
 
     for( int i=0; i<numVerts; i++ )
     {
-        pVerts[i].x = cos( i*anglechange ) * radius;
-        pVerts[i].y = sin( i*anglechange ) * radius;
+        pVerts[i].x = cosf( i*anglechange ) * radius;
+        pVerts[i].y = sinf( i*anglechange ) * radius;
 
-        pVerts[i].u = cos( i*anglechange );
-        pVerts[i].v = sin( i*anglechange );
+        pVerts[i].u = cosf( i*anglechange );
+        pVerts[i].v = sinf( i*anglechange );
     }
 
     m_AABounds.Set( Vector3(0), Vector3(radius, radius, 0) );
@@ -1088,15 +1088,15 @@ void MyMesh::Create2DArc(Vector3 origin, float startAngle, float endAngle, float
     // Normals for 2D shapes are set to (0,1,0), so plot them out on the X/Z plane.
     for( unsigned int i=0; i<numberOfSegments + 1; i++ )
     {
-        pVerts[i*2 + 0].x = cos( startrad + i*anglechange ) * endRadius;
-        pVerts[i*2 + 0].y = sin( startrad + i*anglechange ) * endRadius;
-        pVerts[i*2 + 0].u = cos( startrad + i*anglechange );
-        pVerts[i*2 + 0].v = sin( startrad + i*anglechange );
+        pVerts[i*2 + 0].x = cosf( startrad + i*anglechange ) * endRadius;
+        pVerts[i*2 + 0].y = sinf( startrad + i*anglechange ) * endRadius;
+        pVerts[i*2 + 0].u = cosf( startrad + i*anglechange );
+        pVerts[i*2 + 0].v = sinf( startrad + i*anglechange );
 
-        pVerts[i*2 + 1].x = cos( startrad + i*anglechange ) * startRadius;
-        pVerts[i*2 + 1].y = sin( startrad + i*anglechange ) * startRadius;
-        pVerts[i*2 + 1].u = cos( startrad + i*anglechange );
-        pVerts[i*2 + 1].v = sin( startrad + i*anglechange );
+        pVerts[i*2 + 1].x = cosf( startrad + i*anglechange ) * startRadius;
+        pVerts[i*2 + 1].y = sinf( startrad + i*anglechange ) * startRadius;
+        pVerts[i*2 + 1].u = cosf( startrad + i*anglechange );
+        pVerts[i*2 + 1].v = sinf( startrad + i*anglechange );
     }
 
     m_AABounds.Set( Vector3(0), Vector3(endRadius, endRadius, 0) );
