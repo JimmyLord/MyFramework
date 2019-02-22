@@ -59,4 +59,39 @@ public:
     }
 };
 
+class AABB2D
+{
+protected:
+    Vector2 m_Min;
+    Vector2 m_Max;
+
+public:
+    AABB2D() {}
+
+    void Set(const Vector2& topLeft, const Vector2& bottomRight)
+    {
+        m_Min = topLeft;
+        m_Max = bottomRight;
+
+        MyAssert( m_Min.x <= m_Max.x );
+        MyAssert( m_Min.y <= m_Max.y );
+    }
+
+    void SetUnsorted(const Vector2& pos1, const Vector2& pos2)
+    {
+        if( pos1.x < pos2.x ) { m_Min.x = pos1.x; m_Max.x = pos2.x; }
+                         else { m_Min.x = pos2.x; m_Max.x = pos1.x; }
+        if( pos1.y < pos2.y ) { m_Min.y = pos1.y; m_Max.y = pos2.y; }
+                         else { m_Min.y = pos2.y; m_Max.y = pos1.y; }
+    }
+
+    bool IsOverlapped(const AABB2D& other)
+    {
+        if( this->m_Min.x > other.m_Max.x || other.m_Min.x > this->m_Max.x ) return false;
+        if( this->m_Min.y > other.m_Max.y || other.m_Min.y > this->m_Max.y ) return false;
+
+        return true;
+    }
+};
+
 #endif //__MyAABounds_H__
