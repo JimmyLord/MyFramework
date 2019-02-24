@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -19,13 +19,13 @@ class EditorCommand
     friend class CommandStack;
 
 protected:
-    // if these flags are set, then the commands get undone/redone as a single entity.
+    // If these flags are set, then the commands get undone/redone as a single entity.
     bool m_LinkedToPreviousCommandOnUndoStack;
-    bool m_LinkedToNextCommandOnRedoStack; // assigned a value during an undo op before being places on redo stack.
+    bool m_LinkedToNextCommandOnRedoStack; // Assigned a value during an undo op before being places on redo stack.
 
     unsigned int m_FrameExecuted;
 
-    const char* m_Name; // Used for debug output.
+    const char* m_Name; // Used for debug output and in some cases to identify command types.
 
 public:
     EditorCommand()
@@ -35,10 +35,11 @@ public:
         m_FrameExecuted = 0;
     }
     virtual ~EditorCommand() {}
+    virtual const char* GetName() { return m_Name; }
 
     virtual void Do() = 0;
     virtual void Undo() = 0;
-    virtual EditorCommand* Repeat() = 0; // make a copy of the command and execute it.
+    virtual EditorCommand* Repeat() = 0; // Make a copy of the command and execute it.
 };
 
 //====================================================================================================
