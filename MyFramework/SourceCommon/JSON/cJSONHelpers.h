@@ -29,6 +29,12 @@ template <typename Type> void cJSONExt_AddNumberToObjectIfDiffers(cJSON* object,
         cJSON_AddNumberToObject( object, name, number );
 }
 
+#define cJSONExt_GetEnum(object, name, variable) \
+{ \
+    cJSON* obj = cJSON_GetObjectItem( object, name ); \
+    if( obj ) variable = obj->valueint; \
+}
+
 void cJSONExt_GetBoolArray(cJSON* object, const char* name, bool* vars, int numinarray);
 void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numinarray);
 void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray);
