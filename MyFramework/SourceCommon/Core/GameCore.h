@@ -40,7 +40,11 @@ enum GameCoreButtonActions // following android finger keys
     GCBA_Held,
     GCBA_Wheel,
     GCBA_RelativeMovement,
+    GCBA_NumActions,
 };
+
+extern const char* g_GameCoreButtonActionStrings[GCBA_NumActions];
+extern const char* g_GameCoreButtonActionLuaStrings[GCBA_NumActions];
 
 enum GameCoreButtonIDs
 { // If changed here, change in LuaGameState.cpp and snippets.json as well.

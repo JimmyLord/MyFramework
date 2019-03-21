@@ -39,6 +39,24 @@
 #include "../SourceEditor/CommandStack.h"
 #endif
 
+const char* g_GameCoreButtonActionStrings[GCBA_NumActions] =
+{
+    "Down",
+    "Up",
+    "Held",
+    "Wheel",
+    "RelativeMovement",
+};
+
+const char* g_GameCoreButtonActionLuaStrings[GCBA_NumActions] =
+{
+    "BUTTONACTION_Down",
+    "BUTTONACTION_Up",
+    "BUTTONACTION_Held",
+    "BUTTONACTION_Wheel",
+    "BUTTONACTION_RelativeMovement",
+};
+
 GameCore* g_pGameCore = 0;
 
 GameCore::GameCore(Renderer_Base* pRenderer)
