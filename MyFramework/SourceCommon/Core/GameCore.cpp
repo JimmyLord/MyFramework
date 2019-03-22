@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "GameCore.h"
+#include "ResourceManagers.h"
 #include "../DataTypes/MyTypes.h"
 #include "../Events/EventManager.h"
 #include "../Events/EventTypeManager.h"
@@ -57,11 +58,13 @@ const char* g_GameCoreButtonActionLuaStrings[GCBA_NumActions] =
     "BUTTONACTION_RelativeMovement",
 };
 
-GameCore* g_pGameCore = 0;
+GameCore* g_pGameCore = nullptr;
 
-GameCore::GameCore(Renderer_Base* pRenderer)
+GameCore::GameCore(Renderer_Base* pRenderer, bool createAndOwnGlobalManagers)
 {
     g_pGameCore = this;
+
+    m_ThisClassOwnsTheGlobalManagers = createAndOwnGlobalManagers;
 
     TestMyTypeSizes();
 
@@ -75,11 +78,9 @@ GameCore::GameCore(Renderer_Base* pRenderer)
 
     m_MainViewport.Set( 0, 0, 0, 0 );
 
-    m_pSoundPlayer = 0;
-    m_pSoundManager = 0;
-    m_pMyJobManager = 0;
+    m_pSoundPlayer = nullptr;
 #if MYFW_BLACKBERRY
-    m_pMediaPlayer = 0;
+    m_pMediaPlayer = nullptr;
 #endif
 
 #if MYFW_IOS || MYFW_ANDROID
@@ -106,7 +107,7 @@ GameCore::GameCore(Renderer_Base* pRenderer)
     }
 
 #if MYFW_EDITOR
-    m_pCommandStack = 0;
+    m_pCommandStack = nullptr;
 #endif
 }
 
@@ -114,28 +115,63 @@ GameCore::~GameCore()
 {
     LOGInfo( LOGTag, "GameCore::~GameCore()\n" );
 
-    SAFE_DELETE( m_pMyJobManager );
+    SAFE_DELETE( m_Managers.m_pMyJobManager );
+    SAFE_DELETE( m_Managers.m_pGamepadManager );
 
-    g_pFontManager->FreeAllFonts();
+    if( m_ThisClassOwnsTheGlobalManagers )
+    {
+        if( g_pFontManager )
+        {
+            g_pFontManager->FreeAllFonts();
+        }
 
-    SAFE_DELETE( g_pGamepadManager );
-    SAFE_DELETE( g_pMaterialManager );
-    SAFE_DELETE( g_pTextureManager );
-    SAFE_DELETE( g_pFontManager );
-    SAFE_DELETE( g_pBufferManager );
-    SAFE_DELETE( g_pMeshManager );
-    SAFE_DELETE( g_pLightManager );
-    SAFE_DELETE( g_pShaderManager );
-    SAFE_DELETE( g_pShaderGroupManager );
-    SAFE_DELETE( m_pSoundManager );
+        SAFE_DELETE( g_pMaterialManager );
+        SAFE_DELETE( g_pTextureManager );
+        SAFE_DELETE( g_pFontManager );
+        SAFE_DELETE( g_pBufferManager );
+        SAFE_DELETE( g_pMeshManager );
+        SAFE_DELETE( g_pLightManager );
+        SAFE_DELETE( g_pShaderManager );
+        SAFE_DELETE( g_pShaderGroupManager );
+    }
+    else
+    {
+        if( m_Managers.m_pFontManager )
+        {
+            m_Managers.m_pFontManager->FreeAllFonts();
+        }
+
+        SAFE_DELETE( m_Managers.m_pMaterialManager );
+        SAFE_DELETE( m_Managers.m_pTextureManager );
+        SAFE_DELETE( m_Managers.m_pFontManager );
+        SAFE_DELETE( m_Managers.m_pBufferManager );
+        SAFE_DELETE( m_Managers.m_pMeshManager );
+        SAFE_DELETE( m_Managers.m_pLightManager );
+        SAFE_DELETE( m_Managers.m_pShaderManager );
+        SAFE_DELETE( m_Managers.m_pShaderGroupManager );
+    }
+    SAFE_DELETE( m_Managers.m_pSoundManager );
     SAFE_DELETE( m_pSoundPlayer );
-    SAFE_DELETE( g_pGameServiceManager );
-    SAFE_DELETE( g_pVertexFormatManager );
+    if( m_ThisClassOwnsTheGlobalManagers )
+    {
+        SAFE_DELETE( g_pGameServiceManager );
+        SAFE_DELETE( g_pVertexFormatManager );
 
-    SAFE_DELETE( g_pFileManager ); // Will assert if all files aren't free, so delete last.
+        SAFE_DELETE( g_pFileManager ); // Will assert if all files aren't free, so delete last.
 
-    SAFE_DELETE( g_pEventManager );
-    SAFE_DELETE( g_pEventTypeManager );
+        SAFE_DELETE( g_pEventManager );
+        SAFE_DELETE( g_pEventTypeManager );
+    }
+    else
+    {
+        SAFE_DELETE( m_Managers.m_pGameServiceManager );
+        SAFE_DELETE( m_Managers.m_pVertexFormatManager );
+
+        SAFE_DELETE( m_Managers.m_pFileManager ); // Will assert if all files aren't free, so delete last.
+
+        SAFE_DELETE( m_Managers.m_pEventManager );
+        SAFE_DELETE( m_Managers.m_pEventTypeManager );
+    }
 
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
@@ -165,38 +201,57 @@ uint32 GameCore::GetWindowHeight()
 
 void GameCore::InitializeManagers()
 {
-    if( g_pEventTypeManager == 0 )
-        g_pEventTypeManager = MyNew EventTypeManager;
-    if( g_pEventManager == 0 )
-        g_pEventManager = MyNew EventManager;
-    if( g_pFileManager == 0 )
-        g_pFileManager = MyNew FileManager;
-    if( g_pTextureManager == 0 )
-        g_pTextureManager = MyNew TextureManager;
-    if( g_pFontManager == 0 )
-        g_pFontManager = MyNew FontManager;
-    if( g_pMaterialManager == 0 )
-        g_pMaterialManager = MyNew MaterialManager;
-    if( g_pBufferManager == 0 )
-        g_pBufferManager = MyNew BufferManager;
-    if( g_pMeshManager == 0 )
-        g_pMeshManager = MyNew MeshManager;
-    if( g_pLightManager == 0 )
-        g_pLightManager = MyNew LightManager;
-    if( g_pShaderManager == 0 )
-        g_pShaderManager = MyNew ShaderManager;
-    if( g_pShaderGroupManager == 0 )
-        g_pShaderGroupManager = MyNew ShaderGroupManager;
-    if( g_pGameServiceManager == 0 )
-        g_pGameServiceManager = MyNew GameServiceManager;
-    if( g_pVertexFormatManager == 0 )
-        g_pVertexFormatManager = MyNew VertexFormatManager;
+#define HACK_CreateGlobalAndLocalManager(TYPE) \
+    if( g_p##TYPE == nullptr ) \
+    g_p##TYPE = MyNew TYPE; \
+    m_Managers.m_p##TYPE = g_p##TYPE;
+
+#define HACK_BackupAndCreateNewManager(TYPE) \
+    TYPE* p##TYPE = g_p##TYPE; \
+    m_Managers.m_p##TYPE = MyNew TYPE; \
+    g_p##TYPE = p##TYPE;
+
+    if( m_ThisClassOwnsTheGlobalManagers )
+    {
+        HACK_CreateGlobalAndLocalManager( EventTypeManager );
+        HACK_CreateGlobalAndLocalManager( EventManager );
+        HACK_CreateGlobalAndLocalManager( FileManager );
+        HACK_CreateGlobalAndLocalManager( TextureManager );
+        HACK_CreateGlobalAndLocalManager( FontManager );
+        HACK_CreateGlobalAndLocalManager( MaterialManager );
+        HACK_CreateGlobalAndLocalManager( BufferManager );
+        HACK_CreateGlobalAndLocalManager( MeshManager );
+        HACK_CreateGlobalAndLocalManager( LightManager );
+        HACK_CreateGlobalAndLocalManager( ShaderManager );
+        HACK_CreateGlobalAndLocalManager( ShaderGroupManager );
+        HACK_CreateGlobalAndLocalManager( GameServiceManager );
+        HACK_CreateGlobalAndLocalManager( VertexFormatManager );
+    }
+    else
+    {
+        HACK_BackupAndCreateNewManager( EventTypeManager );
+        HACK_BackupAndCreateNewManager( EventManager );
+        HACK_BackupAndCreateNewManager( FileManager );
+        HACK_BackupAndCreateNewManager( TextureManager );
+        HACK_BackupAndCreateNewManager( FontManager );
+        HACK_BackupAndCreateNewManager( MaterialManager );
+        HACK_BackupAndCreateNewManager( BufferManager );
+        HACK_BackupAndCreateNewManager( MeshManager );
+        HACK_BackupAndCreateNewManager( LightManager );
+        HACK_BackupAndCreateNewManager( ShaderManager );
+        HACK_BackupAndCreateNewManager( ShaderGroupManager );
+        HACK_BackupAndCreateNewManager( GameServiceManager );
+        HACK_BackupAndCreateNewManager( VertexFormatManager );
+    }
+
 #if MYFW_WINDOWS
-    if( g_pGamepadManager == 0 )
-        g_pGamepadManager = MyNew GamepadManagerXInput;
+    m_Managers.m_pGamepadManager = MyNew GamepadManagerXInput;
 #endif
-    if( g_pGamepadManager )
-        g_pGamepadManager->Initialize();
+    if( m_Managers.m_pGamepadManager )
+        m_Managers.m_pGamepadManager->Initialize();
+
+    m_Managers.m_pSoundManager = MyNew SoundManager;
+    m_Managers.m_pMyJobManager = MyNew MyJobManager;
 }
 
 void GameCore::OneTimeInit()
@@ -206,13 +261,13 @@ void GameCore::OneTimeInit()
 
     m_OneTimeInitWasCalled = true;
 
-    // base seed on realtime if available.  don't fmod on emscripten, nanosecs aren't accurate enough.
+    // Base seed on realtime if available.  Don't fmod on emscripten, nanosecs aren't accurate enough.
 #if MYFW_EMSCRIPTEN
-    double time = MyTime_GetSystemTime(true);
+    double time = MyTime_GetSystemTime( true );
     unsigned int seed = (unsigned int)time;
 #else
     double time = MyTime_GetSystemTime( true ) * 10000000;
-    unsigned int seed = (unsigned int)fmod(time,100000);
+    unsigned int seed = (uint32)fmod( time, 100000 );
 #endif
     LOGInfo( LOGTag, "Seeding random: %d\n", seed );
     srand( seed );
@@ -220,8 +275,6 @@ void GameCore::OneTimeInit()
     InitializeManagers();
 
     m_pSoundPlayer = MyNew SoundPlayer;
-    m_pSoundManager = MyNew SoundManager;
-    m_pMyJobManager = MyNew MyJobManager;
 
 #if MYFW_BLACKBERRY
     m_pMediaPlayer = MyNew MediaPlayer;
@@ -257,20 +310,20 @@ float GameCore::Tick(float deltaTime)
     size_t numbytesallocated = MyMemory_GetNumberOfBytesAllocated();
 #endif
 
-    g_pEventManager->Tick( deltaTime );
-    g_pFileManager->Tick();
-    g_pTextureManager->Tick();
-    g_pMaterialManager->Tick();
-    m_pSoundManager->Tick();
-    g_pBufferManager->Tick();
-    g_pFontManager->Tick();
+    m_Managers.m_pEventManager->Tick( deltaTime );
+    m_Managers.m_pFileManager->Tick();
+    m_Managers.m_pTextureManager->Tick();
+    m_Managers.m_pMaterialManager->Tick();
+    m_Managers.m_pSoundManager->Tick();
+    m_Managers.m_pBufferManager->Tick();
+    m_Managers.m_pFontManager->Tick();
 #if MYFW_BLACKBERRY10
     if( m_WindowWidth == m_WindowHeight )
-        g_pGameServiceManager->Tick( "Q10" );
+        m_Managers.m_pGameServiceManager->Tick( "Q10" );
     else
-        g_pGameServiceManager->Tick( "Z10" );
+        m_Managers.m_pGameServiceManager->Tick( "Z10" );
 #else
-    g_pGameServiceManager->Tick();
+    m_Managers.m_pGameServiceManager->Tick();
 #endif //MYFW_BLACKBERRY10
 
     if( m_KeyboardOpenRequested )
@@ -284,8 +337,8 @@ float GameCore::Tick(float deltaTime)
         ShowKeyboard( false );
     }
 
-    if( g_pGamepadManager )
-        g_pGamepadManager->Tick( deltaTime );
+    if( m_Managers.m_pGamepadManager )
+        m_Managers.m_pGamepadManager->Tick( deltaTime );
 
 #if MYFW_USING_WX
     g_pPanelWatch->Tick( deltaTime );
@@ -333,13 +386,13 @@ void GameCore::OnSurfaceLost()
     m_pRenderer->OnSurfaceCreated();
 
     // These calls don't clean out opengl allocations,
-    //     The surface was already lost along with all allocs.
-    if( g_pShaderManager )
-        g_pShaderManager->InvalidateAllShaders( false );
-    if( g_pTextureManager )
-        g_pTextureManager->InvalidateAllTextures( false );
-    if( g_pBufferManager )
-        g_pBufferManager->InvalidateAllBuffers( false );
+    //     the surface was already lost along with all allocs.
+    if( m_Managers.m_pShaderManager )
+        m_Managers.m_pShaderManager->InvalidateAllShaders( false );
+    if( m_Managers.m_pTextureManager )
+        m_Managers.m_pTextureManager->InvalidateAllTextures( false );
+    if( m_Managers.m_pBufferManager )
+        m_Managers.m_pBufferManager->InvalidateAllBuffers( false );
 }
 
 void GameCore::OnDrawFrameStart(unsigned int canvasid)
@@ -409,7 +462,7 @@ bool GameCore::OnKeys(GameCoreButtonActions action, int keycode, int unicodechar
     if( g_GLCanvasIDActive == 0 )
 #endif
     {
-        // if the key is mapped to a button, then call the button handler.
+        // If the key is mapped to a button, then call the button handler.
         if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons && keycode < 255 )
         {
             return OnButtons( action, m_KeyMappingToButtons[keycode] );
@@ -430,7 +483,7 @@ bool GameCore::OnChar(unsigned int c)
 
 bool GameCore::OnKeyDown(int keycode, int unicodechar)
 {
-    // TODO: don't ignore the unicode characters.
+    // TODO: Don't ignore the unicode characters.
 #if MYFW_WINDOWS || MYFW_OSX
     if( keycode >= 'A' && keycode <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
     {
@@ -447,7 +500,7 @@ bool GameCore::OnKeyDown(int keycode, int unicodechar)
 
 bool GameCore::OnKeyUp(int keycode, int unicodechar)
 {
-    // TODO: don't ignore the unicode characters.
+    // TODO: Don't ignore the unicode characters.
 
     if( keycode >= 0 && keycode < 255 )
         m_KeysHeld[keycode] = false;
@@ -468,7 +521,7 @@ bool GameCore::OnKeyUp(int keycode, int unicodechar)
 
 bool GameCore::IsKeyHeld(int keycode)
 {
-    // if the key is mapped to a button, then the key isn't held.
+    // If the key is mapped to a button, then the key isn't held.
     if( m_KeyMappingToButtons[keycode] != GCBI_NumButtons )
     {
         return false;
@@ -490,7 +543,7 @@ void GameCore::ForceKeyRelease(int keycode)
 
 void GameCore::GenerateKeyHeldMessages()
 {
-    // generate held messages for keys and buttons.
+    // Generate held messages for keys and buttons.
 #if MYFW_USING_IMGUI
     for( int i=0; i<255; i++ )
     {
@@ -498,10 +551,10 @@ void GameCore::GenerateKeyHeldMessages()
         {
 #if MYFW_WINDOWS || MYFW_OSX
             if( i >= 'A' && i <= 'Z' && m_KeysHeld[MYKEYCODE_LSHIFT] == 0 && m_KeysHeld[MYKEYCODE_RSHIFT] == 0 )
-                g_pGameCore->OnKeys( GCBA_Held, i, i+32 );
+                OnKeys( GCBA_Held, i, i+32 );
             else
 #endif
-                g_pGameCore->OnKeys( GCBA_Held, i, i );
+                OnKeys( GCBA_Held, i, i );
         }
     }
 #endif

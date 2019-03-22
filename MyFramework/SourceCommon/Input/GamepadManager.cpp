@@ -11,8 +11,6 @@
 
 #include "GamepadManager.h"
 
-GamepadManager* g_pGamepadManager = 0;
-
 GamepadManager::GamepadManager()
 {
 }

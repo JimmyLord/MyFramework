@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,6 +11,7 @@
 #define __GameCore_H__
 
 #include "Renderers/BaseClasses/Renderer_Base.h"
+#include "ResourceManagers.h"
 
 class BMFont;
 class GameCore;
@@ -33,7 +34,7 @@ enum GameCoreInputMethods
     InputMethod_Keyboard,
 };
 
-enum GameCoreButtonActions // following android finger keys
+enum GameCoreButtonActions // Following android finger keys.
 { // If changed here, change in LuaGameState.cpp and snippets.json as well.
     GCBA_Down,
     GCBA_Up,
@@ -73,6 +74,7 @@ enum IAPErrorCodes
 class GameCore
 {
 protected:
+    bool m_ThisClassOwnsTheGlobalManagers;
     bool m_OneTimeInitWasCalled; // HACK: NaCl and Android builds call OneTimeInit too often, so this will ensure it doesn't get called multiple times.
     bool m_GameConfirmedCloseIsOkay; // Setting this flag should cause the main game window to close.
 
@@ -82,7 +84,7 @@ protected:
     bool m_HasFocus;
     bool m_Settled;
 
-    // not happy about these, but MenuInputBox opens/closes keyboard in key/button/touch callback,
+    // Not happy about these, but MenuInputBox opens/closes keyboard in key/button/touch callback,
     //     but we want to wait until next tick for JNI to be set up.
     bool m_KeyboardOpenRequested;
     bool m_KeyboardCloseRequested; 
@@ -98,19 +100,19 @@ protected:
     float m_TimeSinceGameStarted;
     float m_TimePassedUnpausedLastFrame;
 
-    MyJobManager* m_pMyJobManager;
+    ResourceManagers m_Managers;
 
     SoundPlayer* m_pSoundPlayer;
-    SoundManager* m_pSoundManager;
 #if MYFW_BLACKBERRY
     MediaPlayer* m_pMediaPlayer;
 #endif
 
 public:
-    GameCore(Renderer_Base* pRenderer = 0);
+    GameCore(Renderer_Base* pRenderer = nullptr, bool createAndOwnGlobalManagers = true);
     virtual ~GameCore();
 
     // Getters.
+    ResourceManagers* GetManagers() { return &m_Managers; }
     bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
     bool IsGLSurfaceIsValid();
 
@@ -124,7 +126,7 @@ public:
     float GetTimePassedUnpausedLastFrame() { return m_TimePassedUnpausedLastFrame; }
 
     SoundPlayer* GetSoundPlayer() { return m_pSoundPlayer; }
-    SoundManager* GetSoundManager() { return m_pSoundManager; }
+    SoundManager* GetSoundManager() { return m_Managers.m_pSoundManager; }
 #if MYFW_BLACKBERRY
     MediaPlayer* GetMediaPlayer() { return m_pMediaPlayer; }
 #endif
@@ -135,7 +137,7 @@ public:
     void RequestKeyboardOpen() { m_KeyboardOpenRequested = true; }
     void RequestKeyboardClose() { m_KeyboardCloseRequested = true; }
 
-    // GameCore Methods
+    // GameCore Methods.
     virtual void InitializeManagers();
 
     virtual void OneTimeInit();
@@ -146,7 +148,7 @@ public:
     virtual bool HasGameConfirmedCloseIsOkay() { return m_GameConfirmedCloseIsOkay; }
     virtual void SetGameConfirmedCloseIsOkay() { m_GameConfirmedCloseIsOkay = true; }
 
-    virtual float Tick(float deltaTime); // returns time used... i.e. unpaused time.
+    virtual float Tick(float deltaTime); // Returns time used... i.e. unpaused time.
     virtual void OnFocusGained();
     virtual void OnFocusLost();
     virtual void OnSurfaceCreated();
@@ -177,14 +179,14 @@ public:
 
     virtual void OnPurchaseComplete(const char* id, const char* sku, IAPErrorCodes errorcode, bool newpurchase) { }
 
-    virtual const char* GetMatchmakingGameName() { return 0; }
+    virtual const char* GetMatchmakingGameName() { return nullptr; }
 
 #if MYFW_EDITOR
 protected:
     CommandStack* m_pCommandStack;
 
 public:
-    void SetCommandStack(CommandStack* pCommandStack) { MyAssert( m_pCommandStack == 0 ); m_pCommandStack = pCommandStack; }
+    void SetCommandStack(CommandStack* pCommandStack) { MyAssert( m_pCommandStack == nullptr ); m_pCommandStack = pCommandStack; }
     CommandStack* GetCommandStack() { return m_pCommandStack; }
 #endif
 };

@@ -34,6 +34,7 @@ void MyStackAllocator::Initialize(unsigned int sizeinbytes)
 void MyStackAllocator::Cleanup()
 {
     delete[] m_pMemory;
+    m_pMemory = nullptr;
 }
 
 MyStackAllocator::MyStackPointer MyStackAllocator::GetCurrentLocation()

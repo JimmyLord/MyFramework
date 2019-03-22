@@ -1485,6 +1485,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|Emscripten'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Emscripten'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Core\ResourceManagers.cpp" />
     <ClCompile Include="SourceCommon\MyFrameworkPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -2713,6 +2714,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='WxRelease|Emscripten'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SourceCommon\Core\GameCore.h" />
+    <ClInclude Include="SourceCommon\Core\ResourceManagers.h" />
     <ClInclude Include="SourceCommon\MyFramework.h" />
     <ClInclude Include="SourceCommon\MyFrameworkPCH.h" />
     <ClInclude Include="SourceCommon\DataTypes\ColorStructs.h" />

@@ -130,7 +130,7 @@ void FileManager::PrintListOfOpenFiles()
 void FileManager::FreeFile(MyFileObject* pFile)
 {
     MyAssert( pFile );
-    pFile->Release(); // file's are refcounted, so release a reference to it.
+    pFile->Release(); // File's are refcounted, so release a reference to it.
 }
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()

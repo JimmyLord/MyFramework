@@ -182,8 +182,8 @@ FontDefinition* FontManager::FindFontByFilename(const char* fullpath)
 
 void FontManager::FreeAllFonts()
 {
-    MyAssert( m_FontsLoaded.GetHead() == 0 );
-    MyAssert( m_FontsStillLoading.GetHead() == 0 );
+    MyAssert( m_FontsLoaded.GetHead() == nullptr );
+    MyAssert( m_FontsStillLoading.GetHead() == nullptr );
 
     while( FontDefinition* pFontDef = m_FontsLoaded.GetHead() )
     {

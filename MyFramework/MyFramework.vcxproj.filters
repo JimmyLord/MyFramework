@@ -561,6 +561,9 @@
     <ClCompile Include="SourceCommon\MyFrameworkPCH.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCommon\Core\ResourceManagers.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCommon\Helpers\MessageLog.h">
@@ -1045,6 +1048,9 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\MyFrameworkPCH.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\Core\ResourceManagers.h">
+      <Filter>Source\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
