@@ -14,8 +14,6 @@
 
 class VertexFormatManager;
 
-extern VertexFormatManager* g_pVertexFormatManager;
-
 class VertexFormatManager
 {
     static const int MAX_DYNAMIC_VERTEX_FORMATS = 10; // TODO: fix this hardcodedness

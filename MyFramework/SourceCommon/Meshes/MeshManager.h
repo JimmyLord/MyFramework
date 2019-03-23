@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2015-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -13,15 +13,26 @@
 class MeshManager;
 class MyFileObject;
 class MyMesh;
+class VertexFormatManager;
 
 extern MeshManager* g_pMeshManager;
 
 class MeshManager
 {
-public:
+protected:
+    VertexFormatManager* m_pVertexFormatManager;
     TCPPListHead<MyMesh*> m_MeshList;
 
+public:
+    MeshManager(VertexFormatManager* pVertexFormatManager);
+
+    // Getters.
+    VertexFormatManager* GetVertexFormatManager() { return m_pVertexFormatManager; }
+
+    // Add Mesh.
     void AddMesh(MyMesh* pMesh);
+
+    // Find Mesh.
     MyMesh* FindMeshBySourceFile(MyFileObject* pFile);
 };
 

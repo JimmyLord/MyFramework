@@ -12,8 +12,6 @@
 #include "VertexFormatManager.h"
 #include "VertexFormats.h"
 
-VertexFormatManager* g_pVertexFormatManager = 0;
-
 VertexFormatManager::VertexFormatManager()
 {
     m_pDynamicVertexFormatDesc.AllocateObjects( MAX_DYNAMIC_VERTEX_FORMATS );

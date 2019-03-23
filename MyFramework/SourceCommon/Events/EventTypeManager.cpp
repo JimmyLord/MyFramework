@@ -20,11 +20,8 @@ EventTypeInfo g_EngineEventTypeInfo[Event_NumEventTypes] = // ADDING_NEW_EventTy
     { Event_IAP,                        "IAP",                        },  //Event_IAP,
 };
 
-EventTypeManager* g_pEventTypeManager = 0;
-
 EventTypeManager::EventTypeManager()
 {
-    g_pEventTypeManager = this;
 }
 
 EventTypeManager::~EventTypeManager()

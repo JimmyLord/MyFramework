@@ -13,8 +13,6 @@
 class EventTypeManager;
 class MyEvent;
 
-extern EventTypeManager* g_pEventTypeManager;
-
 enum EventTypes // ADDING_NEW_EventType
 {
     Event_Undefined,

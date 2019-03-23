@@ -14,6 +14,7 @@
 #include "../DataTypes/MyActivePool.h"
 
 class EventManager;
+class EventTypeManager;
 class MyEvent;
 
 extern EventManager* g_pEventManager;
@@ -46,6 +47,8 @@ class EventManager
     friend class MyEvent; // allow access to m_pEventArgumentPool to clear arguments.
 
 protected:
+    EventTypeManager* m_pEventTypeManager;
+
     MySimplePool<MyEvent> m_pEventPool;
     MySimplePool<MyEventArgument> m_pEventArgumentPool;
     MySimplePool<MyEventHandler> m_pEventHandlerPool;
@@ -59,7 +62,7 @@ protected:
     void ReleaseEvent(MyEvent* pEvent);
 
 public:
-    EventManager();
+    EventManager(EventTypeManager* pEventTypeManager);
     ~EventManager();
 
     void Tick(float deltaTime);

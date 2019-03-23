@@ -27,6 +27,8 @@
 
 MyMesh::MyMesh()
 {
+    m_pMeshManager = nullptr;
+
     m_pSourceFile = nullptr;
     m_LoadDefaultMaterials = true;
     m_ForceCheckForAnimationFile = false;
@@ -35,8 +37,6 @@ MyMesh::MyMesh()
     m_AABounds.Set( Vector3(0), Vector3(0) );
 
     m_InitialScale = 1.0f; // TODO: Make this changable through interface somehow... reload/recreate mesh when changed?
-
-    g_pMeshManager->AddMesh( this );
 
     m_pAnimations.AllocateObjects( MAX_ANIMATIONS );
 
@@ -319,6 +319,14 @@ MaterialDefinition* MyMesh::GetMaterial(int submeshindex)
 //============================================================================================================================
 // Setters.
 //============================================================================================================================
+void MyMesh::SetMeshManagerAndAddToMeshList(MeshManager* pMeshManager)
+{
+    MyAssert( m_pMeshManager == nullptr );
+
+    m_pMeshManager = pMeshManager;
+    m_pMeshManager->AddMesh( this );
+}
+
 void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
 {
     //if( m_SubmeshList.Count() == 0 )

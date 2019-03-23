@@ -155,12 +155,11 @@ GameCore::~GameCore()
     if( m_ThisClassOwnsTheGlobalManagers )
     {
         SAFE_DELETE( g_pGameServiceManager );
-        SAFE_DELETE( g_pVertexFormatManager );
+        SAFE_DELETE( m_Managers.m_pVertexFormatManager );
 
         SAFE_DELETE( g_pFileManager ); // Will assert if all files aren't free, so delete last.
 
         SAFE_DELETE( g_pEventManager );
-        SAFE_DELETE( g_pEventTypeManager );
     }
     else
     {
@@ -170,8 +169,9 @@ GameCore::~GameCore()
         SAFE_DELETE( m_Managers.m_pFileManager ); // Will assert if all files aren't free, so delete last.
 
         SAFE_DELETE( m_Managers.m_pEventManager );
-        SAFE_DELETE( m_Managers.m_pEventTypeManager );
     }
+
+    SAFE_DELETE( m_Managers.m_pEventTypeManager );
 
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
@@ -203,7 +203,7 @@ void GameCore::InitializeManagers()
 {
 #define HACK_CreateGlobalAndLocalManager(TYPE) \
     if( g_p##TYPE == nullptr ) \
-    g_p##TYPE = MyNew TYPE; \
+        g_p##TYPE = MyNew TYPE; \
     m_Managers.m_p##TYPE = g_p##TYPE;
 
 #define HACK_BackupAndCreateNewManager(TYPE) \
@@ -211,37 +211,53 @@ void GameCore::InitializeManagers()
     m_Managers.m_p##TYPE = MyNew TYPE; \
     g_p##TYPE = p##TYPE;
 
+    m_Managers.m_pEventTypeManager = MyNew EventTypeManager;
+
     if( m_ThisClassOwnsTheGlobalManagers )
     {
-        HACK_CreateGlobalAndLocalManager( EventTypeManager );
-        HACK_CreateGlobalAndLocalManager( EventManager );
+        if( g_pEventManager == nullptr )
+            g_pEventManager = MyNew EventManager( m_Managers.m_pEventTypeManager );
+        m_Managers.m_pEventManager = g_pEventManager;
+
+        m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
+
         HACK_CreateGlobalAndLocalManager( FileManager );
         HACK_CreateGlobalAndLocalManager( TextureManager );
         HACK_CreateGlobalAndLocalManager( FontManager );
         HACK_CreateGlobalAndLocalManager( MaterialManager );
         HACK_CreateGlobalAndLocalManager( BufferManager );
-        HACK_CreateGlobalAndLocalManager( MeshManager );
+
+        if( g_pMeshManager == nullptr )
+            g_pMeshManager = MyNew MeshManager( m_Managers.m_pVertexFormatManager );
+        m_Managers.m_pMeshManager = g_pMeshManager;
+
         HACK_CreateGlobalAndLocalManager( LightManager );
         HACK_CreateGlobalAndLocalManager( ShaderManager );
         HACK_CreateGlobalAndLocalManager( ShaderGroupManager );
         HACK_CreateGlobalAndLocalManager( GameServiceManager );
-        HACK_CreateGlobalAndLocalManager( VertexFormatManager );
     }
     else
     {
-        HACK_BackupAndCreateNewManager( EventTypeManager );
-        HACK_BackupAndCreateNewManager( EventManager );
+        EventManager* pEventManager = g_pEventManager;
+        m_Managers.m_pEventManager = MyNew EventManager( m_Managers.m_pEventTypeManager );
+        g_pEventManager = pEventManager;
+
+        m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
+
         HACK_BackupAndCreateNewManager( FileManager );
         HACK_BackupAndCreateNewManager( TextureManager );
         HACK_BackupAndCreateNewManager( FontManager );
         HACK_BackupAndCreateNewManager( MaterialManager );
         HACK_BackupAndCreateNewManager( BufferManager );
-        HACK_BackupAndCreateNewManager( MeshManager );
+
+        MeshManager* pMeshManager = g_pMeshManager;
+        m_Managers.m_pMeshManager = MyNew MeshManager( m_Managers.m_pVertexFormatManager );
+        g_pMeshManager = pMeshManager;
+
         HACK_BackupAndCreateNewManager( LightManager );
         HACK_BackupAndCreateNewManager( ShaderManager );
         HACK_BackupAndCreateNewManager( ShaderGroupManager );
         HACK_BackupAndCreateNewManager( GameServiceManager );
-        HACK_BackupAndCreateNewManager( VertexFormatManager );
     }
 
 #if MYFW_WINDOWS

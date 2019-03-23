@@ -15,8 +15,10 @@
 
 EventManager* g_pEventManager = 0;
 
-EventManager::EventManager()
+EventManager::EventManager(EventTypeManager* pEventTypeManager)
 {
+    m_pEventTypeManager = pEventTypeManager;
+
     m_pEventPool.AllocateObjects( MAX_EVENTS );
     m_pEventArgumentPool.AllocateObjects( MAX_EVENT_ARGUMENTS );
     m_pEventHandlerPool.AllocateObjects( MAX_EVENT_HANDLERS );
@@ -70,9 +72,9 @@ void EventManager::RegisterForEvents(const char* name, void* pObject, EventCallb
 #if MYFW_EDITOR
     // Currently a safety check for duplicate hashes, so only done in editor mode.
     // Check if this event type is registered, if not, register it.
-    if( g_pEventTypeManager->IsTypeRegistered( name, true ) == false )
+    if( m_pEventTypeManager->IsTypeRegistered( name, true ) == false )
     {
-        g_pEventTypeManager->RegisterEventType( name, true );
+        m_pEventTypeManager->RegisterEventType( name, true );
     }
 #endif
 

@@ -14,6 +14,11 @@
 
 MeshManager* g_pMeshManager = nullptr;
 
+MeshManager::MeshManager(VertexFormatManager* pVertexFormatManager)
+{
+    m_pVertexFormatManager = pVertexFormatManager;
+}
+
 void MeshManager::AddMesh(MyMesh* pMesh)
 {
     m_MeshList.AddTail( pMesh );

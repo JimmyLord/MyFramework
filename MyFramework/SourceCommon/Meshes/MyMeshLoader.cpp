@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "BufferManager.h"
+#include "MeshManager.h"
 #include "MyAnimation.h"
 #include "MyMesh.h"
 #include "MySubmesh.h"
@@ -181,7 +182,7 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
             cJSONExt_GetBool( jMesh, "VF-color", &hasColor );
             cJSONExt_GetUnsignedInt( jMesh, "VF-mostweights", &mostBonesInfluences );
 
-            VertexFormat_Dynamic_Desc* pDesc = g_pVertexFormatManager->GetDynamicVertexFormat( numUVChannels, hasNormals, hasTangents, hasBitangents, hasColor, mostBonesInfluences );
+            VertexFormat_Dynamic_Desc* pDesc = m_pMeshManager->GetVertexFormatManager()->GetDynamicVertexFormat( numUVChannels, hasNormals, hasTangents, hasBitangents, hasColor, mostBonesInfluences );
 
             // read this mesh's raw bytes, verts/indices/etc.
             if( rawByteOffset != 0 )

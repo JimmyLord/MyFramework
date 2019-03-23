@@ -17,6 +17,7 @@
 
 class BufferDefinition;
 class MaterialDefinition;
+class MeshManager;
 class MyAnimation;
 class MyAnimationTimeline;
 class MyFileObject;
@@ -25,6 +26,7 @@ class MySubmesh;
 class Shader_Base;
 class ShaderGroup;
 class TextureDefinition;
+class VertexFormatManager;
 
 struct MySkeletonNode
 {
@@ -52,6 +54,8 @@ class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: Fix this hardcodedness.
 
 protected:
+    MeshManager* m_pMeshManager;
+
     float m_InitialScale;
 
     MyAABounds m_AABounds;
@@ -117,6 +121,7 @@ public:
     MyAABounds* GetBounds() { return &m_AABounds; }
 
     // Setters.
+    void SetMeshManagerAndAddToMeshList(MeshManager* pMeshManager);
     void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
 

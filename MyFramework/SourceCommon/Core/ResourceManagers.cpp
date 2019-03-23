@@ -15,7 +15,7 @@ ResourceManagers::ResourceManagers()
 {
     m_pBufferManager = nullptr;         // g_pBufferManager // 44
     m_pEventManager = nullptr;          // g_pEventManager // 24
-    m_pEventTypeManager = nullptr;      // g_pEventTypeManager // 7
+    m_pEventTypeManager = nullptr;
     m_pFileManager = nullptr;           // g_pFileManager // 97
     m_pFontManager = nullptr;           // g_pFontManager // 15
     m_pGameServiceManager = nullptr;    // g_pGameServiceManager // 14
@@ -28,5 +28,5 @@ ResourceManagers::ResourceManagers()
     m_pShaderGroupManager = nullptr;    // g_pShaderGroupManager // 19
     m_pSoundManager = nullptr;
     m_pTextureManager = nullptr;        // g_pTextureManager // 42
-    m_pVertexFormatManager = nullptr;   // g_pVertexFormatManager // 7
+    m_pVertexFormatManager = nullptr;
 }
