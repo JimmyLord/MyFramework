@@ -15,8 +15,7 @@
 
 class BufferDefinition;
 class ShaderManager;
-
-extern ShaderManager* g_pShaderManager;
+class TextureDefinition;
 
 class BaseShader : public TCPPListNode<BaseShader*>
 {
@@ -30,6 +29,10 @@ public:
         Attribute_BoneIndex,
         Attribute_BoneWeight,
     };
+
+#if MYFW_EDITOR
+    TextureDefinition* m_pErrorTexture;
+#endif
 
     bool m_Initialized;
     bool m_ShaderFailedToCompile;
@@ -63,13 +66,17 @@ public:
     unsigned int m_FragmentShaderHandle;
 
 public:
-    BaseShader();
-    BaseShader(ShaderPassTypes type);
-    void Init_BaseShader();
+    BaseShader(ShaderManager* pShaderManager);
+    BaseShader(ShaderManager* pShaderManager, ShaderPassTypes type);
+    void Init_BaseShader(ShaderManager* pShaderManager);
     virtual ~BaseShader();
     SetClassnameBase( "BaseShader" ); // Only first 8 character count.
 
     virtual void Init(ShaderPassTypes type);
+
+#if MYFW_EDITOR
+    void SetErrorTexture(TextureDefinition* pErrorTexture) { m_pErrorTexture = pErrorTexture; }
+#endif
 
     void OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsoUseDefaults);
 

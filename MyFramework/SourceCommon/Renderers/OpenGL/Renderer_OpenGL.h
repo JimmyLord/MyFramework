@@ -67,7 +67,7 @@ public:
     virtual void SetPointSize(float size) override;
 
     // Actions.
-    virtual Shader_Base* CreateShader(ShaderPassTypes passType) override;
+    virtual Shader_Base* CreateShader(ShaderPassTypes passType, TextureDefinition* pErrorTexture) override;
     virtual TextureDefinition* CreateTexture() override;
     virtual FBODefinition* CreateFBO() override;
 

@@ -21,6 +21,8 @@ Renderer_Base::Renderer_Base()
 
     m_IsValid = false;
 
+    m_pShaderManager = nullptr;
+
     m_ClearColor.Set( 0.0f, 0.0f, 0.2f, 0.0f );
     m_ClearDepth = 1.0f;
 
@@ -44,6 +46,14 @@ Renderer_Base::Renderer_Base()
 
 Renderer_Base::~Renderer_Base()
 {
+}
+
+//====================================================================================================
+// Setters.
+//====================================================================================================
+void Renderer_Base::SetManagers(ShaderManager* pShaderManager)
+{
+    m_pShaderManager = pShaderManager;
 }
 
 //====================================================================================================

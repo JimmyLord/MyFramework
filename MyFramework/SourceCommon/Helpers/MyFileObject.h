@@ -121,7 +121,7 @@ protected:
 
     void Tick();
 
-    virtual void UnloadContents();
+    virtual void UnloadContents(FileManager* pFileManager);
 
     bool IsNewVersionAvailable();
 

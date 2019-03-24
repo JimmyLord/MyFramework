@@ -16,6 +16,7 @@
 #include "../Events/EventTypeManager.h"
 #include "../Helpers/FileManager.h"
 #include "../Shaders/ShaderGroup.h"
+#include "../Textures/TextureManager.h"
 
 MaterialManager* g_pMaterialManager = nullptr;
 
@@ -123,7 +124,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
     if( m_pDefaultEditorMaterial == nullptr )
     {
         m_pDefaultEditorMaterial = CreateMaterial();
-        ShaderGroup* pShader = MyNew ShaderGroup();
+        ShaderGroup* pShader = MyNew ShaderGroup( g_pTextureManager->GetErrorTexture() );
         m_pDefaultEditorMaterial->SetShader( pShader );
         pShader->Release();
     }

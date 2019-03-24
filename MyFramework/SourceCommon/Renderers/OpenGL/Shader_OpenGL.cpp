@@ -24,12 +24,14 @@
 #include "../../Textures/MaterialDefinition.h"
 #include "../../Textures/TextureManager.h"
 
-Shader_OpenGL::Shader_OpenGL()
+Shader_OpenGL::Shader_OpenGL(ShaderManager* pShaderManager)
+: Shader_Base( pShaderManager )
 {
     Init_Shader();
 }
 
-Shader_OpenGL::Shader_OpenGL(ShaderPassTypes type)
+Shader_OpenGL::Shader_OpenGL(ShaderManager* pShaderManager, ShaderPassTypes type)
+: Shader_Base( pShaderManager )
 {
     Init_Shader();
     Init( type );
@@ -924,7 +926,7 @@ void Shader_OpenGL::ProgramMaterialProperties(TextureDefinition* pTexture, Color
     {
         // If the shader wants a texture and we didn't pass one in, use a default texture.
         if( pTexture == nullptr )
-            pTexture = g_pTextureManager->GetErrorTexture();
+            pTexture = m_pErrorTexture;
 
         Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
 
@@ -1180,7 +1182,7 @@ void Shader_OpenGL::ProgramShadowLightTexture(TextureDefinition* pShadowTex)
     if( m_uHandle_ShadowTexture != -1 )
     {
         if( pShadowTex == nullptr )
-            pShadowTex = g_pTextureManager->GetErrorTexture();
+            pShadowTex = m_pErrorTexture;
 
         Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pShadowTex;
 
@@ -1198,7 +1200,7 @@ void Shader_OpenGL::ProgramLightmap(TextureDefinition* pTexture)
     if( m_uHandle_TextureLightmap != -1 )
     {
         if( pTexture == nullptr )
-            pTexture = g_pTextureManager->GetErrorTexture();
+            pTexture = m_pErrorTexture;
 
         Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
 
@@ -1216,7 +1218,7 @@ void Shader_OpenGL::ProgramDepthmap(TextureDefinition* pTexture)
     if( m_uHandle_TextureDepth != -1 && pTexture != nullptr )
     {
         if( pTexture == nullptr )
-            pTexture = g_pTextureManager->GetErrorTexture();
+            pTexture = m_pErrorTexture;
 
         Texture_OpenGL* pGLTexture = (Texture_OpenGL*)pTexture;
 
@@ -1284,7 +1286,7 @@ void Shader_OpenGL::ProgramExposedUniforms(ExposedUniformValue* valueArray)
             {
                 TextureDefinition* pTexture = valueArray[i].m_pTexture;
                 if( pTexture == nullptr )
-                    pTexture = g_pTextureManager->GetErrorTexture();
+                    pTexture = m_pErrorTexture;
 
                 if( pTexture )
                 {

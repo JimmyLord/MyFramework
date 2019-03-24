@@ -11,6 +11,7 @@
 
 #include "MyFileObjectShader.h"
 #include "ShaderManager.h"
+#include "../Core/GameCore.h"
 #include "../Helpers/FileManager.h"
 
 MyFileObjectShader::MyFileObjectShader()
@@ -30,11 +31,11 @@ MyFileObjectShader::~MyFileObjectShader()
     ClearIncludedFiles();
 }
 
-void MyFileObjectShader::UnloadContents()
+void MyFileObjectShader::UnloadContents(FileManager* pFileManager)
 {
-    MyFileObject::UnloadContents();
+    MyFileObject::UnloadContents( pFileManager );
 
-    g_pShaderManager->InvalidateAllShadersUsingFile( this );
+    pFileManager->GetGameCore()->GetManagers()->GetShaderManager()->InvalidateAllShadersUsingFile( this );
 
     m_NumExposedUniforms = 0;
     for( int i=0; i<MAX_EXPOSED_UNIFORMS; i++ )

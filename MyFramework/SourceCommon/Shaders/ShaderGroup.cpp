@@ -14,6 +14,7 @@
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "../Shaders/MyFileObjectShader.h"
+#include "../Textures/TextureManager.h"
 
 ShaderGroupManager* g_pShaderGroupManager = nullptr;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
@@ -26,29 +27,29 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup()
+ShaderGroup::ShaderGroup(TextureDefinition* pErrorTexture)
 {
-    Create( 0, 0 );
+    Create( 0, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(const char* pFilename)
+ShaderGroup::ShaderGroup(const char* pFilename, TextureDefinition* pErrorTexture)
 {
     MyFileObject* pShaderFile = RequestFile( pFilename );
-    Create( pShaderFile, 0 );
+    Create( pShaderFile, 0, pErrorTexture );
     pShaderFile->Release();
 }
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile)
+ShaderGroup::ShaderGroup(MyFileObject* pFile, TextureDefinition* pErrorTexture)
 {
-    Create( pFile, 0 );
+    Create( pFile, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc)
+ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
-    Create( pFile, pFunc );
+    Create( pFile, pFunc, pErrorTexture );
 }
 
-void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc)
+void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
     if( pFile && pFile->IsA( "MyFileShader" ) == false )
     {
@@ -64,13 +65,13 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
 
     m_pShaderAllocationFunction = pFunc;
 
-    Initialize();
+    Initialize( pErrorTexture );
 
     SetFileForAllPasses( pFile );
     g_pShaderGroupManager->AddShaderGroup( this );
 }
 
-void ShaderGroup::Initialize()
+void ShaderGroup::Initialize(TextureDefinition* pErrorTexture)
 {
     for( int p=0; p<ShaderPass_NumTypes; p++ )
     {
@@ -81,7 +82,7 @@ void ShaderGroup::Initialize()
                 if( m_pShaderAllocationFunction )
                     m_pShaderPasses[p][lc][bc] = m_pShaderAllocationFunction( (ShaderPassTypes)p );
                 else
-                    m_pShaderPasses[p][lc][bc] = g_pRenderer->CreateShader( (ShaderPassTypes)p );
+                    m_pShaderPasses[p][lc][bc] = g_pRenderer->CreateShader( (ShaderPassTypes)p, pErrorTexture );
             }
         }
     }

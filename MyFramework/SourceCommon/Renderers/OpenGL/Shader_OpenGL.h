@@ -87,8 +87,8 @@ public:
     GLint m_uHandle_ExposedUniforms[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
 public:
-    Shader_OpenGL();
-    Shader_OpenGL(ShaderPassTypes type);
+    Shader_OpenGL(ShaderManager* pShaderManager);
+    Shader_OpenGL(ShaderManager* pShaderManager, ShaderPassTypes type);
     SetClassnameBase( "ShaderGL" ); // Only first 8 characters count.
     void Init_Shader();
     virtual ~Shader_OpenGL();

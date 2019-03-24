@@ -68,7 +68,7 @@ SpriteSheet::~SpriteSheet()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
+void SpriteSheet::Create(TextureManager* pTextureManager, const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
     MyAssert( m_pMaterial == 0 );
     MyAssert( m_ppSpriteArray == 0 );
@@ -76,14 +76,15 @@ void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFi
 
     MyFileObject* pFile = RequestFile( fullpath );
 
-    Create( pFile, pShader, minFilter, magFilter, createSprites, createMaterials );
+    Create( pTextureManager, pFile, pShader, minFilter, magFilter, createSprites, createMaterials );
 }
 
-void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
+void SpriteSheet::Create(TextureManager* pTextureManager, MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
-    MyAssert( m_pMaterial == 0 );
-    MyAssert( m_ppSpriteArray == 0 );
-    MyAssert( m_pMaterialList == 0 );
+    MyAssert( pTextureManager != nullptr );
+    MyAssert( m_pMaterial == nullptr );
+    MyAssert( m_ppSpriteArray == nullptr );
+    MyAssert( m_pMaterialList == nullptr );
 
     LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->GetFullPath() );
 
@@ -116,7 +117,7 @@ void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFil
 
     m_pJSONFile = pJSONFile;
 
-    TextureDefinition* pTextureDef = g_pTextureManager->CreateTexture( pTextureFile, minFilter, magFilter );
+    TextureDefinition* pTextureDef = pTextureManager->CreateTexture( pTextureFile, minFilter, magFilter );
     m_pMaterial = g_pMaterialManager->CreateMaterial();
     m_pMaterial->SetTextureColor( pTextureDef );
     m_pMaterial->SetShader( pShader );

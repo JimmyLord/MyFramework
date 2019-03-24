@@ -74,7 +74,7 @@ public:
     virtual ~MyFileObjectShader();
     SetClassnameWithParent( "MyFileShader", MyFileObject ); // only first 8 character count.
 
-    virtual void UnloadContents();
+    virtual void UnloadContents(FileManager* pFileManager) override;
 
     void ClearIncludedFiles();
     void CheckFileForIncludesAndAddToList();

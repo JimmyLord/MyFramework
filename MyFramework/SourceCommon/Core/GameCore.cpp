@@ -71,10 +71,17 @@ GameCore::GameCore(Renderer_Base* pRenderer, bool createAndOwnGlobalManagers)
     m_OneTimeInitWasCalled = false;
     m_GameConfirmedCloseIsOkay = false;
 
+    m_OwnsRenderer = false;
+
     if( pRenderer )
+    {
         m_pRenderer = pRenderer;
+    }
     else
+    {
         m_pRenderer = MyNew Renderer_OpenGL();
+        m_OwnsRenderer = true;
+    }
 
     m_MainViewport.Set( 0, 0, 0, 0 );
 
@@ -131,7 +138,7 @@ GameCore::~GameCore()
         SAFE_DELETE( g_pBufferManager );
         SAFE_DELETE( g_pMeshManager );
         SAFE_DELETE( g_pLightManager );
-        SAFE_DELETE( g_pShaderManager );
+        SAFE_DELETE( m_Managers.m_pShaderManager );
         SAFE_DELETE( g_pShaderGroupManager );
     }
     else
@@ -181,7 +188,13 @@ GameCore::~GameCore()
     SAFE_DELETE( g_pIAPManager );
 #endif
 
-    delete m_pRenderer;
+    if( m_OwnsRenderer )
+    {
+        if( g_pRenderer == m_pRenderer )
+            g_pRenderer = nullptr;
+
+        delete m_pRenderer;
+    }
 }
 
 bool GameCore::IsGLSurfaceIsValid()
@@ -221,9 +234,16 @@ void GameCore::InitializeManagers()
 
         m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
 
-        HACK_CreateGlobalAndLocalManager( FileManager );
+        if( g_pFileManager == nullptr )
+            g_pFileManager = MyNew FileManager( this );
+        m_Managers.m_pFileManager = g_pFileManager;
+
         HACK_CreateGlobalAndLocalManager( TextureManager );
-        HACK_CreateGlobalAndLocalManager( FontManager );
+
+        if( g_pFontManager == nullptr )
+            g_pFontManager = MyNew FontManager( m_Managers.m_pTextureManager );
+        m_Managers.m_pFontManager = g_pFontManager;
+
         HACK_CreateGlobalAndLocalManager( MaterialManager );
         HACK_CreateGlobalAndLocalManager( BufferManager );
 
@@ -232,7 +252,7 @@ void GameCore::InitializeManagers()
         m_Managers.m_pMeshManager = g_pMeshManager;
 
         HACK_CreateGlobalAndLocalManager( LightManager );
-        HACK_CreateGlobalAndLocalManager( ShaderManager );
+        m_Managers.m_pShaderManager = MyNew ShaderManager;
         HACK_CreateGlobalAndLocalManager( ShaderGroupManager );
         HACK_CreateGlobalAndLocalManager( GameServiceManager );
     }
@@ -244,9 +264,16 @@ void GameCore::InitializeManagers()
 
         m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
 
-        HACK_BackupAndCreateNewManager( FileManager );
+        FileManager* pFileManager = g_pFileManager;
+        m_Managers.m_pFileManager = MyNew FileManager( this );
+        g_pFileManager = pFileManager;
+
         HACK_BackupAndCreateNewManager( TextureManager );
-        HACK_BackupAndCreateNewManager( FontManager );
+
+        FontManager* pFontManager = g_pFontManager;
+        m_Managers.m_pFontManager = MyNew FontManager( m_Managers.m_pTextureManager );
+        g_pFontManager = pFontManager;
+
         HACK_BackupAndCreateNewManager( MaterialManager );
         HACK_BackupAndCreateNewManager( BufferManager );
 
@@ -255,7 +282,7 @@ void GameCore::InitializeManagers()
         g_pMeshManager = pMeshManager;
 
         HACK_BackupAndCreateNewManager( LightManager );
-        HACK_BackupAndCreateNewManager( ShaderManager );
+        m_Managers.m_pShaderManager = MyNew ShaderManager;
         HACK_BackupAndCreateNewManager( ShaderGroupManager );
         HACK_BackupAndCreateNewManager( GameServiceManager );
     }
@@ -289,6 +316,8 @@ void GameCore::OneTimeInit()
     srand( seed );
 
     InitializeManagers();
+
+    m_pRenderer->SetManagers( m_Managers.m_pShaderManager );
 
     m_pSoundPlayer = MyNew SoundPlayer;
 

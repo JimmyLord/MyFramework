@@ -40,6 +40,11 @@ FontDefinition::~FontDefinition()
 //========================
 //========================
 
+FontManager::FontManager(TextureManager* pTextureManager)
+{
+    m_pTextureManager = pTextureManager;
+}
+
 FontDefinition* FontManager::CreateFont(const char* fontfilename)
 {
     FontDefinition* pFontDef = FindFontByFilename( fontfilename );
@@ -99,7 +104,7 @@ void FontManager::Tick()
                 tempname[i] = 0;
             }
             strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
-            pFontDef->m_pTextureDef = g_pTextureManager->CreateTexture( tempname, MyRE::MinFilter_Linear, MyRE::MagFilter_Linear, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
+            pFontDef->m_pTextureDef = m_pTextureManager->CreateTexture( tempname, MyRE::MinFilter_Linear, MyRE::MagFilter_Linear, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
 #if MYFW_EDITOR
             if( pFontDef->m_pFile->MemoryPanel_IsVisible() == false )
             {

@@ -29,26 +29,45 @@ class VertexFormatManager;
 
 class ResourceManagers
 {
-public:
-    BufferManager* m_pBufferManager;
-    EventManager* m_pEventManager;
-    EventTypeManager* m_pEventTypeManager;
-    FileManager* m_pFileManager;
-    FontManager* m_pFontManager;
-    GamepadManager* m_pGamepadManager;
-    GameServiceManager* m_pGameServiceManager;
-    MyJobManager* m_pMyJobManager;
-    LightManager* m_pLightManager;
-    MaterialManager* m_pMaterialManager;
-    MeshManager* m_pMeshManager;
-    ShaderManager* m_pShaderManager;
-    ShaderGroupManager* m_pShaderGroupManager;
-    SoundManager* m_pSoundManager;
-    TextureManager* m_pTextureManager;
-    VertexFormatManager* m_pVertexFormatManager;
+    friend class GameCore;
+
+protected:
+    BufferManager*          m_pBufferManager;
+    EventManager*           m_pEventManager;
+    EventTypeManager*       m_pEventTypeManager;
+    FileManager*            m_pFileManager;
+    FontManager*            m_pFontManager;
+    GamepadManager*         m_pGamepadManager;
+    GameServiceManager*     m_pGameServiceManager;
+    MyJobManager*           m_pMyJobManager;
+    LightManager*           m_pLightManager;
+    MaterialManager*        m_pMaterialManager;
+    MeshManager*            m_pMeshManager;
+    ShaderManager*          m_pShaderManager;
+    ShaderGroupManager*     m_pShaderGroupManager;
+    SoundManager*           m_pSoundManager;
+    TextureManager*         m_pTextureManager;
+    VertexFormatManager*    m_pVertexFormatManager;
 
 public:
     ResourceManagers();
+
+    BufferManager*          GetBufferManager()          { return m_pBufferManager;       }
+    EventManager*           GetEventManager()           { return m_pEventManager;        }
+    EventTypeManager*       GetEventTypeManager()       { return m_pEventTypeManager;    }
+    FileManager*            GetFileManager()            { return m_pFileManager;         }
+    FontManager*            GetFontManager()            { return m_pFontManager;         }
+    GamepadManager*         GetGamepadManager()         { return m_pGamepadManager;      }
+    GameServiceManager*     GetGameServiceManager()     { return m_pGameServiceManager;  }
+    MyJobManager*           GetMyJobManager()           { return m_pMyJobManager;        }
+    LightManager*           GetLightManager()           { return m_pLightManager;        }
+    MaterialManager*        GetMaterialManager()        { return m_pMaterialManager;     }
+    MeshManager*            GetMeshManager()            { return m_pMeshManager;         }
+    ShaderManager*          GetShaderManager()          { return m_pShaderManager;       }
+    ShaderGroupManager*     GetShaderGroupManager()     { return m_pShaderGroupManager;  }
+    SoundManager*           GetSoundManager()           { return m_pSoundManager;        }
+    TextureManager*         GetTextureManager()         { return m_pTextureManager;      }
+    VertexFormatManager*    GetVertexFormatManager()    { return m_pVertexFormatManager; }
 };
 
 #endif //__ResourceManagers_H__

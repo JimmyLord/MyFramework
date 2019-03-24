@@ -79,6 +79,7 @@ protected:
     bool m_GameConfirmedCloseIsOkay; // Setting this flag should cause the main game window to close.
 
     Renderer_Base* m_pRenderer;
+    bool m_OwnsRenderer;
     MyViewport m_MainViewport;
 
     bool m_HasFocus;

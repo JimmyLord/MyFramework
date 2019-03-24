@@ -20,8 +20,6 @@
 // TODO: Fix GL Includes.
 #include "../Renderers/OpenGL/GLHelpers.h"
 
-ShaderManager* g_pShaderManager = nullptr;
-
 const char* g_pBrokenShaderString =
 "                                                                                       \n\
 #ifndef WIN32                                                                           \n\
@@ -48,24 +46,28 @@ uniform float u_Time;                                                           
 #endif                                                                                  \n\
 ";
 
-BaseShader::BaseShader()
+BaseShader::BaseShader(ShaderManager* pShaderManager)
 {
-    Init_BaseShader();
+    Init_BaseShader( pShaderManager );
     Init( ShaderPass_Main );
 }
 
-BaseShader::BaseShader(ShaderPassTypes type)
+BaseShader::BaseShader(ShaderManager* pShaderManager, ShaderPassTypes type)
 {
-    Init_BaseShader();
+    Init_BaseShader( pShaderManager );
     Init( type );
 }
 
-void BaseShader::Init_BaseShader()
+void BaseShader::Init_BaseShader(ShaderManager* pShaderManager)
 {
     ClassnameSanityCheck();
 
     m_Initialized = false;
     m_ShaderFailedToCompile = false;
+
+#if MYFW_EDITOR
+    m_pErrorTexture = nullptr;
+#endif
 
     m_PassType = ShaderPass_NumTypes;
     m_BlendType = MyRE::MaterialBlendType_NotSet;
@@ -82,7 +84,7 @@ void BaseShader::Init_BaseShader()
     m_pGSPredefinitions = nullptr;
     m_pFSPredefinitions = nullptr;
 
-    g_pShaderManager->AddShader( this );
+    pShaderManager->AddShader( this );
 }
 
 BaseShader::~BaseShader()

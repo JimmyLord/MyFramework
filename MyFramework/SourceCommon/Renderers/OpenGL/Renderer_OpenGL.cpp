@@ -20,6 +20,7 @@
 #include "../Old/OpenGLWrapper.h"
 #include "../../DataTypes/ColorStructs.h"
 #include "../../Particles/ParticleRendererInstanced.h"
+#include "../../../SourceCommon/Textures/TextureManager.h"
 
 //====================================================================================================
 // Enum Conversions.
@@ -411,9 +412,15 @@ void Renderer_OpenGL::SetPointSize(float size)
 //====================================================================================================
 // Actions.
 //====================================================================================================
-Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType)
+Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType, TextureDefinition* pErrorTexture)
 {
-    return MyNew Shader_OpenGL( passType );
+    Shader_Base* pShader = MyNew Shader_OpenGL( m_pShaderManager, passType );
+
+#if MYFW_EDITOR
+    pShader->SetErrorTexture( pErrorTexture );
+#endif
+
+    return pShader;
 }
 
 TextureDefinition* Renderer_OpenGL::CreateTexture()

@@ -18,6 +18,7 @@ class Buffer_Base;
 class FBODefinition;
 class Renderer_Base;
 class Shader_Base;
+class ShaderManager;
 class TextureDefinition;
 
 extern Renderer_Base* g_pRenderer;
@@ -53,6 +54,8 @@ class Renderer_Base
 protected:
     bool m_IsValid;
 
+    ShaderManager* m_pShaderManager;
+
     ColorFloat m_ClearColor;
     float m_ClearDepth;
 
@@ -81,6 +84,7 @@ public:
     bool IsValid() { return m_IsValid; }
 
     // Setters.
+    void SetManagers(ShaderManager* pShaderManager);
 
     // Events.
     virtual void OnSurfaceCreated();
@@ -103,7 +107,7 @@ public:
     virtual void SetPointSize(float size);
 
     // Actions.
-    virtual Shader_Base* CreateShader(ShaderPassTypes passType) = 0;
+    virtual Shader_Base* CreateShader(ShaderPassTypes passType, TextureDefinition* pErrorTexture) = 0;
     virtual TextureDefinition* CreateTexture() = 0;
     virtual FBODefinition* CreateFBO() = 0;
 

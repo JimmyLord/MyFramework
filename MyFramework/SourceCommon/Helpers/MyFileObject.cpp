@@ -423,7 +423,7 @@ void MyFileObject::UpdateTimestamp()
 #endif
 }
 
-void MyFileObject::UnloadContents()
+void MyFileObject::UnloadContents(FileManager* pFileManager)
 {
     SAFE_DELETE_ARRAY( m_pBuffer );
     m_FileLength = 0;

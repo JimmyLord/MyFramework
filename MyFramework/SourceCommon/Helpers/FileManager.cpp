@@ -20,8 +20,10 @@
 
 FileManager* g_pFileManager = 0;
 
-FileManager::FileManager()
+FileManager::FileManager(GameCore* pGameCore)
 {
+    m_pGameCore = pGameCore;
+
 #if USE_PTHREAD && !MYFW_NACL
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
@@ -211,7 +213,7 @@ void FileManager::ReloadFile(MyFileObject* pFile)
 {
     MyAssert( pFile );
 
-    pFile->UnloadContents();
+    pFile->UnloadContents( this );
     m_FilesStillLoading.MoveTail( pFile );
 }
 

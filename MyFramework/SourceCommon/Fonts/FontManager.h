@@ -14,6 +14,7 @@ class BMFont;
 class FontManager;
 class MyFileObject;
 class TextureDefinition;
+class TextureManager;
 
 extern FontManager* g_pFontManager;
 
@@ -44,10 +45,14 @@ public:
 class FontManager
 {
 protected:
+    TextureManager* m_pTextureManager;
+
     TCPPListHead<FontDefinition*> m_FontsLoaded;
     TCPPListHead<FontDefinition*> m_FontsStillLoading;
 
 public:
+    FontManager(TextureManager* pTextureManager);
+
     FontDefinition* CreateFont(const char* fontfilename);
     FontDefinition* CreateFont(MyFileObject* pFile);
     void Tick();

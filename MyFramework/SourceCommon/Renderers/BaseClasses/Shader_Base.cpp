@@ -13,11 +13,13 @@
 #include "../../Shaders/ShaderManager.h"
 #include "../../Shaders/VertexFormats.h"
 
-Shader_Base::Shader_Base()
+Shader_Base::Shader_Base(ShaderManager* pShaderManager)
+: BaseShader( pShaderManager )
 {
 }
 
-Shader_Base::Shader_Base(ShaderPassTypes type)
+Shader_Base::Shader_Base(ShaderManager* pShaderManager, ShaderPassTypes type)
+: BaseShader( pShaderManager )
 {
     Init( type );
 }

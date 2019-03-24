@@ -16,6 +16,7 @@ class MyFileObjectShader;
 class Shader_Base;
 class ShaderGroup;
 class ShaderGroupManager;
+class TextureDefinition;
 
 enum ShaderPassTypes
 {
@@ -45,15 +46,15 @@ protected:
     ShaderGroupShaderAllocationFunction* m_pShaderAllocationFunction;
 
 protected:
-    void Initialize();
+    void Initialize(TextureDefinition* pErrorTexture);
     void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
-    ShaderGroup();
-    ShaderGroup(const char* pFilename);
-    ShaderGroup(MyFileObject* pFile);
-    ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc);
-    void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc);
+    ShaderGroup(TextureDefinition* pErrorTexture);
+    ShaderGroup(const char* pFilename, TextureDefinition* pErrorTexture);
+    ShaderGroup(MyFileObject* pFile, TextureDefinition* pErrorTexture);
+    ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
+    void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
 
     ~ShaderGroup();
 

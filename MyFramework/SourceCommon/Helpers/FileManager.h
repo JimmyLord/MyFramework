@@ -11,6 +11,7 @@
 #define __FileManager_H__
 
 class FileManager;
+class GameCore;
 class MyFileObject;
 class MySaveFileObject;
 class TextureDefinition;
@@ -44,6 +45,8 @@ class FileManager
     };
 
 protected:
+    GameCore* m_pGameCore;
+
     TCPPListHead<MyFileObject*> m_FilesLoaded;
     TCPPListHead<MyFileObject*> m_FilesStillLoading;
 
@@ -55,8 +58,10 @@ protected:
 #endif //USE_PTHREAD
 
 public:
-    FileManager();
+    FileManager(GameCore* pGameCore);
     virtual ~FileManager();
+
+    GameCore* GetGameCore() { return m_pGameCore; }
 
     void PrintListOfOpenFiles();
     void FreeFile(MyFileObject* pFile);
