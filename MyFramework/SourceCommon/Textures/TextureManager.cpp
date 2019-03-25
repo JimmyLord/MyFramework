@@ -15,8 +15,6 @@
 #include "../Helpers/MyFileObject.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 
-TextureManager* g_pTextureManager = nullptr;
-
 TextureManager::TextureManager()
 {
     m_MaxTexturesToLoadInOneTick = -1;

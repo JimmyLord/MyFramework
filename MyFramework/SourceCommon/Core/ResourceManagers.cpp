@@ -27,6 +27,6 @@ ResourceManagers::ResourceManagers()
     m_pShaderManager = nullptr;
     m_pShaderGroupManager = nullptr;    // g_pShaderGroupManager // 19
     m_pSoundManager = nullptr;
-    m_pTextureManager = nullptr;        // g_pTextureManager // 35
+    m_pTextureManager = nullptr;
     m_pVertexFormatManager = nullptr;
 }

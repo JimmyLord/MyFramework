@@ -17,8 +17,6 @@ class RefCount;
 class TextureDefinition;
 class TextureManager;
 
-extern TextureManager* g_pTextureManager;
-
 class TextureManager
 {
 #if MYFW_USING_IMGUI

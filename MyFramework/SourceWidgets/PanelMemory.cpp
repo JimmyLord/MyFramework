@@ -340,7 +340,7 @@ void PanelMemory::UpdateRootNodeTextureCount()
     // update root node memory usage count.
     //sprintf_s( tempstr, 100, "Textures(%d) - size(%d)",
     //    m_pTree_Textures->GetChildrenCount( idroot, true ) - m_pTree_Textures->GetChildrenCount( idroot, false ),
-    //    0 );//g_pTextureManager->CalculateTotalMemoryUsedByTextures() );
+    //    0 );//EngineCore->GetManagers()->GetTextureManager()->CalculateTotalMemoryUsedByTextures() );
     //m_pTree_Textures->SetItemText( idroot, tempstr );
     sprintf_s( tempstr, 100, "Tex(%d)",
         (int)m_pTree_Textures->GetChildrenCount( idroot, true ) - (int)m_pTree_Textures->GetChildrenCount( idroot, false ) );

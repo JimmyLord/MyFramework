@@ -54,25 +54,25 @@ void ExposedUniformValue::SetToInitialValue(ExposedUniformType type)
     }
 }
 
-MaterialDefinition::MaterialDefinition()
+MaterialDefinition::MaterialDefinition(MaterialManager* pMaterialManager)
 {
-    Init();
+    Init( pMaterialManager );
 }
 
-MaterialDefinition::MaterialDefinition(ShaderGroup* pShader)
+MaterialDefinition::MaterialDefinition(MaterialManager* pMaterialManager, ShaderGroup* pShader)
 {
-    Init();
+    Init( pMaterialManager );
 
     SetShader( pShader );
 }
 
-MaterialDefinition::MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse)
+MaterialDefinition::MaterialDefinition(MaterialManager* pMaterialManager, ShaderGroup* pShader, ColorByte colorDiffuse)
 {
-    Init();
+    Init( pMaterialManager );
 
     SetShader( pShader );
 
-    m_ColorDiffuse = colordiffuse;
+    m_ColorDiffuse = colorDiffuse;
 
     m_UnsavedChanges = false;
 }
@@ -98,7 +98,7 @@ void MaterialDefinition::SetFile(MyFileObject* pFile)
 //============================================================================================================================
 // Public methods.
 //============================================================================================================================
-void MaterialDefinition::Init()
+void MaterialDefinition::Init(MaterialManager* pMaterialManager)
 {
     m_MaterialFileIsLoaded = false;
 
@@ -106,6 +106,8 @@ void MaterialDefinition::Init()
 
     m_Name[0] = '\0';
     m_pFile = nullptr;
+
+    m_pMaterialManager = pMaterialManager;
 
     m_pShaderGroup = nullptr;
     m_pShaderGroupInstanced = nullptr;
@@ -169,6 +171,8 @@ MaterialDefinition& MaterialDefinition::operator=(const MaterialDefinition& othe
     // m_Name
     // m_pFile
 
+    this->m_pMaterialManager = other.m_pMaterialManager;
+
     this->SetShader( other.GetShader() );
     this->SetShaderInstanced( other.GetShaderInstanced() );
     this->SetTextureColor( other.GetTextureColor() );
@@ -226,7 +230,7 @@ void MaterialDefinition::ImportFromFile()
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( pShaderFile, g_pTextureManager->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShader( pShaderGroup );
                     pShaderGroup->Release();
                 }
@@ -252,7 +256,7 @@ void MaterialDefinition::ImportFromFile()
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( pShaderFile, g_pTextureManager->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShaderInstanced( pShaderGroup );
                     pShaderGroup->Release();
                 }
@@ -267,7 +271,7 @@ void MaterialDefinition::ImportFromFile()
         cJSON* jTexColor = cJSON_GetObjectItem( jMaterial, "TexColor" );
         if( jTexColor && jTexColor->valuestring[0] != '\0' )
         {
-            TextureDefinition* pTexture = g_pTextureManager->CreateTexture( jTexColor->valuestring ); // Adds a ref.
+            TextureDefinition* pTexture = m_pMaterialManager->GetTextureManager()->CreateTexture( jTexColor->valuestring ); // Adds a ref.
             MyAssert( pTexture ); // CreateTexture should find the old one if loaded or create a new one if not.
             if( pTexture )
             {
@@ -581,7 +585,7 @@ void MaterialDefinition::ImportExposedUniformValues(cJSON* jMaterial)
 
                             if( filename != nullptr )
                             {
-                                m_UniformValues[i].m_pTexture = g_pTextureManager->FindTexture( filename );
+                                m_UniformValues[i].m_pTexture = m_pMaterialManager->GetTextureManager()->FindTexture( filename );
                                 m_UniformValues[i].m_pTexture->AddRef();
                             }
                         }

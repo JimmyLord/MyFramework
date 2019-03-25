@@ -65,9 +65,7 @@ void BaseShader::Init_BaseShader(ShaderManager* pShaderManager)
     m_Initialized = false;
     m_ShaderFailedToCompile = false;
 
-#if MYFW_EDITOR
     m_pErrorTexture = nullptr;
-#endif
 
     m_PassType = ShaderPass_NumTypes;
     m_BlendType = MyRE::MaterialBlendType_NotSet;

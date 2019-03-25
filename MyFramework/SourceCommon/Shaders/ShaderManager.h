@@ -30,9 +30,7 @@ public:
         Attribute_BoneWeight,
     };
 
-#if MYFW_EDITOR
     TextureDefinition* m_pErrorTexture;
-#endif
 
     bool m_Initialized;
     bool m_ShaderFailedToCompile;
@@ -74,9 +72,7 @@ public:
 
     virtual void Init(ShaderPassTypes type);
 
-#if MYFW_EDITOR
     void SetErrorTexture(TextureDefinition* pErrorTexture) { m_pErrorTexture = pErrorTexture; }
-#endif
 
     void OverridePredefs(const char* VSpredef, const char* GSpredef, const char* FSpredef, bool alsoUseDefaults);
 

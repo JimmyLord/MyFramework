@@ -20,8 +20,10 @@
 
 MaterialManager* g_pMaterialManager = nullptr;
 
-MaterialManager::MaterialManager()
+MaterialManager::MaterialManager(TextureManager* pTextureManager)
 {
+    m_pTextureManager = pTextureManager;
+
 #if MYFW_EDITOR
     m_pDefaultEditorMaterial = nullptr;
 #endif
@@ -124,7 +126,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
     if( m_pDefaultEditorMaterial == nullptr )
     {
         m_pDefaultEditorMaterial = CreateMaterial();
-        ShaderGroup* pShader = MyNew ShaderGroup( g_pTextureManager->GetErrorTexture() );
+        ShaderGroup* pShader = MyNew ShaderGroup( m_pTextureManager->GetErrorTexture() );
         m_pDefaultEditorMaterial->SetShader( pShader );
         pShader->Release();
     }
@@ -137,7 +139,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pMaterialFile)
 {
     MyAssert( pMaterialFile != nullptr );
 
-    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    MaterialDefinition* pMaterial = MyNew MaterialDefinition( this );
     m_Materials.AddTail( pMaterial );
 
     pMaterial->SetFile( pMaterialFile );
@@ -147,7 +149,7 @@ MaterialDefinition* MaterialManager::CreateMaterial(MyFileObject* pMaterialFile)
 
 MaterialDefinition* MaterialManager::CreateMaterial(const char* name, const char* relativePath)
 {
-    MaterialDefinition* pMaterial = MyNew MaterialDefinition();
+    MaterialDefinition* pMaterial = MyNew MaterialDefinition( this );
     m_Materials.AddTail( pMaterial );
 
     pMaterial->m_MaterialFileIsLoaded = true;
@@ -182,7 +184,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
         return pMaterial;
     }
 
-    pMaterial = MyNew MaterialDefinition();
+    pMaterial = MyNew MaterialDefinition( this );
     m_MaterialsStillLoading.AddTail( pMaterial );
 
     pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );

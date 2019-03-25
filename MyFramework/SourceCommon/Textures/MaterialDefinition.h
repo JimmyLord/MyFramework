@@ -65,6 +65,8 @@ protected:
     char m_Name[MAX_MATERIAL_NAME_LEN]; // If [0] == '/0', material won't save to disk.
     MyFileObject* m_pFile;
 
+    MaterialManager* m_pMaterialManager;
+
     ShaderGroup* m_pShaderGroup;
     ShaderGroup* m_pShaderGroupInstanced;
     TextureDefinition* m_pTextureColor;
@@ -86,10 +88,10 @@ public:
     Vector2 m_UVOffset;
 
 public:
-    MaterialDefinition();
-    MaterialDefinition(ShaderGroup* pShader);
-    MaterialDefinition(ShaderGroup* pShader, ColorByte colordiffuse);
-    void Init();
+    MaterialDefinition(MaterialManager* pMaterialManager);
+    MaterialDefinition(MaterialManager* pMaterialManager, ShaderGroup* pShader);
+    MaterialDefinition(MaterialManager* pMaterialManager, ShaderGroup* pShader, ColorByte colorDiffuse);
+    void Init(MaterialManager* pMaterialManager);
 
     virtual ~MaterialDefinition();
 

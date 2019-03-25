@@ -13,6 +13,7 @@
 class MaterialDefinition;
 class MaterialManager;
 class TextureDefinition;
+class TextureManager;
 
 extern MaterialManager* g_pMaterialManager;
 
@@ -36,6 +37,8 @@ private:
 #endif
 
 protected:
+    TextureManager* m_pTextureManager;
+
     TCPPListHead<MaterialDefinition*> m_Materials;
     TCPPListHead<MaterialDefinition*> m_MaterialsStillLoading;
 
@@ -46,8 +49,10 @@ protected:
 #endif
 
 public:
-    MaterialManager();
+    MaterialManager(TextureManager* pTextureManager);
     virtual ~MaterialManager();
+
+    TextureManager* GetTextureManager() { return m_pTextureManager; }
 
     void Tick();
     
