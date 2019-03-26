@@ -152,7 +152,7 @@ void MySubmesh::SetupAttributes(Shader_Base* pShader)
     }
 }
 
-void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySubmesh::Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* pCamPos, Vector3* pCamRot, MyLight** pLightPtrs, int numLights, MyMatrix* shadowLightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
 #if _DEBUG && MYFW_WINDOWS
     if( m_TriggerBreakpointOnNextDraw )
@@ -170,12 +170,14 @@ void MySubmesh::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMa
     MyRE::PrimitiveTypes primitiveType = m_PrimitiveType;
     int pointSize = m_PointSize;
 
-    MaterialDefinition* pMaterial = m_pMaterial;
+    if( pMaterial == nullptr )
+        pMaterial = m_pMaterial;
 
 #if MYFW_EDITOR
     if( pMaterial == nullptr )
     {
-        pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+        MyAssert( false ); // In editor builds, calling code should set a default "error" material.
+        //pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
     }
 #else
     if( pMaterial == nullptr && pShaderOverride == nullptr )

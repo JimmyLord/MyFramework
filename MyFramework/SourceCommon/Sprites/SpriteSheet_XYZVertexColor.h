@@ -32,7 +32,7 @@ public:
         m_ppSpriteArray = (MySprite**)MyNew MySprite_XYZVertexColorPtr[m_NumSprites];
         for( uint32 i=0; i<m_NumSprites; i++ )
         {
-            m_ppSpriteArray[i] = MyNew MySprite_XYZVertexColor( false );
+            m_ppSpriteArray[i] = MyNew MySprite_XYZVertexColor();
             m_ppSpriteArray[i]->SetMaterial( m_pMaterial );
         }
     }

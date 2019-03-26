@@ -16,6 +16,7 @@
 #include "../Meshes/LightManager.h"
 #include "../Meshes/MyMesh.h"
 #include "../Meshes/MySubmesh.h"
+#include "../Textures/MaterialManager.h"
 
 SceneGraph_Flat::SceneGraph_Flat()
 {
@@ -187,6 +188,14 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 #else
         bool hideFromDrawList = false;
 #endif
-        pSubmesh->Draw( pMesh, pMatProj, pMatView, &worldTransform, camPos, camRot, lights, numLights, shadowlightVP, pShadowTex, nullptr, pShaderOverride, hideFromDrawList );
+
+#if MYFW_EDITOR
+        if( pMaterial == nullptr )
+        {
+            pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+        }
+#endif
+
+        pSubmesh->Draw( pMaterial, pMesh, pMatProj, pMatView, &worldTransform, camPos, camRot, lights, numLights, shadowlightVP, pShadowTex, nullptr, pShaderOverride, hideFromDrawList );
     }
 }

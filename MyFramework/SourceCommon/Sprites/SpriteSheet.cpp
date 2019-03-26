@@ -447,7 +447,7 @@ void SpriteSheet::CreateSprites()
     m_ppSpriteArray = MyNew MySprite*[m_NumSprites];
     for( uint32 i=0; i<m_NumSprites; i++ )
     {
-        m_ppSpriteArray[i] = MyNew MySprite( false );
+        m_ppSpriteArray[i] = MyNew MySprite();
         m_ppSpriteArray[i]->SetMaterial( m_pMaterial );
     }
 }

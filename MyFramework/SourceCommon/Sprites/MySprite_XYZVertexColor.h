@@ -13,7 +13,9 @@
 #include "../DataTypes/ColorStructs.h"
 #include "../Sprites/MySprite.h"
 
+class MaterialManager;
 class MySprite_XYZVertexColor;
+class ShaderGroup;
 class Shader_TextureVertexColor;
 class TextureDefinition;
 
@@ -24,7 +26,7 @@ class MySprite_XYZVertexColor : public MySprite
 protected:
 
 public:
-    MySprite_XYZVertexColor(bool creatematerial);
+    MySprite_XYZVertexColor();
     virtual ~MySprite_XYZVertexColor();
 
     virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
@@ -37,7 +39,7 @@ public:
     //virtual void DrawNoSetup();
     //virtual void DeactivateShader();
     virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride = 0, bool hideFromDrawList = false);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
+    virtual void Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
     virtual void SetVertexColors( ColorByte bl, ColorByte br, ColorByte tl, ColorByte tr );
     virtual void SetVertexColors( ColorFloat bl, ColorFloat br, ColorFloat tl, ColorFloat tr );

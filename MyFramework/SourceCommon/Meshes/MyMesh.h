@@ -49,6 +49,7 @@ typedef void SetupCustomUniformsCallbackFunc(void* pObjectPtr, Shader_Base* pSha
 
 class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
 {
+    friend class MeshManager;
     friend class MySubmesh;
 
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: Fix this hardcodedness.
@@ -94,7 +95,6 @@ protected:
     void OnFileFinishedLoadingMyAnim(MyFileObject* pFile);
 
     virtual void ParseFile();
-    void GuessAndAssignAppropriateShader();
 
 public:
     MyMesh();

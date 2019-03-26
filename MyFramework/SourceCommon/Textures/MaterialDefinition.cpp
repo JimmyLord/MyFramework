@@ -219,7 +219,7 @@ void MaterialDefinition::ImportFromFile()
         cJSON* jShaderString = cJSON_GetObjectItem( jMaterial, "Shader" );
         if( jShaderString )
         {
-            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
+            ShaderGroup* pShaderGroup = m_pMaterialManager->GetShaderGroupManager()->FindShaderGroupByFilename( jShaderString->valuestring );
             if( pShaderGroup != nullptr )
             {
                 SetShader( pShaderGroup );
@@ -230,7 +230,7 @@ void MaterialDefinition::ImportFromFile()
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetShaderGroupManager(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShader( pShaderGroup );
                     pShaderGroup->Release();
                 }
@@ -245,7 +245,7 @@ void MaterialDefinition::ImportFromFile()
         jShaderString = cJSON_GetObjectItem( jMaterial, "ShaderInstanced" );
         if( jShaderString )
         {
-            ShaderGroup* pShaderGroup = g_pShaderGroupManager->FindShaderGroupByFilename( jShaderString->valuestring );
+            ShaderGroup* pShaderGroup = m_pMaterialManager->GetShaderGroupManager()->FindShaderGroupByFilename( jShaderString->valuestring );
             if( pShaderGroup != nullptr )
             {
                 SetShaderInstanced( pShaderGroup );
@@ -256,7 +256,7 @@ void MaterialDefinition::ImportFromFile()
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetShaderGroupManager(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShaderInstanced( pShaderGroup );
                     pShaderGroup->Release();
                 }

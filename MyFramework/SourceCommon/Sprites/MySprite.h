@@ -15,6 +15,7 @@
 
 class BaseShader;
 class BufferDefinition;
+class MaterialManager;
 class MySprite;
 class ShaderGroup;
 class TextureDefinition;
@@ -42,7 +43,7 @@ public:
     //ColorByte m_Tint; // doesn't work anymore... use materials.
 
 public:
-    MySprite(bool creatematerial);
+    MySprite();
     MySprite(MySprite* pSprite, const char* category);
     virtual ~MySprite();
 
@@ -69,7 +70,7 @@ public:
     virtual void DrawNoSetup();
     virtual void DeactivateShader();
     virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride = 0, bool hideFromDrawList = false);
-    virtual void Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
+    virtual void Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList);
 
     Vertex_Base* GetVerts(bool markDirty);
 

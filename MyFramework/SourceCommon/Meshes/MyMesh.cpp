@@ -24,6 +24,7 @@
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 #include "../Textures/MaterialDefinition.h"
+#include "../Textures/MaterialManager.h"
 
 MyMesh::MyMesh()
 {
@@ -253,21 +254,9 @@ void MyMesh::ParseFile()
                 if( m_SubmeshList[0]->m_pMaterial && m_SubmeshList[0]->m_pMaterial->GetShader() == nullptr )
                 {
                     // Guess at an appropriate shader for this mesh/material.
-                    GuessAndAssignAppropriateShader();
+                    m_pMeshManager->GuessAndAssignAppropriateShaderToMesh( this );
                 }
             }
-        }
-    }
-}
-
-void MyMesh::GuessAndAssignAppropriateShader()
-{
-    for( unsigned int i=0; i<m_SubmeshList.Count(); i++ )
-    {
-        if( m_SubmeshList[i]->m_pMaterial->GetShader() == nullptr )
-        {
-            // TODO: Actually write code here...
-            m_SubmeshList[i]->m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
         }
     }
 }
@@ -466,7 +455,14 @@ void MyMesh::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, V
 {
     for( unsigned int meshindex=0; meshindex<m_SubmeshList.Count(); meshindex++ )
     {
-        m_SubmeshList[meshindex]->Draw( this, pMatProj, pMatView, pMatWorld, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
+        MaterialDefinition* pMaterial = m_SubmeshList[meshindex]->GetMaterial();
+
+        if( pMaterial == nullptr )
+        {
+            pMaterial = m_pMeshManager->GetMaterialManager()->GetDefaultEditorMaterial();
+        }
+
+        m_SubmeshList[meshindex]->Draw( pMaterial, this, pMatProj, pMatView, pMatWorld, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
     }
 }
 

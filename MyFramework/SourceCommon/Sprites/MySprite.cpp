@@ -32,25 +32,10 @@ char g_SpriteVertexIndices[6] = {  0,  2,  1,    2,  3,  1 }; // counter-clockwi
 char g_SpriteVertexIndices[6] = {  0,  1,  2,    2,  1,  3 }; // clockwise winding
 #endif
 
-MySprite::MySprite(bool creatematerial)
+MySprite::MySprite()
 //: m_Tint(255, 255, 255, 255)
 {
     m_SpriteIsStatic = false;
-
-    //m_pMaterial = 0;
-
-    if( creatematerial )
-    {
-        m_pMaterial = g_pMaterialManager->CreateMaterial();
-        m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
-    }
-
-    //m_pVertexBuffer = 0;
-    //m_pIndexBuffer = 0;
-
-    //m_Position.SetIdentity();
-
-    //m_pParentMatrix = 0;
 
     m_SpriteSize.Set( 0, 0 );
     m_SpriteUVStart.Set( 0, 0 );
@@ -70,8 +55,6 @@ MySprite::MySprite(MySprite* pSprite, const char* category)
 
     m_pMaterial = 0;
     SetMaterial( pSprite->GetMaterial() );
-    //m_pMaterial = g_pMaterialManager->CreateMaterial();
-    //m_pMaterial->SetShader( g_pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
 
     Vertex_Sprite* pVerts = MyNew Vertex_Sprite[4];
     memcpy( pVerts, pSprite->m_pVertexBuffer->GetData( false ), sizeof(Vertex_Sprite)*4);
@@ -482,15 +465,18 @@ void MySprite::DeactivateShader()
 
 void MySprite::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, pMatProj, pMatView, pMatWorld, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
+    Draw( nullptr, nullptr, pMatProj, pMatView, pMatWorld, nullptr, nullptr, nullptr, 0, nullptr, nullptr, nullptr, pShaderOverride, hideFromDrawList );
 }
 
-void MySprite::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite::Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    if( m_pMaterial == 0 || m_pMaterial->GetShader() == 0 )
+    if( pMaterial == nullptr )
+        pMaterial = m_pMaterial;
+
+    if( pMaterial == nullptr || pMaterial->GetShader() == nullptr )
         return;
 
-    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr );
 
     if( m_pVertexBuffer->IsDirty() )
     {

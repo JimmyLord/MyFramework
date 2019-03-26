@@ -139,7 +139,7 @@ GameCore::~GameCore()
         SAFE_DELETE( g_pMeshManager );
         SAFE_DELETE( g_pLightManager );
         SAFE_DELETE( m_Managers.m_pShaderManager );
-        SAFE_DELETE( g_pShaderGroupManager );
+        SAFE_DELETE( m_Managers.m_pShaderGroupManager );
     }
     else
     {
@@ -238,32 +238,32 @@ void GameCore::InitializeManagers()
 
     if( m_ThisClassOwnsTheGlobalManagers )
     {
-        HACK_CreateGlobalAndLocalManagerArg( EventManager, m_Managers.m_pEventTypeManager );
+        HACK_CreateGlobalAndLocalManagerArg( EventManager, m_Managers.GetEventTypeManager() );
         m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
         HACK_CreateGlobalAndLocalManagerArg( FileManager, this );
         m_Managers.m_pTextureManager = MyNew TextureManager;
-        HACK_CreateGlobalAndLocalManagerArg( FontManager, m_Managers.m_pTextureManager );
-        HACK_CreateGlobalAndLocalManagerArg( MaterialManager, m_Managers.m_pTextureManager );
+        HACK_CreateGlobalAndLocalManagerArg( FontManager, m_Managers.GetTextureManager() );
+        HACK_CreateGlobalAndLocalManagerArg( MaterialManager, this );
         HACK_CreateGlobalAndLocalManager( BufferManager );
-        HACK_CreateGlobalAndLocalManagerArg( MeshManager, m_Managers.m_pVertexFormatManager );
+        HACK_CreateGlobalAndLocalManagerArg( MeshManager, this );
         HACK_CreateGlobalAndLocalManager( LightManager );
         m_Managers.m_pShaderManager = MyNew ShaderManager;
-        HACK_CreateGlobalAndLocalManager( ShaderGroupManager );
+        m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
         HACK_CreateGlobalAndLocalManager( GameServiceManager );
     }
     else
     {
-        HACK_BackupAndCreateNewManagerArg( EventManager, m_Managers.m_pEventTypeManager );
+        HACK_BackupAndCreateNewManagerArg( EventManager, m_Managers.GetEventTypeManager() );
         m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
         HACK_BackupAndCreateNewManagerArg( FileManager, this );
         m_Managers.m_pTextureManager = MyNew TextureManager;
-        HACK_BackupAndCreateNewManagerArg( FontManager, m_Managers.m_pTextureManager );
-        HACK_BackupAndCreateNewManagerArg( MaterialManager, m_Managers.m_pTextureManager );
+        HACK_BackupAndCreateNewManagerArg( FontManager, m_Managers.GetTextureManager() );
+        HACK_BackupAndCreateNewManagerArg( MaterialManager, this );
         HACK_BackupAndCreateNewManager( BufferManager );
-        HACK_BackupAndCreateNewManagerArg( MeshManager, m_Managers.m_pVertexFormatManager );
+        HACK_BackupAndCreateNewManagerArg( MeshManager, this );
         HACK_BackupAndCreateNewManager( LightManager );
         m_Managers.m_pShaderManager = MyNew ShaderManager;
-        HACK_BackupAndCreateNewManager( ShaderGroupManager );
+        m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
         HACK_BackupAndCreateNewManager( GameServiceManager );
     }
 

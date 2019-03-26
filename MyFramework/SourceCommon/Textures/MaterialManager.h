@@ -10,10 +10,12 @@
 #ifndef __MaterialManager_H__
 #define __MaterialManager_H__
 
+class GameCore;
 class MaterialDefinition;
 class MaterialManager;
 class TextureDefinition;
 class TextureManager;
+class ShaderGroupManager;
 
 extern MaterialManager* g_pMaterialManager;
 
@@ -37,7 +39,7 @@ private:
 #endif
 
 protected:
-    TextureManager* m_pTextureManager;
+    GameCore* m_pGameCore;
 
     TCPPListHead<MaterialDefinition*> m_Materials;
     TCPPListHead<MaterialDefinition*> m_MaterialsStillLoading;
@@ -49,10 +51,11 @@ protected:
 #endif
 
 public:
-    MaterialManager(TextureManager* pTextureManager);
+    MaterialManager(GameCore* pGameCore);
     virtual ~MaterialManager();
 
-    TextureManager* GetTextureManager() { return m_pTextureManager; }
+    TextureManager* GetTextureManager();
+    ShaderGroupManager* GetShaderGroupManager();
 
     void Tick();
     

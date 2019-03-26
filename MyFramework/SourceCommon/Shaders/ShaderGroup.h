@@ -27,7 +27,6 @@ enum ShaderPassTypes
     ShaderPass_NumTypes,
 };
 
-extern ShaderGroupManager* g_pShaderGroupManager;
 extern const char* g_ShaderPassDefines[ShaderPass_NumTypes];
 extern ShaderPassTypes g_ActiveShaderPass;
 
@@ -40,6 +39,8 @@ public:
     static const int SHADERGROUP_MAX_BONE_INFLUENCES = 4;
 
 protected:
+    ShaderGroupManager* m_pShaderGroupManager;
+
     MyFileObjectShader* m_pFile;
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
 
@@ -50,11 +51,11 @@ protected:
     void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
-    ShaderGroup(TextureDefinition* pErrorTexture);
-    ShaderGroup(const char* pFilename, TextureDefinition* pErrorTexture);
-    ShaderGroup(MyFileObject* pFile, TextureDefinition* pErrorTexture);
-    ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
-    void Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
+    ShaderGroup(ShaderGroupManager* pShaderGroupManager, TextureDefinition* pErrorTexture);
+    ShaderGroup(ShaderGroupManager* pShaderGroupManager, const char* pFilename, TextureDefinition* pErrorTexture);
+    ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, TextureDefinition* pErrorTexture);
+    ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
+    void Create(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
 
     ~ShaderGroup();
 

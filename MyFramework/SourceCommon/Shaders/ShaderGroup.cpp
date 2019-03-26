@@ -16,7 +16,6 @@
 #include "../Shaders/MyFileObjectShader.h"
 #include "../Textures/TextureManager.h"
 
-ShaderGroupManager* g_pShaderGroupManager = nullptr;
 ShaderPassTypes g_ActiveShaderPass = ShaderPass_Main;
 
 const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
@@ -27,30 +26,32 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup(TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, TextureDefinition* pErrorTexture)
 {
-    Create( 0, 0, pErrorTexture );
+    Create( pShaderGroupManager, 0, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(const char* pFilename, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, const char* pFilename, TextureDefinition* pErrorTexture)
 {
     MyFileObject* pShaderFile = RequestFile( pFilename );
-    Create( pShaderFile, 0, pErrorTexture );
+    Create( pShaderGroupManager, pShaderFile, 0, pErrorTexture );
     pShaderFile->Release();
 }
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, TextureDefinition* pErrorTexture)
 {
-    Create( pFile, 0, pErrorTexture );
+    Create( pShaderGroupManager, pFile, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
-    Create( pFile, pFunc, pErrorTexture );
+    Create( pShaderGroupManager, pFile, pFunc, pErrorTexture );
 }
 
-void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
+void ShaderGroup::Create(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
+    m_pShaderGroupManager = pShaderGroupManager;
+
     if( pFile && pFile->IsA( "MyFileShader" ) == false )
     {
         MyAssert( false );
@@ -68,7 +69,7 @@ void ShaderGroup::Create(MyFileObject* pFile, ShaderGroupShaderAllocationFunctio
     Initialize( pErrorTexture );
 
     SetFileForAllPasses( pFile );
-    g_pShaderGroupManager->AddShaderGroup( this );
+    m_pShaderGroupManager->AddShaderGroup( this );
 }
 
 void ShaderGroup::Initialize(TextureDefinition* pErrorTexture)

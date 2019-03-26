@@ -10,7 +10,9 @@
 #ifndef __MeshManager_H__
 #define __MeshManager_H__
 
+class GameCore;
 class MeshManager;
+class MaterialManager;
 class MyFileObject;
 class MyMesh;
 class VertexFormatManager;
@@ -20,20 +22,25 @@ extern MeshManager* g_pMeshManager;
 class MeshManager
 {
 protected:
-    VertexFormatManager* m_pVertexFormatManager;
+    GameCore* m_pGameCore;
     TCPPListHead<MyMesh*> m_MeshList;
 
 public:
-    MeshManager(VertexFormatManager* pVertexFormatManager);
+    MeshManager(GameCore* pGameCore);
 
     // Getters.
-    VertexFormatManager* GetVertexFormatManager() { return m_pVertexFormatManager; }
+    GameCore* GetGameCore() { return m_pGameCore; }
+    VertexFormatManager* GetVertexFormatManager();
+    MaterialManager* GetMaterialManager();
 
     // Add Mesh.
     void AddMesh(MyMesh* pMesh);
 
     // Find Mesh.
     MyMesh* FindMeshBySourceFile(MyFileObject* pFile);
+
+    // Actions.
+    void GuessAndAssignAppropriateShaderToMesh(MyMesh* pMesh);
 };
 
 #endif //__MeshManager_H__

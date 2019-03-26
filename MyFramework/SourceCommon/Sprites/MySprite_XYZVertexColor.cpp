@@ -16,8 +16,8 @@
 #include "../Renderers/BaseClasses/Shader_Base.h"
 #include "../Textures/MaterialDefinition.h"
 
-MySprite_XYZVertexColor::MySprite_XYZVertexColor(bool creatematerial)
-: MySprite( creatematerial )
+MySprite_XYZVertexColor::MySprite_XYZVertexColor()
+: MySprite()
 {
 }
 
@@ -172,17 +172,20 @@ void MySprite_XYZVertexColor::FlipX()
 
 void MySprite_XYZVertexColor::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    Draw( 0, pMatProj, pMatView, pMatWorld, 0, 0, 0, 0, 0, 0, 0, pShaderOverride, hideFromDrawList );
+    Draw( nullptr, nullptr, pMatProj, pMatView, pMatWorld, nullptr, nullptr, nullptr, 0, nullptr, nullptr, nullptr, pShaderOverride, hideFromDrawList );
 }
 
-void MySprite_XYZVertexColor::Draw(MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
+void MySprite_XYZVertexColor::Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, Vector3* campos, Vector3* camrot, MyLight** lightptrs, int numlights, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, TextureDefinition* pLightmapTex, ShaderGroup* pShaderOverride, bool hideFromDrawList)
 {
-    MyAssert( pShaderOverride == 0 ); // TODO: Support overriding shaders
+    if( pMaterial == nullptr )
+        pMaterial = m_pMaterial;
 
-    if( m_pMaterial == 0 )
+    MyAssert( pShaderOverride == nullptr ); // TODO: Support overriding shaders
+
+    if( pMaterial == nullptr )
         return;
 
-    MyAssert( m_pVertexBuffer != 0 && m_pIndexBuffer != 0 );
+    MyAssert( m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr );
 
     if( m_pVertexBuffer->IsDirty() )
     {

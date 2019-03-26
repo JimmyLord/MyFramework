@@ -11,12 +11,25 @@
 
 #include "MeshManager.h"
 #include "MyMesh.h"
+#include "MySubmesh.h"
+#include "../Core/GameCore.h"
+#include "../Textures/MaterialDefinition.h"
 
 MeshManager* g_pMeshManager = nullptr;
 
-MeshManager::MeshManager(VertexFormatManager* pVertexFormatManager)
+MeshManager::MeshManager(GameCore* pGameCore)
 {
-    m_pVertexFormatManager = pVertexFormatManager;
+    m_pGameCore = pGameCore;
+}
+
+VertexFormatManager* MeshManager::GetVertexFormatManager()
+{
+    return m_pGameCore->GetManagers()->GetVertexFormatManager();
+}
+
+MaterialManager* MeshManager::GetMaterialManager()
+{
+    return m_pGameCore->GetManagers()->GetMaterialManager();
 }
 
 void MeshManager::AddMesh(MyMesh* pMesh)
@@ -33,4 +46,18 @@ MyMesh* MeshManager::FindMeshBySourceFile(MyFileObject* pFile)
     }
 
     return nullptr;
+}
+
+void MeshManager::GuessAndAssignAppropriateShaderToMesh(MyMesh* pMesh)
+{
+    ShaderGroupManager* pShaderGroupManager = m_pGameCore->GetManagers()->GetShaderGroupManager();
+
+    for( unsigned int i=0; i<pMesh->m_SubmeshList.Count(); i++ )
+    {
+        if( pMesh->m_SubmeshList[i]->GetMaterial()->GetShader() == nullptr )
+        {
+            // TODO: Actually write code here...
+            pMesh->m_SubmeshList[i]->GetMaterial()->SetShader( pShaderGroupManager->FindShaderGroupByName( "Shader_TintColor" ) );
+        }
+    }
 }

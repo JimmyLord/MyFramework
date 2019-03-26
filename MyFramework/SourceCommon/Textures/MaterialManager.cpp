@@ -11,6 +11,7 @@
 
 #include "MaterialDefinition.h"
 #include "MaterialManager.h"
+#include "../Core/GameCore.h"
 #include "../Events/MyEvent.h"
 #include "../Events/EventManager.h"
 #include "../Events/EventTypeManager.h"
@@ -20,9 +21,9 @@
 
 MaterialManager* g_pMaterialManager = nullptr;
 
-MaterialManager::MaterialManager(TextureManager* pTextureManager)
+MaterialManager::MaterialManager(GameCore* pGameCore)
 {
-    m_pTextureManager = pTextureManager;
+    m_pGameCore = pGameCore;
 
 #if MYFW_EDITOR
     m_pDefaultEditorMaterial = nullptr;
@@ -39,6 +40,16 @@ MaterialManager::~MaterialManager()
 
     FreeAllMaterials();
     m_pMaterialCreatedCallbackList.FreeAllInList();
+}
+
+TextureManager* MaterialManager::GetTextureManager()
+{
+    return m_pGameCore->GetManagers()->GetTextureManager();
+}
+
+ShaderGroupManager* MaterialManager::GetShaderGroupManager()
+{
+    return m_pGameCore->GetManagers()->GetShaderGroupManager();
 }
 
 void MaterialManager::Tick()
@@ -126,7 +137,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
     if( m_pDefaultEditorMaterial == nullptr )
     {
         m_pDefaultEditorMaterial = CreateMaterial();
-        ShaderGroup* pShader = MyNew ShaderGroup( m_pTextureManager->GetErrorTexture() );
+        ShaderGroup* pShader = MyNew ShaderGroup( GetShaderGroupManager(), GetTextureManager()->GetErrorTexture() );
         m_pDefaultEditorMaterial->SetShader( pShader );
         pShader->Release();
     }
