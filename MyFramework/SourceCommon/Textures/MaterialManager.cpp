@@ -19,8 +19,6 @@
 #include "../Shaders/ShaderGroup.h"
 #include "../Textures/TextureManager.h"
 
-MaterialManager* g_pMaterialManager = nullptr;
-
 MaterialManager::MaterialManager(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;
@@ -283,36 +281,14 @@ void MaterialManager::RegisterMaterialCreatedCallback(void* pObj, MaterialCreate
     m_pMaterialCreatedCallbackList.Add( callbackstruct );
 }
 
-    //int id = evt.GetId();
-    //if( id == 1000 )
-    //{
-    //    MaterialDefinition* pMaterial = g_pMaterialManager->CreateMaterial( "new" ); // the new material will only exist in the material manager.
-    //    // TODO: this material will cause an assert on shutdown, unless released by some other code.
-
-    //    // find the selected folder and put the object into that folder.
-    //    wxString wxcategory = g_pPanelMemory->m_pTree_Materials->GetItemText( g_pMaterialManager->m_TreeIDRightClicked );
-    //    const char* category = wxcategory;
-
-    //    char tempstr[MAX_PATH];
-    //    if( strcmp( category, "Materials" ) == 0 )
-    //        sprintf_s( tempstr, MAX_PATH, "Data/Materials" );
-    //    else
-    //        sprintf_s( tempstr, MAX_PATH, "Data/Materials/%s", category );
-    //    pMaterial->SaveMaterial( tempstr );
-
-    //    g_pPanelMemory->RemoveMaterial( pMaterial );
-    //    g_pPanelMemory->AddMaterial( pMaterial, category, pMaterial->m_Name, MaterialDefinition::StaticOnLeftClick, MaterialDefinition::StaticOnRightClick, MaterialDefinition::StaticOnDrag );
-    //    g_pPanelMemory->SetLabelEditFunction( g_pPanelMemory->m_pTree_Materials, pMaterial, MaterialDefinition::StaticOnLabelEdit );
-
-    //    CallMaterialCreatedCallbacks( pMaterial );
-    //}
-
 #if MYFW_EDITOR
 void MaterialManager::CallMaterialCreatedCallbacks(MaterialDefinition* pMaterial)
 {
-    for( unsigned int i=0; i<g_pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
+    MaterialManager* pMaterialManager = pMaterial->m_pMaterialManager;
+
+    for( unsigned int i=0; i<pMaterialManager->m_pMaterialCreatedCallbackList.Count(); i++ )
     {
-        g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( g_pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
+        pMaterialManager->m_pMaterialCreatedCallbackList[i].pFunc( pMaterialManager->m_pMaterialCreatedCallbackList[i].pObj, pMaterial );
     }
 }
 #endif

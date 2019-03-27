@@ -15,8 +15,6 @@
 #include "../Core/GameCore.h"
 #include "../Textures/MaterialDefinition.h"
 
-MeshManager* g_pMeshManager = nullptr;
-
 MeshManager::MeshManager(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;

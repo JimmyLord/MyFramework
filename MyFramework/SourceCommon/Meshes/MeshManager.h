@@ -17,8 +17,6 @@ class MyFileObject;
 class MyMesh;
 class VertexFormatManager;
 
-extern MeshManager* g_pMeshManager;
-
 class MeshManager
 {
 protected:

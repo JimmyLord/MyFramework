@@ -23,7 +23,7 @@ MySaveFileObject* CreatePlatformSpecificSaveFile();
 MyFileObject* RequestFile(const char* filename);
 #endif
 
-typedef void FileManager_OnFileUpdated_CallbackFunction(MyFileObject* pFile);
+typedef void FileManager_OnFileUpdated_CallbackFunction(GameCore* pGameCore, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFileUnloaded_CallbackFunction(void* pObject, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);
 
@@ -70,12 +70,12 @@ public:
     unsigned int CalculateTotalMemoryUsedByFiles();
 
     MyFileObject* CreateFileObject(const char* fullpath);
-    virtual MyFileObject* RequestFile(const char* filename); // will add a ref.
-    MyFileObject* FindFileByName(const char* filename); // doesn't add a ref to the file.
+    virtual MyFileObject* RequestFile(const char* filename); // Will add a ref.
+    MyFileObject* FindFileByName(const char* filename); // Doesn't add a ref to the file.
     void ReloadFile(MyFileObject* pFile);
     void FinishSuccessfullyLoadingFile(MyFileObject* pFile);
     void Tick();
-    int ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc);
+    int ReloadAnyUpdatedFiles(GameCore* pGameCore, FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc);
 
     MyFileObject* GetFirstFileLoaded() { return m_FilesLoaded.GetHead(); }
     MyFileObject* GetFirstFileStillLoading() { return m_FilesStillLoading.GetHead(); }

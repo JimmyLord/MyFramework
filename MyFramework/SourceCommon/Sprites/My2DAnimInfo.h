@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -11,6 +11,7 @@
 #define __My2DAnimInfo_H__
 
 class MaterialDefinition;
+class MaterialManager;
 class MyFileObject;
 class SpriteSheet;
 
@@ -32,17 +33,13 @@ public:
     My2DAnimationFrame();
     ~My2DAnimationFrame();
 
-    // Getters
+    // Getters.
     MaterialDefinition* GetMaterial() { return m_pMaterial; }
     float GetDuration() { return m_Duration; }
 
-    // Setters
+    // Setters.
     void SetMaterial(MaterialDefinition* pMaterial);
     void SetDuration(float duration) { m_Duration = duration; }
-
-#if MYFW_USING_WX
-    int m_ControlID_Material;
-#endif
 };
 
 //====================================================================================================
@@ -61,13 +58,13 @@ protected:
     MyList<My2DAnimationFrame*> m_Frames;
 
 public:
-    // Getters
+    // Getters.
     const char* GetName() { return m_Name; }
     uint32 GetFrameCount();
-    My2DAnimationFrame* GetFrameByIndex(uint32 frameindex);
-    My2DAnimationFrame* GetFrameByIndexClamped(uint32 frameindex);
+    My2DAnimationFrame* GetFrameByIndex(uint32 frameIndex);
+    My2DAnimationFrame* GetFrameByIndexClamped(uint32 frameIndex);
 
-    // Setters
+    // Setters.
     void SetName(const char* name);
 };
 
@@ -76,15 +73,12 @@ public:
 //====================================================================================================
 
 class My2DAnimInfo : public RefCount
-#if MYFW_USING_WX
-, public wxEvtHandler
-#endif
 {
     friend class EditorMainFrame_ImGui;
 
 public:
-    static const unsigned int MAX_ANIMATIONS = 10; // TODO: fix this hardcodedness
-    static const unsigned int MAX_FRAMES_IN_ANIMATION = 10; // TODO: fix this hardcodedness
+    static const unsigned int MAX_ANIMATIONS = 10; // TODO: Fix this hardcodedness.
+    static const unsigned int MAX_FRAMES_IN_ANIMATION = 10; // TODO: Fix this hardcodedness.
 
 protected:
     bool m_AnimationFileLoaded;
@@ -95,9 +89,9 @@ public:
     My2DAnimInfo();
     virtual ~My2DAnimInfo();
 
-    bool LoadAnimationControlFile();
+    bool LoadAnimationControlFile(MaterialManager* pMaterialManager);
 
-    // Getters
+    // Getters.
     uint32 GetNumberOfAnimations();
     My2DAnimation* GetAnimationByName(const char* name);
     uint32 GetAnimationIndexByName(const char* name);
@@ -105,7 +99,7 @@ public:
     My2DAnimation* GetAnimationByIndexClamped(uint32 animIndex);
     MyFileObject* GetSourceFile() { return m_pSourceFile; }
 
-    // Setters
+    // Setters.
     void SetSourceFile(MyFileObject* pSourceFile);
 
 #if MYFW_EDITOR
@@ -117,33 +111,6 @@ public:
     void OnRemoveFramePressed(unsigned int animIndex, unsigned int frameIndex);
     void OnAddFramePressed(int animIndex);
     void OnSaveAnimationsPressed();
-#endif
-
-#if MYFW_USING_WX
-    enum RightClickOptions
-    {
-        RightClick_ViewInWatchWindow = 1000,
-    };
-
-    // Memory panel callbacks
-    void FillPropertiesWindow(bool clear);
-
-    static void StaticRefreshWatchWindow(void* pObjectPtr) { ((My2DAnimInfo*)pObjectPtr)->RefreshWatchWindow(); }
-    void RefreshWatchWindow();
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((My2DAnimInfo*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnAddAnimationPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddAnimationPressed(); }
-    static void StaticOnRemoveFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnRemoveFramePressed( buttonid ); }
-    void OnRemoveFramePressed(int buttonid);
-    static void StaticOnAddFramePressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnAddFramePressed( buttonid ); }
-    static void StaticOnSaveAnimationsPressed(void* pObjectPtr, int buttonid) { ((My2DAnimInfo*)pObjectPtr)->OnSaveAnimationsPressed(); }
-
-    // Watch panel callbacks.
-    static void StaticOnDropMaterial(void* pObjectPtr, int controlid, int x, int y) { ((My2DAnimInfo*)pObjectPtr)->OnDropMaterial(controlid, x, y); }
-    void OnDropMaterial(int controlid, int x, int y);
 #endif
 };
 

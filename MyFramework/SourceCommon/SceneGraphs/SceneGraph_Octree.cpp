@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "SceneGraph_Octree.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyActivePool.h"
 #include "../Meshes/LightManager.h"
@@ -55,7 +56,8 @@ void OctreeNode::Cleanup()
     m_pParentNode = nullptr;
 }
 
-SceneGraph_Octree::SceneGraph_Octree(uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+SceneGraph_Octree::SceneGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+: SceneGraph_Base( pGameCore )
 {
     m_MaxDepth = treeDepth;
 
@@ -408,7 +410,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 #if MYFW_EDITOR
         if( pMaterial == nullptr )
         {
-            pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+            pMaterial = m_pGameCore->GetManagers()->GetMaterialManager()->GetDefaultEditorMaterial();
         }
 #endif
 

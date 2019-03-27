@@ -132,11 +132,11 @@ GameCore::~GameCore()
             g_pFontManager->FreeAllFonts();
         }
 
-        SAFE_DELETE( g_pMaterialManager );
+        SAFE_DELETE( m_Managers.m_pMaterialManager );
         SAFE_DELETE( m_Managers.m_pTextureManager );
         SAFE_DELETE( g_pFontManager );
         SAFE_DELETE( g_pBufferManager );
-        SAFE_DELETE( g_pMeshManager );
+        SAFE_DELETE( m_Managers.m_pMeshManager );
         SAFE_DELETE( g_pLightManager );
         SAFE_DELETE( m_Managers.m_pShaderManager );
         SAFE_DELETE( m_Managers.m_pShaderGroupManager );
@@ -243,9 +243,9 @@ void GameCore::InitializeManagers()
         HACK_CreateGlobalAndLocalManagerArg( FileManager, this );
         m_Managers.m_pTextureManager = MyNew TextureManager;
         HACK_CreateGlobalAndLocalManagerArg( FontManager, m_Managers.GetTextureManager() );
-        HACK_CreateGlobalAndLocalManagerArg( MaterialManager, this );
+        m_Managers.m_pMaterialManager = MyNew MaterialManager( this );
         HACK_CreateGlobalAndLocalManager( BufferManager );
-        HACK_CreateGlobalAndLocalManagerArg( MeshManager, this );
+        m_Managers.m_pMeshManager = MyNew MeshManager( this );
         HACK_CreateGlobalAndLocalManager( LightManager );
         m_Managers.m_pShaderManager = MyNew ShaderManager;
         m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
@@ -258,9 +258,9 @@ void GameCore::InitializeManagers()
         HACK_BackupAndCreateNewManagerArg( FileManager, this );
         m_Managers.m_pTextureManager = MyNew TextureManager;
         HACK_BackupAndCreateNewManagerArg( FontManager, m_Managers.GetTextureManager() );
-        HACK_BackupAndCreateNewManagerArg( MaterialManager, this );
+        m_Managers.m_pMaterialManager = MyNew MaterialManager( this );
         HACK_BackupAndCreateNewManager( BufferManager );
-        HACK_BackupAndCreateNewManagerArg( MeshManager, this );
+        m_Managers.m_pMeshManager = MyNew MeshManager( this );
         HACK_BackupAndCreateNewManager( LightManager );
         m_Managers.m_pShaderManager = MyNew ShaderManager;
         m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;

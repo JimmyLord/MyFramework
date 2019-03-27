@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -21,7 +21,7 @@
 
 My2DAnimationFrame::My2DAnimationFrame()
 {
-    m_pMaterial = 0;
+    m_pMaterial = nullptr;
 }
 
 My2DAnimationFrame::~My2DAnimationFrame()
@@ -37,7 +37,9 @@ void My2DAnimationFrame::SetMaterial(MaterialDefinition* pMaterial)
     SAFE_RELEASE( m_pMaterial );
     m_pMaterial = pMaterial;
     if( pMaterial )
+    {
         m_pMaterial->AddRef();
+    }
 }
 
 //====================================================================================================
@@ -49,18 +51,18 @@ uint32 My2DAnimation::GetFrameCount()
     return m_Frames.Count();
 }
 
-My2DAnimationFrame* My2DAnimation::GetFrameByIndex(uint32 frameindex)
+My2DAnimationFrame* My2DAnimation::GetFrameByIndex(uint32 frameIndex)
 {
-    MyAssert( frameindex < m_Frames.Count() );
+    MyAssert( frameIndex < m_Frames.Count() );
 
-    return m_Frames[frameindex];
+    return m_Frames[frameIndex];
 }
 
-My2DAnimationFrame* My2DAnimation::GetFrameByIndexClamped(uint32 frameindex)
+My2DAnimationFrame* My2DAnimation::GetFrameByIndexClamped(uint32 frameIndex)
 {
-    MyClamp( frameindex, (uint32)0, m_Frames.Count()-1 );
+    MyClamp( frameIndex, (uint32)0, m_Frames.Count()-1 );
 
-    return m_Frames[frameindex];
+    return m_Frames[frameIndex];
 }
 
 void My2DAnimation::SetName(const char* name)
@@ -77,7 +79,7 @@ void My2DAnimation::SetName(const char* name)
 My2DAnimInfo::My2DAnimInfo()
 {
     m_AnimationFileLoaded = false;
-    m_pSourceFile = 0;
+    m_pSourceFile = nullptr;
 }
 
 My2DAnimInfo::~My2DAnimInfo()
@@ -95,9 +97,9 @@ My2DAnimInfo::~My2DAnimInfo()
     SAFE_RELEASE( m_pSourceFile );
 }
 
-bool My2DAnimInfo::LoadAnimationControlFile()
+bool My2DAnimInfo::LoadAnimationControlFile(MaterialManager* pMaterialManager)
 {
-    if( m_pSourceFile == 0 || m_pSourceFile->GetFileLoadStatus() != FileLoadStatus_Success )
+    if( m_pSourceFile == nullptr || m_pSourceFile->GetFileLoadStatus() != FileLoadStatus_Success )
         return false;
 
     if( m_AnimationFileLoaded == true )
@@ -105,11 +107,11 @@ bool My2DAnimInfo::LoadAnimationControlFile()
 
     const char* buffer = m_pSourceFile->GetBuffer();
 
-    MyAssert( buffer != 0 );
+    MyAssert( buffer != nullptr );
     MyAssert( m_Animations.Count() == 0 );
 
     // If the file doesn't exist, do nothing for now.
-    if( buffer == 0 )
+    if( buffer == nullptr )
     {
         MyAssert( m_Animations.Count() == 0 );
     }
@@ -119,14 +121,12 @@ bool My2DAnimInfo::LoadAnimationControlFile()
 
         if( jRoot )
         {
+            // Allocate and load the correct number of animations.
             cJSON* jAnimArray = cJSON_GetObjectItem( jRoot, "Anims" );
 
             int numanims = cJSON_GetArraySize( jAnimArray );
-#if MYFW_USING_WX
-            m_Animations.AllocateObjects( numanims > MAX_ANIMATIONS ? numanims : MAX_ANIMATIONS );
-#else
             m_Animations.AllocateObjects( numanims );
-#endif
+
             for( int i=0; i<numanims; i++ )
             {
                 cJSON* jAnim = cJSON_GetArrayItem( jAnimArray, i );
@@ -140,14 +140,12 @@ bool My2DAnimInfo::LoadAnimationControlFile()
                     pAnim->SetName( jName->valuestring );
                 }
 
+                // Allocate and load the correct number of frames for this animation.
                 cJSON* jFrameArray = cJSON_GetObjectItem( jAnim, "Frames" );
 
                 int numframes = cJSON_GetArraySize( jFrameArray );
-#if MYFW_USING_WX
-                pAnim->m_Frames.AllocateObjects( numframes > MAX_FRAMES_IN_ANIMATION ? numframes : MAX_FRAMES_IN_ANIMATION );
-#else
                 pAnim->m_Frames.AllocateObjects( numframes );
-#endif
+
                 for( int i=0; i<numframes; i++ )
                 {
                     cJSON* jFrame = cJSON_GetArrayItem( jFrameArray, i );
@@ -158,7 +156,8 @@ bool My2DAnimInfo::LoadAnimationControlFile()
                     cJSON* jMatName = cJSON_GetObjectItem( jFrame, "Material" );
                     if( jMatName )
                     {
-                        MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMatName->valuestring );
+                        // Load and set the necessary material.
+                        MaterialDefinition* pMaterial = pMaterialManager->LoadMaterial( jMatName->valuestring );
                         if( pMaterial )
                         {
                             pFrame->SetMaterial( pMaterial );
@@ -224,7 +223,7 @@ My2DAnimation* My2DAnimInfo::GetAnimationByIndexClamped(uint32 animIndex)
 void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
 {
     // This class currently doesn't support changing the source file.
-    MyAssert( m_pSourceFile == 0 );
+    MyAssert( m_pSourceFile == nullptr );
 
     if( m_pSourceFile == pSourceFile )
         return;
@@ -232,12 +231,6 @@ void My2DAnimInfo::SetSourceFile(MyFileObject* pSourceFile)
     SAFE_RELEASE( m_pSourceFile );
     m_pSourceFile = pSourceFile;
     m_pSourceFile->AddRef();
-
-#if MYFW_USING_WX
-    wxTreeItemId treeid = g_pPanelMemory->FindFile( m_pSourceFile );
-    if( treeid.IsOk() )
-        g_pPanelMemory->SetFilePanelCallbacks( treeid, this, MyFileObject::StaticOnLeftClick, My2DAnimInfo::StaticOnRightClick, MyFileObject::StaticOnDrag );
-#endif
 }
 
 #if MYFW_EDITOR
@@ -252,7 +245,7 @@ struct SpriteSheetAnimData
 
 void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration)
 {
-    MyAssert( pSpriteSheet != 0 );
+    MyAssert( pSpriteSheet != nullptr );
     MyAssert( pSpriteSheet->GetNumSprites() != 0 );
     MyAssert( m_Animations.Count() == 0 );
 
@@ -306,8 +299,6 @@ void My2DAnimInfo::LoadFromSpriteSheet(SpriteSheet* pSpriteSheet, float duration
 
 void My2DAnimInfo::SaveAnimationControlFile()
 {
-    //char filename[MAX_PATH];
-    //m_pSourceFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".my2daniminfo", filename, MAX_PATH );
     const char* filename = m_pSourceFile->GetFullPath();
 
     cJSON* jRoot = cJSON_CreateObject();
@@ -324,7 +315,7 @@ void My2DAnimInfo::SaveAnimationControlFile()
 
         cJSON_AddStringToObject( jAnim, "Name", pAnim->m_Name );
 
-        // write out frame info
+        // Write out frame info.
         cJSON* jFrameArray = cJSON_CreateArray();
         cJSON_AddItemToObject( jAnim, "Frames", jFrameArray );
 
@@ -341,7 +332,7 @@ void My2DAnimInfo::SaveAnimationControlFile()
         }
     }
 
-    // dump animarray to disk
+    // Dump animation array to disk.
     char* jsonstr = cJSON_Print( jRoot );
     cJSON_Delete( jRoot );
 
@@ -368,10 +359,6 @@ void My2DAnimInfo::OnAddAnimationPressed()
     pAnim->m_Frames.AllocateObjects( MAX_FRAMES_IN_ANIMATION );
 
     m_Animations.Add( pAnim );
-
-#if MYFW_USING_WX
-    g_pPanelWatch->SetNeedsRefresh();
-#endif
 }
 
 void My2DAnimInfo::OnRemoveAnimationPressed(unsigned int animIndex)
@@ -390,10 +377,6 @@ void My2DAnimInfo::OnRemoveFramePressed(unsigned int animIndex, unsigned int fra
 
     My2DAnimationFrame* pFrame = m_Animations[animIndex]->m_Frames.RemoveIndex_MaintainOrder( frameIndex );
     delete pFrame;
-
-#if MYFW_USING_WX
-    g_pPanelWatch->SetNeedsRefresh();
-#endif
 }
 
 void My2DAnimInfo::OnAddFramePressed(int animIndex)
@@ -403,136 +386,13 @@ void My2DAnimInfo::OnAddFramePressed(int animIndex)
 
     My2DAnimationFrame* pFrame = MyNew My2DAnimationFrame;
 
-    //pFrame->SetMaterial( 0 );
     pFrame->m_Duration = 0.2f;
 
     m_Animations[animIndex]->m_Frames.Add( pFrame );
-
-#if MYFW_USING_WX
-    g_pPanelWatch->SetNeedsRefresh();
-#endif
 }
 
 void My2DAnimInfo::OnSaveAnimationsPressed()
 {
     SaveAnimationControlFile();
 }
-
 #endif //MYFW_EDITOR
-
-#if MYFW_USING_WX
-void My2DAnimInfo::RefreshWatchWindow()
-{
-    FillPropertiesWindow( true );
-}
-
-void My2DAnimInfo::FillPropertiesWindow(bool clear)
-{
-    g_pPanelWatch->SetRefreshCallback( this, My2DAnimInfo::StaticRefreshWatchWindow );
-
-    g_pPanelWatch->Freeze();
-
-    g_pPanelWatch->ClearAllVariables();
-
-    g_pPanelWatch->AddButton( "Save Animations", this, -1, My2DAnimInfo::StaticOnSaveAnimationsPressed );
-
-    for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
-    {
-        My2DAnimation* pAnim = m_Animations[animindex];
-        g_pPanelWatch->AddSpace( pAnim->m_Name );
-        g_pPanelWatch->AddString( "Animation Name", pAnim->m_Name, My2DAnimation::MAX_ANIMATION_NAME_LEN );
-
-        unsigned int numframes = m_Animations[animindex]->GetFrameCount();
-
-        for( unsigned int frameindex=0; frameindex<numframes; frameindex++ )
-        {
-            My2DAnimationFrame* pFrame = m_Animations[animindex]->GetFrameByIndex( frameindex );
-
-            char tempname[20];
-            sprintf_s( tempname, 20, "Frame %d", frameindex );
-            g_pPanelWatch->AddFloat( tempname, &pFrame->m_Duration, 0, 1 );
-
-            int controlid = g_pPanelWatch->AddButton( "Remove", this, animindex * 1000 + frameindex, My2DAnimInfo::StaticOnRemoveFramePressed, Vector2Int( 200, -23 ), Vector2Int( 70, 20 ) );
-
-            const char* desc = "no material";
-            if( pFrame->m_pMaterial != 0 )
-                desc = pFrame->m_pMaterial->GetName();
-            pFrame->m_ControlID_Material = g_pPanelWatch->AddPointerWithDescription( " ", 0, desc, this, My2DAnimInfo::StaticOnDropMaterial );
-        }
-
-        if( m_Animations[animindex]->m_Frames.Count() < MAX_FRAMES_IN_ANIMATION )
-            g_pPanelWatch->AddButton( "Add Frame", this, animindex, My2DAnimInfo::StaticOnAddFramePressed );
-    }
-
-    if( m_Animations.Count() < MAX_ANIMATIONS )
-        g_pPanelWatch->AddButton( "Add Animation", this, -1, My2DAnimInfo::StaticOnAddAnimationPressed );
-
-    g_pPanelWatch->Thaw();
-}
-
-void My2DAnimInfo::OnRightClick()
-{
- 	wxMenu menu;
-    menu.SetClientData( this );
-    
-    menu.Append( RightClick_ViewInWatchWindow, "View in watch window" );
- 	menu.Connect( wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&My2DAnimInfo::OnPopupClick );
-
-    // blocking call.
-    g_pPanelWatch->PopupMenu( &menu ); // there's no reason this is using g_pPanelWatch other than convenience.
-}
-
-void My2DAnimInfo::OnPopupClick(wxEvent &evt)
-{
-    My2DAnimInfo* pAnimInfo = (My2DAnimInfo*)static_cast<wxMenu*>(evt.GetEventObject())->GetClientData();
-
-    int id = evt.GetId();
-    switch( id )
-    {
-    case RightClick_ViewInWatchWindow:
-        {
-            pAnimInfo->FillPropertiesWindow( false );
-        }
-        break;
-    }
-}
-
-void My2DAnimInfo::OnRemoveFramePressed(int buttonid)
-{
-    unsigned int animindex = buttonid / 1000;
-    unsigned int frameindex = buttonid % 1000;
-}
-
-void My2DAnimInfo::OnDropMaterial(int controlid, int x, int y)
-{
-    DragAndDropItem* pDropItem = g_DragAndDropStruct.GetItem( 0 );
-
-    if( pDropItem->m_Type == DragAndDropType_MaterialDefinitionPointer )
-    {
-        MaterialDefinition* pMaterial = (MaterialDefinition*)pDropItem->m_Value;
-        MyAssert( pMaterial );
-
-        for( unsigned int animindex=0; animindex<m_Animations.Count(); animindex++ )
-        {
-            My2DAnimation* pAnim = m_Animations[animindex];
-
-            unsigned int numframes = m_Animations[animindex]->GetFrameCount();
-            for( unsigned int frameindex=0; frameindex<numframes; frameindex++ )
-            {
-                My2DAnimationFrame* pFrame = m_Animations[animindex]->m_Frames[frameindex];
-
-                if( controlid == pFrame->m_ControlID_Material )
-                {
-                    pFrame->SetMaterial( pMaterial );
-
-                    // update the panel so new Material name shows up.
-                    const char* desc = "no material";
-                    if( pFrame->m_pMaterial != 0 )
-                        desc = pFrame->m_pMaterial->GetName();
-                    g_pPanelWatch->GetVariableProperties( g_DragAndDropStruct.GetControlID() )->m_Description = desc;
-                }
-            }
-        }
-    }
-}
-#endif

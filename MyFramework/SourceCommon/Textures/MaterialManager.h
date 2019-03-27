@@ -17,8 +17,6 @@ class TextureDefinition;
 class TextureManager;
 class ShaderGroupManager;
 
-extern MaterialManager* g_pMaterialManager;
-
 typedef void MaterialCreatedCallbackFunc(void* pObjectPtr, MaterialDefinition* pMaterial);
 struct MaterialCreatedCallbackStruct
 {

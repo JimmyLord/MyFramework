@@ -158,7 +158,8 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
                 cJSON* jMaterial = cJSON_GetObjectItem( jMesh, "Material" );
                 if( jMaterial && jMaterial->valuestring )
                 {
-                    MaterialDefinition* pMaterial = g_pMaterialManager->LoadMaterial( jMaterial->valuestring );
+                    MaterialManager* pMaterialManager = m_pMeshManager->GetMaterialManager();
+                    MaterialDefinition* pMaterial = pMaterialManager->LoadMaterial( jMaterial->valuestring );
                     if( pMaterial )
                         pSubmesh->SetMaterial( pMaterial );
                     pMaterial->Release();

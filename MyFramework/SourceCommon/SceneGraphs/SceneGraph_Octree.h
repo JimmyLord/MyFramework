@@ -57,7 +57,7 @@ protected:
     void DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc);
 
 public:
-    SceneGraph_Octree(uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    SceneGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     virtual ~SceneGraph_Octree();
 
     void Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);

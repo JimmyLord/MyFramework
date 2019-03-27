@@ -470,7 +470,7 @@ MaterialDefinition* PanelMemory::GetSelectedMaterial()
         if( pData )
         {
             MaterialDefinition* objptr = (MaterialDefinition*)((TreeItemDataGenericObjectInfo*)pData)->m_pObject;
-            if( (void*)objptr != g_pMaterialManager )
+            if( (void*)objptr != m_pMaterialManager )
                 return objptr;
         }
     }
@@ -487,7 +487,7 @@ void PanelMemory::UpdateRootNodeMaterialCount()
     // update root node memory usage count.
     //sprintf_s( tempstr, 100, "Materials(%d) - size(%d)",
     //    m_pTree_Materials->GetChildrenCount( idroot, true ) - m_pTree_Materials->GetChildrenCount( idroot, false ),
-    //    0 );//g_pMaterialManager->CalculateTotalMemoryUsedByMaterials() );
+    //    0 );//m_pMaterialManager->CalculateTotalMemoryUsedByMaterials() );
     //m_pTree_Materials->SetItemText( idroot, tempstr );
     sprintf_s( tempstr, 100, "Mat(%d)",
         (int)m_pTree_Materials->GetChildrenCount( idroot, true ) - (int)m_pTree_Materials->GetChildrenCount( idroot, false ) );

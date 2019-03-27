@@ -19,7 +19,8 @@ class SpriteSheet_XYZVertexColor : public SpriteSheet
 public:
 
 public:
-    SpriteSheet_XYZVertexColor()
+    SpriteSheet_XYZVertexColor(GameCore* pGameCore)
+    : SpriteSheet( pGameCore )
     {
     }
 

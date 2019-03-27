@@ -11,6 +11,7 @@
 
 #include "SceneGraph_Base.h"
 #include "SceneGraph_Flat.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyActivePool.h"
 #include "../Meshes/LightManager.h"
@@ -18,7 +19,8 @@
 #include "../Meshes/MySubmesh.h"
 #include "../Textures/MaterialManager.h"
 
-SceneGraph_Flat::SceneGraph_Flat()
+SceneGraph_Flat::SceneGraph_Flat(GameCore* pGameCore)
+: SceneGraph_Base( pGameCore )
 {
     m_NumRenderables = 0;
 }
@@ -192,7 +194,7 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 #if MYFW_EDITOR
         if( pMaterial == nullptr )
         {
-            pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+            pMaterial = m_pGameCore->GetManagers()->GetMaterialManager()->GetDefaultEditorMaterial();
         }
 #endif
 

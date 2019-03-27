@@ -13,6 +13,7 @@
 #include "../DataTypes/MyActivePool.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 
+class GameCore;
 class MaterialDefinition;
 class MyMesh;
 class MySubmesh;
@@ -86,10 +87,11 @@ public:
 class SceneGraph_Base
 {
 protected:
+    GameCore* m_pGameCore;
     MySimplePool<SceneGraphObject> m_pObjectPool;
 
 public:
-    SceneGraph_Base();
+    SceneGraph_Base(GameCore* pGameCore);
     virtual ~SceneGraph_Base();
 
     virtual SceneGraphObject* AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, unsigned int layers, void* pUserData);

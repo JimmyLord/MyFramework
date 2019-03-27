@@ -355,7 +355,7 @@ void FileManager::Tick()
 #endif
 }
 
-int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc)
+int FileManager::ReloadAnyUpdatedFiles(GameCore* pGameCore, FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc)
 {
     int numfilesupdated = 0;
 
@@ -369,7 +369,7 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
         if( updateavailable )
         {
             ReloadFile( pFile );
-            pCallbackFunc( pFile );
+            pCallbackFunc( pGameCore, pFile );
             numfilesupdated++;
         }
     }
@@ -385,7 +385,7 @@ int FileManager::ReloadAnyUpdatedFiles(FileManager_OnFileUpdated_CallbackFunctio
         if( updateavailable )
         {
             ReloadFile( pFile );
-            pCallbackFunc( pFile );
+            pCallbackFunc( pGameCore, pFile );
             numfilesupdated++;
         }
 

@@ -19,7 +19,7 @@
 
 SpriteBatch::SpriteBatch()
 {
-    m_pMaterial = 0;//g_pMaterialManager->CreateMaterial();
+    m_pMaterial = 0;
     m_NumSprites = 0;
 
     m_SpritesAllocated = 0;

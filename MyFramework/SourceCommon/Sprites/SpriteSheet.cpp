@@ -11,6 +11,7 @@
 
 #include "MySprite.h"
 #include "SpriteSheet.h"
+#include "../Core/GameCore.h"
 #include "../Helpers/FileManager.h"
 #include "../JSON/cJSONHelpers.h"
 #include "../Textures/MaterialDefinition.h"
@@ -18,8 +19,10 @@
 #include "../Textures/TextureDefinition.h"
 #include "../Textures/TextureManager.h"
 
-SpriteSheet::SpriteSheet()
+SpriteSheet::SpriteSheet(GameCore* pGameCore)
 {
+    m_pGameCore = pGameCore;
+
     m_FullyLoaded = false;
 
     m_pSpriteNames = 0;
@@ -117,8 +120,9 @@ void SpriteSheet::Create(TextureManager* pTextureManager, MyFileObject* pFile, S
 
     m_pJSONFile = pJSONFile;
 
+    MaterialManager* pMaterialManager = m_pGameCore->GetManagers()->GetMaterialManager();
     TextureDefinition* pTextureDef = pTextureManager->CreateTexture( pTextureFile, minFilter, magFilter );
-    m_pMaterial = g_pMaterialManager->CreateMaterial();
+    m_pMaterial = pMaterialManager->CreateMaterial();
     m_pMaterial->SetTextureColor( pTextureDef );
     m_pMaterial->SetShader( pShader );
 #if MYFW_EDITOR
@@ -273,21 +277,25 @@ void SpriteSheet::FinishLoadingFile()
                                 char fullpath[MAX_PATH];
                                 m_pJSONFile->GenerateNewFullPathFilenameInSameFolder( matname, fullpath, MAX_PATH );
 
+                                MaterialManager* pMaterialManager = m_pGameCore->GetManagers()->GetMaterialManager();
+
 #if MYFW_EDITOR
+                                FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
+
                                 // In editor mode, check if the file exists before loading.
-                                if( g_pFileManager->DoesFileExist( fullpath ) == false )
+                                if( pFileManager->DoesFileExist( fullpath ) == false )
                                 {
                                     // The material might not exist on disk but a load was previously attempted, so find that object.
-                                    m_pMaterialList[i] = g_pMaterialManager->FindMaterialByFilename( fullpath );
+                                    m_pMaterialList[i] = pMaterialManager->FindMaterialByFilename( fullpath );
                                     if( m_pMaterialList[i] )
                                         m_pMaterialList[i]->AddRef();
 
                                     // If the material still isn't there, create a new one along with a file for it.
                                     if( m_pMaterialList[i] == 0 )
                                     {
-                                        MyFileObject* pFile = g_pFileManager->CreateFileObject( fullpath );
+                                        MyFileObject* pFile = pFileManager->CreateFileObject( fullpath );
                                     
-                                        m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( pFile );
+                                        m_pMaterialList[i] = pMaterialManager->CreateMaterial( pFile );
 
                                         pFile->Release();
                                     }
@@ -296,7 +304,7 @@ void SpriteSheet::FinishLoadingFile()
 #endif
                                 {
                                     // Load the existing material if it exists.
-                                    m_pMaterialList[i] = g_pMaterialManager->LoadMaterial( fullpath );
+                                    m_pMaterialList[i] = pMaterialManager->LoadMaterial( fullpath );
                                 }
 
                                 MyAssert( m_pMaterialList[i] );
@@ -463,9 +471,11 @@ void SpriteSheet::CreateMaterials(bool creatematerials)
 
     if( creatematerials )
     {
+        MaterialManager* pMaterialManager = m_pGameCore->GetManagers()->GetMaterialManager();
+
         for( uint32 i=0; i<m_NumSprites; i++ )
         {
-            m_pMaterialList[i] = g_pMaterialManager->CreateMaterial( "SpriteSheet" );
+            m_pMaterialList[i] = pMaterialManager->CreateMaterial( "SpriteSheet" );
             *m_pMaterialList[i] = *m_pMaterial;
         }
     }

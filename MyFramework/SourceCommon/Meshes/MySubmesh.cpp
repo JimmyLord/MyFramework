@@ -177,7 +177,8 @@ void MySubmesh::Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMa
     if( pMaterial == nullptr )
     {
         MyAssert( false ); // In editor builds, calling code should set a default "error" material.
-        //pMaterial = g_pMaterialManager->GetDefaultEditorMaterial();
+        //MaterialManager* pMaterialManager = m_pMeshManager->GetMaterialManager();
+        //pMaterial = pMaterialManager->GetDefaultEditorMaterial();
     }
 #else
     if( pMaterial == nullptr && pShaderOverride == nullptr )

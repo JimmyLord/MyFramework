@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "SceneGraph_Base.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/MyActivePool.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 #include "../Textures/MaterialDefinition.h"
@@ -70,8 +71,10 @@ void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool update
     }
 }
 
-SceneGraph_Base::SceneGraph_Base()
+SceneGraph_Base::SceneGraph_Base(GameCore* pGameCore)
 {
+    m_pGameCore = pGameCore;
+
     m_pObjectPool.AllocateObjects( 100000 );
 }
 

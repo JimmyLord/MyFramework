@@ -12,6 +12,7 @@
 
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 
+class GameCore;
 class MaterialDefinition;
 class MyFileObject;
 class MySprite;
@@ -22,11 +23,13 @@ class TextureManager;
 class SpriteSheet
 {
 protected:
+    GameCore* m_pGameCore;
+
     bool m_FullyLoaded;
 
-    bool m_CreateSprites; // optionally create a MySprite for each image in the sheet (with UVs baked into the verts)
+    bool m_CreateSprites; // Optionally create a MySprite for each image in the sheet (with UVs baked into the verts)
     bool m_CreateMaterials; // or create a MaterialDefinition for each image holding it's uv scale/offset
-                            // or neither or both
+                            // or neither or both.
 
     char* m_pSpriteNames;
     Vector4* m_pSpriteUVs;
@@ -48,7 +51,7 @@ protected:
     virtual void CreateMaterials(bool creatematerials);
 
 public:
-    SpriteSheet();
+    SpriteSheet(GameCore* pGameCore);
     virtual ~SpriteSheet();
 
     MyFileObject* GetJSONFile() { return m_pJSONFile; }
