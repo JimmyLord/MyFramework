@@ -63,7 +63,7 @@ bool MyEvent::IsType(EventHashType hash)
     return false;
 }
 
-void MyEvent::ClearArguments()
+void MyEvent::ClearArguments(EventManager* pEventManager)
 {
     MyEventArgument* pArg = m_FirstArgument;
     while( pArg )
@@ -71,7 +71,7 @@ void MyEvent::ClearArguments()
         MyEventArgument* pNextArg = pArg->m_NextArgument;
 
         pArg->m_NextArgument = 0;
-        g_pEventManager->m_pEventArgumentPool.ReturnObjectToPool( pArg );
+        pEventManager->m_pEventArgumentPool.ReturnObjectToPool( pArg );
 
         pArg = pNextArg;
     }
@@ -82,9 +82,9 @@ void MyEvent::ClearArguments()
 // Create a function for each type of argument in ArgumentTypes enum.
 //====================================================================================================
 #define CREATE_ATTACH_ARGUMENT_FUNC(ArgumentName, ArgumentType) \
-void MyEvent::Attach##ArgumentName(const char* name, ArgumentType value) \
+void MyEvent::Attach##ArgumentName(EventManager* pEventManager, const char* name, ArgumentType value) \
 { \
-    MyEventArgument* pArg = g_pEventManager->m_pEventArgumentPool.GetObjectFromPool(); \
+    MyEventArgument* pArg = pEventManager->m_pEventArgumentPool.GetObjectFromPool(); \
     pArg->m_NameHash = g_pEventTypeHashFunc( name ); \
     pArg->m_Type = MyEventArgument::Type_##ArgumentName; \
     pArg->m_##ArgumentName = value; \

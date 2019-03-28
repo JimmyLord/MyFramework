@@ -66,8 +66,9 @@ void MaterialManager::Tick()
             {
                 pMaterial->ImportFromFile();
 
-                MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_MaterialFinishedLoading );
-                g_pEventManager->SendEventNow( pEvent );
+                EventManager* pEventManager = m_pGameCore->GetManagers()->GetEventManager();
+                MyEvent* pEvent = pEventManager->CreateNewEvent( Event_MaterialFinishedLoading );
+                pEventManager->SendEventNow( pEvent );
             }
             else
             {
@@ -135,7 +136,7 @@ MaterialDefinition* MaterialManager::GetDefaultEditorMaterial()
     if( m_pDefaultEditorMaterial == nullptr )
     {
         m_pDefaultEditorMaterial = CreateMaterial();
-        ShaderGroup* pShader = MyNew ShaderGroup( GetShaderGroupManager(), GetTextureManager()->GetErrorTexture() );
+        ShaderGroup* pShader = MyNew ShaderGroup( m_pGameCore, GetTextureManager()->GetErrorTexture() );
         m_pDefaultEditorMaterial->SetShader( pShader );
         pShader->Release();
     }
@@ -196,7 +197,7 @@ MaterialDefinition* MaterialManager::LoadMaterial(const char* fullpath)
     pMaterial = MyNew MaterialDefinition( this );
     m_MaterialsStillLoading.AddTail( pMaterial );
 
-    pMaterial->m_pFile = g_pFileManager->RequestFile( fullpath );
+    pMaterial->m_pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fullpath );
 
     MyAssert( pMaterial->m_pFile );
 

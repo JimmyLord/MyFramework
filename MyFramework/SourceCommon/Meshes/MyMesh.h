@@ -16,6 +16,7 @@
 #include "../Shaders/VertexFormats.h"
 
 class BufferDefinition;
+class GameCore;
 class MaterialDefinition;
 class MeshManager;
 class MyAnimation;
@@ -55,7 +56,7 @@ class MyMesh : public TCPPListNode<MyMesh*>, public RefCount
     static const unsigned int MAX_ANIMATIONS = 10; // TODO: Fix this hardcodedness.
 
 protected:
-    MeshManager* m_pMeshManager;
+    GameCore* m_pGameCore;
 
     float m_InitialScale;
 
@@ -97,7 +98,7 @@ protected:
     virtual void ParseFile();
 
 public:
-    MyMesh();
+    MyMesh(GameCore* pGameCore);
     virtual ~MyMesh();
 
     void Clear();
@@ -121,7 +122,7 @@ public:
     MyAABounds* GetBounds() { return &m_AABounds; }
 
     // Setters.
-    void SetMeshManagerAndAddToMeshList(MeshManager* pMeshManager);
+    void SetGameCoreAndAddToMeshManager(GameCore* pGameCore);
     void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
 

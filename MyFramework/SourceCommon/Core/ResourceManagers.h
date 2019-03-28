@@ -17,12 +17,12 @@ class FileManager;
 class FontManager;
 class GamepadManager;
 class GameServiceManager;
-class MyJobManager;
 class LightManager;
-class MaterialManager;
 class MeshManager;
-class ShaderManager;
+class MaterialManager;
+class MyJobManager;
 class ShaderGroupManager;
+class ShaderManager;
 class SoundManager;
 class TextureManager;
 class VertexFormatManager;
@@ -30,6 +30,7 @@ class VertexFormatManager;
 class ResourceManagers
 {
     friend class GameCore;
+    friend class EngineCore;
 
 protected:
     BufferManager*          m_pBufferManager;
@@ -39,12 +40,12 @@ protected:
     FontManager*            m_pFontManager;
     GamepadManager*         m_pGamepadManager;
     GameServiceManager*     m_pGameServiceManager;
-    MyJobManager*           m_pMyJobManager;
     LightManager*           m_pLightManager;
-    MaterialManager*        m_pMaterialManager;
     MeshManager*            m_pMeshManager;
-    ShaderManager*          m_pShaderManager;
+    MaterialManager*        m_pMaterialManager;
+    MyJobManager*           m_pMyJobManager;
     ShaderGroupManager*     m_pShaderGroupManager;
+    ShaderManager*          m_pShaderManager;
     SoundManager*           m_pSoundManager;
     TextureManager*         m_pTextureManager;
     VertexFormatManager*    m_pVertexFormatManager;
@@ -59,12 +60,12 @@ public:
     FontManager*            GetFontManager()            { return m_pFontManager;         }
     GamepadManager*         GetGamepadManager()         { return m_pGamepadManager;      }
     GameServiceManager*     GetGameServiceManager()     { return m_pGameServiceManager;  }
-    MyJobManager*           GetMyJobManager()           { return m_pMyJobManager;        }
     LightManager*           GetLightManager()           { return m_pLightManager;        }
     MaterialManager*        GetMaterialManager()        { return m_pMaterialManager;     }
     MeshManager*            GetMeshManager()            { return m_pMeshManager;         }
-    ShaderManager*          GetShaderManager()          { return m_pShaderManager;       }
+    MyJobManager*           GetMyJobManager()           { return m_pMyJobManager;        }
     ShaderGroupManager*     GetShaderGroupManager()     { return m_pShaderGroupManager;  }
+    ShaderManager*          GetShaderManager()          { return m_pShaderManager;       }
     SoundManager*           GetSoundManager()           { return m_pSoundManager;        }
     TextureManager*         GetTextureManager()         { return m_pTextureManager;      }
     VertexFormatManager*    GetVertexFormatManager()    { return m_pVertexFormatManager; }

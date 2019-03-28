@@ -10,6 +10,8 @@
 #ifndef __MyEvent_H__
 #define __MyEvent_H__
 
+class EventManager;
+
 #define EventHashType uint32
 typedef EventHashType EventTypeHashFunction(const char* str);
 extern EventTypeHashFunction* g_pEventTypeHashFunc;
@@ -62,14 +64,14 @@ public:
     bool IsType(EventHashType hash);
 
     // Arguments
-    void ClearArguments();
+    void ClearArguments(EventManager* pEventManager);
 
-    void AttachPointer(const char* name, void* value);
-    void AttachBool(const char* name, bool value);
-    void AttachInt(const char* name, int32 value);
-    void AttachUnsignedInt(const char* name, uint32 value);
-    void AttachFloat(const char* name, float value);
-    void AttachDouble(const char* name, double value);
+    void AttachPointer(EventManager* pEventManager, const char* name, void* value);
+    void AttachBool(EventManager* pEventManager, const char* name, bool value);
+    void AttachInt(EventManager* pEventManager, const char* name, int32 value);
+    void AttachUnsignedInt(EventManager* pEventManager, const char* name, uint32 value);
+    void AttachFloat(EventManager* pEventManager, const char* name, float value);
+    void AttachDouble(EventManager* pEventManager, const char* name, double value);
 
     bool IsArgumentAttached(const char* name);
 

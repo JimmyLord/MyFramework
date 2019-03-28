@@ -60,7 +60,7 @@ ParticleRenderer::~ParticleRenderer()
     //SAFE_RELEASE( m_pMaterial );
 }
 
-void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category)
+void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* category, BufferManager* pBufferManager)
 {
     LOGInfo( LOGTag, "ParticleRenderer: Allocating %d Verts\n", numpoints );
 
@@ -79,7 +79,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
 
     LOGInfo( LOGTag, "ParticleRenderer: about to call glGenBuffers\n" );
 
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
+    m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 
     //Buffer_OpenGL* pGLVBO = (Buffer_OpenGL*)m_pVertexBuffer->m_pBuffer;
     //LOGInfo( LOGTag, "ParticleRenderer: m_pVertexBuffer->m_BufferID = %d\n", pGLVBO->m_CurrentBufferID );
@@ -97,7 +97,7 @@ void ParticleRenderer::AllocateVertices(unsigned int numpoints, const char* cate
             tempindices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
         }
 
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, 2, category, "Particles-Indices" );
+        m_pIndexBuffer = pBufferManager->CreateBuffer( tempindices, sizeof(unsigned short)*numindices, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, 2, category, "Particles-Indices" );
     }
 }
 

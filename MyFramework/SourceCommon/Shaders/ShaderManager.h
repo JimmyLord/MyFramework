@@ -14,6 +14,7 @@
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 
 class BufferDefinition;
+class GameCore;
 class ShaderManager;
 class TextureDefinition;
 
@@ -30,6 +31,7 @@ public:
         Attribute_BoneWeight,
     };
 
+    GameCore* m_pGameCore;
     TextureDefinition* m_pErrorTexture;
 
     bool m_Initialized;
@@ -64,9 +66,9 @@ public:
     unsigned int m_FragmentShaderHandle;
 
 public:
-    BaseShader(ShaderManager* pShaderManager);
-    BaseShader(ShaderManager* pShaderManager, ShaderPassTypes type);
-    void Init_BaseShader(ShaderManager* pShaderManager);
+    BaseShader(GameCore* pGameCore);
+    BaseShader(GameCore* pGameCore, ShaderPassTypes type);
+    void Init_BaseShader(GameCore* pGameCore);
     virtual ~BaseShader();
     SetClassnameBase( "BaseShader" ); // Only first 8 character count.
 
@@ -102,12 +104,19 @@ public:
 
 class ShaderManager
 {
-public:
+protected:
+    GameCore* m_pGameCore;
     TCPPListHead<BaseShader*> m_ShaderList;
+
+public:
+    ShaderManager(GameCore* pGameCore);
 
     void AddShader(BaseShader* pShader);
     void InvalidateAllShaders(bool cleanGLAllocs);
     void InvalidateAllShadersUsingFile(MyFileObjectShader* pFileToFind);
+
+    // Getters.
+    GameCore* GetGameCore() { return m_pGameCore; }
 };
 
 #endif //__ShaderManager_H__

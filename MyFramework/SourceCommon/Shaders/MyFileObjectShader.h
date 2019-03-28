@@ -70,11 +70,11 @@ public:
     ExposedUniformInfo m_ExposedUniforms[MAX_EXPOSED_UNIFORMS];
 
 public:
-    MyFileObjectShader();
+    MyFileObjectShader(FileManager* pFileManager);
     virtual ~MyFileObjectShader();
     SetClassnameWithParent( "MyFileShader", MyFileObject ); // only first 8 character count.
 
-    virtual void UnloadContents(FileManager* pFileManager) override;
+    virtual void UnloadContents() override;
 
     void ClearIncludedFiles();
     void CheckFileForIncludesAndAddToList();

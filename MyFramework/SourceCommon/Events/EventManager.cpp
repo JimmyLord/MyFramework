@@ -13,8 +13,6 @@
 #include "EventTypeManager.h"
 #include "../Helpers/FileManager.h"
 
-EventManager* g_pEventManager = 0;
-
 EventManager::EventManager(EventTypeManager* pEventTypeManager)
 {
     m_pEventTypeManager = pEventTypeManager;
@@ -45,7 +43,7 @@ EventManager::~EventManager()
 
 void EventManager::ReleaseEvent(MyEvent* pEvent)
 {
-    pEvent->ClearArguments();
+    pEvent->ClearArguments( this );
     m_pEventPool.ReturnObjectToPool( pEvent );
 }
 

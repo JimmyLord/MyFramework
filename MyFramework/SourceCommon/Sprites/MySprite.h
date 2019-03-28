@@ -15,6 +15,7 @@
 
 class BaseShader;
 class BufferDefinition;
+class BufferManager;
 class MaterialManager;
 class MySprite;
 class ShaderGroup;
@@ -44,16 +45,16 @@ public:
 
 public:
     MySprite();
-    MySprite(MySprite* pSprite, const char* category);
+    MySprite(MySprite* pSprite, const char* category, BufferManager* pBufferManager);
     virtual ~MySprite();
 
     virtual MaterialDefinition* GetMaterial() { return m_pMaterial; }
     //virtual void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
-    virtual void Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
-    virtual void CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx = 0, float epx = 1, float spy = 0, float epy = 1, bool staticverts = false, bool facepositivez = false);
-    virtual void CreateInPlace(const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
+    virtual void Create(BufferManager* pBufferManager, const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
+    virtual void Create(BufferManager* pBufferManager, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
+    virtual void CreateSubsection(BufferManager* pBufferManager, const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx = 0, float epx = 1, float spy = 0, float epy = 1, bool staticverts = false, bool facepositivez = false);
+    virtual void CreateInPlace(BufferManager* pBufferManager, const char* category, float x, float y, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts = false, bool facepositivez = false);
     //MyMatrix GetPosition();
     //void SetPosition(Vector3 pos, bool setindentity = true);
     //void SetPosition(float x, float y, float z, bool setindentity = true);

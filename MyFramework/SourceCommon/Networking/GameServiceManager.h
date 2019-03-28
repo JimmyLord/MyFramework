@@ -16,8 +16,6 @@ class GameServiceManager;
 class WebRequestObject;
 class GameService_ScoreLoop;
 
-extern GameServiceManager* g_pGameServiceManager;
-
 enum GameServicePlayerStatus
 {
     GameServicePlayerStatus_None,

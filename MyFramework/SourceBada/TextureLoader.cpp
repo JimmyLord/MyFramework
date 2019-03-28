@@ -11,27 +11,27 @@
 #include "TextureLoader.h"
 #include "../../Soil/SOIL.h"
 
-MyFileObject* RequestFile(const char* filename)
-{
-    // TODO: uncomment next line
-    //return g_pFileManager->RequestFile( filename );
-
-    LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
-
-    char fullpath[MAX_PATH];
-    sprintf_s( fullpath, MAX_PATH, "app/native/%s", filename);
-
-    int length = 0;
-    MyFileObject* file = MyNew MyFileObject;
-    char* buffer = LoadFile( fullpath, &length );
-    file->FakeFileLoad( buffer, length );
-
-    return file;
-}
+//MyFileObject* RequestFile(const char* filename)
+//{
+//    // TODO: uncomment next line
+//    //return g_ pFileManager->RequestFile( filename );
+//
+//    LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filename );
+//
+//    char fullpath[MAX_PATH];
+//    sprintf_s( fullpath, MAX_PATH, "app/native/%s", filename);
+//
+//    int length = 0;
+//    MyFileObject* file = MyNew MyFileObject;
+//    char* buffer = LoadFile( fullpath, &length );
+//    file->FakeFileLoad( buffer, length );
+//
+//    return file;
+//}
 
 char* LoadFile(const char* filename, int* length)
 {
-    MyAssert( false ); // migrate to g_pFileManager->RequestFile( filename );
+    MyAssert( false ); // migrate to g_ pFileManager->RequestFile( filename );
 
     char* filecontents = 0;
 

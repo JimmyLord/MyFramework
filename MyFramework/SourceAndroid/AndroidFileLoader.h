@@ -13,7 +13,7 @@
 class TextureDefinition;
 class MyFileObject;
 
-MyFileObject* RequestFile(const char* filename);
+//MyFileObject* RequestFile(const char* filename);
 
 char* LoadFile(const char* filepath, int* length = 0);
 char* LoadTexture(const char* filepath, int* width, int* height);

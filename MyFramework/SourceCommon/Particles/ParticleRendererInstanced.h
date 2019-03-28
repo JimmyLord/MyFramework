@@ -12,6 +12,8 @@
 
 #include "../Particles/ParticleRenderer.h"
 
+class BufferManager;
+
 #if MYFW_USEINSTANCEDPARTICLES
 
 struct ParticleInstanceData
@@ -44,7 +46,7 @@ public:
     ParticleRendererInstanced(bool creatematerial);
     virtual ~ParticleRendererInstanced();
 
-    virtual void AllocateVertices(unsigned int maxPoints, const char* category);
+    virtual void AllocateVertices(unsigned int maxPoints, const char* category, BufferManager* pBufferManager);
     virtual void RebuildParticleQuad(MyMatrix* matrot);
     virtual void Reset() { m_ParticleCount = 0; }
 

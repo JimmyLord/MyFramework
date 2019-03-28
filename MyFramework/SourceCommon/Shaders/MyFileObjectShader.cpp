@@ -14,7 +14,8 @@
 #include "../Core/GameCore.h"
 #include "../Helpers/FileManager.h"
 
-MyFileObjectShader::MyFileObjectShader()
+MyFileObjectShader::MyFileObjectShader(FileManager* pFileManager)
+: MyFileObject( pFileManager )
 {
     ClassnameSanityCheck();
 
@@ -31,11 +32,11 @@ MyFileObjectShader::~MyFileObjectShader()
     ClearIncludedFiles();
 }
 
-void MyFileObjectShader::UnloadContents(FileManager* pFileManager)
+void MyFileObjectShader::UnloadContents()
 {
-    MyFileObject::UnloadContents( pFileManager );
+    MyFileObject::UnloadContents();
 
-    pFileManager->GetGameCore()->GetManagers()->GetShaderManager()->InvalidateAllShadersUsingFile( this );
+    m_pFileManager->GetGameCore()->GetManagers()->GetShaderManager()->InvalidateAllShadersUsingFile( this );
 
     m_NumExposedUniforms = 0;
     for( int i=0; i<MAX_EXPOSED_UNIFORMS; i++ )
@@ -53,7 +54,7 @@ void MyFileObjectShader::ClearIncludedFiles()
     {
         MyAssert( m_Includes[i].m_pIncludedFile != 0 );
 
-        g_pFileManager->FreeFile( m_Includes[i].m_pIncludedFile );
+        m_pFileManager->FreeFile( m_Includes[i].m_pIncludedFile );
     }
 
     m_ScannedForIncludes = false;
@@ -98,12 +99,12 @@ void MyFileObjectShader::CheckFileForIncludesAndAddToList()
 
             if( result == 1 )
             {
-                MyFileObject* pIncludeFile = g_pFileManager->RequestFile( includefilename );
+                MyFileObject* pIncludeFile = m_pFileManager->RequestFile( includefilename );
                 MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pIncludeFile;
                 if( pShaderFile->IsA( "MyFileShader" ) == false )
                 {
                     LOGError( LOGTag, "MyFileObjectShader: Including a non-shader file\n" );
-                    g_pFileManager->FreeFile( pIncludeFile );
+                    m_pFileManager->FreeFile( pIncludeFile );
                     continue;
                 }
 

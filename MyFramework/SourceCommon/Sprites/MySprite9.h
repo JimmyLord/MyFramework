@@ -14,6 +14,7 @@
 
 class BaseShader;
 class BufferDefinition;
+class BufferManager;
 class MaterialDefinition;
 class TextureDefinition;
 
@@ -34,7 +35,7 @@ public:
     MySprite9();
     virtual ~MySprite9();
 
-    void Create(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4);
+    void Create(BufferManager* pBufferManager, float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4);
 
     virtual void SetMaterial(MaterialDefinition* pMaterial);
 

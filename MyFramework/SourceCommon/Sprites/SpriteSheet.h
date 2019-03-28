@@ -57,8 +57,8 @@ public:
     MyFileObject* GetJSONFile() { return m_pJSONFile; }
     
     void SetScale(float scale) { m_SpriteScale = scale; }
-    virtual void Create(TextureManager* pTextureManager, const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials);
-    virtual void Create(TextureManager* pTextureManager, MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials);
+    virtual void Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials);
+    virtual void Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials);
     virtual void FinishLoadingFile();
     //virtual void Create(MaterialDefinition* pMaterial, bool createsprites, bool creatematerials);
     virtual void Tick(float deltaTime);

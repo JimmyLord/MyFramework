@@ -379,7 +379,7 @@ int bbmain(const char* UUID)
             StoreOldKeyHeldStateAndClearCurrent(); // part of hack to get keyheld messages.
 
 #if USE_SCORELOOP
-            g_pGameServiceManager->m_pScoreLoop->HandleEvents();
+            pGameServiceManager->m_pScoreLoop->HandleEvents();
 #endif
 
             //// deal with the payment manager.
@@ -456,7 +456,7 @@ int bbmain(const char* UUID)
     bps_shutdown();
 
 #if USE_SCORELOOP
-    g_pGameServiceManager->m_pScoreLoop->Shutdown();
+    pGameServiceManager->m_pScoreLoop->Shutdown();
 #endif
 
     //Use utility code to terminate EGL setup

@@ -9,6 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
+#include "../Core/GameCore.h"
 #include "../Helpers/FileManager.h"
 #include "../Helpers/MyFileObject.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
@@ -26,31 +27,33 @@ const char* g_ShaderPassDefines[ShaderPass_NumTypes] =
     "#define PassShadowCastRGB 1\n",
 };
 
-ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(GameCore* pGameCore, TextureDefinition* pErrorTexture)
 {
-    Create( pShaderGroupManager, 0, 0, pErrorTexture );
+    Create( pGameCore, 0, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, const char* pFilename, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(GameCore* pGameCore, const char* pFilename, TextureDefinition* pErrorTexture)
 {
-    MyFileObject* pShaderFile = RequestFile( pFilename );
-    Create( pShaderGroupManager, pShaderFile, 0, pErrorTexture );
+    FileManager* pFileManager = pGameCore->GetManagers()->GetFileManager();
+
+    MyFileObject* pShaderFile = pFileManager->RequestFile( pFilename );
+    Create( pGameCore, pShaderFile, 0, pErrorTexture );
     pShaderFile->Release();
 }
 
-ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(GameCore* pGameCore, MyFileObject* pFile, TextureDefinition* pErrorTexture)
 {
-    Create( pShaderGroupManager, pFile, 0, pErrorTexture );
+    Create( pGameCore, pFile, 0, pErrorTexture );
 }
 
-ShaderGroup::ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
+ShaderGroup::ShaderGroup(GameCore* pGameCore, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
-    Create( pShaderGroupManager, pFile, pFunc, pErrorTexture );
+    Create( pGameCore, pFile, pFunc, pErrorTexture );
 }
 
-void ShaderGroup::Create(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
+void ShaderGroup::Create(GameCore* pGameCore, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture)
 {
-    m_pShaderGroupManager = pShaderGroupManager;
+    m_pGameCore = pGameCore;
 
     if( pFile && pFile->IsA( "MyFileShader" ) == false )
     {
@@ -69,7 +72,7 @@ void ShaderGroup::Create(ShaderGroupManager* pShaderGroupManager, MyFileObject* 
     Initialize( pErrorTexture );
 
     SetFileForAllPasses( pFile );
-    m_pShaderGroupManager->AddShaderGroup( this );
+    m_pGameCore->GetManagers()->GetShaderGroupManager()->AddShaderGroup( this );
 }
 
 void ShaderGroup::Initialize(TextureDefinition* pErrorTexture)
@@ -181,14 +184,14 @@ void ShaderGroup::OnPopupClick(ShaderGroup* pShaderGroup, int id)
     case RightClick_UnloadFile:
         {
             if( pFileObject )
-                g_pFileManager->Editor_UnloadFile( pFileObject );
+                m_pGameCore->GetManagers()->GetFileManager()->Editor_UnloadFile( pFileObject );
         }
         break;
 
     case RightClick_FindAllReferences:
         {
             if( pFileObject )
-                g_pFileManager->Editor_FindAllReferences( pFileObject );
+                m_pGameCore->GetManagers()->GetFileManager()->Editor_FindAllReferences( pFileObject );
         }
         break;
     }

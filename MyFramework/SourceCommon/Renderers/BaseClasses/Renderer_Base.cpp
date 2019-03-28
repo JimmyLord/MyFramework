@@ -15,13 +15,13 @@
 
 Renderer_Base* g_pRenderer = 0;
 
-Renderer_Base::Renderer_Base()
+Renderer_Base::Renderer_Base(GameCore* pGameCore)
 {
     g_pRenderer = this;
 
     m_IsValid = false;
 
-    m_pShaderManager = nullptr;
+    m_pGameCore = pGameCore;
 
     m_ClearColor.Set( 0.0f, 0.0f, 0.2f, 0.0f );
     m_ClearDepth = 1.0f;
@@ -51,10 +51,6 @@ Renderer_Base::~Renderer_Base()
 //====================================================================================================
 // Setters.
 //====================================================================================================
-void Renderer_Base::SetManagers(ShaderManager* pShaderManager)
-{
-    m_pShaderManager = pShaderManager;
-}
 
 //====================================================================================================
 // Events.

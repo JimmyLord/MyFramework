@@ -15,6 +15,7 @@
 #include "MyMesh.h"
 #include "MySubmesh.h"
 #include "OBJLoader.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyMatrix.h"
 #include "../DataTypes/MyQuaternion.h"
@@ -26,9 +27,13 @@
 #include "../Textures/MaterialDefinition.h"
 #include "../Textures/MaterialManager.h"
 
-MyMesh::MyMesh()
+MyMesh::MyMesh(GameCore* pGameCore)
 {
-    m_pMeshManager = nullptr;
+    m_pGameCore = nullptr;
+    if( pGameCore )
+    {
+        SetGameCoreAndAddToMeshManager( pGameCore );
+    }
 
     m_pSourceFile = nullptr;
     m_LoadDefaultMaterials = true;
@@ -121,7 +126,7 @@ void MyMesh::OnFileFinishedLoadingOBJ(MyFileObject* pFile)
 
         if( pFile->GetFileLoadStatus() == FileLoadStatus_Success )
         {
-            LoadBasicOBJ( pFile->GetBuffer(), &m_SubmeshList, false, 1.0f, &m_AABounds );
+            LoadBasicOBJ( pFile->GetBuffer(), &m_SubmeshList, false, 1.0f, &m_AABounds, m_pGameCore->GetManagers()->GetBufferManager() );
 
             MyAssert( m_SubmeshList.Count() > 0 );
 
@@ -175,18 +180,18 @@ void MyMesh::OnFileFinishedLoadingMyMesh(MyFileObject* pFile)
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".myaniminfo", animfilename, MAX_PATH );
 #if MYFW_EDITOR
         // Only try to open the file if it exists, only in editor builds since file i/o isn't necessarily synchronous otherwise.
-        if( g_pFileManager->DoesFileExist( animfilename ) )
+        if( FileManager::DoesFileExist( animfilename ) )
         {
-            m_pAnimationControlFile = g_pFileManager->RequestFile( animfilename ); // Adds a ref to the existing file or new one.
+            m_pAnimationControlFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( animfilename ); // Adds a ref to the existing file or new one.
             m_pAnimationControlFile->RegisterFileFinishedLoadingCallback( this, StaticOnFileFinishedLoadingMyAnim );
-            //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned true file = %d\n", animfilename, m_pAnimationControlFile );
+            //LOGInfo( LOGTag, "FileManager::DoesFileExist( %s ) returned true file = %d\n", animfilename, m_pAnimationControlFile );
         }
         else
         {
-            //LOGInfo( LOGTag, "g_pFileManager->DoesFileExist( %s ) returned false\n", animfilename );
+            //LOGInfo( LOGTag, "FileManager::DoesFileExist( %s ) returned false\n", animfilename );
         }
 #else
-        m_pAnimationControlFile = g_pFileManager->RequestFile( animfilename ); // adds a ref to the existing file or new one.
+        m_pAnimationControlFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( animfilename ); // adds a ref to the existing file or new one.
 #endif
     }
 
@@ -216,7 +221,7 @@ void MyMesh::OnFileFinishedLoadingMyAnim(MyFileObject* pFile)
     if( m_pAnimationControlFile->GetFileLoadStatus() == FileLoadStatus_Error_FileNotFound )
     {
         //LOGInfo( LOGTag, "Animation File - error loading file\n" );
-        g_pFileManager->FreeFile( m_pAnimationControlFile );
+        m_pGameCore->GetManagers()->GetFileManager()->FreeFile( m_pAnimationControlFile );
         m_pAnimationControlFile = nullptr;
     }
         
@@ -254,7 +259,8 @@ void MyMesh::ParseFile()
                 if( m_SubmeshList[0]->m_pMaterial && m_SubmeshList[0]->m_pMaterial->GetShader() == nullptr )
                 {
                     // Guess at an appropriate shader for this mesh/material.
-                    m_pMeshManager->GuessAndAssignAppropriateShaderToMesh( this );
+                    MeshManager* pMeshManager = m_pGameCore->GetManagers()->GetMeshManager();
+                    pMeshManager->GuessAndAssignAppropriateShaderToMesh( this );
                 }
             }
         }
@@ -308,12 +314,15 @@ MaterialDefinition* MyMesh::GetMaterial(int submeshindex)
 //============================================================================================================================
 // Setters.
 //============================================================================================================================
-void MyMesh::SetMeshManagerAndAddToMeshList(MeshManager* pMeshManager)
+void MyMesh::SetGameCoreAndAddToMeshManager(GameCore* pGameCore)
 {
-    MyAssert( m_pMeshManager == nullptr );
+    MyAssert( m_pGameCore == nullptr );
+    MyAssert( pGameCore != nullptr );
 
-    m_pMeshManager = pMeshManager;
-    m_pMeshManager->AddMesh( this );
+    m_pGameCore = pGameCore;
+
+    MeshManager* pMeshManager = m_pGameCore->GetManagers()->GetMeshManager();
+    pMeshManager->AddMesh( this );
 }
 
 void MyMesh::SetMaterial(MaterialDefinition* pMaterial, int submeshindex)
@@ -376,7 +385,8 @@ void MyMesh::CreateVertexBuffer(int meshIndex, VertexFormat_Dynamic_Desc* pVerte
         m_SubmeshList[meshIndex]->m_NumVertsToDraw = numVerts;
         m_SubmeshList[meshIndex]->m_VertexFormat = VertexFormat_Dynamic;
 
-        m_SubmeshList[meshIndex]->m_pVertexBuffer = g_pBufferManager->CreateBuffer(
+        BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+        m_SubmeshList[meshIndex]->m_pVertexBuffer = pBufferManager->CreateBuffer(
             nullptr, pVertexFormatDesc->stride*numVerts, MyRE::BufferType_Vertex, usage,
             false, numbuffers, VertexFormat_Dynamic, pVertexFormatDesc, "MyMesh", "Verts" );
     }
@@ -399,7 +409,8 @@ void MyMesh::CreateIndexBuffer(int meshIndex, int bytesPerIndex, unsigned int nu
     {
         m_SubmeshList[meshIndex]->m_NumIndicesToDraw = numIndices;
 
-        m_SubmeshList[meshIndex]->m_pIndexBuffer = g_pBufferManager->CreateBuffer(
+        BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+        m_SubmeshList[meshIndex]->m_pIndexBuffer = pBufferManager->CreateBuffer(
             nullptr, bytesPerIndex*numIndices, MyRE::BufferType_Index, usage,
             false, numbuffers, bytesPerIndex, "MyMesh", "Indices" );
     }
@@ -459,8 +470,14 @@ void MyMesh::Draw(MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* pMatWorld, V
 
         if( pMaterial == nullptr )
         {
-            pMaterial = m_pMeshManager->GetMaterialManager()->GetDefaultEditorMaterial();
+#if MYFW_EDITOR
+            MaterialManager* pMaterialManager = m_pGameCore->GetManagers()->GetMaterialManager();
+            pMaterial = pMaterialManager->GetDefaultEditorMaterial();
+#else
+            return;
+#endif
         }
+
 
         m_SubmeshList[meshindex]->Draw( pMaterial, this, pMatProj, pMatView, pMatWorld, campos, camrot, lightptrs, numlights, shadowlightVP, pShadowTex, pLightmapTex, pShaderOverride, false );
     }

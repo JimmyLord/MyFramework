@@ -24,14 +24,14 @@
 #include "../../Textures/MaterialDefinition.h"
 #include "../../Textures/TextureManager.h"
 
-Shader_OpenGL::Shader_OpenGL(ShaderManager* pShaderManager)
-: Shader_Base( pShaderManager )
+Shader_OpenGL::Shader_OpenGL(GameCore* pGameCore)
+: Shader_Base( pGameCore )
 {
     Init_Shader();
 }
 
-Shader_OpenGL::Shader_OpenGL(ShaderManager* pShaderManager, ShaderPassTypes type)
-: Shader_Base( pShaderManager )
+Shader_OpenGL::Shader_OpenGL(GameCore* pGameCore, ShaderPassTypes type)
+: Shader_Base( pGameCore )
 {
     Init_Shader();
     Init( type );

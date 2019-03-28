@@ -15,8 +15,6 @@
 class LightManager;
 class MyLight;
 
-extern LightManager* g_pLightManager;
-
 class LightManager
 {
     static const int MAX_LIGHTS_TO_FIND = 8;

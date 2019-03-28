@@ -11,6 +11,7 @@
 #define __ShaderGroup_H__
 
 class BaseShader;
+class GameCore;
 class MyFileObject;
 class MyFileObjectShader;
 class Shader_Base;
@@ -39,7 +40,7 @@ public:
     static const int SHADERGROUP_MAX_BONE_INFLUENCES = 4;
 
 protected:
-    ShaderGroupManager* m_pShaderGroupManager;
+    GameCore* m_pGameCore;
 
     MyFileObjectShader* m_pFile;
     BaseShader* m_pShaderPasses[ShaderPass_NumTypes][SHADERGROUP_MAX_LIGHTS+1][SHADERGROUP_MAX_BONE_INFLUENCES+1];
@@ -51,11 +52,11 @@ protected:
     void SetFileForAllPasses(MyFileObject* pFile);
 
 public:
-    ShaderGroup(ShaderGroupManager* pShaderGroupManager, TextureDefinition* pErrorTexture);
-    ShaderGroup(ShaderGroupManager* pShaderGroupManager, const char* pFilename, TextureDefinition* pErrorTexture);
-    ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, TextureDefinition* pErrorTexture);
-    ShaderGroup(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
-    void Create(ShaderGroupManager* pShaderGroupManager, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
+    ShaderGroup(GameCore* pGameCore, TextureDefinition* pErrorTexture);
+    ShaderGroup(GameCore* pGameCore, const char* pFilename, TextureDefinition* pErrorTexture);
+    ShaderGroup(GameCore* pGameCore, MyFileObject* pFile, TextureDefinition* pErrorTexture);
+    ShaderGroup(GameCore* pGameCore, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
+    void Create(GameCore* pGameCore, MyFileObject* pFile, ShaderGroupShaderAllocationFunction* pFunc, TextureDefinition* pErrorTexture);
 
     ~ShaderGroup();
 

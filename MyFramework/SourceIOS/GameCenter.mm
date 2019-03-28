@@ -70,12 +70,12 @@ void GameCenter_SubmitScore(int boardid, const char* boardidstr, int score)
                 if( error != nil )
                 {
                     LOGInfo( LOGTag, "GameCenter - Leaderboard Submit failed!\n" );
-                    g_pGameServiceManager->MarkLeaderboardSubmitComplete( false, GameServiceProtocol_GameCenter, boardid, score );
+                    pGameServiceManager->MarkLeaderboardSubmitComplete( false, GameServiceProtocol_GameCenter, boardid, score );
                 }
                 else
                 {
                     LOGInfo( LOGTag, "GameCenter - Leaderboard Submit succeeded!\n" );
-                    g_pGameServiceManager->MarkLeaderboardSubmitComplete( true, GameServiceProtocol_GameCenter, boardid, score );
+                    pGameServiceManager->MarkLeaderboardSubmitComplete( true, GameServiceProtocol_GameCenter, boardid, score );
                 }
             }
         ];
@@ -95,12 +95,12 @@ void GameCenter_SubmitAchievement(int achid, const char* achidstr, float perc)
                 if( error != nil )
                 {
                     LOGInfo( LOGTag, "GameCenter - Achievement Submit failed!\n" );
-                    g_pGameServiceManager->MarkAchSubmitComplete( false, GameServiceProtocol_GameCenter, achid );
+                    pGameServiceManager->MarkAchSubmitComplete( false, GameServiceProtocol_GameCenter, achid );
                 }
                 else
                 {
                     LOGInfo( LOGTag, "GameCenter - Achievement Submit succeeded!\n" );
-                    g_pGameServiceManager->MarkAchSubmitComplete( true, GameServiceProtocol_GameCenter, achid );
+                    pGameServiceManager->MarkAchSubmitComplete( true, GameServiceProtocol_GameCenter, achid );
                 }
             }
         ];

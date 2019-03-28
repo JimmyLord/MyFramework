@@ -11,8 +11,6 @@
 
 #include "LightManager.h"
 
-LightManager* g_pLightManager = nullptr;
-
 LightManager::LightManager()
 {
 }

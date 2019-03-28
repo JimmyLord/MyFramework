@@ -13,6 +13,7 @@
 #include "Renderers/BaseClasses/Renderer_Enums.h"
 
 class FBODefinition;
+class FileManager;
 class MyFileObject;
 class RefCount;
 class TextureManager;
@@ -83,7 +84,7 @@ public:
     bool m_ShowInMemoryPanel;
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
 
-    void OnPopupClick(TextureDefinition* pTexture, int id);
+    void OnPopupClick(FileManager* pFileManager, TextureDefinition* pTexture, int id);
 #endif //MYFW_EDITOR
 };
 

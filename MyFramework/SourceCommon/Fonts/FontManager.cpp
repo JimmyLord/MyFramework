@@ -10,13 +10,12 @@
 #include "MyFrameworkPCH.h"
 
 #include "FontManager.h"
+#include "../Core/GameCore.h"
 #include "../Fonts/BMFont.h"
 #include "../Helpers/FileManager.h"
 #include "../Helpers/MyFileObject.h"
 #include "../Textures/TextureDefinition.h"
 #include "../Textures/TextureManager.h"
-
-FontManager* g_pFontManager = 0;
 
 FontDefinition::FontDefinition()
 {
@@ -40,9 +39,9 @@ FontDefinition::~FontDefinition()
 //========================
 //========================
 
-FontManager::FontManager(TextureManager* pTextureManager)
+FontManager::FontManager(GameCore* pGameCore)
 {
-    m_pTextureManager = pTextureManager;
+    m_pGameCore = pGameCore;
 }
 
 FontDefinition* FontManager::CreateFont(const char* fontfilename)
@@ -55,7 +54,7 @@ FontDefinition* FontManager::CreateFont(const char* fontfilename)
     }
 
     pFontDef = MyNew FontDefinition();
-    pFontDef->m_pFile = g_pFileManager->RequestFile( fontfilename );
+    pFontDef->m_pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fontfilename );
 
     m_FontsStillLoading.AddTail( pFontDef );
 
@@ -104,7 +103,7 @@ void FontManager::Tick()
                 tempname[i] = 0;
             }
             strcat_s( tempname, MAX_PATH, pFontDef->m_pBMFont->QueryImageName() );
-            pFontDef->m_pTextureDef = m_pTextureManager->CreateTexture( tempname, MyRE::MinFilter_Linear, MyRE::MagFilter_Linear, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
+            pFontDef->m_pTextureDef = m_pGameCore->GetManagers()->GetTextureManager()->CreateTexture( tempname, MyRE::MinFilter_Linear, MyRE::MagFilter_Linear, MyRE::WrapMode_Clamp, MyRE::WrapMode_Clamp );
 #if MYFW_EDITOR
             if( pFontDef->m_pFile->MemoryPanel_IsVisible() == false )
             {

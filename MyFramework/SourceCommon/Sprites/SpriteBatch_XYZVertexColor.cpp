@@ -27,7 +27,7 @@ SpriteBatch_XYZVertexColor::~SpriteBatch_XYZVertexColor()
 {
 }
 
-void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
+void SpriteBatch_XYZVertexColor::AllocateVertices(BufferManager* pBufferManager, int numsprites)
 {
     MyAssert( m_pVertexBuffer == 0 );
 
@@ -40,7 +40,7 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
     MyAssert( pIndices );
 
     // allocate 2 empty buffers, will be filled by subbufferdata elsewhere.
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numsprites*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, "SpriteBatch_XYZVertexColor", "Verts" );
+    m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numsprites*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, "SpriteBatch_XYZVertexColor", "Verts" );
 
     for( GLushort i=0; i<numsprites; i++ )
     {
@@ -52,7 +52,7 @@ void SpriteBatch_XYZVertexColor::AllocateVertices(int numsprites)
         pIndices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
     }
 
-    m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
+    m_pIndexBuffer = pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "SpriteBatch_XYZVertexColor", "Indices" );
 }
 
 void SpriteBatch_XYZVertexColor::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)

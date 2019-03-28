@@ -34,7 +34,7 @@ public:
 
     void SetMaterial(MaterialDefinition* pMaterial);
 
-    virtual void AllocateVertices(int numsprites);
+    virtual void AllocateVertices(BufferManager* pBufferManager, int numsprites);
     virtual void AddSprite(MyMatrix* pMatWorld, MySprite* pSprite);
     virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);
 };

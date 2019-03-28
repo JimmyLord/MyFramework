@@ -11,6 +11,7 @@
 
 #include "MaterialDefinition.h"
 #include "MaterialManager.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/ColorStructs.h"
 #include "../Helpers/FileManager.h"
 #include "../JSON/cJSONHelpers.h"
@@ -226,11 +227,12 @@ void MaterialDefinition::ImportFromFile()
             }
             else
             {
-                MyFileObject* pFile = g_pFileManager->RequestFile( jShaderString->valuestring );
+                FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
+                MyFileObject* pFile = pFileManager->RequestFile( jShaderString->valuestring );
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetShaderGroupManager(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetGameCore(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShader( pShaderGroup );
                     pShaderGroup->Release();
                 }
@@ -252,11 +254,12 @@ void MaterialDefinition::ImportFromFile()
             }
             else
             {
-                MyFileObject* pFile = g_pFileManager->RequestFile( jShaderString->valuestring );
+                FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
+                MyFileObject* pFile = pFileManager->RequestFile( jShaderString->valuestring );
                 if( pFile->IsA( "MyFileShader" ) )
                 {
                     MyFileObjectShader* pShaderFile = (MyFileObjectShader*)pFile;
-                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetShaderGroupManager(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
+                    pShaderGroup = MyNew ShaderGroup( m_pMaterialManager->GetGameCore(), pShaderFile, m_pMaterialManager->GetTextureManager()->GetErrorTexture() );
                     SetShaderInstanced( pShaderGroup );
                     pShaderGroup->Release();
                 }
@@ -317,16 +320,17 @@ void MaterialDefinition::ImportFromFile()
 
 void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
 {
-    g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pFile );
+    FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
+    pFileManager->MoveFileToFrontOfFileLoadedList( m_pFile );
 
     if( m_pShaderGroup )
-        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroup->GetFile() );
+        pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroup->GetFile() );
 
     if( m_pShaderGroupInstanced )
-        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroupInstanced->GetFile() );
+        pFileManager->MoveFileToFrontOfFileLoadedList( m_pShaderGroupInstanced->GetFile() );
 
     if( m_pTextureColor )
-        g_pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->GetFile() );
+        pFileManager->MoveFileToFrontOfFileLoadedList( m_pTextureColor->GetFile() );
 }
 
 void MaterialDefinition::SetName(const char* name)
@@ -843,6 +847,7 @@ MyRE::BlendFactors MaterialDefinition::GetShaderBlendFactorDest()
 #if MYFW_EDITOR
 void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
 {
+    FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
     MyFileObject* pMaterialFile = pMaterial->GetFile();
 
     switch( id )
@@ -855,14 +860,14 @@ void MaterialDefinition::OnPopupClick(MaterialDefinition* pMaterial, int id)
     case RightClick_UnloadFile:
         {
             if( pMaterialFile )
-                g_pFileManager->Editor_UnloadFile( pMaterialFile );
+                pFileManager->Editor_UnloadFile( pMaterialFile );
         }
         break;
 
     case RightClick_FindAllReferences:
         {
             if( pMaterialFile )
-                g_pFileManager->Editor_FindAllReferences( pMaterialFile );
+                pFileManager->Editor_FindAllReferences( pMaterialFile );
         }
         break;
     }
@@ -937,7 +942,7 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
             unsigned int count = 0;
             char newname[MAX_MATERIAL_NAME_LEN];
             strcpy_s( newname, MAX_MATERIAL_NAME_LEN, m_Name );
-            while( g_pFileManager->DoesFileExist( filename ) == true )
+            while( FileManager::DoesFileExist( filename ) == true )
             {
                 count++;
 
@@ -1010,8 +1015,10 @@ void MaterialDefinition::SaveMaterial(const char* relativepath)
         // If the file managed to save, request it.
         if( m_pFile == nullptr )
         {
+            FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
+
             sprintf_s( filename, MAX_PATH, "%s/%s.mymaterial", relativepath, m_Name );
-            m_pFile = g_pFileManager->RequestFile( filename );
+            m_pFile = pFileManager->RequestFile( filename );
         }
 
         // Update timestamp when saving a file to disk, so it doesn't reload when alt-tabbing.

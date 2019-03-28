@@ -72,13 +72,13 @@ void MySprite9::SetPosition(MyMatrix* mat)
     m_Position = *mat;
 }
 
-void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4)
+void MySprite9::Create(BufferManager* pBufferManager, float x1, float x2, float x3, float x4, float y1, float y2, float y3, float y4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4)
 {
     // allocate 16 verts
     if( m_pVertexBuffer == 0 )
     {
         Vertex_Sprite* pVerts = MyNew Vertex_Sprite[16];
-        m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 16*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, "MySprite9", "Verts" );
+        m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, 16*sizeof(Vertex_Sprite), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, "MySprite9", "Verts" );
     }
 
     // allocate and fill 24 indices for a triangle strip
@@ -115,7 +115,7 @@ void MySprite9::Create(float x1, float x2, float x3, float x4, float y1, float y
             pIndices[i] = vertindex;
         }
         
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, numindices*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "MySprite9", "Verts" );
+        m_pIndexBuffer = pBufferManager->CreateBuffer( pIndices, numindices*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "MySprite9", "Verts" );
     }
 
     // Fill vertex buffer with data and mark it dirty.

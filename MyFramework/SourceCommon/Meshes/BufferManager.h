@@ -17,8 +17,6 @@ class BufferManager;
 class RefCount;
 class Buffer_Base;
 
-extern BufferManager* g_pBufferManager;
-
 // ATM this whole buffer system creates a cpu memory block that mirrors what should be copied into OpenGL managed memory.
 
 class BufferDefinition : public TCPPListNode<BufferDefinition*>, public RefCount

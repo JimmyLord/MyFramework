@@ -24,7 +24,7 @@ public:
     SpriteBatch_XYZVertexColor();
     virtual ~SpriteBatch_XYZVertexColor();
 
-    virtual void AllocateVertices(int numsprites);
+    virtual void AllocateVertices(BufferManager* pBufferManager, int numsprites);
     virtual void AddSprite(MyMatrix* pMatWorld, MySprite* pSprite);
     void AddSprite(MyMatrix* pMatWorld, MySprite_XYZVertexColor* pSprite);
     virtual void Draw(MyMatrix* pMatProj, MyMatrix* pMatView);

@@ -184,12 +184,12 @@ void GameService_ScoreLoop::LeaderboardWriteArrived(SC_Error_t completionStatus)
     if( completionStatus != SC_OK )
     {
         LOGError( LOGTag, "ScoreLoop - Leaderboard Submit failed!\n" );
-        g_pGameServiceManager->MarkLeaderboardSubmitComplete( false, GameServiceProtocol_ScoreLoop, pEntry->m_ID, pEntry->m_Score );
+        pGameServiceManager->MarkLeaderboardSubmitComplete( false, GameServiceProtocol_ScoreLoop, pEntry->m_ID, pEntry->m_Score );
         return;
     }
 
     LOGInfo( LOGTag, "ScoreLoop - Leaderboard Submit succeeded!\n" );
-    g_pGameServiceManager->MarkLeaderboardSubmitComplete( true, GameServiceProtocol_ScoreLoop, pEntry->m_ID, pEntry->m_Score );
+    pGameServiceManager->MarkLeaderboardSubmitComplete( true, GameServiceProtocol_ScoreLoop, pEntry->m_ID, pEntry->m_Score );
 }
 
 void GameService_ScoreLoop::LoginToService()

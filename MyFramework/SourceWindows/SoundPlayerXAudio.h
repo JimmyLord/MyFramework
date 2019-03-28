@@ -13,6 +13,7 @@
 #include "../SourceCommon/DataTypes/MyActivePool.h"
 #include "../SourceCommon/Sound/WaveLoader.h"
 
+class FileManager;
 class MyFileObject;
 class SoundChannel;
 class VoiceCallback;
@@ -140,7 +141,7 @@ public:
     void StopMusic();
 
     //SoundObject* LoadSound(const char* path, const char* ext);
-    SoundObject* LoadSound(const char* fullpath);
+    SoundObject* LoadSound(FileManager* pFileManager, const char* fullpath);
     SoundObject* LoadSound(MyFileObject* pFile);
 
     void Shutdown();

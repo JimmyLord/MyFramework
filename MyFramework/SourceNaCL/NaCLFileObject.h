@@ -47,7 +47,7 @@ private:
     void AppendDataBytes(const char* buffer, int32 numbytes);
 };
 
-MyFileObject* RequestFile(const char* filename);
+//MyFileObject* RequestFile(const char* filename);
 
 char* LoadFile(const char* filename, int* length = 0);
 GLuint LoadTexture(const char* filename);

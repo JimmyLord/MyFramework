@@ -12,11 +12,10 @@
 
 class BMFont;
 class FontManager;
+class GameCore;
 class MyFileObject;
 class TextureDefinition;
 class TextureManager;
-
-extern FontManager* g_pFontManager;
 
 class FontDefinition : public TCPPListNode<FontDefinition*>, public RefCount
 {
@@ -45,13 +44,13 @@ public:
 class FontManager
 {
 protected:
-    TextureManager* m_pTextureManager;
+    GameCore* m_pGameCore;
 
     TCPPListHead<FontDefinition*> m_FontsLoaded;
     TCPPListHead<FontDefinition*> m_FontsStillLoading;
 
 public:
-    FontManager(TextureManager* pTextureManager);
+    FontManager(GameCore* pGameCore);
 
     FontDefinition* CreateFont(const char* fontfilename);
     FontDefinition* CreateFont(MyFileObject* pFile);

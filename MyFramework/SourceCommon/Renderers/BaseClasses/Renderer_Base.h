@@ -54,7 +54,7 @@ class Renderer_Base
 protected:
     bool m_IsValid;
 
-    ShaderManager* m_pShaderManager;
+    GameCore* m_pGameCore;
 
     ColorFloat m_ClearColor;
     float m_ClearDepth;
@@ -77,14 +77,13 @@ protected:
     float m_PointSize;
 
 public:
-    Renderer_Base();
+    Renderer_Base(GameCore* pGameCore);
     virtual ~Renderer_Base();
 
     // Getters.
     bool IsValid() { return m_IsValid; }
 
     // Setters.
-    void SetManagers(ShaderManager* pShaderManager);
 
     // Events.
     virtual void OnSurfaceCreated();

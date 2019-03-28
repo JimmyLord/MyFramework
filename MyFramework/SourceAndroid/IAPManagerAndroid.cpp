@@ -30,7 +30,8 @@ void IAPManager::Initialize()
 {
     m_Initialized = true;
 
-    g_pEventManager->RegisterForEvents( Event_IAP, this, &IAPManager::StaticHandleEvent );
+    EventManager* pEventManager = m_pGameCore->GetManagers()->GetEventManager();
+    pEventManager->RegisterForEvents( Event_IAP, this, &IAPManager::StaticHandleEvent );
 }
 
 bool IAPManager::HandleEvent(MyEvent* pEvent)

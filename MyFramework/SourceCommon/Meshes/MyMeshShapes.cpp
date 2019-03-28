@@ -12,6 +12,7 @@
 #include "BufferManager.h"
 #include "MyMesh.h"
 #include "MySubmesh.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/ColorStructs.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
@@ -30,12 +31,14 @@ void MyMesh::CreateShapeBuffers(bool createIndexBuffer)
 
     if( m_SubmeshList[0]->m_pVertexBuffer == nullptr )
     {
-        m_SubmeshList[0]->m_pVertexBuffer = g_pBufferManager->CreateBuffer();
+        BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+        m_SubmeshList[0]->m_pVertexBuffer = pBufferManager->CreateBuffer();
     }
 
     if( createIndexBuffer && m_SubmeshList[0]->m_pIndexBuffer == nullptr )
     {
-        m_SubmeshList[0]->m_pIndexBuffer = g_pBufferManager->CreateBuffer();
+        BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+        m_SubmeshList[0]->m_pIndexBuffer = pBufferManager->CreateBuffer();
     }
 }
 

@@ -120,7 +120,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 //{
 //    char tempstr[100];
 //
-//    if( g_pBufferManager == 0 )
+//    if( pBufferManager == 0 )
 //        return;
 //
 //    m_pTree_Buffers->DeleteAllItems();
@@ -129,7 +129,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 //
 //    unsigned int count = 0;
 //
-//    for( CPPListNode* pNode = g_pBufferManager->m_Buffers.GetHead(); pNode; )
+//    for( CPPListNode* pNode = pBufferManager->m_Buffers.GetHead(); pNode; )
 //    {
 //        BufferDefinition* pBufferDef = (BufferDefinition*)pNode;
 //        pNode = pNode->GetNext();
@@ -159,7 +159,7 @@ wxTreeItemId PanelMemory::FindObject(wxTreeCtrl* tree, void* pObjectPtr, wxTreeI
 //    }
 //
 //    sprintf_s( tempstr, 100, "Buffers(%d) - size(%d)", m_pTree_Buffers->GetChildrenCount( idroot, true ),
-//        g_pBufferManager->CalculateTotalMemoryUsedByBuffers() );
+//        pBufferManager->CalculateTotalMemoryUsedByBuffers() );
 //    m_pTree_Buffers->SetItemText( idroot, tempstr );
 //}
 
@@ -253,7 +253,7 @@ void PanelMemory::UpdateRootNodeBufferCount()
     wxTreeItemId idroot = m_pTree_Buffers->GetRootItem();
 
     // update root node memory usage count.
-    sprintf_s( tempstr, 100, "Buffers - size(%d)", g_pBufferManager->CalculateTotalMemoryUsedByBuffers() );
+    sprintf_s( tempstr, 100, "Buffers - size(%d)", pBufferManager->CalculateTotalMemoryUsedByBuffers() );
     m_pTree_Buffers->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Buffs(%d)",
@@ -599,7 +599,7 @@ void PanelMemory::UpdateRootNodeFileCount()
     wxTreeItemId idroot = m_pTree_Files->GetRootItem();
 
     // update root node memory usage count.
-    sprintf_s( tempstr, 100, "Files - size(%d)", g_pFileManager->CalculateTotalMemoryUsedByFiles() );
+    sprintf_s( tempstr, 100, "Files - size(%d)", pFileManager->CalculateTotalMemoryUsedByFiles() );
     m_pTree_Files->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Files(%d)",
@@ -779,7 +779,7 @@ void PanelMemory::UpdateRootNodeDrawCallCount()
     wxTreeItemId idroot = m_pTree_DrawCalls->GetRootItem();
 
     // update root node memory usage count.
-    //sprintf_s( tempstr, 100, "Draws - size(%d)", g_pFileManager->CalculateTotalMemoryUsedByFiles() );
+    //sprintf_s( tempstr, 100, "Draws - size(%d)", pFileManager->CalculateTotalMemoryUsedByFiles() );
     //m_pTree_DrawCalls->SetItemText( idroot, tempstr );
 
     sprintf_s( tempstr, 100, "Draws(%d)",

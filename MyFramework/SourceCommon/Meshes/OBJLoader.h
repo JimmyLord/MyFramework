@@ -10,14 +10,15 @@
 #ifndef __OBJLoader_H__
 #define __OBJLoader_H__
 
+class BufferManager;
 class MyAABounds;
 class MySubmesh;
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB);
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB, BufferManager* pBufferManager);
 #endif
 
 // return 2 BufferDefinition pointers.
-void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB);
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB, BufferManager* pBufferManager);
 
 #endif //__OBJLoader_H__

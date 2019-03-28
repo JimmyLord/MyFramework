@@ -173,9 +173,9 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
 
     if( keys[MYKEYCODE_LCTRL] && keys['I'] == 1 && keysold['I'] == 0 ) // new press
     {
-        ShaderManager* pShaderManager = pGameCore->GetManagers()->m_pShaderManager;
-        ShaderManager* pTextureManager = pGameCore->GetManagers()->m_pTextureManager;
-        ShaderManager* pBufferManager = pGameCore->GetManagers()->m_pBufferManager;
+        ShaderManager* pShaderManager = pGameCore->GetManagers()->GetShaderManager();
+        TextureManager* pTextureManager = pGameCore->GetManagers()->GetTextureManager();
+        BufferManager* pBufferManager = pGameCore->GetManagers()->GetBufferManager();
 
         if( pShaderManager )
             pShaderManager->InvalidateAllShaders( true );

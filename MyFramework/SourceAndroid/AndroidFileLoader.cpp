@@ -22,10 +22,10 @@
 
 #include "JavaInterfaceCPP.h"
 
-MyFileObject* RequestFile(const char* filename)
-{
-    return g_pFileManager->RequestFile( filename );
-}
+//MyFileObject* RequestFile(const char* filename)
+//{
+//    return g_ pFileManager->RequestFile( filename );
+//}
 
 char* LoadFile(const char* filepath, int* length)
 {

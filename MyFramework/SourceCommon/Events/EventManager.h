@@ -17,8 +17,6 @@ class EventManager;
 class EventTypeManager;
 class MyEvent;
 
-extern EventManager* g_pEventManager;
-
 typedef bool EventCallbackFunc(void* pObjectPtr, MyEvent* pEvent);
 
 class MyEventHandler

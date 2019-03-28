@@ -15,8 +15,6 @@
 #include "../DataTypes/MyActivePool.h"
 #include "../Helpers/MyTime.h"
 
-GameServiceManager* g_pGameServiceManager = 0;
-
 #include "GameService_ScoreLoop.h"
 
 GameServiceManager::GameServiceManager()

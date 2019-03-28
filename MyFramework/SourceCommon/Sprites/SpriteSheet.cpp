@@ -71,23 +71,27 @@ SpriteSheet::~SpriteSheet()
     SAFE_RELEASE( m_pMaterial );
 }
 
-void SpriteSheet::Create(TextureManager* pTextureManager, const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
+void SpriteSheet::Create(const char* fullpath, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
+    FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
+    TextureManager* pTextureManager = m_pGameCore->GetManagers()->GetTextureManager();
+
     MyAssert( m_pMaterial == 0 );
     MyAssert( m_ppSpriteArray == 0 );
     MyAssert( m_pMaterialList == 0 );
 
-    MyFileObject* pFile = RequestFile( fullpath );
-
-    Create( pTextureManager, pFile, pShader, minFilter, magFilter, createSprites, createMaterials );
+    MyFileObject* pFile = pFileManager->RequestFile( fullpath );
+    Create( pFile, pShader, minFilter, magFilter, createSprites, createMaterials );
 }
 
-void SpriteSheet::Create(TextureManager* pTextureManager, MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
+void SpriteSheet::Create(MyFileObject* pFile, ShaderGroup* pShader, MyRE::MinFilters minFilter, MyRE::MagFilters magFilter, bool createSprites, bool createMaterials)
 {
-    MyAssert( pTextureManager != nullptr );
     MyAssert( m_pMaterial == nullptr );
     MyAssert( m_ppSpriteArray == nullptr );
     MyAssert( m_pMaterialList == nullptr );
+
+    FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
+    TextureManager* pTextureManager = m_pGameCore->GetManagers()->GetTextureManager();
 
     LOGInfo( LOGTag, "SpriteSheet::Load %s\n", pFile->GetFullPath() );
 
@@ -102,7 +106,7 @@ void SpriteSheet::Create(TextureManager* pTextureManager, MyFileObject* pFile, S
 
         char otherpath[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".png", otherpath, MAX_PATH );
-        pTextureFile = RequestFile( otherpath );
+        pTextureFile = pFileManager->RequestFile( otherpath );
     }
     else if( strcmp( pFile->GetExtensionWithDot(), ".png" ) == 0 )
     {
@@ -111,7 +115,7 @@ void SpriteSheet::Create(TextureManager* pTextureManager, MyFileObject* pFile, S
 
         char otherpath[MAX_PATH];
         pFile->GenerateNewFullPathExtensionWithSameNameInSameFolder( ".json", otherpath, MAX_PATH );
-        pJSONFile = RequestFile( otherpath );
+        pJSONFile = pFileManager->RequestFile( otherpath );
     }
     else
     {
@@ -258,7 +262,9 @@ void SpriteSheet::FinishLoadingFile()
                             {
                                 MyAssert( m_ppSpriteArray[i] );
 
-                                m_ppSpriteArray[i]->CreateSubsection( "SpriteSheet",
+                                BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+
+                                m_ppSpriteArray[i]->CreateSubsection( pBufferManager, "SpriteSheet",
                                                 (float)originalW * m_SpriteScale, (float)originalH * m_SpriteScale,
                                                 (posX-trimX+offset)/sheetW, (posX-trimX+originalW-offset)/sheetW,
                                                 (posY-trimY+offset)/sheetH, (posY-trimY+originalH-offset)/sheetH,
@@ -283,7 +289,7 @@ void SpriteSheet::FinishLoadingFile()
                                 FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
 
                                 // In editor mode, check if the file exists before loading.
-                                if( pFileManager->DoesFileExist( fullpath ) == false )
+                                if( FileManager::DoesFileExist( fullpath ) == false )
                                 {
                                     // The material might not exist on disk but a load was previously attempted, so find that object.
                                     m_pMaterialList[i] = pMaterialManager->FindMaterialByFilename( fullpath );
@@ -410,7 +416,8 @@ void SpriteSheet::FinishLoadingFile()
 
                                     if( m_CreateSprites )
                                     {
-                                        m_ppSpriteArray[i]->CreateSubsection( "SpriteSheet",
+                                        BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+                                        m_ppSpriteArray[i]->CreateSubsection( pBufferManager, "SpriteSheet",
                                                         (float)w * m_SpriteScale, (float)h * m_SpriteScale,
                                                         (x+offset)/sheetw, (x+w-offset)/sheetw,
                                                         (y+offset)/sheeth, (y+h-offset)/sheeth,

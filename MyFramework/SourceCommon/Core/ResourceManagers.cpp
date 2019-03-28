@@ -13,20 +13,67 @@
 
 ResourceManagers::ResourceManagers()
 {
-    m_pBufferManager = nullptr;         // g_pBufferManager // 40
-    m_pEventManager = nullptr;          // g_pEventManager // 24
+    m_pBufferManager = nullptr;
+    m_pEventManager = nullptr;
     m_pEventTypeManager = nullptr;
-    m_pFileManager = nullptr;           // g_pFileManager // 89
-    m_pFontManager = nullptr;           // g_pFontManager // 13
-    m_pGameServiceManager = nullptr;    // g_pGameServiceManager // 14
+    m_pFileManager = nullptr;
+    m_pFontManager = nullptr;
     m_pGamepadManager = nullptr;
-    m_pMyJobManager = nullptr;
-    m_pLightManager = nullptr;          // g_pLightManager // 21
-    m_pMaterialManager = nullptr;
+    m_pGameServiceManager = nullptr;
+    m_pLightManager = nullptr;
     m_pMeshManager = nullptr;
-    m_pShaderManager = nullptr;
+    m_pMaterialManager = nullptr;
+    m_pMyJobManager = nullptr;
     m_pShaderGroupManager = nullptr;
+    m_pShaderManager = nullptr;
     m_pSoundManager = nullptr;
     m_pTextureManager = nullptr;
     m_pVertexFormatManager = nullptr;
+
+    // Other globals to eliminate.
+    // g_pComponentSystemManager                        // 312
+    // g_pGameCore                                      // 407
+    // g_pEngineCore                                    // 375
+    // g_pMessageLogCallbackFunction                    // 19
+    // g_pMyFileObject_FileFinishedLoadingCallbackPool  // 7
+    // g_pJobManager                                    // 10
+    // g_pLuaGameState                                  // 27
+    // g_pBulletWorld                                   // 28
+    // g_pEditorPrefs                                   // 63
+
+    // Globals okay in the short term.
+    // g_pIAPManager                                    // 14
+    // g_pRenderer                                      // 208
+    // g_pD3DContext                                    // 42
+    // g_pEventTypeHashFunc                             // 10
+    // g_pAllocationList                                // 19
+    // g_pBrokenShaderString                            // 4
+
+    // Other globals to look at.
+    // g_pComponentTransform_TransformChangedCallbackPool
+    // g_pGlobalLog
+    // g_pComponentTypeManager
+    // g_pVisibilityLayerStrings
+    // g_pEngineMainFrame
+    // g_pEngineFileManager
+    // g_pRTQGlobals
+    // g_pScreenManager
+    // g_pLanguageTable
+    // g_pWP8App
+    // g_pGame
+    // g_pAnimationKeyPool
+    // g_pMainActivity
+    // g_pAssetManager
+    // g_pBMPFactoryLoader
+    // g_pJavaSoundPlayer
+    // g_pAndroidDeviceName
+    // g_pJavaEnvironment
+    // g_pIAPInterface
+    // g_pInstance
+    // g_pMyDataFormat
+    // g_pPanelWatch
+    // g_pPanelMemory
+    // g_pPanelObjectList
+    // g_pGLContext
+    // g_pMainApp
 }

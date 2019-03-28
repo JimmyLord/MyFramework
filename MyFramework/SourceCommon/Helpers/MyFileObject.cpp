@@ -87,8 +87,10 @@ char* PlatformSpecific_LoadFile(const char* filename, int* length, const char* f
     return filecontents;
 }
 
-MyFileObject::MyFileObject()
+MyFileObject::MyFileObject(FileManager* pFileManager)
 {
+    m_pFileManager = pFileManager;
+
     ClassnameSanityCheck();
 
     m_FullPath = nullptr;
@@ -423,7 +425,7 @@ void MyFileObject::UpdateTimestamp()
 #endif
 }
 
-void MyFileObject::UnloadContents(FileManager* pFileManager)
+void MyFileObject::UnloadContents()
 {
     SAFE_DELETE_ARRAY( m_pBuffer );
     m_FileLength = 0;
@@ -452,7 +454,7 @@ void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
     _getcwd( workingdir, MAX_PATH * sizeof(char) );
     sprintf_s( url, MAX_PATH, "%s/%s", workingdir, m_FullPath );
 
-    if( g_pFileManager->DoesFileExist( url ) == false )
+    if( FileManager::DoesFileExist( url ) == false )
     {
         FILE* file;
         fopen_s( &file, url, "wb" );
@@ -490,7 +492,7 @@ void MyFileObject::OSOpenContainingFolder()
 #endif
 }
 
-void MyFileObject::OnPopupClick(MyFileObject* pFileObject, int id)
+void MyFileObject::OnPopupClick(FileManager* pFileManager, MyFileObject* pFileObject, int id)
 {
     switch( id )
     {
@@ -513,13 +515,13 @@ void MyFileObject::OnPopupClick(MyFileObject* pFileObject, int id)
 
     case RightClick_UnloadFile:
         {
-            g_pFileManager->Editor_UnloadFile( pFileObject );
+            pFileManager->Editor_UnloadFile( pFileObject );
         }
         break;
 
     case RightClick_FindAllReferences:
         {
-            g_pFileManager->Editor_FindAllReferences( pFileObject );
+            pFileManager->Editor_FindAllReferences( pFileObject );
         }
         break;
     }

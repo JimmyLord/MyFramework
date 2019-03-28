@@ -243,7 +243,7 @@ int ParseFaceInfo(FaceInfo* faces, const char* buffer, int index)
 }
 
 #if _DEBUG
-void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB)
+void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB, BufferManager* pBufferManager)
 {
     MyAssert( pSubmeshList );
 
@@ -252,7 +252,7 @@ void LoadBasicOBJFromFile(char* filename, MyList<MySubmesh*>* pSubmeshList, bool
     long size;
     char* buffer = LoadFile( filename, &size );
 
-    LoadBasicOBJ( buffer, pSubmeshList, removeDuplicateVertices, scale, pAABB );
+    LoadBasicOBJ( buffer, pSubmeshList, removeDuplicateVertices, scale, pAABB, pBufferManager );
 
     delete[] buffer;
 }
@@ -274,7 +274,7 @@ void SetValueOfIndex(unsigned char* indices, int index, unsigned int value, int 
     }
 }
 
-void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB)
+void LoadBasicOBJ(const char* buffer, MyList<MySubmesh*>* pSubmeshList, bool removeDuplicateVertices, float scale, MyAABounds* pAABB, BufferManager* pBufferManager)
 {
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
@@ -567,12 +567,12 @@ foundDuplicate_SkipToNextVert:
     // Give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s.
     if( *ppVBO == nullptr )
     {
-        *ppVBO = g_pBufferManager->CreateBuffer();
+        *ppVBO = pBufferManager->CreateBuffer();
     }
 
     if( *ppIBO == nullptr )
     {
-        *ppIBO = g_pBufferManager->CreateBuffer();
+        *ppIBO = pBufferManager->CreateBuffer();
     }
 
     if( pAABB )

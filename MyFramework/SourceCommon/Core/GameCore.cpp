@@ -79,7 +79,7 @@ GameCore::GameCore(Renderer_Base* pRenderer, bool createAndOwnGlobalManagers)
     }
     else
     {
-        m_pRenderer = MyNew Renderer_OpenGL();
+        m_pRenderer = MyNew Renderer_OpenGL( this );
         m_OwnsRenderer = true;
     }
 
@@ -125,59 +125,25 @@ GameCore::~GameCore()
     SAFE_DELETE( m_Managers.m_pMyJobManager );
     SAFE_DELETE( m_Managers.m_pGamepadManager );
 
-    if( m_ThisClassOwnsTheGlobalManagers )
+    if( m_Managers.m_pFontManager )
     {
-        if( g_pFontManager )
-        {
-            g_pFontManager->FreeAllFonts();
-        }
-
-        SAFE_DELETE( m_Managers.m_pMaterialManager );
-        SAFE_DELETE( m_Managers.m_pTextureManager );
-        SAFE_DELETE( g_pFontManager );
-        SAFE_DELETE( g_pBufferManager );
-        SAFE_DELETE( m_Managers.m_pMeshManager );
-        SAFE_DELETE( g_pLightManager );
-        SAFE_DELETE( m_Managers.m_pShaderManager );
-        SAFE_DELETE( m_Managers.m_pShaderGroupManager );
+        m_Managers.m_pFontManager->FreeAllFonts();
     }
-    else
-    {
-        if( m_Managers.m_pFontManager )
-        {
-            m_Managers.m_pFontManager->FreeAllFonts();
-        }
 
-        SAFE_DELETE( m_Managers.m_pMaterialManager );
-        SAFE_DELETE( m_Managers.m_pTextureManager );
-        SAFE_DELETE( m_Managers.m_pFontManager );
-        SAFE_DELETE( m_Managers.m_pBufferManager );
-        SAFE_DELETE( m_Managers.m_pMeshManager );
-        SAFE_DELETE( m_Managers.m_pLightManager );
-        SAFE_DELETE( m_Managers.m_pShaderManager );
-        SAFE_DELETE( m_Managers.m_pShaderGroupManager );
-    }
+    SAFE_DELETE( m_Managers.m_pMaterialManager );
+    SAFE_DELETE( m_Managers.m_pTextureManager );
+    SAFE_DELETE( m_Managers.m_pFontManager );
+    SAFE_DELETE( m_Managers.m_pBufferManager );
+    SAFE_DELETE( m_Managers.m_pMeshManager );
+    SAFE_DELETE( m_Managers.m_pLightManager );
+    SAFE_DELETE( m_Managers.m_pShaderManager );
+    SAFE_DELETE( m_Managers.m_pShaderGroupManager );
     SAFE_DELETE( m_Managers.m_pSoundManager );
     SAFE_DELETE( m_pSoundPlayer );
-    if( m_ThisClassOwnsTheGlobalManagers )
-    {
-        SAFE_DELETE( g_pGameServiceManager );
-        SAFE_DELETE( m_Managers.m_pVertexFormatManager );
-
-        SAFE_DELETE( g_pFileManager ); // Will assert if all files aren't free, so delete last.
-
-        SAFE_DELETE( g_pEventManager );
-    }
-    else
-    {
-        SAFE_DELETE( m_Managers.m_pGameServiceManager );
-        SAFE_DELETE( m_Managers.m_pVertexFormatManager );
-
-        SAFE_DELETE( m_Managers.m_pFileManager ); // Will assert if all files aren't free, so delete last.
-
-        SAFE_DELETE( m_Managers.m_pEventManager );
-    }
-
+    SAFE_DELETE( m_Managers.m_pGameServiceManager );
+    SAFE_DELETE( m_Managers.m_pVertexFormatManager );
+    SAFE_DELETE( m_Managers.m_pFileManager ); // Will assert if all files aren't free, so delete last.
+    SAFE_DELETE( m_Managers.m_pEventManager );
     SAFE_DELETE( m_Managers.m_pEventTypeManager );
 
 #if MYFW_BLACKBERRY
@@ -214,66 +180,27 @@ uint32 GameCore::GetWindowHeight()
 
 void GameCore::InitializeManagers()
 {
-#define HACK_CreateGlobalAndLocalManager(TYPE) \
-    if( g_p##TYPE == nullptr ) \
-        g_p##TYPE = MyNew TYPE; \
-    m_Managers.m_p##TYPE = g_p##TYPE;
-
-#define HACK_CreateGlobalAndLocalManagerArg(TYPE, arg) \
-    if( g_p##TYPE == nullptr ) \
-        g_p##TYPE = MyNew TYPE( arg ); \
-    m_Managers.m_p##TYPE = g_p##TYPE;
-
-#define HACK_BackupAndCreateNewManager(TYPE) \
-    TYPE* p##TYPE = g_p##TYPE; \
-    m_Managers.m_p##TYPE = MyNew TYPE; \
-    g_p##TYPE = p##TYPE;
-
-#define HACK_BackupAndCreateNewManagerArg(TYPE, arg) \
-    TYPE* p##TYPE = g_p##TYPE; \
-    m_Managers.m_p##TYPE = MyNew TYPE( arg ); \
-    g_p##TYPE = p##TYPE;
-
-    m_Managers.m_pEventTypeManager = MyNew EventTypeManager;
-
-    if( m_ThisClassOwnsTheGlobalManagers )
-    {
-        HACK_CreateGlobalAndLocalManagerArg( EventManager, m_Managers.GetEventTypeManager() );
-        m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
-        HACK_CreateGlobalAndLocalManagerArg( FileManager, this );
-        m_Managers.m_pTextureManager = MyNew TextureManager;
-        HACK_CreateGlobalAndLocalManagerArg( FontManager, m_Managers.GetTextureManager() );
-        m_Managers.m_pMaterialManager = MyNew MaterialManager( this );
-        HACK_CreateGlobalAndLocalManager( BufferManager );
-        m_Managers.m_pMeshManager = MyNew MeshManager( this );
-        HACK_CreateGlobalAndLocalManager( LightManager );
-        m_Managers.m_pShaderManager = MyNew ShaderManager;
-        m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
-        HACK_CreateGlobalAndLocalManager( GameServiceManager );
-    }
-    else
-    {
-        HACK_BackupAndCreateNewManagerArg( EventManager, m_Managers.GetEventTypeManager() );
-        m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
-        HACK_BackupAndCreateNewManagerArg( FileManager, this );
-        m_Managers.m_pTextureManager = MyNew TextureManager;
-        HACK_BackupAndCreateNewManagerArg( FontManager, m_Managers.GetTextureManager() );
-        m_Managers.m_pMaterialManager = MyNew MaterialManager( this );
-        HACK_BackupAndCreateNewManager( BufferManager );
-        m_Managers.m_pMeshManager = MyNew MeshManager( this );
-        HACK_BackupAndCreateNewManager( LightManager );
-        m_Managers.m_pShaderManager = MyNew ShaderManager;
-        m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
-        HACK_BackupAndCreateNewManager( GameServiceManager );
-    }
-
+    if( m_Managers.m_pEventTypeManager == nullptr )     m_Managers.m_pEventTypeManager = MyNew EventTypeManager;
+    if( m_Managers.m_pEventManager == nullptr )         m_Managers.m_pEventManager = MyNew EventManager( m_Managers.GetEventTypeManager() );
+    if( m_Managers.m_pVertexFormatManager == nullptr )  m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;
+    if( m_Managers.m_pFileManager == nullptr )          m_Managers.m_pFileManager = MyNew FileManager( this );
+    if( m_Managers.m_pTextureManager == nullptr )       m_Managers.m_pTextureManager = MyNew TextureManager( this );
+    if( m_Managers.m_pFontManager == nullptr )          m_Managers.m_pFontManager = MyNew FontManager( this );
+    if( m_Managers.m_pMaterialManager == nullptr )      m_Managers.m_pMaterialManager = MyNew MaterialManager( this );
+    if( m_Managers.m_pBufferManager == nullptr )        m_Managers.m_pBufferManager = MyNew BufferManager();
+    if( m_Managers.m_pMeshManager == nullptr )          m_Managers.m_pMeshManager = MyNew MeshManager( this );
+    if( m_Managers.m_pLightManager == nullptr )         m_Managers.m_pLightManager = MyNew LightManager();
+    if( m_Managers.m_pShaderManager == nullptr )        m_Managers.m_pShaderManager = MyNew ShaderManager( this );
+    if( m_Managers.m_pShaderGroupManager == nullptr )   m_Managers.m_pShaderGroupManager = MyNew ShaderGroupManager;
+    if( m_Managers.m_pGameServiceManager == nullptr )   m_Managers.m_pGameServiceManager = MyNew GameServiceManager;
 #if MYFW_WINDOWS
-    m_Managers.m_pGamepadManager = MyNew GamepadManagerXInput;
+    if( m_Managers.m_pGamepadManager == nullptr )       m_Managers.m_pGamepadManager = MyNew GamepadManagerXInput;
 #endif
+    
     if( m_Managers.m_pGamepadManager )
         m_Managers.m_pGamepadManager->Initialize();
 
-    m_Managers.m_pSoundManager = MyNew SoundManager;
+    m_Managers.m_pSoundManager = MyNew SoundManager( this );
     m_Managers.m_pMyJobManager = MyNew MyJobManager;
 }
 
@@ -296,8 +223,6 @@ void GameCore::OneTimeInit()
     srand( seed );
 
     InitializeManagers();
-
-    m_pRenderer->SetManagers( m_Managers.m_pShaderManager );
 
     m_pSoundPlayer = MyNew SoundPlayer;
 

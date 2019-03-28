@@ -196,7 +196,8 @@ GLint PolygonDrawModeConversionTable[MyRE::PolygonDrawMode_NumModes] =
 //====================================================================================================
 // Renderer_OpenGL.
 //====================================================================================================
-Renderer_OpenGL::Renderer_OpenGL()
+Renderer_OpenGL::Renderer_OpenGL(GameCore* pGameCore)
+: Renderer_Base( pGameCore )
 {
 }
 
@@ -414,7 +415,7 @@ void Renderer_OpenGL::SetPointSize(float size)
 //====================================================================================================
 Shader_Base* Renderer_OpenGL::CreateShader(ShaderPassTypes passType, TextureDefinition* pErrorTexture)
 {
-    Shader_Base* pShader = MyNew Shader_OpenGL( m_pShaderManager, passType );
+    Shader_Base* pShader = MyNew Shader_OpenGL( m_pGameCore, passType );
 
 #if MYFW_EDITOR
     pShader->SetErrorTexture( pErrorTexture );

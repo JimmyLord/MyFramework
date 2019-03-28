@@ -18,8 +18,6 @@ double ElasticEaseIn(double t, double b, double c, double d, float elasticity);
 double ElasticEaseOut(double t, double b, double c, double d, float elasticity);
 double ElasticEaseInOut(double t, double b, double c, double d, float elasticity);
 
-MyTweenPool* g_pTweenPool = 0;
-
 MyTweenPool::MyTweenPool(int numuchars, int numchars, int numints, int numfloats)
 : m_UnsignedChars(numuchars)
 , m_Chars(numchars)

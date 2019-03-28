@@ -18,8 +18,6 @@
 #include "../../SourceNaCL/MainInstance.h"
 #endif //MYFW_NACL
 
-FileManager* g_pFileManager = 0;
-
 FileManager::FileManager(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;
@@ -154,7 +152,7 @@ unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 
 MyFileObject* FileManager::CreateFileObject(const char* fullpath)
 {
-    MyFileObject* pFile = MyNew MyFileObject;
+    MyFileObject* pFile = MyNew MyFileObject( this );
 
     pFile->ParseName( fullpath );
 
@@ -188,9 +186,9 @@ MyFileObject* FileManager::RequestFile(const char* filename)
 
     int len = (int)strlen( filename );
     if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
-        pFile = MyNew MyFileObjectShader;
+        pFile = MyNew MyFileObjectShader( this );
     else
-        pFile = MyNew MyFileObject;
+        pFile = MyNew MyFileObject( this );
 
     pFile->RequestFile( filename );
 
@@ -213,7 +211,7 @@ void FileManager::ReloadFile(MyFileObject* pFile)
 {
     MyAssert( pFile );
 
-    pFile->UnloadContents( this );
+    pFile->UnloadContents();
     m_FilesStillLoading.MoveTail( pFile );
 }
 
@@ -412,7 +410,7 @@ void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
 }
 
 #if MYFW_EDITOR
-bool FileManager::DoesFileExist(const char* fullpath)
+bool FileManager::DoesFileExist(const char* fullpath) // Static
 {
 #if MYFW_WINDOWS
     WIN32_FIND_DATAA data;
@@ -433,7 +431,7 @@ bool FileManager::DoesFileExist(const char* fullpath)
 
 MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 {
-    if( DoesFileExist( fullpath ) == false )
+    if( FileManager::DoesFileExist( fullpath ) == false )
         return 0;
 
     MyFileObject* pFile = RequestFile( fullpath );
@@ -633,15 +631,15 @@ void MySaveFileObject_FILE::Tick()
 }
 
 #if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
-MyFileObject* RequestFile(const char* filename)
-{
-    MyAssert( filename != 0 );
-    if( filename == 0 )
-        return 0;
-    MyAssert( filename[0] != 0 );
-    if( filename[0] == 0 )
-        return 0;
-
-    return g_pFileManager->RequestFile( filename );
-}
+//MyFileObject* RequestFile(const char* filename)
+//{
+//    MyAssert( filename != 0 );
+//    if( filename == 0 )
+//        return 0;
+//    MyAssert( filename[0] != 0 );
+//    if( filename[0] == 0 )
+//        return 0;
+//
+//    return g_ pFileManager->RequestFile( filename );
+//}
 #endif

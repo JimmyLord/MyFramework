@@ -169,7 +169,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
             unsigned int count = 0;
             char newname[MAX_SOUND_CUE_NAME_LEN];
             strcpy_s( newname, MAX_SOUND_CUE_NAME_LEN, m_Name );
-            while( g_pFileManager->DoesFileExist( filename ) == true )
+            while( FileManager::DoesFileExist( filename ) == true )
             {
                 count++;
 
@@ -223,7 +223,7 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
         if( m_pFile == nullptr )
         {
             sprintf_s( filename, MAX_PATH, "%s/%s.mycue", relativefolder, m_Name );
-            m_pFile = g_pFileManager->RequestFile( filename );
+            m_pFile = g_pGameCore->GetManagers()->GetFileManager()->RequestFile( filename );
         }
     }
 }
@@ -246,8 +246,10 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 //    }
 #endif //MYFW_EDITOR
 
-SoundManager::SoundManager()
+SoundManager::SoundManager(GameCore* pGameCore)
 {
+    m_pGameCore = pGameCore;
+
     m_SoundCuePool.AllocateObjects( NUM_SOUND_CUES_TO_POOL );
 #if _DEBUG
     for( unsigned int i=0; i<m_SoundCuePool.Debug_GetLength(); i++ )
@@ -349,7 +351,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     if( pCue )
     {
         pCue->AddRef(); // Automatically add a ref for the calling code.
-        pCue->m_pFile = g_pFileManager->RequestFile( fullpath );
+        pCue->m_pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fullpath );
 
         m_CuesStillLoading.AddTail( pCue );
     }
@@ -394,7 +396,7 @@ void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
     // TODO: fix
     SoundObject* pSoundObject = nullptr;
 #else
-    SoundObject* pSoundObject = g_pGameCore->GetSoundPlayer()->LoadSound( fullpath );
+    SoundObject* pSoundObject = m_pGameCore->GetSoundPlayer()->LoadSound( m_pGameCore->GetManagers()->GetFileManager(), fullpath );
 #endif
 
     if( pSoundObject )

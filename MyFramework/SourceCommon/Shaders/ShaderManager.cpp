@@ -9,6 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
+#include "../Core/GameCore.h"
 #include "../Events/EventManager.h"
 #include "../Events/EventTypeManager.h"
 #include "../Events/MyEvent.h"
@@ -46,21 +47,23 @@ uniform float u_Time;                                                           
 #endif                                                                                  \n\
 ";
 
-BaseShader::BaseShader(ShaderManager* pShaderManager)
+BaseShader::BaseShader(GameCore* pGameCore)
 {
-    Init_BaseShader( pShaderManager );
+    Init_BaseShader( pGameCore );
     Init( ShaderPass_Main );
 }
 
-BaseShader::BaseShader(ShaderManager* pShaderManager, ShaderPassTypes type)
+BaseShader::BaseShader(GameCore* pGameCore, ShaderPassTypes type)
 {
-    Init_BaseShader( pShaderManager );
+    Init_BaseShader( pGameCore );
     Init( type );
 }
 
-void BaseShader::Init_BaseShader(ShaderManager* pShaderManager)
+void BaseShader::Init_BaseShader(GameCore* pGameCore)
 {
     ClassnameSanityCheck();
+
+    m_pGameCore = pGameCore;
 
     m_Initialized = false;
     m_ShaderFailedToCompile = false;
@@ -82,6 +85,7 @@ void BaseShader::Init_BaseShader(ShaderManager* pShaderManager)
     m_pGSPredefinitions = nullptr;
     m_pFSPredefinitions = nullptr;
 
+    ShaderManager* pShaderManager = m_pGameCore->GetManagers()->GetShaderManager();
     pShaderManager->AddShader( this );
 }
 
@@ -178,17 +182,19 @@ void BaseShader::LoadFromFile(const char* filename)
 
 void BaseShader::LoadFromFile()
 {
+    FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
+
     MyAssert( m_pFile == nullptr );
 #if MYFW_WP8
     char tempfilename[MAX_PATH];
     sprintf_s( tempfilename, MAX_PATH, "%s.vertex.cso", m_pFilename );
-    m_pFile = RequestFile( tempfilename );
+    m_pFile = pFileManager->RequestFile( tempfilename );
     sprintf_s( tempfilename, MAX_PATH, "%s.pixel.cso", m_pFilename );
-    m_pFilePixelShader = RequestFile( tempfilename );
+    m_pFilePixelShader = pFileManager->RequestFile( tempfilename );
 #else
     char tempfilename[MAX_PATH];
     sprintf_s( tempfilename, MAX_PATH, "%s.glsl", m_pFilename );
-    MyFileObject* pFile = RequestFile( tempfilename );
+    MyFileObject* pFile = pFileManager->RequestFile( tempfilename );
     if( pFile->IsA( "MyFileShader" ) )
     {
         m_pFile = (MyFileObjectShader*)pFile;
@@ -196,7 +202,7 @@ void BaseShader::LoadFromFile()
     else
     {
         MyAssert( false );
-        g_pFileManager->FreeFile( pFile );
+        m_pGameCore->GetManagers()->GetFileManager()->FreeFile( pFile );
     }
 #endif
 }
@@ -450,9 +456,10 @@ bool BaseShader::LoadAndCompile(GLuint premadeProgramHandle)
         //LOGInfo( LOGTag, "Successfully created program from %s\n", m_pFile->GetFullPath() );
     }
 
-    MyEvent* pEvent = g_pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );
-    pEvent->AttachPointer( "Shader", this );
-    g_pEventManager->SendEventNow( pEvent );
+    EventManager* pEventManager = m_pGameCore->GetManagers()->GetEventManager();
+    MyEvent* pEvent = pEventManager->CreateNewEvent( Event_ShaderFinishedLoading );
+    pEvent->AttachPointer( pEventManager, "Shader", this );
+    pEventManager->SendEventNow( pEvent );
 
     return true;
 }
@@ -474,6 +481,11 @@ MyRE::BlendFactors BaseShader::GetShaderBlendFactorSrc()
 MyRE::BlendFactors BaseShader::GetShaderBlendFactorDest()
 {
     return m_BlendFactorDest;
+}
+
+ShaderManager::ShaderManager(GameCore* pGameCore)
+{
+    m_pGameCore = pGameCore;
 }
 
 void ShaderManager::AddShader(BaseShader* pShader)

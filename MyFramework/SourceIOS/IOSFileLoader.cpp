@@ -15,7 +15,7 @@
 FILE* IOS_fopen(const char* filepathnameext)
 {
     // TODO: uncomment next line
-    //return g_pFileManager->RequestFile( filename );
+    //return g_ pFileManager->RequestFile( filename );
 
     //LOGInfo( LOGTag, "OLD FASHIONED RequestFile %s\n", filepathnameext );
 

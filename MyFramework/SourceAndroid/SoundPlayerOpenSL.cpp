@@ -275,7 +275,7 @@ void SoundPlayer::ReallyPlaySound(int soundid)
 
 SoundObject* SoundPlayer::LoadSound(const char* fullpath)
 {
-    MyFileObject* pFile = g_pFileManager->RequestFile( fullpath );
+    MyFileObject* pFile = pFileManager->RequestFile( fullpath );
     return LoadSound( pFile );
 }
 

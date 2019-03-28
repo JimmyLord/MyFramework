@@ -119,12 +119,12 @@ void LeaderboardStorageScoreLoop::GetScoreBlock()
 
         if( offset == -1 )
         {
-            g_pGameServiceManager->m_pScoreLoop->RequestLeaderboardResults( boardid, -1, 50 );
+            pGameServiceManager->m_pScoreLoop->RequestLeaderboardResults( boardid, -1, 50 );
             m_Busy = true;
         }
         else
         {
-            g_pGameServiceManager->m_pScoreLoop->RequestLeaderboardResults( boardid, offset, 50 );
+            pGameServiceManager->m_pScoreLoop->RequestLeaderboardResults( boardid, offset, 50 );
             m_Busy = true;
         }
     }

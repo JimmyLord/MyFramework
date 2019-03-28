@@ -388,8 +388,8 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
 
         // Find nearest lights.
         MyLight* lights[5];
-        int numlights = g_pLightManager->FindNearestLights( LightType_Directional, 1, worldtransform.GetTranslation(), &lights[0] );
-        numlights += g_pLightManager->FindNearestLights( LightType_Point, 4, worldtransform.GetTranslation(), &lights[numlights] );
+        int numlights = m_pGameCore->GetManagers()->GetLightManager()->FindNearestLights( LightType_Directional, 1, worldtransform.GetTranslation(), &lights[0] );
+        numlights += m_pGameCore->GetManagers()->GetLightManager()->FindNearestLights( LightType_Point, 4, worldtransform.GetTranslation(), &lights[numlights] );
 
         if( pPreDrawCallbackFunc )
         {

@@ -14,6 +14,8 @@
 #include "../Meshes/MySubmesh.h"
 #include "../Shaders/VertexFormats.h"
 
+class BufferManager;
+
 class ParticleRenderer : public MySubmesh
 {
 protected:
@@ -45,7 +47,7 @@ public:
     ParticleRenderer(bool creatematerial);
     virtual ~ParticleRenderer();
 
-    virtual void AllocateVertices(unsigned int numpoints, const char* category);
+    virtual void AllocateVertices(unsigned int numpoints, const char* category, BufferManager* pBufferManager);
     virtual void RebuildParticleQuad(MyMatrix* matrot);
     virtual void Reset() { m_ParticleCount = 0; }
 

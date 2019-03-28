@@ -32,7 +32,7 @@ ParticleRendererInstanced::~ParticleRendererInstanced()
     SAFE_RELEASE( m_pInstancedAttributesBuffer );
 }
 
-void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const char* category)
+void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const char* category, BufferManager* pBufferManager)
 {
     LOGInfo( LOGTag, "ParticleRendererInstanced: Allocating %d Verts\n", maxPoints );
 
@@ -43,7 +43,7 @@ void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const c
     m_pParticleData = MyNew ParticleInstanceData[maxPoints];
     m_NumParticlesAllocated = maxPoints;
 
-    m_pInstancedAttributesBuffer = g_pBufferManager->CreateBuffer();
+    m_pInstancedAttributesBuffer = pBufferManager->CreateBuffer();
     m_pInstancedAttributesBuffer->InitializeBuffer( nullptr, 0, MyRE::BufferType_Vertex, MyRE::BufferUsage_StreamDraw,
                                                     false, 1, VertexFormat_Dynamic, nullptr, "Particles", "InstancedAttribs" );
 
@@ -56,7 +56,7 @@ void ParticleRendererInstanced::AllocateVertices(unsigned int maxPoints, const c
     pVerts[3].x = +halfsize; pVerts[3].y = -halfsize; pVerts[3].z = 0; pVerts[3].u = 1; pVerts[3].v = 1;
     m_NumVertsAllocated = numverts;
 
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
+    m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_XYZUV_RGBA)*numverts, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, true, 2, VertexFormat_XYZUV_RGBA, category, "Particles-Verts" );
 }
 
 void ParticleRendererInstanced::RebuildParticleQuad(MyMatrix* matrot)

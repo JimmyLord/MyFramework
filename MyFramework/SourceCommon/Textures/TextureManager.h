@@ -13,6 +13,7 @@
 #include "FBODefinition.h"
 
 class FBODefinition;
+class GameCore;
 class RefCount;
 class TextureDefinition;
 class TextureManager;
@@ -24,6 +25,8 @@ class TextureManager
 #endif
 
 protected:
+    GameCore* m_pGameCore;
+
     TCPPListHead<TextureDefinition*> m_LoadedTextures;
     TCPPListHead<TextureDefinition*> m_TexturesStillLoading;
     TCPPListHead<FBODefinition*> m_InitializedFBOs;
@@ -33,7 +36,7 @@ protected:
     TextureDefinition* m_pErrorTexture;
 
 public:
-    TextureManager();
+    TextureManager(GameCore* pGameCore);
     virtual ~TextureManager();
 
     void Tick();

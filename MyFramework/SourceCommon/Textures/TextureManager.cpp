@@ -11,12 +11,15 @@
 
 #include "TextureDefinition.h"
 #include "TextureManager.h"
+#include "../Core/GameCore.h"
 #include "../Helpers/FileManager.h"
 #include "../Helpers/MyFileObject.h"
 #include "../Renderers/BaseClasses/Renderer_Base.h"
 
-TextureManager::TextureManager()
+TextureManager::TextureManager(GameCore* pGameCore)
 {
+    m_pGameCore = pGameCore;
+
     m_MaxTexturesToLoadInOneTick = -1;
 
     m_pErrorTexture = nullptr;
@@ -39,7 +42,8 @@ TextureDefinition* TextureManager::CreateTexture(const char* textureFilename, My
         return pTextureDef;
     }
 
-    MyFileObject* pFile = g_pFileManager->RequestFile( textureFilename );
+    FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
+    MyFileObject* pFile = pFileManager->RequestFile( textureFilename );
     pTextureDef = CreateTexture( pFile, minFilter, magFilter, wrapS, wrapT );
     pFile->Release(); // CreateTexture() will add a ref.
 
@@ -246,8 +250,9 @@ void TextureManager::Tick()
             MyAssert( pTextureDef->m_Filename[0] != '\0' );
             if( pTextureDef->m_Filename[0] != '\0' )
             {
+                FileManager* pFileManager = m_pGameCore->GetManagers()->GetFileManager();
                 //LOGInfo( LOGTag, "Loading Texture: RequestFile\n" );
-                pTextureDef->m_pFile = RequestFile( pTextureDef->m_Filename );
+                pTextureDef->m_pFile = pFileManager->RequestFile( pTextureDef->m_Filename );
                 //LOGInfo( LOGTag, "Loading Texture: ~RequestFile\n" );
             }
         }
@@ -273,7 +278,9 @@ void TextureManager::Tick()
 
                 // By default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
                 if( pTextureDef->QueryFreeWhenCreated() )
-                    g_pFileManager->FreeFile( pTextureDef->m_pFile );
+                {
+                    pTextureDef->m_pFile->Release();
+                }
 
                 // The texture failed to load, but add it to the loaded texture list anyway.
                 m_LoadedTextures.MoveTail( pTextureDef );
@@ -287,7 +294,7 @@ void TextureManager::Tick()
 
             // By default, we don't free the texture from main ram, so if we free the opengl tex, we can "reload" quick.
             if( pTextureDef->QueryFreeWhenCreated() )
-                g_pFileManager->FreeFile( pTextureDef->m_pFile );
+                pTextureDef->m_pFile->Release();
 
             m_LoadedTextures.MoveTail( pTextureDef );
 

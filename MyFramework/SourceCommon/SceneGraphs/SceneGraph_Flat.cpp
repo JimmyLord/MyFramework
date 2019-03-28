@@ -172,8 +172,8 @@ void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOpt
 
         // Find nearest lights.
         MyLight* lights[5];
-        int numLights = g_pLightManager->FindNearestLights( LightType_Directional, 1, worldTransform.GetTranslation(), &lights[0] );
-        numLights += g_pLightManager->FindNearestLights( LightType_Point, 4, worldTransform.GetTranslation(), &lights[numLights] );
+        int numLights = m_pGameCore->GetManagers()->GetLightManager()->FindNearestLights( LightType_Directional, 1, worldTransform.GetTranslation(), &lights[0] );
+        numLights += m_pGameCore->GetManagers()->GetLightManager()->FindNearestLights( LightType_Point, 4, worldTransform.GetTranslation(), &lights[numLights] );
 
         if( pPreDrawCallbackFunc )
         {

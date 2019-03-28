@@ -52,6 +52,7 @@ public:
     MaterialManager(GameCore* pGameCore);
     virtual ~MaterialManager();
 
+    GameCore* GetGameCore() { return m_pGameCore; }
     TextureManager* GetTextureManager();
     ShaderGroupManager* GetShaderGroupManager();
 

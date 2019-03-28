@@ -12,6 +12,7 @@
 
 #include "../DataTypes/MyActivePool.h"
 
+class GameCore;
 class MyFileObject;
 class SoundCue;
 class SoundManager;
@@ -71,6 +72,8 @@ class SoundManager
     static const int MAX_REGISTERED_CALLBACKS = 1; // TODO: Fix this hardcodedness.
 
 protected:
+    GameCore* m_pGameCore;
+
     MySimplePool<SoundCue> m_SoundCuePool;
     TCPPListHead<SoundCue*> m_Cues;
     TCPPListHead<SoundCue*> m_CuesStillLoading;
@@ -82,7 +85,7 @@ protected:
     SoundCue* GetCueFromPool();
 
 public:
-    SoundManager();
+    SoundManager(GameCore* pGameCore);
     ~SoundManager();
 
     void Tick();

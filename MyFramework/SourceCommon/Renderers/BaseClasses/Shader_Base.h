@@ -28,8 +28,8 @@ private:
 protected:
 
 public:
-    Shader_Base(ShaderManager* pShaderManager);
-    Shader_Base(ShaderManager* pShaderManager, ShaderPassTypes type);
+    Shader_Base(GameCore* pGameCore);
+    Shader_Base(GameCore* pGameCore, ShaderPassTypes type);
     SetClassnameBase( "ShadBase" ); // Only first 8 characters count.
     void Init_Shader_Base();
     virtual ~Shader_Base();

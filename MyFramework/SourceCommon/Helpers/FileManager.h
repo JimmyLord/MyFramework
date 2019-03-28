@@ -16,11 +16,10 @@ class MyFileObject;
 class MySaveFileObject;
 class TextureDefinition;
 
-extern FileManager* g_pFileManager;
 MySaveFileObject* CreatePlatformSpecificSaveFile();
 
 #if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
-MyFileObject* RequestFile(const char* filename);
+//MyFileObject* RequestFile(const char* filename);
 #endif
 
 typedef void FileManager_OnFileUpdated_CallbackFunction(GameCore* pGameCore, MyFileObject* pFile);
@@ -91,7 +90,7 @@ protected:
     FileManager_Editor_OnFindAllReferences_CallbackFunction* m_pFindAllReferencesCallbackFunc;    
 
 public:
-    bool DoesFileExist(const char* fullpath);
+    static bool DoesFileExist(const char* fullpath);
     MyFileObject* LoadFileNow(const char* fullpath);
 
     void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction* pFunc);

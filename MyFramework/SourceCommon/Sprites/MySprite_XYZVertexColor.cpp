@@ -25,17 +25,17 @@ MySprite_XYZVertexColor::~MySprite_XYZVertexColor()
 {
 }
 
-void MySprite_XYZVertexColor::Create(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
+void MySprite_XYZVertexColor::Create(BufferManager* pBufferManager, const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
+    CreateSubsection( pBufferManager, category, spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite_XYZVertexColor::Create(float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
+void MySprite_XYZVertexColor::Create(BufferManager* pBufferManager, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, bool staticverts, bool facepositivez)
 {
-    CreateSubsection( "Default", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
+    CreateSubsection( pBufferManager, "Default", spritew, spriteh, startu, endu, startv, endv, justificationflags, 0, 1, 0, 1, staticverts, facepositivez );
 }
 
-void MySprite_XYZVertexColor::CreateSubsection(const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts, bool facepositivez)
+void MySprite_XYZVertexColor::CreateSubsection(BufferManager* pBufferManager, const char* category, float spritew, float spriteh, float startu, float endu, float startv, float endv, unsigned char justificationflags, float spx, float epx, float spy, float epy, bool staticverts, bool facepositivez)
 {
     MyAssert( m_SpriteIsStatic == false );
 
@@ -47,9 +47,9 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
 
         Vertex_XYZUV_RGBA* pVerts = MyNew Vertex_XYZUV_RGBA[4];
         if( staticverts )
-            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-StaticVerts" );
+            m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_StaticDraw, false, 1, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-StaticVerts" );
         else
-            m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-Verts" );
+            m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, 4*sizeof(Vertex_XYZUV_RGBA), MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_XYZUV_RGBA, category, "MySprite_XYZVertexColor-Verts" );
     }
 
     if( m_pIndexBuffer == 0 )
@@ -63,7 +63,7 @@ void MySprite_XYZVertexColor::CreateSubsection(const char* category, float sprit
         pIndices[4] = g_SpriteVertexIndices[4];
         pIndices[5] = g_SpriteVertexIndices[5];
 
-        m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
+        m_pIndexBuffer = pBufferManager->CreateBuffer( pIndices, 6*sizeof(GLushort), MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, category, "MySprite_XYZVertexColor-Indices" );
     }
 
     // Fill vertex buffer with data and mark it dirty.

@@ -43,7 +43,7 @@ void SpriteBatch::SetMaterial(MaterialDefinition* pMaterial)
     m_pMaterial = pMaterial;
 }
 
-void SpriteBatch::AllocateVertices(int numsprites)
+void SpriteBatch::AllocateVertices(BufferManager* pBufferManager, int numsprites)
 {
     MyAssert( m_pVertexBuffer == 0 );
 
@@ -56,7 +56,7 @@ void SpriteBatch::AllocateVertices(int numsprites)
     MyAssert( pIndices );
 
     // allocate 2 empty buffers, will be filled by subbufferdata elsewhere.
-    m_pVertexBuffer = g_pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*numsprites*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, "SpriteBatch", "Verts" );
+    m_pVertexBuffer = pBufferManager->CreateBuffer( pVerts, sizeof(Vertex_Sprite)*numsprites*4, MyRE::BufferType_Vertex, MyRE::BufferUsage_DynamicDraw, false, 2, VertexFormat_Sprite, "SpriteBatch", "Verts" );
 
     for( GLushort i=0; i<numsprites; i++ )
     {
@@ -68,7 +68,7 @@ void SpriteBatch::AllocateVertices(int numsprites)
         pIndices[i*6 + 5] = i*4 + g_SpriteVertexIndices[5];
     }
 
-    m_pIndexBuffer = g_pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "SpriteBatch", "Indices" );
+    m_pIndexBuffer = pBufferManager->CreateBuffer( pIndices, sizeof(GLushort)*numsprites*6, MyRE::BufferType_Index, MyRE::BufferUsage_StaticDraw, true, 1, VertexFormat_None, "SpriteBatch", "Indices" );
 }
 
 void SpriteBatch::AddSprite(MyMatrix* pMatWorld, MySprite* pSprite)

@@ -41,7 +41,7 @@ protected:
     virtual void BufferSubData(Buffer_Base* pBuffer, GLuint bufferID, uint32 offset, uint32 sizeInBytes, void* pData) override;
 
 public:
-    Renderer_OpenGL();
+    Renderer_OpenGL(GameCore* pGameCore);
     virtual ~Renderer_OpenGL();
 
     // Getters.

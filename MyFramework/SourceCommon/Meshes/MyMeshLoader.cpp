@@ -14,6 +14,7 @@
 #include "MyAnimation.h"
 #include "MyMesh.h"
 #include "MySubmesh.h"
+#include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../JSON/cJSONHelpers.h"
 #include "../Shaders/VertexFormatManager.h"
@@ -22,6 +23,9 @@
 
 void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, float scale)
 {
+    MeshManager* pMeshManager = m_pGameCore->GetManagers()->GetMeshManager();
+    MaterialManager* pMaterialManager = pMeshManager->GetMaterialManager();
+
     MyAssert( pSubmeshList );
     MyAssert( pSubmeshList->Length() == 0 );
 
@@ -158,7 +162,6 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
                 cJSON* jMaterial = cJSON_GetObjectItem( jMesh, "Material" );
                 if( jMaterial && jMaterial->valuestring )
                 {
-                    MaterialManager* pMaterialManager = m_pMeshManager->GetMaterialManager();
                     MaterialDefinition* pMaterial = pMaterialManager->LoadMaterial( jMaterial->valuestring );
                     if( pMaterial )
                         pSubmesh->SetMaterial( pMaterial );
@@ -183,7 +186,7 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
             cJSONExt_GetBool( jMesh, "VF-color", &hasColor );
             cJSONExt_GetUnsignedInt( jMesh, "VF-mostweights", &mostBonesInfluences );
 
-            VertexFormat_Dynamic_Desc* pDesc = m_pMeshManager->GetVertexFormatManager()->GetDynamicVertexFormat( numUVChannels, hasNormals, hasTangents, hasBitangents, hasColor, mostBonesInfluences );
+            VertexFormat_Dynamic_Desc* pDesc = pMeshManager->GetVertexFormatManager()->GetDynamicVertexFormat( numUVChannels, hasNormals, hasTangents, hasBitangents, hasColor, mostBonesInfluences );
 
             // read this mesh's raw bytes, verts/indices/etc.
             if( rawByteOffset != 0 )
@@ -243,12 +246,14 @@ void MyMesh::LoadMyMesh(const char* pBuffer, MyList<MySubmesh*>* pSubmeshList, f
                 // Give verts and indices pointers to BufferDefinition objects, which will handle the delete[]'s.
                 if( *ppVBO == nullptr )
                 {
-                    *ppVBO = g_pBufferManager->CreateBuffer();
+                    BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+                    *ppVBO = pBufferManager->CreateBuffer();
                 }
 
                 if( *ppIBO == nullptr )
                 {
-                    *ppIBO = g_pBufferManager->CreateBuffer();
+                    BufferManager* pBufferManager = m_pGameCore->GetManagers()->GetBufferManager();
+                    *ppIBO = pBufferManager->CreateBuffer();
                 }
 
                 // The buffer will delete the allocated arrays of verts/indices.

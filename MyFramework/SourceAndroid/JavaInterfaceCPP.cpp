@@ -253,7 +253,7 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
 void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const char* dataSignature,
                              const char* sku, const char* payload)
 {
-    MyEvent* pIAPEvent = g_pEventManager->CreateNewEvent( Event_IAP );
+    MyEvent* pIAPEvent = pEventManager->CreateNewEvent( Event_IAP );
 
     if( pIAPEvent )
     {
@@ -267,6 +267,6 @@ void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const c
         pIAPEvent->AttachPointer(       "payload",      (void*)payload      );
 
         LOGInfo( LOGTag, "Sending IAPEvent\n" );
-        g_pEventManager->SendEventNow( pIAPEvent );
+        pEventManager->SendEventNow( pIAPEvent );
     }
 }

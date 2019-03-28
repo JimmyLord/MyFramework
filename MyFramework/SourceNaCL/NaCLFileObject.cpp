@@ -190,10 +190,10 @@ void NaCLFileObject::AppendDataBytes(const char* buffer, int32 numbytes)
     m_pFile->m_BytesRead += numbytes;
 }
 
-MyFileObject* RequestFile(const char* filename)
-{
-    return g_pFileManager->RequestFile( filename );
-}
+//MyFileObject* RequestFile(const char* filename)
+//{
+//    return g_ pFileManager->RequestFile( filename );
+//}
 
 char* LoadFile(const char* filename, int* length)
 {

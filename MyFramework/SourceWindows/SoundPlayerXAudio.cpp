@@ -242,9 +242,9 @@ void SoundPlayer::StopMusic()
 //    return 0;
 //}
 
-SoundObject* SoundPlayer::LoadSound(const char* fullpath)
+SoundObject* SoundPlayer::LoadSound(FileManager* pFileManager, const char* fullpath)
 {
-    MyFileObject* pFile = g_pFileManager->RequestFile( fullpath );
+    MyFileObject* pFile = pFileManager->RequestFile( fullpath );
     SoundObject* pSoundObject = LoadSound( pFile );
     pFile->Release();
 

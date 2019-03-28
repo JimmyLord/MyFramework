@@ -11,7 +11,6 @@
 #define __MyTweener_H__
 
 class MyTweenPool;
-extern MyTweenPool* g_pTweenPool;
 
 // http://rechneronline.de/function-graphs/
 // Sine Ease in, out, in/out

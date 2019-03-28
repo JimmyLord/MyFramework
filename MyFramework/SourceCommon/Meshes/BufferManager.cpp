@@ -14,8 +14,6 @@
 #include "../Helpers/FileManager.h"
 #include "../Renderers/OpenGL/Buffer_OpenGL.h"
 
-BufferManager* g_pBufferManager = nullptr;
-
 BufferDefinition::BufferDefinition()
 {
     m_pBuffer = MyNew Buffer_OpenGL();

@@ -60,6 +60,8 @@ class MyFileObject : public TCPPListNode<MyFileObject*>, public RefCount
     static const int CALLBACK_POOL_SIZE = 1000;
 
 protected:
+    FileManager* m_pFileManager;
+
     TCPPListHead<FileFinishedLoadingCallbackStruct*> m_FileFinishedLoadingCallbackList;
 
     char* m_FullPath;
@@ -81,7 +83,7 @@ protected:
 #endif
 
 public:
-    MyFileObject();
+    MyFileObject(FileManager* pFileManager);
     virtual ~MyFileObject();
     SetClassnameBase( "MyFileObject" ); // only first 8 character count.
 
@@ -121,7 +123,7 @@ protected:
 
     void Tick();
 
-    virtual void UnloadContents(FileManager* pFileManager);
+    virtual void UnloadContents();
 
     bool IsNewVersionAvailable();
 
@@ -148,7 +150,7 @@ public:
     void OSLaunchFile(bool createfileifdoesntexist);
     void OSOpenContainingFolder();
 
-    void OnPopupClick(MyFileObject* pFileObject, int id);
+    void OnPopupClick(FileManager* pFileManager, MyFileObject* pFileObject, int id);
 
 #if MYFW_USING_WX
     static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
