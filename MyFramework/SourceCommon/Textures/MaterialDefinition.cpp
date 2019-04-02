@@ -318,6 +318,28 @@ void MaterialDefinition::ImportFromFile()
     m_UnsavedChanges = false;
 }
 
+void MaterialDefinition::ImportExposedUniformValuesFromFile()
+{
+    MyAssert( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success );
+    if( m_pFile == nullptr || m_pFile->GetFileLoadStatus() != FileLoadStatus_Success )
+        return;
+
+    cJSON* jRoot = cJSON_Parse( m_pFile->GetBuffer() );
+    if( jRoot == nullptr )
+        return;
+
+    cJSON* jMaterial = cJSON_GetObjectItem( jRoot, "Material" );
+    if( jMaterial )
+    {
+        if( m_pShaderGroup && m_pShaderGroup->GetFile() && m_pShaderGroup->GetFile()->IsFinishedLoading() )
+        {
+            ImportExposedUniformValues( jMaterial );
+        }
+    }
+
+    cJSON_Delete( jRoot );
+}
+
 void MaterialDefinition::MoveAssociatedFilesToFrontOfFileList()
 {
     FileManager* pFileManager = m_pMaterialManager->GetGameCore()->GetManagers()->GetFileManager();
@@ -438,9 +460,10 @@ void MaterialDefinition::SetShader(ShaderGroup* pShader)
 
             InitializeExposedUniformValues( false );
 
+            // Reload and re-set exposed uniform values for the new shader.
             if( m_pFile && m_pFile->GetFileLoadStatus() == FileLoadStatus_Success )
             {
-                ImportFromFile();
+                ImportExposedUniformValuesFromFile();
             }
         }
     }

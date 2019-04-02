@@ -42,6 +42,10 @@ FBODefinition::FBODefinition()
     m_DepthIsTexture = false;
 
     m_LastFrameBufferID = -1;
+
+#if MYFW_EDITOR
+    m_ShowInMemoryPanel = true;
+#endif
 }
 
 FBODefinition::~FBODefinition()

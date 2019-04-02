@@ -101,6 +101,7 @@ public:
     void Lua_Release() { Release(); }
 
     void ImportFromFile();
+    void ImportExposedUniformValuesFromFile();
     void MoveAssociatedFilesToFrontOfFileList();
 
     const char* GetName() { return m_Name; }

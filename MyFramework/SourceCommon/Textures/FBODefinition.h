@@ -86,6 +86,12 @@ public:
 
     unsigned int GetTextureWidth() { return m_TextureWidth; }
     unsigned int GetTextureHeight() { return m_TextureHeight; }
+
+public:
+#if MYFW_EDITOR
+    bool m_ShowInMemoryPanel;
+    void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
+#endif //MYFW_EDITOR
 };
 
 #endif //__FBODefinition_H__

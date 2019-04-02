@@ -30,16 +30,20 @@ ResourceManagers::ResourceManagers()
     m_pTextureManager = nullptr;
     m_pVertexFormatManager = nullptr;
 
-    // Other globals to eliminate.
-    // g_pComponentSystemManager                        // 312
-    // g_pGameCore                                      // 407
-    // g_pEngineCore                                    // 375
-    // g_pMessageLogCallbackFunction                    // 19
+    // Globals to eliminate.
     // g_pMyFileObject_FileFinishedLoadingCallbackPool  // 7
     // g_pJobManager                                    // 10
     // g_pLuaGameState                                  // 27
     // g_pBulletWorld                                   // 28
     // g_pEditorPrefs                                   // 63
+    // //ImGui::SetCurrentContext( m_pImGuiContext )    // 2
+
+    // Globals worked around, but should eliminate.
+    // g_pGlobalLog                                     // 6
+    // g_pMessageLogCallbackFunction                    // 19
+    // g_pComponentSystemManager                        // 307
+    // g_pGameCore                                      // 407
+    // g_pEngineCore                                    // 379
 
     // Globals okay in the short term.
     // g_pIAPManager                                    // 14
@@ -51,11 +55,9 @@ ResourceManagers::ResourceManagers()
 
     // Other globals to look at.
     // g_pComponentTransform_TransformChangedCallbackPool
-    // g_pGlobalLog
     // g_pComponentTypeManager
     // g_pVisibilityLayerStrings
     // g_pEngineMainFrame
-    // g_pEngineFileManager
     // g_pRTQGlobals
     // g_pScreenManager
     // g_pLanguageTable
