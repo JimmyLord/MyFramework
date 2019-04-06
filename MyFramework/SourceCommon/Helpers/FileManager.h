@@ -49,6 +49,8 @@ protected:
     TCPPListHead<MyFileObject*> m_FilesLoaded;
     TCPPListHead<MyFileObject*> m_FilesStillLoading;
 
+    char m_WorkingDirectory[MAX_PATH];
+
 protected:
 #if USE_PTHREAD
     FileIOThreadObject m_Threads[1]; // TODO: there should be one of these for each file system in use.
@@ -67,6 +69,8 @@ public:
     //void FreeAllFiles();
 
     unsigned int CalculateTotalMemoryUsedByFiles();
+
+    const char* GetWorkingDirectory() { return m_WorkingDirectory; }
 
     MyFileObject* CreateFileObject(const char* fullpath);
     virtual MyFileObject* RequestFile(const char* filename); // Will add a ref.

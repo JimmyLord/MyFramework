@@ -22,6 +22,12 @@ FileManager::FileManager(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;
 
+#if MYFW_WINDOWS
+    GetCurrentDirectory( MAX_PATH, m_WorkingDirectory );
+#else
+    m_WorkingDirectory[0] = '\0';
+#endif
+
 #if USE_PTHREAD && !MYFW_NACL
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
