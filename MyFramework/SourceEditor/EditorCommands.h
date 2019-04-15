@@ -33,6 +33,7 @@ public:
         m_LinkedToPreviousCommandOnUndoStack = false;
         m_LinkedToNextCommandOnRedoStack = false;
         m_FrameExecuted = 0;
+        m_Name = nullptr;
     }
     virtual ~EditorCommand() {}
     virtual const char* GetName() { return m_Name; }

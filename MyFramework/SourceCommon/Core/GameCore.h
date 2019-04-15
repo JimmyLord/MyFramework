@@ -48,7 +48,7 @@ extern const char* g_GameCoreButtonActionStrings[GCBA_NumActions];
 extern const char* g_GameCoreButtonActionLuaStrings[GCBA_NumActions];
 
 enum GameCoreButtonIDs
-{ // If changed here, change in LuaGameState.cpp and snippets.json as well.
+{ // If changed here, change in LuaGameState.cpp and snippets.json (BUTTONID_) as well.
     GCBI_Back,
     GCBI_Left,
     GCBI_Right,

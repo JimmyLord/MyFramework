@@ -29,6 +29,7 @@ public:
     unsigned int GetUndoStackSize() { return (unsigned int)m_UndoStack.size(); }
     unsigned int GetRedoStackSize() { return (unsigned int)m_RedoStack.size(); }
     EditorCommand* GetUndoCommandAtIndex(unsigned int index) { return m_UndoStack[index]; }
+    EditorCommand* GetRedoCommandAtIndex(unsigned int index) { return m_RedoStack[index]; }
 
     void ClearStacks();
     void ClearUndoStack(unsigned int numToLeave = 0);
