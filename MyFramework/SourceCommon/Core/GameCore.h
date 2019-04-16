@@ -187,7 +187,7 @@ protected:
     CommandStack* m_pCommandStack;
 
 public:
-    void SetCommandStack(CommandStack* pCommandStack) { MyAssert( m_pCommandStack == nullptr ); m_pCommandStack = pCommandStack; }
+    void SetCommandStack(CommandStack* pCommandStack) { MyAssert( pCommandStack == nullptr || m_pCommandStack == nullptr ); m_pCommandStack = pCommandStack; }
     CommandStack* GetCommandStack() { return m_pCommandStack; }
 #endif
 };
