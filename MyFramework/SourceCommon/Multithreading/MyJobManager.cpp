@@ -12,19 +12,23 @@
 #include "MyJobManager.h"
 #include "MyThread.h"
 
-MyJobManager* g_pJobManager = nullptr;
-
 #if USE_PTHREAD
 class MyJobThread : public MyThread
 {
 protected:
+    MyJobManager* m_pJobManager;
+
 public:
+    MyJobThread(MyJobManager* pJobManager) : m_pJobManager(pJobManager)
+    {
+    }
+
     virtual void* Run()
     {
         while( true )
         {
             // Ask for a job, block while waiting for one to come in.
-            MyJob* pJob = g_pJobManager->RemoveJob( m_ThreadID );
+            MyJob* pJob = m_pJobManager->RemoveJob( m_ThreadID );
 
             // If the job given by the manager is 0, then exit the thread.
             if( pJob == nullptr )
@@ -49,14 +53,12 @@ public:
 #if USE_PTHREAD
 MyJobManager::MyJobManager()
 {
-    g_pJobManager = this;
-
     pthread_mutex_init( &m_JobListMutex, nullptr );
     pthread_cond_init( &m_JobAvailableConditional, nullptr );
 
     for( int i=0; i<MAX_THREADS; i++ )
     {
-        m_pThreads[i] = MyNew MyJobThread;
+        m_pThreads[i] = MyNew MyJobThread( this );
         m_pThreads[i]->Start();
     }
 
@@ -141,8 +143,6 @@ MyJob* MyJobManager::RemoveJob(pthread_t threadID)
 #else //USE_PTHREAD
 MyJobManager::MyJobManager()
 {
-    g_pJobManager = this;
-
     m_ShuttingDown = false;
 }
 

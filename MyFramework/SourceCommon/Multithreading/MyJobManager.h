@@ -12,8 +12,6 @@
 class MyJobManager;
 class MyThread;
 
-extern MyJobManager* g_pJobManager;
-
 class MyJob : public TCPPListNode<MyJob*>
 {
 protected:

@@ -122,7 +122,7 @@ GameCore::~GameCore()
 {
     LOGInfo( LOGTag, "GameCore::~GameCore()\n" );
 
-    SAFE_DELETE( m_Managers.m_pMyJobManager );
+    SAFE_DELETE( m_Managers.m_pJobManager );
     SAFE_DELETE( m_Managers.m_pGamepadManager );
 
     if( m_Managers.m_pFontManager )
@@ -201,7 +201,7 @@ void GameCore::InitializeManagers()
         m_Managers.m_pGamepadManager->Initialize();
 
     m_Managers.m_pSoundManager = MyNew SoundManager( this );
-    m_Managers.m_pMyJobManager = MyNew MyJobManager;
+    m_Managers.m_pJobManager = MyNew MyJobManager;
 }
 
 void GameCore::OneTimeInit()

@@ -23,7 +23,7 @@ ResourceManagers::ResourceManagers()
     m_pLightManager = nullptr;
     m_pMeshManager = nullptr;
     m_pMaterialManager = nullptr;
-    m_pMyJobManager = nullptr;
+    m_pJobManager = nullptr;
     m_pShaderGroupManager = nullptr;
     m_pShaderManager = nullptr;
     m_pSoundManager = nullptr;
@@ -32,10 +32,9 @@ ResourceManagers::ResourceManagers()
 
     // Globals to eliminate.
     // g_pMyFileObject_FileFinishedLoadingCallbackPool  // 7
-    // g_pJobManager                                    // 10
-    // g_pLuaGameState                                  // 27
+    // g_pLuaGameState                                  // 25
     // g_pBulletWorld                                   // 28
-    // g_pEditorPrefs                                   // 63
+    // g_pEditorPrefs                                   // 68
     // //ImGui::SetCurrentContext( m_pImGuiContext )    // 2
 
     // Globals worked around, but should eliminate.

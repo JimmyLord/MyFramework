@@ -43,7 +43,7 @@ protected:
     LightManager*           m_pLightManager;
     MeshManager*            m_pMeshManager;
     MaterialManager*        m_pMaterialManager;
-    MyJobManager*           m_pMyJobManager;
+    MyJobManager*           m_pJobManager;
     ShaderGroupManager*     m_pShaderGroupManager;
     ShaderManager*          m_pShaderManager;
     SoundManager*           m_pSoundManager;
@@ -63,7 +63,7 @@ public:
     LightManager*           GetLightManager()           { return m_pLightManager;        }
     MaterialManager*        GetMaterialManager()        { return m_pMaterialManager;     }
     MeshManager*            GetMeshManager()            { return m_pMeshManager;         }
-    MyJobManager*           GetMyJobManager()           { return m_pMyJobManager;        }
+    MyJobManager*           GetJobManager()             { return m_pJobManager;          }
     ShaderGroupManager*     GetShaderGroupManager()     { return m_pShaderGroupManager;  }
     ShaderManager*          GetShaderManager()          { return m_pShaderManager;       }
     SoundManager*           GetSoundManager()           { return m_pSoundManager;        }
