@@ -9,8 +9,8 @@
 
 #include "MyFrameworkPCH.h"
 
-#include "SceneGraph_Base.h"
-#include "SceneGraph_Flat.h"
+#include "RenderGraph_Base.h"
+#include "RenderGraph_Flat.h"
 #include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyActivePool.h"
@@ -19,17 +19,17 @@
 #include "../Meshes/MySubmesh.h"
 #include "../Textures/MaterialManager.h"
 
-SceneGraph_Flat::SceneGraph_Flat(GameCore* pGameCore)
-: SceneGraph_Base( pGameCore )
+RenderGraph_Flat::RenderGraph_Flat(GameCore* pGameCore)
+: RenderGraph_Base( pGameCore )
 {
     m_NumRenderables = 0;
 }
 
-SceneGraph_Flat::~SceneGraph_Flat()
+RenderGraph_Flat::~RenderGraph_Flat()
 {
     while( m_Renderables.GetHead() )
     {
-        m_pObjectPool.ReturnObjectToPool( (SceneGraphObject*)m_Renderables.RemHead() );
+        m_pObjectPool.ReturnObjectToPool( (RenderGraphObject*)m_Renderables.RemHead() );
 
         m_NumRenderables--;
     }
@@ -37,13 +37,13 @@ SceneGraph_Flat::~SceneGraph_Flat()
     MyAssert( m_NumRenderables == 0 );
 }
 
-SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+RenderGraphObject* RenderGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, RenderGraphFlags flags, unsigned int layers, void* pUserData)
 {
-    //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
+    //LOGInfo( "RenderGraph", "Add object %d\n", pUserData );
 
     MyAssert( pTransform != nullptr );
 
-    SceneGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
+    RenderGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
 
     if( pObject )
     {
@@ -74,9 +74,9 @@ SceneGraphObject* SceneGraph_Flat::AddObjectWithFlagOverride(MyMatrix* pTransfor
     return pObject;
 }
 
-void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
+void RenderGraph_Flat::RemoveObject(RenderGraphObject* pObject)
 {
-    //LOGInfo( "SceneGraph", "Remove object %d\n", pObject->m_pUserData );
+    //LOGInfo( "RenderGraph", "Remove object %d\n", pObject->m_pUserData );
 
     MyAssert( pObject != nullptr );
 
@@ -87,18 +87,18 @@ void SceneGraph_Flat::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Flat::ObjectMoved(SceneGraphObject* pObject)
+void RenderGraph_Flat::ObjectMoved(RenderGraphObject* pObject)
 {
 }
 
-void SceneGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
+void RenderGraph_Flat::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
 {
     MyAssert( pMatProj != nullptr );
     MyAssert( pMatView != nullptr );
 
     MyMatrix matViewProj = *pMatProj * *pMatView;
 
-    for( SceneGraphObject* pObject = m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
+    for( RenderGraphObject* pObject = m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
     {
         // Skip object if it doesn't match transparency/emissive settings, isn't on the right layer, etc.
         if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )

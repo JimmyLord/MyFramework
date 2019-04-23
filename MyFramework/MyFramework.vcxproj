@@ -1598,9 +1598,9 @@
     <ClCompile Include="SourceCommon\Renderers\Old\OpenGLWrapper.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.cpp" />
     <ClCompile Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.cpp" />
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp" />
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp" />
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp" />
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Base.cpp" />
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Flat.cpp" />
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Octree.cpp" />
     <ClCompile Include="SourceCommon\Shaders\MyFileObjectShader.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderGroup.cpp" />
     <ClCompile Include="SourceCommon\Shaders\ShaderManager.cpp" />
@@ -2815,9 +2815,9 @@
     <ClInclude Include="SourceCommon\Renderers\Old\OpenGLWrapper.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Renderer_OpenGL.h" />
     <ClInclude Include="SourceCommon\Renderers\OpenGL\Texture_OpenGL.h" />
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Base.h" />
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h" />
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h" />
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Base.h" />
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Flat.h" />
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Octree.h" />
     <ClInclude Include="SourceCommon\Shaders\MyFileObjectShader.h" />
     <ClInclude Include="SourceCommon\Shaders\ListOfShaders.h" />
     <ClInclude Include="SourceCommon\Shaders\ShaderGroup.h" />

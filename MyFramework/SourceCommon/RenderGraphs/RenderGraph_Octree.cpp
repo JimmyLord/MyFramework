@@ -9,7 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
-#include "SceneGraph_Octree.h"
+#include "RenderGraph_Octree.h"
 #include "../Core/GameCore.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyActivePool.h"
@@ -20,7 +20,7 @@
 
 OctreeNode::OctreeNode()
 {
-    m_pSceneGraph = nullptr;
+    m_pRenderGraph = nullptr;
 
     for( int i=0; i<8; i++ )
     {
@@ -31,7 +31,7 @@ OctreeNode::OctreeNode()
 
 OctreeNode::~OctreeNode()
 {
-    MyAssert( m_pSceneGraph == nullptr );
+    MyAssert( m_pRenderGraph == nullptr );
     MyAssert( m_pParentNode == nullptr );    
 }
 
@@ -39,7 +39,7 @@ void OctreeNode::Cleanup()
 {
     while( m_Renderables.GetHead() )
     {
-        m_pSceneGraph->m_pObjectPool.ReturnObjectToPool( (SceneGraphObject*)m_Renderables.RemHead() );
+        m_pRenderGraph->m_pObjectPool.ReturnObjectToPool( (RenderGraphObject*)m_Renderables.RemHead() );
     }
 
     for( int i=0; i<8; i++ )
@@ -51,13 +51,13 @@ void OctreeNode::Cleanup()
         }
     }
 
-    m_pSceneGraph->m_OctreeNodePool.ReturnObjectToPool( this );
-    m_pSceneGraph = nullptr;
+    m_pRenderGraph->m_OctreeNodePool.ReturnObjectToPool( this );
+    m_pRenderGraph = nullptr;
     m_pParentNode = nullptr;
 }
 
-SceneGraph_Octree::SceneGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
-: SceneGraph_Base( pGameCore )
+RenderGraph_Octree::RenderGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+: RenderGraph_Base( pGameCore )
 {
     m_MaxDepth = treeDepth;
 
@@ -79,11 +79,11 @@ SceneGraph_Octree::SceneGraph_Octree(GameCore* pGameCore, uint32 treeDepth, floa
     Vector3 center( minX + halfSize.x, minY + halfSize.y, minZ + halfSize.z );
 
     m_pRootNode->m_Bounds.Set( center, halfSize );
-    m_pRootNode->m_pSceneGraph = this;
+    m_pRootNode->m_pRenderGraph = this;
     m_pRootNode->m_NodeDepth = 0;
 }
 
-SceneGraph_Octree::~SceneGraph_Octree()
+RenderGraph_Octree::~RenderGraph_Octree()
 {
     m_pRootNode->Cleanup();
 }
@@ -170,16 +170,16 @@ bool FitsInFrustum(MyAABounds* pBounds, MyMatrix* pMatProj, MyMatrix* pMatView, 
     return true;
 }
 
-void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
+void RenderGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
 {
     if( pOctreeNode->m_NodeDepth >= m_MaxDepth - 1 )
         return;
 
     // Move all objects in pOctreeNode node down as far as they can go.
-    SceneGraphObject* pNextSceneGraphObject;
-    for( SceneGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pNextSceneGraphObject )
+    RenderGraphObject* pNextRenderGraphObject;
+    for( RenderGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pNextRenderGraphObject )
     {
-        pNextSceneGraphObject = pObject->GetNext();
+        pNextRenderGraphObject = pObject->GetNext();
 
         if( pObject->m_pMesh == nullptr )
             continue;
@@ -218,7 +218,7 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
                     pOctreeNode->m_pChildNodes[i] = m_OctreeNodePool.GetObjectFromPool();
                     pOctreeNode->m_pChildNodes[i]->m_Bounds = childBounds;
                     pOctreeNode->m_pChildNodes[i]->m_pParentNode = pOctreeNode;
-                    pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = this;
+                    pOctreeNode->m_pChildNodes[i]->m_pRenderGraph = this;
                     pOctreeNode->m_pChildNodes[i]->m_NodeDepth = pOctreeNode->m_NodeDepth + 1;
                 }
 
@@ -237,15 +237,15 @@ void SceneGraph_Octree::UpdateTree(OctreeNode* pOctreeNode)
     }
 }
 
-void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
+void RenderGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
 {
     // Loop through the 8 child nodes.
     for( int i=0; i<8; i++ )
     {
         if( pOctreeNode->m_pChildNodes[i] != nullptr )
         {
-            // Move all SceneGraphObjects from each child node onto the tail of the root node.
-            TCPPListHead<SceneGraphObject*>* childObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
+            // Move all RenderGraphObjects from each child node onto the tail of the root node.
+            TCPPListHead<RenderGraphObject*>* childObjectList = &pOctreeNode->m_pChildNodes[i]->m_Renderables;
             if( childObjectList->GetHead() )
             {
                 m_pRootNode->m_Renderables.BulkMoveTail( childObjectList->GetHead(), childObjectList->GetTail() );
@@ -256,14 +256,14 @@ void SceneGraph_Octree::CollapseChildNodes(OctreeNode* pOctreeNode)
 
             // Return this child to the node pool.
             m_OctreeNodePool.ReturnObjectToPool( pOctreeNode->m_pChildNodes[i] );
-            pOctreeNode->m_pChildNodes[i]->m_pSceneGraph = nullptr;
+            pOctreeNode->m_pChildNodes[i]->m_pRenderGraph = nullptr;
             pOctreeNode->m_pChildNodes[i]->m_pParentNode = nullptr;
             pOctreeNode->m_pChildNodes[i] = nullptr;
         }
     }
 }
 
-void SceneGraph_Octree::Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
+void RenderGraph_Octree::Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
 {
     MyAABounds newBounds;
     Vector3 halfSize( (maxX - minX)/2.0f, (maxY - minY)/2.0f, (maxZ - minZ)/2.0f );
@@ -283,13 +283,13 @@ void SceneGraph_Octree::Resize(float minX, float minY, float minZ, float maxX, f
     }
 }
 
-SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData)
+RenderGraphObject* RenderGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, RenderGraphFlags flags, unsigned int layers, void* pUserData)
 {
-    //LOGInfo( "SceneGraph", "Add object %d\n", pUserData );
+    //LOGInfo( "RenderGraph", "Add object %d\n", pUserData );
 
     MyAssert( pTransform != nullptr );
 
-    SceneGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
+    RenderGraphObject* pObject = m_pObjectPool.GetObjectFromPool();
 
     if( pObject )
     {
@@ -322,9 +322,9 @@ SceneGraphObject* SceneGraph_Octree::AddObjectWithFlagOverride(MyMatrix* pTransf
     return pObject;
 }
 
-void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
+void RenderGraph_Octree::RemoveObject(RenderGraphObject* pObject)
 {
-    //LOGInfo( "SceneGraph", "Remove object %d\n", pObject->m_pUserData );
+    //LOGInfo( "RenderGraph", "Remove object %d\n", pObject->m_pUserData );
 
     MyAssert( pObject != nullptr );
 
@@ -335,14 +335,14 @@ void SceneGraph_Octree::RemoveObject(SceneGraphObject* pObject)
     m_pObjectPool.ReturnObjectToPool( pObject );
 }
 
-void SceneGraph_Octree::ObjectMoved(SceneGraphObject* pObject)
+void RenderGraph_Octree::ObjectMoved(RenderGraphObject* pObject)
 {
     // Move any object that moves to the root of the octree.
     // TODO: Better.
     m_pRootNode->m_Renderables.MoveTail( pObject );
 }
 
-void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
+void RenderGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
 {
     if( m_Dirty )
     {
@@ -352,7 +352,7 @@ void SceneGraph_Octree::Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawO
     DrawNode( m_pRootNode, drawOpaques, emissiveDrawOption, layersToRender, camPos, camRot, pMatProj, pMatView, shadowlightVP, pShadowTex, pShaderOverride, pPreDrawCallbackFunc );
 }
 
-void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
+void RenderGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc)
 {
     // Draw all scene graph objects contained in this node.
 
@@ -360,13 +360,13 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
     if( pOctreeNode != m_pRootNode && FitsInFrustum( &pOctreeNode->m_Bounds, pMatProj, pMatView, nullptr ) == false )
         return;
 
-    for( SceneGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
+    for( RenderGraphObject* pObject = pOctreeNode->m_Renderables.GetHead(); pObject; pObject = pObject->GetNext() )
     {
         // Skip object if it doesn't match transparency/emissive settings, isn't on the right layer, etc.
         if( ShouldObjectBeDrawn( pObject, drawOpaques, emissiveDrawOption, layersToRender ) == false )
             continue;
 
-        // Pull info from SceneGraphObject.
+        // Pull info from RenderGraphObject.
         MyMatrix worldtransform = *pObject->m_pTransform;
         MyMesh* pMesh = pObject->m_pMesh;
 
@@ -379,7 +379,7 @@ void SceneGraph_Octree::DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, Emis
         //        continue;
         //}
 
-        // Update submesh with material, etc from SceneGraphObject.
+        // Update submesh with material, etc from RenderGraphObject.
         MySubmesh* pSubmesh = pObject->m_pSubmesh;
         MaterialDefinition* pMaterial = pObject->GetMaterial();
         pSubmesh->SetMaterial( pMaterial );

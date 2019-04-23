@@ -200,7 +200,7 @@
 #include "Sprites/SpriteSheet.h"
 #include "Sprites/SpriteSheet_XYZVertexColor.h"
 
-#include "SceneGraphs/SceneGraph_Base.h"
+#include "RenderGraphs/RenderGraph_Base.h"
 
 #include "Fonts/BMFont.h"
 #include "Fonts/FontManager.h"

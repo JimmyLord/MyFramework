@@ -7,22 +7,22 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __SceneGraph_Octree_H__
-#define __SceneGraph_Octree_H__
+#ifndef __RenderGraph_Octree_H__
+#define __RenderGraph_Octree_H__
 
-#include "SceneGraph_Base.h"
+#include "RenderGraph_Base.h"
 #include "../DataTypes/MyAABounds.h"
 #include "../DataTypes/MyActivePool.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 
-class SceneGraph_Octree;
+class RenderGraph_Octree;
 
 class OctreeNode
 {
-    friend class SceneGraph_Octree;
+    friend class RenderGraph_Octree;
 
 protected:
-    SceneGraph_Octree* m_pSceneGraph;
+    RenderGraph_Octree* m_pRenderGraph;
     unsigned int m_NodeDepth;
 
     MyAABounds m_Bounds;
@@ -30,7 +30,7 @@ protected:
     OctreeNode* m_pChildNodes[8];
     OctreeNode* m_pParentNode;
 
-    TCPPListHead<SceneGraphObject*> m_Renderables;
+    TCPPListHead<RenderGraphObject*> m_Renderables;
 
     void Cleanup();
 
@@ -39,7 +39,7 @@ public:
     ~OctreeNode();
 };
 
-class SceneGraph_Octree : public SceneGraph_Base
+class RenderGraph_Octree : public RenderGraph_Base
 {
     friend class OctreeNode;
 
@@ -57,17 +57,17 @@ protected:
     void DrawNode(OctreeNode* pOctreeNode, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc);
 
 public:
-    SceneGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
-    virtual ~SceneGraph_Octree();
+    RenderGraph_Octree(GameCore* pGameCore, uint32 treeDepth, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    virtual ~RenderGraph_Octree();
 
     void Resize(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData);
-    virtual void RemoveObject(SceneGraphObject* pObject);
+    virtual RenderGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, RenderGraphFlags flags, unsigned int layers, void* pUserData);
+    virtual void RemoveObject(RenderGraphObject* pObject);
 
-    virtual void ObjectMoved(SceneGraphObject* pObject);
+    virtual void ObjectMoved(RenderGraphObject* pObject);
 
     virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc);
 };
 
-#endif //__SceneGraph_Octree_H__
+#endif //__RenderGraph_Octree_H__

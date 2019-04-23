@@ -9,15 +9,15 @@
 
 #include "MyFrameworkPCH.h"
 
-#include "SceneGraph_Base.h"
+#include "RenderGraph_Base.h"
 #include "../Core/GameCore.h"
 #include "../DataTypes/MyActivePool.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 #include "../Textures/MaterialDefinition.h"
 
-void SceneGraphObject::Clear()
+void RenderGraphObject::Clear()
 {
-    m_Flags = SceneGraphFlag_Opaque;
+    m_Flags = RenderGraphFlag_Opaque;
     m_pMaterial = nullptr;
     m_WaitingForMaterialToFinishLoading = false;
 
@@ -37,7 +37,7 @@ void SceneGraphObject::Clear()
     m_pUserData = nullptr;
 }
 
-void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
+void RenderGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool updateTransparencyFlags)
 {
     m_pMaterial = pNewMaterial;
 
@@ -51,49 +51,49 @@ void SceneGraphObject::SetMaterial(MaterialDefinition* pNewMaterial, bool update
 
     if( updateTransparencyFlags )
     {
-        SceneGraphFlags flags = (SceneGraphFlags)(m_Flags & ~(SceneGraphFlag_Opaque | SceneGraphFlag_Transparent | SceneGraphFlag_Emissive));
+        RenderGraphFlags flags = (RenderGraphFlags)(m_Flags & ~(RenderGraphFlag_Opaque | RenderGraphFlag_Transparent | RenderGraphFlag_Emissive));
         if( pNewMaterial )
         {
             if( pNewMaterial->IsTransparent() )
-                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Transparent);
+                flags = (RenderGraphFlags)(flags | RenderGraphFlag_Transparent);
             else
-                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Opaque);
+                flags = (RenderGraphFlags)(flags | RenderGraphFlag_Opaque);
 
             if( pNewMaterial->IsEmissive() )
-                flags = (SceneGraphFlags)(flags | SceneGraphFlag_Emissive);
+                flags = (RenderGraphFlags)(flags | RenderGraphFlag_Emissive);
         }
         else
         {
-            flags = (SceneGraphFlags)(flags | SceneGraphFlag_Opaque);
+            flags = (RenderGraphFlags)(flags | RenderGraphFlag_Opaque);
         }
 
         m_Flags = flags;
     }
 }
 
-SceneGraph_Base::SceneGraph_Base(GameCore* pGameCore)
+RenderGraph_Base::RenderGraph_Base(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;
 
     m_pObjectPool.AllocateObjects( 100000 );
 }
 
-SceneGraph_Base::~SceneGraph_Base()
+RenderGraph_Base::~RenderGraph_Base()
 {
 }
 
-SceneGraphObject* SceneGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, unsigned int layers, void* pUserData)
+RenderGraphObject* RenderGraph_Base::AddObject(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, unsigned int layers, void* pUserData)
 {
     // Add the object with the opaque flag set.
-    SceneGraphObject* pSceneGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitiveType, pointSize, SceneGraphFlag_Opaque, layers, pUserData);
+    RenderGraphObject* pRenderGraphObject = AddObjectWithFlagOverride( pTransform, pMesh, pSubmesh, pMaterial, primitiveType, pointSize, RenderGraphFlag_Opaque, layers, pUserData);
 
     // Set the material again, this time also overwrite the opacity flags with the material setting.
-    pSceneGraphObject->SetMaterial( pMaterial, true );
+    pRenderGraphObject->SetMaterial( pMaterial, true );
 
-    return pSceneGraphObject;
+    return pRenderGraphObject;
 }
 
-bool SceneGraph_Base::ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender)
+bool RenderGraph_Base::ShouldObjectBeDrawn(RenderGraphObject* pObject, bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender)
 {
     // Forward Passes:
     //   opaque and opaque/emissive
@@ -115,10 +115,10 @@ bool SceneGraph_Base::ShouldObjectBeDrawn(SceneGraphObject* pObject, bool drawOp
             return false;
     }
 
-    SceneGraphFlags objectFlags = pObject->GetFlags();
+    RenderGraphFlags objectFlags = pObject->GetFlags();
 
-    bool isOpaque      = objectFlags & SceneGraphFlag_Opaque   ? true : false;
-    bool isEmissive    = objectFlags & SceneGraphFlag_Emissive ? true : false;
+    bool isOpaque      = objectFlags & RenderGraphFlag_Opaque   ? true : false;
+    bool isEmissive    = objectFlags & RenderGraphFlag_Emissive ? true : false;
 
     // If we're drawing opaques and this object is transparent, kick out.
     if( drawOpaques & !isOpaque )

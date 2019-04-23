@@ -7,36 +7,36 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#ifndef __SceneGraph_Flat_H__
-#define __SceneGraph_Flat_H__
+#ifndef __RenderGraph_Flat_H__
+#define __RenderGraph_Flat_H__
 
-#include "SceneGraph_Base.h"
+#include "RenderGraph_Base.h"
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
 
 class MaterialDefinition;
 class MyMatrix;
 class MyMesh;
 class MySubmesh;
-class SceneGraphObject;
+class RenderGraphObject;
 class ShaderGroup;
 class Vector3;
 
-class SceneGraph_Flat : public SceneGraph_Base
+class RenderGraph_Flat : public RenderGraph_Base
 {
 protected:
-    TCPPListHead<SceneGraphObject*> m_Renderables;
+    TCPPListHead<RenderGraphObject*> m_Renderables;
     unsigned int m_NumRenderables;
 
 public:
-    SceneGraph_Flat(GameCore* pGameCore);
-    virtual ~SceneGraph_Flat();
+    RenderGraph_Flat(GameCore* pGameCore);
+    virtual ~RenderGraph_Flat();
 
-    virtual SceneGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, SceneGraphFlags flags, unsigned int layers, void* pUserData) override;
-    virtual void RemoveObject(SceneGraphObject* pObject) override;
+    virtual RenderGraphObject* AddObjectWithFlagOverride(MyMatrix* pTransform, MyMesh* pMesh, MySubmesh* pSubmesh, MaterialDefinition* pMaterial, MyRE::PrimitiveTypes primitiveType, int pointSize, RenderGraphFlags flags, unsigned int layers, void* pUserData) override;
+    virtual void RemoveObject(RenderGraphObject* pObject) override;
 
-    virtual void ObjectMoved(SceneGraphObject* pObject) override;
+    virtual void ObjectMoved(RenderGraphObject* pObject) override;
 
     virtual void Draw(bool drawOpaques, EmissiveDrawOptions emissiveDrawOption, unsigned int layersToRender, Vector3* camPos, Vector3* camRot, MyMatrix* pMatProj, MyMatrix* pMatView, MyMatrix* shadowlightVP, TextureDefinition* pShadowTex, ShaderGroup* pShaderOverride, PreDrawCallbackFunctionPtr* pPreDrawCallbackFunc) override;
 };
 
-#endif //__SceneGraph_Flat_H__
+#endif //__RenderGraph_Flat_H__

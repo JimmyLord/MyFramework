@@ -85,9 +85,6 @@
     <Filter Include="Source\Memory">
       <UniqueIdentifier>{d2da7e06-8405-4bf7-9df8-6aebaa1b8b83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\SceneGraphs">
-      <UniqueIdentifier>{375e65cc-77be-4ef4-8595-2fcc2a5483d8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Events">
       <UniqueIdentifier>{5803e1d8-cc4e-4dcb-b790-536ca3322646}</UniqueIdentifier>
     </Filter>
@@ -138,6 +135,9 @@
     </Filter>
     <Filter Include="Source\Core">
       <UniqueIdentifier>{79792542-a24b-40ac-9d98-2df9e3bfbf90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\RenderGraphs">
+      <UniqueIdentifier>{375e65cc-77be-4ef4-8595-2fcc2a5483d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -426,12 +426,6 @@
     <ClCompile Include="SourceCommon\Memory\MyStackAllocator.cpp">
       <Filter>Source\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Base.cpp">
-      <Filter>Source\SceneGraphs</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Flat.cpp">
-      <Filter>Source\SceneGraphs</Filter>
-    </ClCompile>
     <ClCompile Include="SourceCommon\Events\EventManager.cpp">
       <Filter>Source\Events</Filter>
     </ClCompile>
@@ -470,9 +464,6 @@
     </ClCompile>
     <ClCompile Include="SourceNaCL\NaCLFileObject.cpp">
       <Filter>Source-Platform\Source - NaCL</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceCommon\SceneGraphs\SceneGraph_Octree.cpp">
-      <Filter>Source\SceneGraphs</Filter>
     </ClCompile>
     <ClCompile Include="SourceAndroid\SoundPlayerOpenSL.cpp">
       <Filter>Source-Platform\Source - Android</Filter>
@@ -563,6 +554,15 @@
     </ClCompile>
     <ClCompile Include="SourceCommon\Core\ResourceManagers.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Base.cpp">
+      <Filter>Source\RenderGraphs</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Flat.cpp">
+      <Filter>Source\RenderGraphs</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceCommon\RenderGraphs\RenderGraph_Octree.cpp">
+      <Filter>Source\RenderGraphs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -896,12 +896,6 @@
     <ClInclude Include="SourceCommon\Memory\MyStackAllocator.h">
       <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Base.h">
-      <Filter>Source\SceneGraphs</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Flat.h">
-      <Filter>Source\SceneGraphs</Filter>
-    </ClInclude>
     <ClInclude Include="SourceCommon\Events\EventManager.h">
       <Filter>Source\Events</Filter>
     </ClInclude>
@@ -943,9 +937,6 @@
     </ClInclude>
     <ClInclude Include="SourceNaCL\NaCLFileObject.h">
       <Filter>Source-Platform\Source - NaCL</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceCommon\SceneGraphs\SceneGraph_Octree.h">
-      <Filter>Source\SceneGraphs</Filter>
     </ClInclude>
     <ClInclude Include="SourceAndroid\SoundPlayerOpenSL.h">
       <Filter>Source-Platform\Source - Android</Filter>
@@ -1051,6 +1042,15 @@
     </ClInclude>
     <ClInclude Include="SourceCommon\Core\ResourceManagers.h">
       <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Base.h">
+      <Filter>Source\RenderGraphs</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Flat.h">
+      <Filter>Source\RenderGraphs</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCommon\RenderGraphs\RenderGraph_Octree.h">
+      <Filter>Source\RenderGraphs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
