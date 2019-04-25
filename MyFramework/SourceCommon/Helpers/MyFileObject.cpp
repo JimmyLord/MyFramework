@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -362,6 +362,7 @@ void MyFileObject::Tick()
         //     on Windows, make sure relativePath is actually a complete path.
         // Relative paths will only cause issues in cases where files are being loaded
         //     from multiple working directories on different threads.
+        // See similar issue in MyFileObject::UpdateTimestamp()
         char tempPath[MAX_PATH];
         sprintf_s( tempPath, MAX_PATH, "%s/%s", m_pFileManager->GetWorkingDirectory(), m_FullPath );
         fullPath = tempPath;
@@ -426,8 +427,16 @@ bool MyFileObject::IsNewVersionAvailable()
 void MyFileObject::UpdateTimestamp()
 {
 #if MYFW_WINDOWS
+    // m_FullPath is a path relative to the working dir, we need this to check a complete Windows path.
+    // Relative paths will only cause issues in cases where files are being loaded
+    //     from multiple working directories on different threads.
+    // See similar issue in MyFileObject::Tick()
+    MyAssert( m_FullPath && m_FullPath[1] != ':' );
+    char completeWindowsPath[MAX_PATH];
+    sprintf_s( completeWindowsPath, MAX_PATH, "%s/%s", m_pFileManager->GetWorkingDirectory(), m_FullPath );
+
     WIN32_FIND_DATAA data;
-    GetFileData( m_FullPath, &data );
+    GetFileData( completeWindowsPath, &data );
 
     m_FileLastWriteTime = data.ftLastWriteTime;
 #else

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -38,9 +38,9 @@ enum FileLoadStatus
     FileLoadStatus_Loading,
     FileLoadStatus_LoadedButNotFinalized,
 
-    // all states above need to be loading
+    // All states above need to be loading.
     FileLoadStatus_Success,
-    // all states below need to be errors
+    // All states below need to be errors.
 
     FileLoadStatus_Error_FileNotFound,
     FileLoadStatus_Error_Other,
@@ -64,9 +64,9 @@ protected:
 
     TCPPListHead<FileFinishedLoadingCallbackStruct*> m_FileFinishedLoadingCallbackList;
 
-    char* m_FullPath;
+    char* m_FullPath; // Path relative to the working directory.
     char* m_FilenameWithoutExtension;
-    char* m_ExtensionWithDot; // will be "." if no extension
+    char* m_ExtensionWithDot; // Will be "." if no extension.
     FileLoadStatus m_FileLoadStatus;
     unsigned int m_FileLength;
     char* m_pBuffer;
@@ -85,7 +85,7 @@ protected:
 public:
     MyFileObject(FileManager* pFileManager);
     virtual ~MyFileObject();
-    SetClassnameBase( "MyFileObject" ); // only first 8 character count.
+    SetClassnameBase( "MyFileObject" ); // Only first 8 character count.
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
@@ -97,7 +97,7 @@ public:
     const char* GetFullPath() const { return m_FullPath; }
     const char* GetFilename();
     const char* GetFilenameWithoutExtension() { return m_FilenameWithoutExtension; }
-    const char* GetExtensionWithDot() { return m_ExtensionWithDot; } // will be "." if no extension
+    const char* GetExtensionWithDot() { return m_ExtensionWithDot; } // Will be "." if no extension.
     FileLoadStatus GetFileLoadStatus() { return m_FileLoadStatus; }
     unsigned int GetFileLength() { return m_FileLength; }
     const char* GetBuffer() { return m_pBuffer; }
@@ -113,7 +113,7 @@ public:
     time_t GetFileLastWriteTime() { return m_FileLastWriteTime; }
 #endif
 
-    // Callbacks
+    // Callbacks.
     void RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc* pCallback);
     void UnregisterFileFinishedLoadingCallback(void* pObj);
 
@@ -158,7 +158,7 @@ public:
 
     static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MyFileObject*)pObjectPtr)->OnRightClick(); }
     void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
+    void OnPopupClick(wxEvent &evt); // Used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
 
     static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
     void OnDrag();
