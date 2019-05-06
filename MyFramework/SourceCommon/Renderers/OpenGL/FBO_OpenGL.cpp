@@ -15,7 +15,7 @@
 #include "Texture_OpenGL.h"
 #include "../BaseClasses/Renderer_Base.h"
 #include "../Old/OpenGLWrapper.h"
-#include "../../GLExtensions.h"
+#include "../SourceWindows/GLExtensions.h"
 
 FBO_OpenGL::FBO_OpenGL()
 {

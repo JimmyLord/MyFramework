@@ -14,7 +14,7 @@
 
 // TODO: Fix GL Includes.
 #include <gl/GL.h>
-#include "../../GLExtensions.h"
+#include "../SourceWindows/GLExtensions.h"
 #include "../OpenGL/GLHelpers.h"
 
 GLStats g_GLStats;

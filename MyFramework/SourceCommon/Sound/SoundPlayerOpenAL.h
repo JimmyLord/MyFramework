@@ -10,6 +10,8 @@
 #ifndef __SoundPlayer_H__
 #define __SoundPlayer_H__
 
+#include "DataTypes/MyActivePool.h"
+
 #if MYFW_IOS || MYFW_OSX
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
