@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -16,14 +16,14 @@ protected:
     MyType* m_pObjects;
     MyType** m_pObjectPtrs;
 
-    unsigned int m_Length; // num elements allocated in list
-    unsigned int m_Count; // num elements used.
+    unsigned int m_Length; // Num elements allocated in list.
+    unsigned int m_Count; // Num elements used.
 
 public:
     MySimplePool()
     {
-        m_pObjects = 0;
-        m_pObjectPtrs = 0;
+        m_pObjects = nullptr;
+        m_pObjectPtrs = nullptr;
 
         m_Length = 0;
         m_Count = 0;
@@ -31,9 +31,7 @@ public:
 
     ~MySimplePool()
     {
-        MyAssert( m_Count == m_Length );
-        SAFE_DELETE_ARRAY( m_pObjects );
-        SAFE_DELETE_ARRAY( m_pObjectPtrs );
+        FreeObjects();
     }
 
     unsigned int GetLength() { return m_Length; }
@@ -47,7 +45,7 @@ public:
 
     void AllocateObjects(unsigned int length)
     {
-        MyAssert( m_pObjects == 0 );
+        MyAssert( m_pObjects == nullptr );
         
         if( length > 0 )
         {
@@ -62,6 +60,13 @@ public:
 
         m_Length = length;
         m_Count = length;
+    }
+
+    void FreeObjects()
+    {
+        MyAssert( m_Count == m_Length );
+        SAFE_DELETE_ARRAY( m_pObjects );
+        SAFE_DELETE_ARRAY( m_pObjectPtrs );
     }
 
     MyType* GetObjectFromPool()
@@ -141,7 +146,7 @@ public:
     MyType MakeObjectActive(int destindex = -1)
     {
         if( m_InactiveObjects.Count() <= 0 )
-            return 0;
+            return nullptr;
 
         MyType pObj = m_InactiveObjects.RemoveIndex( m_InactiveObjects.Count()-1 );
 
@@ -169,7 +174,7 @@ public:
 
     void MakeObjectInactiveByIndex(unsigned int index, bool maintainorder = false)
     {
-        MyType pObj = 0;
+        MyType pObj = nullptr;
         if( maintainorder )
             pObj = m_ActiveObjects.RemoveIndex_MaintainOrder( index );
         else

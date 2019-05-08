@@ -10,6 +10,8 @@
 #ifndef __MYFWWinMain_H__
 #define __MYFWWinMain_H__
 
+class GameCore;
+
 extern HWND g_hWnd;
 
 #if MYFW_USING_IMGUI
@@ -17,7 +19,7 @@ extern unsigned int g_GLCanvasIDActive;
 #endif
 
 bool MYFW_GetKey(int value);
-int MYFWWinMain(int width, int height);
+int MYFWWinMain(GameCore* pGameCore, int width, int height);
 
 // Will return whether or not this call locked the mouse.
 bool LockSystemMouse();
