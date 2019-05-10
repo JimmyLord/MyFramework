@@ -635,17 +635,3 @@ void MySaveFileObject_FILE::Tick()
         m_OpComplete = true;
     }
 }
-
-#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
-//MyFileObject* RequestFile(const char* filename)
-//{
-//    MyAssert( filename != 0 );
-//    if( filename == 0 )
-//        return 0;
-//    MyAssert( filename[0] != 0 );
-//    if( filename[0] == 0 )
-//        return 0;
-//
-//    return g_ pFileManager->RequestFile( filename );
-//}
-#endif

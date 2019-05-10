@@ -18,10 +18,6 @@ class TextureDefinition;
 
 MySaveFileObject* CreatePlatformSpecificSaveFile();
 
-#if MYFW_WINDOWS || MYFW_BLACKBERRY || MYFW_EMSCRIPTEN || MYFW_IOS || MYFW_OSX || MYFW_LINUX
-//MyFileObject* RequestFile(const char* filename);
-#endif
-
 typedef void FileManager_OnFileUpdated_CallbackFunction(GameCore* pGameCore, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFileUnloaded_CallbackFunction(void* pObject, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);

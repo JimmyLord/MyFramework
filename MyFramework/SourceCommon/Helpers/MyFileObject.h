@@ -27,8 +27,6 @@ struct FileFinishedLoadingCallbackStruct : public TCPPListNode<FileFinishedLoadi
     FileFinishedLoadingCallbackFunc* pFunc;
 };
 
-extern MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;
-
 #if MYFW_NACL
 class NaCLFileObject;
 #endif
@@ -51,13 +49,13 @@ class MyFileObject : public TCPPListNode<MyFileObject*>, public RefCount
 , public wxEvtHandler
 #endif
 {
+private:
     friend class FileManager;
-
-#if MYFW_NACL
     friend class NaCLFileObject;
-#endif
 
     static const int CALLBACK_POOL_SIZE = 1000;
+
+    static MySimplePool<FileFinishedLoadingCallbackStruct> m_pMyFileObject_FileFinishedLoadingCallbackPool;
 
 protected:
     FileManager* m_pFileManager;
@@ -86,6 +84,10 @@ public:
     MyFileObject(FileManager* pFileManager);
     virtual ~MyFileObject();
     SetClassnameBase( "MyFileObject" ); // Only first 8 character count.
+
+    // These 2 methods are called by the GameCore at startup and shutdown.
+    static void SystemStartup();
+    static void SystemShutdown();
 
     void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
     void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);

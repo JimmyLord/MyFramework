@@ -31,7 +31,6 @@ ResourceManagers::ResourceManagers()
     m_pVertexFormatManager = nullptr;
 
     // Globals to eliminate.
-    // g_pMyFileObject_FileFinishedLoadingCallbackPool  // 7
     // g_pLuaGameState                                  // 25
     // g_pBulletWorld                                   // 28
     // g_pEditorPrefs                                   // 68
@@ -53,7 +52,6 @@ ResourceManagers::ResourceManagers()
     // g_pBrokenShaderString                            // 4
 
     // Other globals to look at.
-    // g_pComponentTransform_TransformChangedCallbackPool
     // g_pComponentTypeManager
     // g_pVisibilityLayerStrings
     // g_pEngineMainFrame

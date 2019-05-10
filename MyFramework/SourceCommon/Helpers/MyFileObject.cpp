@@ -12,7 +12,7 @@
 #include "FileManager.h"
 #include "MyFileObject.h"
 
-MySimplePool<FileFinishedLoadingCallbackStruct> g_pMyFileObject_FileFinishedLoadingCallbackPool;
+MySimplePool<FileFinishedLoadingCallbackStruct> MyFileObject::m_pMyFileObject_FileFinishedLoadingCallbackPool;
 
 #if MYFW_WINDOWS
 void GetFileData(const char* path, WIN32_FIND_DATAA* data)
@@ -116,9 +116,7 @@ MyFileObject::MyFileObject(FileManager* pFileManager)
     m_ShowInMemoryPanel = true;
 #endif
 
-    // the first MyFileObject will create the pool of callback objects.
-    if( g_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() == false )
-        g_pMyFileObject_FileFinishedLoadingCallbackPool.AllocateObjects( CALLBACK_POOL_SIZE );
+    MyAssert( m_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() );
 }
 
 MyFileObject::~MyFileObject()
@@ -140,6 +138,18 @@ MyFileObject::~MyFileObject()
 #if MYFW_NACL
     SAFE_DELETE( m_pNaClFileObject );
 #endif
+}
+
+void MyFileObject::SystemStartup()
+{
+    // Create the pool of callback objects.
+    if( m_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() == false )
+        m_pMyFileObject_FileFinishedLoadingCallbackPool.AllocateObjects( CALLBACK_POOL_SIZE );
+}
+
+void MyFileObject::SystemShutdown()
+{
+    m_pMyFileObject_FileFinishedLoadingCallbackPool.FreeObjects();
 }
 
 void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
@@ -251,7 +261,7 @@ void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedL
 {
     MyAssert( pCallback != nullptr );
 
-    FileFinishedLoadingCallbackStruct* pCallbackStruct = g_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
+    FileFinishedLoadingCallbackStruct* pCallbackStruct = m_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
 
     if( pCallbackStruct != nullptr )
     {
@@ -271,7 +281,7 @@ void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
         if( pCallbackStruct->pObj == pObj )
         {
             pCallbackStruct->Remove();
-            g_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
+            m_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
         }
 
         pCallbackStruct = pNextCallbackStruct;

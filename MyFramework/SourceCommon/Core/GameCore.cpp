@@ -17,6 +17,7 @@
 #include "../Fonts/FontManager.h"
 #include "../Helpers/ExternalTools.h"
 #include "../Helpers/FileManager.h"
+#include "../Helpers/MyFileObject.h"
 #include "../Helpers/MyTime.h"
 #include "../Meshes/BufferManager.h"
 #include "../Meshes/LightManager.h"
@@ -146,6 +147,8 @@ GameCore::~GameCore()
     SAFE_DELETE( m_Managers.m_pEventManager );
     SAFE_DELETE( m_Managers.m_pEventTypeManager );
 
+    MyFileObject::SystemShutdown();
+
 #if MYFW_BLACKBERRY
     SAFE_DELETE( m_pMediaPlayer );
 #endif
@@ -180,6 +183,8 @@ uint32 GameCore::GetWindowHeight()
 
 void GameCore::InitializeManagers()
 {
+    MyFileObject::SystemStartup();
+
     if( m_Managers.m_pEventTypeManager == nullptr )     m_Managers.m_pEventTypeManager = MyNew EventTypeManager;
     if( m_Managers.m_pEventManager == nullptr )         m_Managers.m_pEventManager = MyNew EventManager( m_Managers.GetEventTypeManager() );
     if( m_Managers.m_pVertexFormatManager == nullptr )  m_Managers.m_pVertexFormatManager = MyNew VertexFormatManager;

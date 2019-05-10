@@ -72,9 +72,15 @@ project "MyFramework"
             "MyFramework/SourceWindows/**.h",
         }
 
-    filter { "files:MyFramework/SourceWindows/SoundPlayerSDL.*"
+    filter { "files:MyFramework/SourceCommon/DataTypes/ColorStructs.cpp"
+            .. " or MyFramework/SourceCommon/DataTypes/Vector.cpp"
+            .. " or MyFramework/SourceCommon/Helpers/TypeInfo.cpp"
+            .. " or MyFramework/SourceCommon/Networking/GameService_MyServer.cpp"
+            .. " or MyFramework/SourceCommon/Networking/GameService_ScoreLoop.cpp"
             .. " or MyFramework/SourceCommon/Renderers/Old/DXWrapper.*"
             .. " or MyFramework/SourceCommon/Sound/SoundPlayerOpenAL.*"
+            .. " or MyFramework/SourceCommon/Sprites/SpriteSheet_XYZVertexColor.cpp"
+            .. " or MyFramework/SourceWindows/SoundPlayerSDL.*"
            }
         flags           "ExcludeFromBuild"
 
