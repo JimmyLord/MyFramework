@@ -486,12 +486,12 @@ void MaterialDefinition::OnFileFinishedLoading(MyFileObject* pFile) // StaticOnF
 void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingvalues)
 {
 #if MYFW_EDITOR
-    static ExposedUniformValue g_PreviousUniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
+    ExposedUniformValue previousUniformValues[MyFileObjectShader::MAX_EXPOSED_UNIFORMS];
 
     // Backup the old values, then restore them below.
     for( unsigned int i=0; i<MyFileObjectShader::MAX_EXPOSED_UNIFORMS; i++ )
     {
-        g_PreviousUniformValues[i] = m_UniformValues[i];
+        previousUniformValues[i] = m_UniformValues[i];
     }
 #endif
 
@@ -534,9 +534,9 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
                     {
                         MyAssert( m_UniformValues[j].m_Name != "" );
 
-                        if( m_UniformValues[j].m_Name == g_PreviousUniformValues[i].m_Name )
+                        if( m_UniformValues[j].m_Name == previousUniformValues[i].m_Name )
                         {
-                            m_UniformValues[j] = g_PreviousUniformValues[i];
+                            m_UniformValues[j] = previousUniformValues[i];
                             break;
                         }
                     }
@@ -548,7 +548,7 @@ void MaterialDefinition::InitializeExposedUniformValues(bool maintainexistingval
                     // If the type we have stored is a sampler, release the texture.
                     if( m_UniformValues[j].m_Type == ExposedUniformType_Sampler2D )
                     {
-                        SAFE_RELEASE( g_PreviousUniformValues[j].m_pTexture );
+                        SAFE_RELEASE( previousUniformValues[j].m_pTexture );
                     }
 
                     if( j < pShaderFile->m_NumExposedUniforms )

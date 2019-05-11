@@ -151,12 +151,19 @@ void SoundChannel::StopSound()
 //====================================================================================================
 SoundPlayer::SoundPlayer()
 {
+    // Initialize all pointers to null in case of early exit (mainly for debugging).
+    m_pEngine = nullptr;
+    m_pMasteringVoice = nullptr;
+    for( int i=0; i<MAX_CHANNELS; i++ )
+        m_pChannels[i] = nullptr;
+
+    // Allocate our objects.
     m_SoundObjectPool.AllocateObjects( NUM_SOUNDOBJECTS_IN_POOL );
 
     CoInitializeEx( NULL, COINIT_MULTITHREADED );
 
     HRESULT result = XAudio2Create( &m_pEngine );
-    
+
     if( result == S_OK )
         result = m_pEngine->CreateMasteringVoice( &m_pMasteringVoice );
 
@@ -209,7 +216,11 @@ SoundPlayer::~SoundPlayer()
     //    pSound->Release();
     //}
 
-    m_pEngine->Release();
+    if( m_pEngine != nullptr )
+    {
+        m_pEngine->Release();
+    }
+
     CoUninitialize();
 }
 
