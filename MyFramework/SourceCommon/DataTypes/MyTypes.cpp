@@ -15,8 +15,12 @@ void TestMyTypeSizes()
 {
     bool ok;
 
-    sizeof( int32 ) == 4  ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( int8   ) == 1 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( int16  ) == 2 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( int32  ) == 4 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( int64  ) == 8 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( uint8  ) == 1 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
+    sizeof( uint16 ) == 2 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
     sizeof( uint32 ) == 4 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
-    sizeof( int64 ) == 8  ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
     sizeof( uint64 ) == 8 ? ok = true : ok = false; MyAssert( ok ); if( !ok ) LOGError( LOGTag, "TYPE TEST FAILED!!!!\n" );
 }

@@ -363,6 +363,7 @@ typedef unsigned long   u_long;
 #include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
 #include "../../Libraries/cJSON/cJSON.h"
 #include "../../Libraries/mtrand/mtrand.h"
+#include "../../Libraries/Box2D/Box2D/Box2D.h"
 
 #if MYFW_WINDOWS
 #if WINVER >= 0x0602

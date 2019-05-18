@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,32 +12,48 @@
 
 #if MYFW_WINDOWS
 
+typedef signed char int8; // Changed from __int8 to avoid conflict with same type defined by box2d
+typedef __int16 int16;
 typedef __int32 int32;
-typedef unsigned __int32 uint32;
 typedef __int64 int64;
+typedef unsigned __int8 uint8;
+typedef unsigned __int16 uint16;
+typedef unsigned __int32 uint32;
 typedef unsigned __int64 uint64;
 
 #elif MYFW_NACL || MYFW_LINUX
 
+typedef __int8_t int8;
+typedef __int16_t int16;
 typedef __int32_t int32;
-typedef __uint32_t uint32;
 typedef __int64_t int64;
+typedef __uint8_t uint8;
+typedef __uint16_t uint16;
+typedef __uint32_t uint32;
 typedef __uint64_t uint64;
 
 #elif MYFW_BLACKBERRY10 || MYFW_EMSCRIPTEN
 
 #include <stdint.h>
 
+typedef int8_t int8;
+typedef int16_t int16;
 typedef int32_t int32;
-typedef uint32_t uint32;
 typedef int64_t int64;
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
 typedef uint64_t uint64;
 
 #else
 
+typedef int8_t int8;
+typedef int16_t int16;
 typedef int32_t int32;
-typedef uint32_t uint32;
 typedef int64_t int64;
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
 typedef uint64_t uint64;
 
 #endif
