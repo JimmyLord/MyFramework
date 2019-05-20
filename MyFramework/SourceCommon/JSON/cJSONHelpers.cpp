@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -197,6 +197,30 @@ void cJSONExt_GetIntArray(cJSON* object, const char* name, int* vars, int numina
     }
 }
 
+void cJSONExt_GetUnsignedIntArray(cJSON* object, const char* name, uint32* vars, int numinarray)
+{
+    cJSON* arrayobj = cJSON_GetObjectItem( object, name );
+    if( arrayobj )
+    {
+        int arraysize = cJSON_GetArraySize( arrayobj );
+        MyAssert( arraysize <= numinarray );
+        for( int i=0; i<arraysize; i++ )
+        {
+            if( i >= numinarray )
+                return;
+
+            cJSON* obj = cJSON_GetArrayItem( arrayobj, i );
+            if( obj )
+            {
+                if( obj->valuedouble <= INT_MAX )
+                    vars[i] = obj->valueint;
+                else
+                    vars[i] = (uint32)obj->valuedouble;
+            }
+        }
+    }
+}
+
 void cJSONExt_GetFloatArray(cJSON* object, const char* name, float* vars, int numinarray)
 {
     cJSON* arrayobj = cJSON_GetObjectItem( object, name );
@@ -334,18 +358,18 @@ size_t cJSONExt_GetStringLength(cJSON* object, const char* name)
 char* cJSONExt_strdup(const char* string)
 {
     size_t length = 0;
-    char* copy = 0;
+    char* copy = nullptr;
 
-    if( string == 0 )
+    if( string == nullptr )
     {
-        return 0;
+        return nullptr;
     }
 
     length = strlen( (const char*)string ) + sizeof( "" );
     copy = (char*)cJSON_malloc( length );
-    if( copy == 0 )
+    if( copy == nullptr )
     {
-        return 0;
+        return nullptr;
     }
     memcpy( copy, string, length );
 
