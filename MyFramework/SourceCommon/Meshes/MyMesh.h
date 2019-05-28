@@ -125,6 +125,7 @@ public:
     void SetGameCoreAndAddToMeshManager(GameCore* pGameCore);
     void SetLoadDefaultMaterials(bool shouldLoad) { m_LoadDefaultMaterials = shouldLoad; }
     virtual void SetMaterial(MaterialDefinition* pMaterial, int submeshindex);
+    void SetReady() { m_MeshReady = true; }
 
     // Submeshes and Buffers.
     void CreateOneSubmeshWithBuffers(VertexFormat_Dynamic_Desc* pVertexFormatDesc, unsigned int numVerts, int bytesPerIndex, unsigned int numIndices, bool dynamic = false);
@@ -157,11 +158,10 @@ public:
     void RegisterSetupCustomUniformsCallback(void* pObjectPtr, SetupCustomUniformsCallbackFunc* pCallback);
 
     // Shape creation functions.  Defined in MyMeshShapes.cpp
-private:
+public:
     void CreateShapeBuffers(bool createIndexBuffer);
     void RebuildShapeBuffers(uint32 numVerts, VertexFormats vertexFormat, MyRE::PrimitiveTypes primitiveType, uint32 numIndices, MyRE::IndexTypes indexType, const char* category);
 
-public:
     void CreateClipSpaceQuad(Vector2 maxUV);
     void CreateBox(float boxWidth, float boxHeight, float boxDepth, float startU, float endU, float startV, float endV, unsigned char justificationFlags, Vector3 offset);
     void CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDepth, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV, unsigned char justificationFlags);
