@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -92,6 +92,7 @@ public:
     static const Vector3 In() { return Vector3( 0.0f, 0.0f, 1.0f ); }
 
     inline Vector2 XY() { return Vector2( x, y ); }
+    inline Vector2 XZ() { return Vector2( x, z ); }
 
     inline void Set(float nx, float ny, float nz) { x = nx; y = ny; z = nz; }
     inline float LengthSquared() const { return x*x + y*y + z*z; }
@@ -228,6 +229,7 @@ public:
 public:
     Vector2Int() {}
     Vector2Int(int nx, int ny) { x = nx; y = ny; }
+    Vector2Int(Vector2 o) { x = (int)o.x; y = (int)o.y; }
     //virtual ~Vector2Int() {}
 
     inline void Set(int nx, int ny) { x = nx; y = ny; }
@@ -243,6 +245,20 @@ public:
     inline bool operator !=(const Vector2Int& o) const { return this->x != o.x || this->y != o.y; }
 
     inline Vector2Int operator -() const { return Vector2Int(-this->x, -this->y); }
+    inline Vector2 operator *(const float o) const { return Vector2(this->x * o, this->y * o); }
+    inline Vector2 operator /(const float o) const { return Vector2(this->x / o, this->y / o); }
+    inline Vector2 operator +(const float o) const { return Vector2(this->x + o, this->y + o); }
+    inline Vector2 operator -(const float o) const { return Vector2(this->x - o, this->y - o); }
+    inline Vector2Int operator *(const int o) const { return Vector2Int(this->x * o, this->y * o); }
+    inline Vector2Int operator /(const int o) const { return Vector2Int(this->x / o, this->y / o); }
+    inline Vector2Int operator +(const int o) const { return Vector2Int(this->x + o, this->y + o); }
+    inline Vector2Int operator -(const int o) const { return Vector2Int(this->x - o, this->y - o); }
+    inline Vector2 operator *(const Vector2& o) const { return Vector2(this->x * o.x, this->y * o.y); }
+    inline Vector2 operator /(const Vector2& o) const { return Vector2(this->x / o.x, this->y / o.y); }
+    inline Vector2 operator +(const Vector2& o) const { return Vector2(this->x + o.x, this->y + o.y); }
+    inline Vector2 operator -(const Vector2& o) const { return Vector2(this->x - o.x, this->y - o.y); }
+    inline Vector2Int operator *(const Vector2Int& o) const { return Vector2Int(this->x * o.x, this->y * o.y); }
+    inline Vector2Int operator /(const Vector2Int& o) const { return Vector2Int(this->x / o.x, this->y / o.y); }
     inline Vector2Int operator +(const Vector2Int& o) const { return Vector2Int(this->x + o.x, this->y + o.y); }
     inline Vector2Int operator -(const Vector2Int& o) const { return Vector2Int(this->x - o.x, this->y - o.y); }
 

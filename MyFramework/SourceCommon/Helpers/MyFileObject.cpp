@@ -263,6 +263,14 @@ void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedL
 
     FileFinishedLoadingCallbackStruct* pCallbackStruct = m_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
 
+#if _DEBUG
+    // Assert this callback isn't registered multiple times.
+    for( FileFinishedLoadingCallbackStruct* pCallbackStruct = m_FileFinishedLoadingCallbackList.GetHead(); pCallbackStruct != nullptr; pCallbackStruct = pCallbackStruct->GetNext() )
+    {
+        MyAssert( pCallbackStruct->pObj != pObj || pCallbackStruct->pFunc != pCallback );
+    }
+#endif
+
     if( pCallbackStruct != nullptr )
     {
         pCallbackStruct->pObj = pObj;
