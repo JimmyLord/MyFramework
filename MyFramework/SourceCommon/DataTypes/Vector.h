@@ -262,6 +262,15 @@ public:
     inline Vector2Int operator +(const Vector2Int& o) const { return Vector2Int(this->x + o.x, this->y + o.y); }
     inline Vector2Int operator -(const Vector2Int& o) const { return Vector2Int(this->x - o.x, this->y - o.y); }
 
+    inline Vector2Int operator *=(const int o) { this->x *= o; this->y *= o; return *this; }
+    inline Vector2Int operator /=(const int o) { this->x /= o; this->y /= o; return *this; }
+    inline Vector2Int operator +=(const int o) { this->x += o; this->y += o; return *this; }
+    inline Vector2Int operator -=(const int o) { this->x -= o; this->y -= o; return *this; }
+    inline Vector2Int operator *=(const Vector2Int& o) { this->x *= o.x; this->y *= o.y; return *this; }
+    inline Vector2Int operator /=(const Vector2Int& o) { this->x /= o.x; this->y /= o.y; return *this; }
+    inline Vector2Int operator +=(const Vector2Int& o) { this->x += o.x; this->y += o.y; return *this; }
+    inline Vector2Int operator -=(const Vector2Int& o) { this->x -= o.x; this->y -= o.y; return *this; }
+
     int& operator[] (int i) { MyAssert(i>=0 && i<2); return *(&x + i); }
 };
 
