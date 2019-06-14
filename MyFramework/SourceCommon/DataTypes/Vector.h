@@ -38,8 +38,8 @@ public:
     inline Vector2 Sub(const Vector2& o) const { return Vector2(this->x - o.x, this->y - o.y); }
     inline Vector2 Scale(const float o) const { return Vector2(this->x * o, this->y * o); }
 
-    inline Vector2 WithX(float x) { return Vector2( x, this->y ); }
-    inline Vector2 WithY(float y) { return Vector2( this->x, y ); }
+    inline Vector2 WithX(float x) const { return Vector2( x, this->y ); }
+    inline Vector2 WithY(float y) const { return Vector2( this->x, y ); }
 
     inline bool operator ==(const Vector2& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y); }
     inline bool operator !=(const Vector2& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y); }
@@ -91,8 +91,8 @@ public:
     static const Vector3 Up() { return Vector3( 0.0f, 1.0f, 0.0f ); }
     static const Vector3 In() { return Vector3( 0.0f, 0.0f, 1.0f ); }
 
-    inline Vector2 XY() { return Vector2( x, y ); }
-    inline Vector2 XZ() { return Vector2( x, z ); }
+    inline Vector2 XY() const { return Vector2( x, y ); }
+    inline Vector2 XZ() const { return Vector2( x, z ); }
 
     inline void Set(float nx, float ny, float nz) { x = nx; y = ny; z = nz; }
     inline float LengthSquared() const { return x*x + y*y + z*z; }
@@ -109,9 +109,9 @@ public:
     inline Vector3 DivideComponents(const Vector3& o) const { return Vector3(this->x / o.x, this->y / o.y, this->z / o.z); }
     //inline Vector3 MultiplyComponents(const Vector3Int& o) const { return Vector3(this->x * o.x, this->y * o.y, this->z * o.z); }
 
-    inline Vector3 WithX(float x) { return Vector3( x, this->y, this->z ); }
-    inline Vector3 WithY(float y) { return Vector3( this->x, y, this->z ); }
-    inline Vector3 WithZ(float z) { return Vector3( this->x, this->y, z ); }
+    inline Vector3 WithX(float x) const { return Vector3( x, this->y, this->z ); }
+    inline Vector3 WithY(float y) const { return Vector3( this->x, y, this->z ); }
+    inline Vector3 WithZ(float z) const { return Vector3( this->x, this->y, z ); }
 
     inline bool operator ==(const Vector3& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z); }
     inline bool operator !=(const Vector3& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z); }
@@ -194,10 +194,10 @@ public:
     inline Vector4 DivideComponents(const Vector4& o) const { return Vector4(this->x / o.x, this->y / o.y, this->z / o.z, this->w / o.w); }
     //inline Vector4 MultiplyComponents(const Vector4Int& o) const { return Vector4(this->x * o.x, this->y * o.y, this->z * o.z, this->w * o.w); }
 
-    inline Vector4 WithX(float x) { return Vector4( x, this->y, this->z, this->w ); }
-    inline Vector4 WithY(float y) { return Vector4( this->x, y, this->z, this->w ); }
-    inline Vector4 WithZ(float z) { return Vector4( this->x, this->y, z, this->w ); }
-    inline Vector4 WithW(float w) { return Vector4( this->x, this->y, this->z, w ); }
+    inline Vector4 WithX(float x) const { return Vector4( x, this->y, this->z, this->w ); }
+    inline Vector4 WithY(float y) const { return Vector4( this->x, y, this->z, this->w ); }
+    inline Vector4 WithZ(float z) const { return Vector4( this->x, this->y, z, this->w ); }
+    inline Vector4 WithW(float w) const { return Vector4( this->x, this->y, this->z, w ); }
 
     inline bool operator ==(const Vector4& o) const { return fequal(this->x, o.x) && fequal(this->y, o.y) && fequal(this->z, o.z) && fequal(this->w, o.w); }
     inline bool operator !=(const Vector4& o) const { return !fequal(this->x, o.x) || !fequal(this->y, o.y) || !fequal(this->z, o.z) || !fequal(this->w, o.w); }
@@ -238,8 +238,8 @@ public:
 
     //inline Vector2Int Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector2Int(x,y); len = 1.0f/len; return Vector2Int(x*len, y*len);}
 
-    inline Vector2Int WithX(int x) { return Vector2Int( x, this->y ); }
-    inline Vector2Int WithY(int y) { return Vector2Int( this->x, y ); }
+    inline Vector2Int WithX(int x) const { return Vector2Int( x, this->y ); }
+    inline Vector2Int WithY(int y) const { return Vector2Int( this->x, y ); }
 
     inline bool operator ==(const Vector2Int& o) const { return this->x == o.x && this->y == o.y; }
     inline bool operator !=(const Vector2Int& o) const { return this->x != o.x || this->y != o.y; }
@@ -302,9 +302,9 @@ public:
     inline Vector3 MultiplyComponents(const Vector3& o) const { return Vector3(this->x * o.x, this->y * o.y, this->z * o.z); }
     inline Vector3Int MultiplyComponents(const Vector3Int& o) const { return Vector3Int(this->x * o.x, this->y * o.y, this->z * o.z); }
 
-    inline Vector3Int WithX(int x) { return Vector3Int( x, this->y, this->z ); }
-    inline Vector3Int WithY(int y) { return Vector3Int( this->x, y, this->z ); }
-    inline Vector3Int WithZ(int z) { return Vector3Int( this->x, this->y, z ); }
+    inline Vector3Int WithX(int x) const { return Vector3Int( x, this->y, this->z ); }
+    inline Vector3Int WithY(int y) const { return Vector3Int( this->x, y, this->z ); }
+    inline Vector3Int WithZ(int z) const { return Vector3Int( this->x, this->y, z ); }
 
     inline bool operator ==(const Vector3Int& o) const { return this->x == o.x && this->y == o.y && this->z == o.z; }
     inline bool operator !=(const Vector3Int& o) const { return this->x != o.x || this->y != o.y || this->z != o.z; }
@@ -368,10 +368,10 @@ public:
     //inline Vector4Int Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector4Int(x,y,z); len = 1.0f/len; return Vector4Int(x*len, y*len, z*len);}
     //inline Vector4Int Cross(const Vector4Int& o) const {return Vector4Int( (y*o.z - z*o.y), (z*o.x - x*o.z), (x*o.y - y*o.x) );}
 
-    inline Vector4Int WithX(int x) { return Vector4Int( x, this->y, this->z, this->w ); }
-    inline Vector4Int WithY(int y) { return Vector4Int( this->x, y, this->z, this->w ); }
-    inline Vector4Int WithZ(int z) { return Vector4Int( this->x, this->y, z, this->w ); }
-    inline Vector4Int WithW(int w) { return Vector4Int( this->x, this->y, this->z, w ); }
+    inline Vector4Int WithX(int x) const { return Vector4Int( x, this->y, this->z, this->w ); }
+    inline Vector4Int WithY(int y) const { return Vector4Int( this->x, y, this->z, this->w ); }
+    inline Vector4Int WithZ(int z) const { return Vector4Int( this->x, this->y, z, this->w ); }
+    inline Vector4Int WithW(int w) const { return Vector4Int( this->x, this->y, this->z, w ); }
 
     inline bool operator ==(const Vector4Int& o) const { return this->x == o.x && this->y == o.y && this->z == o.z && this->w == o.w; }
     inline bool operator !=(const Vector4Int& o) const { return this->x != o.x || this->y != o.y || this->z != o.z || this->w != o.w; }
@@ -422,8 +422,8 @@ public:
     inline Vector2T<MyType> GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector2T<MyType>(x,y); len = 1.0f/len; return Vector2T<MyType>(x*len, y*len); }
     //inline Vector2T<MyType> Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector2T<MyType>(x,y); len = 1.0f/len; return Vector2T<MyType>(x*len, y*len);}
 
-    inline Vector2T<MyType> WithX(MyType x) { return Vector2T<MyType>( x, this->y ); }
-    inline Vector2T<MyType> WithY(MyType y) { return Vector2T<MyType>( this->x, y ); }
+    inline Vector2T<MyType> WithX(MyType x) const { return Vector2T<MyType>( x, this->y ); }
+    inline Vector2T<MyType> WithY(MyType y) const { return Vector2T<MyType>( this->x, y ); }
 
     inline bool operator ==(const Vector2T<MyType>& o) const { return this->x == o.x && this->y == o.y; }
     inline bool operator !=(const Vector2T<MyType>& o) const { return this->x != o.x || this->y != o.y; }
