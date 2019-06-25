@@ -152,6 +152,7 @@ public:
     void LoadMyMesh_ReadNode(cJSON* jNode, MySkeletonNode* pParentSkelNode);
     void LoadAnimationControlFile(const char* pBuffer);
 #if MYFW_EDITOR
+    void ExportToFile(const char* filename) const;
     void SaveAnimationControlFile();
 #endif
 
