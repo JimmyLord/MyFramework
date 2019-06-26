@@ -493,8 +493,6 @@ void MyMesh::ExportToFile(const char* filename) const
     else
         sprintf_s( outputFilename, 260, "%s.mymesh", filename );
 
-    int byteswritten;
-
     FILE* file;
 #if MYFW_WINDOWS
     fopen_s( &file, outputFilename, "wb" );
@@ -511,11 +509,11 @@ void MyMesh::ExportToFile(const char* filename) const
     cJSONExt_free( jsonString );
 
     // Raw data needs to land on 4-byte boundary.
-    byteswritten = ftell( file ) + 1; // Add 1 for the \n that will be written before #RAW.
-    while( byteswritten % 4 != 0 )
+    int bytesWritten = ftell( file ) + 1; // Add 1 for the \n that will be written before #RAW.
+    while( bytesWritten % 4 != 0 )
     {
         fwrite( " ", 1, 1, file );
-        byteswritten++;
+        bytesWritten++;
     }
 
     // Write out a marker for start of raw data.
@@ -526,11 +524,11 @@ void MyMesh::ExportToFile(const char* filename) const
     //    - bone offset matrices                            - padded to start on 4-byte boundary
     //    - node transforms
     //    - animation data
-    const char rawdelimiter[] = "\n#RAW";
-    fwrite( rawdelimiter, 5, 1, file );
+    const char rawDelimiter[] = "\n#RAW";
+    fwrite( rawDelimiter, 5, 1, file );
 
-    byteswritten = ftell( file );
-    assert( byteswritten % 4 == 0 );
+    bytesWritten = ftell( file );
+    assert( bytesWritten % 4 == 0 );
 
     //for( unsigned int mati=0; mati<nummaterials; mati++ )
     unsigned int mati=0;
@@ -566,28 +564,28 @@ void MyMesh::ExportToFile(const char* filename) const
 
             for( unsigned int vi=0; vi<numVertsInThisChunk; vi++ )
             {
-                fwrite( &pVerts->pos, sizeof(Vector3), 1, file );
+                fwrite( &pVerts[vi].pos, sizeof(Vector3), 1, file );
 
-                for( unsigned int i=0; i<1; i++ )
-                    fwrite( &pVerts->uv, sizeof(Vector2), 1, file );
+                //for( unsigned int i=0; i<1; i++ )
+                fwrite( &pVerts[vi].uv, sizeof(Vector2), 1, file );
 
                 //if( m_HasNormals )
-                fwrite( &pVerts->normal, sizeof(Vector3), 1, file );
+                fwrite( &pVerts[vi].normal, sizeof(Vector3), 1, file );
 
                 //if( m_HasTangents )
-                //    fwrite( &pVerts->tangent, sizeof(Vector3), 1, file );
+                //    fwrite( &pVerts[vi].tangent, sizeof(Vector3), 1, file );
 
                 //if( m_HasBitangents )
-                //    fwrite( &pVerts->bitangent, sizeof(Vector3), 1, file );
+                //    fwrite( &pVerts[vi].bitangent, sizeof(Vector3), 1, file );
 
                 //if( m_HasColor )
-                //    fwrite( &pVerts->color, sizeof(unsigned char) * 4, 1, file );
+                //    fwrite( &pVerts[vi].color, sizeof(unsigned char) * 4, 1, file );
 
                 //for( unsigned int i=0; i<m_MostBonesInfluences; i++ )
-                //    fwrite( &pVerts->boneindices[i], sizeof(unsigned char), 1, file );
+                //    fwrite( &pVerts[vi].boneindices[i], sizeof(unsigned char), 1, file );
 
                 //for( unsigned int i=0; i<m_MostBonesInfluences; i++ )
-                //    fwrite( &pVerts->weights[i], sizeof(float), 1, file );
+                //    fwrite( &pVerts[vi].weights[i], sizeof(float), 1, file );
             }
         }
 
@@ -609,17 +607,17 @@ void MyMesh::ExportToFile(const char* filename) const
 
             for( unsigned int i=0; i<numIndicesInThisChunk; i++ )
             {
-                //if( totalVerts <= 256 ) // Write indices as unsigned chars.
-                //{
-                //    unsigned char index = vertCount + pIndices[i];                
-                //    fwrite( &index, sizeof(unsigned char), 1, file );
-                //}
-                //else if( totalVerts <= 256*256 ) // Write indices as unsigned shorts.
-                //{
-                //    unsigned short index = vertCount + pIndices[i];
-                //    fwrite( &index, sizeof(unsigned short), 1, file );
-                //}
-                //else // Write indices as unsigned ints.
+                if( totalVerts <= 256 ) // Write indices as unsigned chars.
+                {
+                    unsigned char index = (unsigned char)(vertCount + pIndices[i]);
+                    fwrite( &index, sizeof(unsigned char), 1, file );
+                }
+                else if( totalVerts <= 256*256 ) // Write indices as unsigned shorts.
+                {
+                    unsigned short index = (unsigned short)(vertCount + pIndices[i]);
+                    fwrite( &index, sizeof(unsigned short), 1, file );
+                }
+                else // Write indices as unsigned ints.
                 {
                     unsigned int index = vertCount + pIndices[i];
                     fwrite( &index, sizeof(unsigned int), 1, file );
