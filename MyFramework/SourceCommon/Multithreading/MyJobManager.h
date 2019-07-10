@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2019 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -14,32 +14,36 @@ class MyThread;
 
 class MyJob : public TCPPListNode<MyJob*>
 {
+    friend class MyJobManager;
+    friend class MyJobThread;
+
 protected:
-    bool m_IsStarted;
-    bool m_IsFinished;
+    bool m_IsStarted  : 1; // True when removed from MyJobManager::m_JobList and given to a thread.
+    bool m_IsActive   : 1; // True when running as the active job in one of MyJobManager::m_pThreads.
+    bool m_IsFinished : 1; // True when job is complete, but might still be sitting in a queue to send notifications (not implemented).
+
+    virtual void DoWork() = 0;
+
+    void MarkAsStarted() { m_IsStarted = true; m_IsActive = true; }
+    void MarkAsFinished() { m_IsActive = false; m_IsFinished = true; }
 
 public:
     MyJob()
     {
         m_IsStarted = false;
-        m_IsFinished = true;
+        m_IsActive = false;
+        m_IsFinished = false;
     }
 
     virtual ~MyJob()
     {
     }
 
-    void MarkAsStarted()
-    {
-        m_IsStarted = true;
-    }
-
-    virtual void DoWork() = 0;
-
-    void MarkAsFinished()
-    {
-        m_IsFinished = true;
-    }
+    bool IsQueued() { return this->Prev != nullptr; } // If we're in a cpplist, we're queued.
+    bool IsStarted() { return m_IsStarted; }
+    bool IsActive() { return m_IsActive; }
+    bool IsFinished() { return m_IsFinished; }
+    void Reset() { MyAssert( m_IsFinished == true ); m_IsStarted = m_IsActive = m_IsFinished = false; }
 };
 
 class MyJobManager
@@ -49,7 +53,7 @@ class MyJobManager
 
 protected:
 #if USE_PTHREAD
-    MyThread* m_pThreads[MAX_THREADS];
+    MyJobThread* m_pThreads[MAX_THREADS];
 
     pthread_mutex_t m_JobListMutex;
     pthread_cond_t m_JobAvailableConditional;
@@ -71,5 +75,6 @@ public:
     void GetJobListMutexLock();
     void ReleaseJobListMutexLock();
 
-    void AddJob(MyJob* pItem, bool lockMutex = true);
+    void AddJob(MyJob* pJob, bool lockMutex = true);
+    void WaitForJobToComplete(MyJob* pJob);
 };
