@@ -221,7 +221,8 @@ void MySubmesh::Draw(MaterialDefinition* pMaterial, MyMesh* pMesh, MyMatrix* pMa
         MyAssert( numIndicesToDraw > 0 );
         pIndexBuffer->Rebuild( 0, numIndicesToDraw*pIndexBuffer->GetBytesPerIndex() );
     }
-    MyAssert( ( numIndicesToDraw == 0 || pIndexBuffer == nullptr || pIndexBuffer->IsDirty() == false ) && pVertexBuffer->IsDirty() == false );
+    // Buffers may be dirty if another thread starts modifying their "CPU" copies between the code above and here.
+    //MyAssert( ( numIndicesToDraw == 0 || pIndexBuffer == nullptr || pIndexBuffer->IsDirty() == false ) && pVertexBuffer->IsDirty() == false );
 
     if( pShaderOverride )
     {

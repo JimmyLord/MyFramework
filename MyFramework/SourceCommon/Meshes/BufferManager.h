@@ -38,6 +38,7 @@ public:
 
     // Getters.
     bool IsDirty() { return m_Dirty; }
+    void MarkDirty() { m_Dirty = true; }
     void* GetData(bool markDirty);
     uint32 GetDataSize() { return m_DataSize; }
     VertexFormats GetVertexFormat();
