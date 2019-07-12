@@ -137,8 +137,11 @@ MyJob* MyJobManager::RemoveJob(pthread_t threadID)
     // List is emptied in destructor when shutting down.
     //LOGInfo( "Threaded Job Manager", "Thread %d taking a job\n", threadID );
     MyJob* pJob = (MyJob*)m_JobList.RemHead();
-    pJob->Prev = nullptr;
-    pJob->Next = nullptr;
+    if( pJob )
+    {
+        pJob->Prev = nullptr;
+        pJob->Next = nullptr;
+    }
 
     pthread_mutex_unlock( &m_JobListMutex );
 

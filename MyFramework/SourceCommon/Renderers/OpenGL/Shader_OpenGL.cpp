@@ -851,25 +851,33 @@ void Shader_OpenGL::ProgramTransforms(MyMatrix* pMatProj, MyMatrix* pMatView, My
         pMatViewProj = &temp;
         *pMatViewProj = *pMatProj * *pMatView;
     }
+    else if( pMatProj )
+    {
+        pMatViewProj = pMatProj;
+    }
+    else if( pMatView )
+    {
+        pMatViewProj = pMatView;
+    }
 
     if( m_uHandle_WorldViewProj != -1 )
     {
-        MyMatrix temp;
+        MyMatrix tempWorldViewProj;
         if( pMatWorld )
         {
-            temp = *pMatWorld;
+            tempWorldViewProj = *pMatWorld;
             if( pMatViewProj )
-                temp = *pMatViewProj * temp;
+                tempWorldViewProj = *pMatViewProj * tempWorldViewProj;
         }
         else
         {
             if( pMatViewProj )
-                temp = *pMatViewProj;
+                tempWorldViewProj = *pMatViewProj;
             else
-                temp.SetIdentity();
+                tempWorldViewProj.SetIdentity();
         }
 
-        glUniformMatrix4fv( m_uHandle_WorldViewProj, 1, false, (GLfloat*)&temp.m11 );
+        glUniformMatrix4fv( m_uHandle_WorldViewProj, 1, false, (GLfloat*)&tempWorldViewProj.m11 );
     }
 
     if( m_uHandle_View != -1 )
