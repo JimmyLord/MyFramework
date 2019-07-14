@@ -114,6 +114,7 @@ public:
 
     // Getters.
     ResourceManagers* GetManagers() { return &m_Managers; }
+    Renderer_Base* GetRenderer() { return m_pRenderer; }
     bool HasOneTimeInitBeenCalled() { return m_OneTimeInitWasCalled; }
     bool IsGLSurfaceIsValid();
 
