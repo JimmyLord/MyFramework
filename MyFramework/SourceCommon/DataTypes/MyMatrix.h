@@ -45,6 +45,8 @@ public:
     //    , m13(o.m13), m23(o.m23), m33(o.m33), m43(o.m43)
     //    , m14(o.m14), m24(o.m24), m34(o.m34), m44(o.m44) {}
 
+    static const MyMatrix Identity() { return MyMatrix( 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 ); }
+
     // The following functions will affect existing values in the matrix.
     void Scale(float scale);
     void Scale(float sx, float sy, float sz);

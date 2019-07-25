@@ -18,6 +18,8 @@ public:
 
 public:
     Plane() {}
+    Plane(Vector3 normal, float distance);
+    Plane(Vector3 normal, Vector3 point);
 
     inline void Set(Vector3 normal, float distance) { m_Normal = normal; m_Normal.Normalize(); m_Distance = distance; }
     void Set(Vector3 normal, Vector3 point);

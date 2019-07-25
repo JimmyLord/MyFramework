@@ -11,6 +11,16 @@
 
 #include "Plane.h"
 
+Plane::Plane(Vector3 normal, float distance)
+{
+    Set( normal, distance );
+}
+
+Plane::Plane(Vector3 normal, Vector3 point)
+{
+    Set( normal, point );
+}
+
 void Plane::Set(Vector3 normal, Vector3 point)
 {
     m_Normal = normal;
