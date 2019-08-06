@@ -92,6 +92,7 @@ protected:
 public:
     static bool DoesFileExist(const char* fullpath);
     MyFileObject* LoadFileNow(const char* fullpath);
+    void ReloadFileNow(MyFileObject* pFile);
 
     void RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction* pFunc);
     void Editor_UnloadFile(MyFileObject* pFile);

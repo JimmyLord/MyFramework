@@ -176,16 +176,43 @@ void LaunchURL(const char* url)
 #endif
 }
 
-void LaunchApplication(const char* appname, const char* arguments)
+void LaunchApplication(const char* appname, const char* arguments, bool hidden, bool async)
 {
 #if MYFW_WINDOWS
-    //wchar_t appnameWide[512];
-    //mbstowcs_s( 0, appnameWide, appname, 512 );
-    //wchar_t argumentsWide[512];
+    ////wchar_t appnameWide[512];
+    ////mbstowcs_s( 0, appnameWide, appname, 512 );
+    ////wchar_t argumentsWide[512];
     if( arguments != 0 )
     {
-        //mbstowcs_s( 0, argumentsWide, arguments, 512 );
-        ShellExecute( NULL, "open", appname, arguments, 0, SW_SHOWNORMAL );
+        ////mbstowcs_s( 0, argumentsWide, arguments, 512 );
+        //ShellExecute( NULL, "open", appname, arguments, 0, SW_SHOWNORMAL );
+
+        SHELLEXECUTEINFOA info = { 0 };
+        info.cbSize = sizeof( SHELLEXECUTEINFOA );
+        info.fMask = SEE_MASK_NOCLOSEPROCESS;
+        info.hwnd = 0;
+        info.lpVerb = nullptr;
+        info.lpFile = appname;
+        info.lpParameters = arguments;
+        info.lpDirectory = nullptr;
+        info.nShow = hidden ? SW_HIDE : SW_SHOWNOACTIVATE;
+        info.hInstApp = 0;
+
+        DWORD errorcode = 1;
+        BOOL success = ShellExecuteExA( &info );
+
+        // If Shell execute gives a process handle, wait for it to finish.
+        if( async == false && info.hProcess )
+        {
+            WaitForSingleObject( info.hProcess, INFINITE );
+            GetExitCodeProcess( info.hProcess, &errorcode ); // Get actual return value from process.
+            //TerminateProcess( info.hProcess );
+            CloseHandle( info.hProcess );
+        }
+        else if( success == 1 ) // If it simply returns success, we're good?
+        {
+            errorcode = 0;
+        }
     }
     else
     {

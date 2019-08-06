@@ -459,6 +459,28 @@ MyFileObject* FileManager::LoadFileNow(const char* fullpath)
     return pFile;
 }
 
+void FileManager::ReloadFileNow(MyFileObject* pFile)
+{
+    MyAssert( pFile );
+    MyAssert( FileManager::DoesFileExist( pFile->GetFullPath() ) == true );
+
+    ReloadFile( pFile );
+
+    while( pFile->m_FileLoadStatus < FileLoadStatus_Success )
+    {
+        pFile->Tick();
+
+        if( pFile->m_FileLoadStatus == FileLoadStatus_LoadedButNotFinalized )
+            pFile->m_FileLoadStatus = FileLoadStatus_Success;
+    }
+
+    if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
+    {
+        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+        FinishSuccessfullyLoadingFile( pFile );
+    }
+}
+
 void FileManager::RegisterFileUnloadedCallback(void* pObject, FileManager_Editor_OnFileUnloaded_CallbackFunction* pFunc)
 {
     m_pFileUnloadedCallbackObj = pObject;
