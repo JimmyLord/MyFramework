@@ -9,6 +9,8 @@
 
 #include "MyFrameworkPCH.h"
 
+#include <sstream>
+
 #include "ExternalTools.h"
 
 #if MYFW_ANDROID
@@ -176,47 +178,91 @@ void LaunchURL(const char* url)
 #endif
 }
 
-void LaunchApplication(const char* appname, const char* arguments, bool hidden, bool async)
+void LaunchApplication(const char* appname, const char* arguments, bool hidden, bool async, std::vector<std::string>* pOutput)
 {
 #if MYFW_WINDOWS
-    ////wchar_t appnameWide[512];
-    ////mbstowcs_s( 0, appnameWide, appname, 512 );
-    ////wchar_t argumentsWide[512];
-    if( arguments != 0 )
     {
-        ////mbstowcs_s( 0, argumentsWide, arguments, 512 );
-        //ShellExecute( NULL, "open", appname, arguments, 0, SW_SHOWNORMAL );
+        HANDLE hChildStdoutRd = 0;
+        HANDLE hChildStdoutWr = 0;
 
-        SHELLEXECUTEINFOA info = { 0 };
-        info.cbSize = sizeof( SHELLEXECUTEINFOA );
-        info.fMask = SEE_MASK_NOCLOSEPROCESS;
-        info.hwnd = 0;
-        info.lpVerb = nullptr;
-        info.lpFile = appname;
-        info.lpParameters = arguments;
-        info.lpDirectory = nullptr;
-        info.nShow = hidden ? SW_HIDE : SW_SHOWNOACTIVATE;
-        info.hInstApp = 0;
+        // Setup some structs needed to create the stdout pipe.
+        SECURITY_ATTRIBUTES securityAttributes;
+        securityAttributes.nLength = sizeof( SECURITY_ATTRIBUTES );
+        securityAttributes.bInheritHandle = true;
+        securityAttributes.lpSecurityDescriptor = nullptr;
 
-        DWORD errorcode = 1;
-        BOOL success = ShellExecuteExA( &info );
+        // Create a pipe and set StdOut's Inherit flag to false.
+        bool success = CreatePipe( &hChildStdoutRd, &hChildStdoutWr, &securityAttributes, 0 );
+        MyAssert( success );
+        success = SetHandleInformation( hChildStdoutRd, HANDLE_FLAG_INHERIT, 0 );
+        MyAssert( success );
 
-        // If Shell execute gives a process handle, wait for it to finish.
-        if( async == false && info.hProcess )
+        // Setup some structs needed to create the process with the pipe created above.
+        PROCESS_INFORMATION processInfo;
+        ZeroMemory( &processInfo, sizeof( PROCESS_INFORMATION ) );
+
+        STARTUPINFO startupInfo;
+        ZeroMemory( &startupInfo, sizeof( STARTUPINFO ) );
+        startupInfo.cb = sizeof( STARTUPINFO );
+        startupInfo.hStdError = hChildStdoutWr;
+        startupInfo.hStdOutput = hChildStdoutWr;
+        startupInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+        std::string command = std::string( "cmd.exe /C \"" ) + std::string( appname ) + "\" " + arguments;
+
+        DWORD creationFlags = 0;
+        if( hidden )
+            creationFlags |= CREATE_NO_WINDOW;
+
+        // Execute a synchronous child process & get exit code.
+        success = CreateProcess(
+            nullptr,                // Application name.
+            (LPSTR)command.c_str(), // Command line.
+            nullptr,                // Process security attributes.
+            nullptr,                // Primary thread security attributes.
+            true,                   // Handles are inherited.
+            creationFlags,          // Creation flags.
+            nullptr,                // Use parent's environment.
+            nullptr,                // Use parent's current directory.
+            &startupInfo,           // STARTUPINFO pointer.
+            &processInfo            // Receives PROCESS_INFORMATION.
+        );
+        MyAssert( success );
+
+        DWORD exitCode = 1;
+        WaitForSingleObject( processInfo.hProcess, INFINITE );
+        GetExitCodeProcess( processInfo.hProcess, &exitCode );
+
+        // Return if the caller is not requesting the stdout results.
+        if( pOutput == nullptr )
+            return;
+
+        // Get the number of chars in the pipe.
+        DWORD bytesInPipe = 0;
+        success = PeekNamedPipe( hChildStdoutRd, nullptr, 0, nullptr, &bytesInPipe, nullptr );
+        MyAssert( success );
+        if( bytesInPipe == 0 )
+            return;
+
+        // Read the data written to the pipe.
+        DWORD bytesRead;
+        char* pipeContents = new char[bytesInPipe+1];
+        success = ReadFile( hChildStdoutRd, pipeContents, bytesInPipe, &bytesRead, nullptr );
+        pipeContents[bytesInPipe] = '\0';
+        MyAssert( success || bytesRead == 0 );
+
+        // Split the data into lines and add them to the return vector.
+        std::stringstream stream( pipeContents );
+        std::string str;
+        while( getline( stream, str ) )
         {
-            WaitForSingleObject( info.hProcess, INFINITE );
-            GetExitCodeProcess( info.hProcess, &errorcode ); // Get actual return value from process.
-            //TerminateProcess( info.hProcess );
-            CloseHandle( info.hProcess );
+            pOutput->push_back( str );
         }
-        else if( success == 1 ) // If it simply returns success, we're good?
-        {
-            errorcode = 0;
-        }
-    }
-    else
-    {
-        ShellExecute( NULL, "open", appname, 0, 0, SW_SHOWNORMAL );
+
+        delete[] pipeContents;
+
+        CloseHandle( processInfo.hProcess );
+        CloseHandle( processInfo.hThread );
     }
 #elif MYFW_OSX
     // TODO: pass arguments to process.
