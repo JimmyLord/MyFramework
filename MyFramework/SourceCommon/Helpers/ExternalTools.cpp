@@ -178,6 +178,27 @@ void LaunchURL(const char* url)
 #endif
 }
 
+void LaunchFileInDefaultApp(const char* filePath)
+{
+#if MYFW_WINDOWS
+    char fullPath[MAX_PATH];
+
+    // If the file path contains a ':', consider it a full path, otherwise consider it relative.
+    if( strstr( filePath, ":" ) )
+    {
+        sprintf_s( fullPath, MAX_PATH, "%s", filePath );
+    }
+    else
+    {
+        char workingDir[MAX_PATH];
+        _getcwd( workingDir, MAX_PATH * sizeof(char) );
+        sprintf_s( fullPath, MAX_PATH, "%s/%s", workingDir, filePath );
+    }
+
+    ShellExecuteA( 0, nullptr, fullPath, nullptr, nullptr, SW_SHOWNORMAL );
+#endif
+}
+
 void LaunchApplication(const char* appname, const char* arguments, bool hidden, bool async, std::vector<std::string>* pOutput)
 {
 #if MYFW_WINDOWS

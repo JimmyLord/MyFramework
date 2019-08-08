@@ -146,6 +146,7 @@ void SetRenderMode(bool continuous);
 void SetExitOnBackButton(bool exit);
 void SetMusicVolume(float volume);
 void LaunchURL(const char* url);
+void LaunchFileInDefaultApp(const char* filePath);
 void LaunchApplication(const char* appname, const char* arguments, bool hidden = false, bool async = true, std::vector<std::string>* pOutput = nullptr);
 void ShareString(const char* subject, const char* body);
 void ShowKeyboard(bool show);

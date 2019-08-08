@@ -429,7 +429,7 @@ bool FileManager::DoesFileExist(const char* fullpath) // Static
     if( data.dwFileAttributes != 0 )
         return true;
 #else
-    return true;
+    MyAssert( false );
 #endif
 
     return false;
