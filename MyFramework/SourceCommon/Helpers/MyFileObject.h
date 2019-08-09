@@ -14,6 +14,10 @@
 
 class MyFileObject;
 
+#if MYFW_WINDOWS
+FileTimeStamp GetFileLastModifiedTime(const char* path);
+#endif
+
 #if MYFW_EDITOR
 char* PlatformSpecific_LoadFile(const char* relativePath, int* length = nullptr, const char* file = __FILE__, unsigned long line = __LINE__);
 #endif

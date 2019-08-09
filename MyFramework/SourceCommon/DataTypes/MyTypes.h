@@ -20,6 +20,7 @@ typedef unsigned __int8 uint8;
 typedef unsigned __int16 uint16;
 typedef unsigned __int32 uint32;
 typedef unsigned __int64 uint64;
+typedef uint64 FileTimeStamp;
 
 #elif MYFW_NACL || MYFW_LINUX
 
@@ -31,6 +32,7 @@ typedef __uint8_t uint8;
 typedef __uint16_t uint16;
 typedef __uint32_t uint32;
 typedef __uint64_t uint64;
+typedef uint64 FileTimeStamp;
 
 #elif MYFW_BLACKBERRY10 || MYFW_EMSCRIPTEN
 
@@ -44,6 +46,7 @@ typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
+typedef uint64 FileTimeStamp;
 
 #else
 
@@ -55,6 +58,7 @@ typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
+typedef uint64 FileTimeStamp;
 
 #endif
 

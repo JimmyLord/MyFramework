@@ -22,6 +22,25 @@ void GetFileData(const char* path, WIN32_FIND_DATAA* data)
     if( handle != INVALID_HANDLE_VALUE )
         FindClose( handle );
 }
+
+FileTimeStamp GetFileLastModifiedTime(const char* path)
+{
+    WIN32_FIND_DATAA data;
+    memset( &data, 0, sizeof( data ) );
+    GetFileData( path, &data );
+
+    FileTimeStamp timeStamp = (uint64)(data.ftLastWriteTime.dwHighDateTime) << 32 | (uint64)data.ftLastWriteTime.dwLowDateTime;
+    return timeStamp;
+}
+#else
+FileTimeStamp GetFileLastModifiedTime(const char* path)
+{
+    MyAssert( false ); // Test this.
+
+    struct stat data;
+    stat( m_FullPath, &data );
+    return data.st_mtime;
+}
 #endif
 
 char* PlatformSpecific_LoadFile(const char* relativePath, int* length, const char* file, unsigned long line)
