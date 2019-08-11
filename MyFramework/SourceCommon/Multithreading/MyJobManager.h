@@ -46,6 +46,28 @@ public:
     void Reset() { MyAssert( m_IsFinished == true ); m_IsStarted = m_IsActive = m_IsFinished = false; }
 };
 
+class JobWithCallbackFunction : public MyJob
+{
+    typedef void JobCallbackFunction(void* pObject);
+
+protected:
+    void* m_pObject;
+    JobCallbackFunction* m_pFunction;
+
+public:
+    JobWithCallbackFunction(void* pObject, JobCallbackFunction* pFunction)
+    {
+        m_pObject = pObject;
+        m_pFunction = pFunction;
+    }
+    virtual ~JobWithCallbackFunction() {}
+
+    virtual void DoWork()
+    {
+        m_pFunction( m_pObject );
+    }
+};
+
 class MyJobManager
 {
     friend class MyJobThread;

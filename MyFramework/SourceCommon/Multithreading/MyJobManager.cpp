@@ -111,6 +111,8 @@ void MyJobManager::ReleaseJobListMutexLock()
 
 void MyJobManager::AddJob(MyJob* pJob, bool lockMutex)
 {
+    MyAssert( pJob->Prev == nullptr );
+
     if( lockMutex )
         pthread_mutex_lock( &m_JobListMutex );
     
