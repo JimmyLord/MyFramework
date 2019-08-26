@@ -178,6 +178,7 @@ void LaunchURL(const char* url)
 #endif
 }
 
+#if MYFW_EDITOR
 void LaunchFileInDefaultApp(const char* filePath)
 {
 #if MYFW_WINDOWS
@@ -290,6 +291,7 @@ void LaunchApplication(const char* appname, const char* arguments, bool hidden, 
     system( appname );
 #endif
 }
+#endif
 
 void ShareString(const char* subject, const char* body)
 {

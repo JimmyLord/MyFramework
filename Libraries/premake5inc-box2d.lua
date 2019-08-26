@@ -39,5 +39,6 @@ project "Box2D"
         defines         "NDEBUG"
         optimize        "Full"
 
-    filter { "system:windows", "configurations:Release" }
-        buildoptions    { "\\GF" } -- /GF -> Enable String Pooling 
+-- String pooling is causing build errors in VS2019, don't feel like looking into it, so disabling.
+--    filter { "system:windows", "configurations:Release" }
+--        buildoptions    { "\\GF" } -- /GF -> Enable String Pooling 
