@@ -84,6 +84,9 @@ project "MyFramework"
            }
         flags           "ExcludeFromBuild"
 
+    filter "files:Libraries/LodePNG/**"
+        disablewarnings { "4551", "4334", "4267" }
+
     filter "configurations:Debug or EditorDebug"
         defines         "_DEBUG"
         symbols         "on"
