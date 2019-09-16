@@ -10,6 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include <sstream>
+#include <direct.h>
 
 #include "ExternalTools.h"
 

@@ -366,7 +366,10 @@ void GameCore::OnDrawFrameDone()
     //LOGInfo( LOGTag, "OnDrawFrame()\n" );
 
 #if MYFW_EDITOR
-    m_pCommandStack->IncrementFrameCount();
+    if( m_pCommandStack )
+    {
+        m_pCommandStack->IncrementFrameCount();
+    }
 #endif
 }
 

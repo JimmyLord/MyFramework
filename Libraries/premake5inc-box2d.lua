@@ -18,8 +18,8 @@ project "Box2D"
     objdir              "$(SolutionDir)Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
 
     includedirs {
-        "$(SolutionDir)../Framework/Libraries/b2Settings",
-        "$(SolutionDir)../Framework/Libraries/Box2D",
+        "b2Settings",
+        "Box2D",
     }
 
     files {

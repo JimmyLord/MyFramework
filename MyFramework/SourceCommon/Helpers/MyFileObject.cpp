@@ -9,6 +9,8 @@
 
 #include "MyFrameworkPCH.h"
 
+#include <direct.h>
+
 #include "FileManager.h"
 #include "MyFileObject.h"
 

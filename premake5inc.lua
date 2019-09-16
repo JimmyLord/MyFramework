@@ -98,7 +98,11 @@ project "MyFramework"
     filter "configurations:EditorDebug or EditorRelease"
         defines         { "MYFW_EDITOR", "MYFW_USING_IMGUI" }
 
+if MyFrameworkPremakeConfig_ForceIncludeEditorFiles == true then
+    filter {}
+else
     filter "configurations:EditorDebug or EditorRelease"
+end
         files {
             "MyFramework/SourceEditor/**.cpp",
             "MyFramework/SourceEditor/**.h",
