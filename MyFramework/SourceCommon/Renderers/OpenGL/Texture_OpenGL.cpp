@@ -19,6 +19,11 @@ Texture_OpenGL::Texture_OpenGL()
     m_TextureID = 0;
 }
 
+Texture_OpenGL::Texture_OpenGL(GLuint textureID)
+{
+    m_TextureID = textureID;
+}
+
 Texture_OpenGL::~Texture_OpenGL()
 {
     // Explicit call to virtual Invalidate() in this class.

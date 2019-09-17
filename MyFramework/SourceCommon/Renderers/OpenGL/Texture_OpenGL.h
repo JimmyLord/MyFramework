@@ -21,6 +21,7 @@ protected:
 
 public:
     Texture_OpenGL();
+    Texture_OpenGL(GLuint textureID);
     virtual ~Texture_OpenGL();
 
     // Getters.
