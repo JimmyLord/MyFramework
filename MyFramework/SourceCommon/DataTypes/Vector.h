@@ -30,6 +30,7 @@ public:
     inline void Set(float nx, float ny) { x = nx; y = ny; }
     inline float LengthSquared() const { return x*x + y*y; }
     inline float Length() const { return sqrtf(x*x + y*y); }
+    inline float DistanceFrom(const Vector2 o) const { return sqrtf( (x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) ); }
 
     inline Vector2 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector2(x,y); len = 1.0f/len; return Vector2(x*len, y*len); }
     inline Vector2 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; } return *this; }
@@ -97,6 +98,7 @@ public:
     inline void Set(float nx, float ny, float nz) { x = nx; y = ny; z = nz; }
     inline float LengthSquared() const { return x*x + y*y + z*z; }
     inline float Length() const { return sqrtf(x*x + y*y + z*z); }
+    inline float DistanceFrom(const Vector3 o) const { return sqrtf( (x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z) ); }
 
     inline Vector3 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector3(x,y,z); len = 1.0f/len; return Vector3(x*len, y*len, z*len);}
     inline Vector3 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; z /= len; } return *this; }
@@ -165,6 +167,7 @@ public:
     inline void Set(float nx, float ny, float nz, float nw) { x = nx; y = ny; z = nz; w = nw; }
     inline float LengthSquared() const {return x*x + y*y + z*z + w*w;}
     inline float Length() const { return sqrtf(x*x + y*y + z*z + w*w); }
+    inline float DistanceFrom(const Vector4 o) const { return sqrtf( (x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z) + (w-o.w)*(w-o.w) ); }
 
     inline Vector4 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector4(x,y,z,w); len = 1.0f/len; return Vector4(x*len, y*len, z*len, w*len); }
     inline Vector4 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; z /= len; w /= len; } return *this; }
@@ -235,6 +238,7 @@ public:
     inline void Set(int nx, int ny) { x = nx; y = ny; }
     inline float LengthSquared() const {return (float)x*x + y*y;}
     inline float Length() const {return sqrtf((float)x*x + y*y);}
+    inline float DistanceFrom(const Vector2Int o) const { return sqrtf( ((float)x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) ); }
 
     //inline Vector2Int Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector2Int(x,y); len = 1.0f/len; return Vector2Int(x*len, y*len);}
 
@@ -295,6 +299,7 @@ public:
     inline void Set(Vector3Int vec) { x = vec.x; y = vec.y; z = vec.z; }
     inline int LengthSquared() const { return x*x + y*y + z*z; }
     inline float Length() const { return sqrtf((float)x*x + y*y + z*z); }
+    inline float DistanceFrom(const Vector3Int o) const { return sqrtf( ((float)x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z) ); }
 
     //inline Vector3Int Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector3Int(x,y,z); len = 1.0f/len; return Vector3Int(x*len, y*len, z*len);}
     //inline Vector3Int Cross(const Vector3Int& o) const {return Vector3Int( (y*o.z - z*o.y), (z*o.x - x*o.z), (x*o.y - y*o.x) );}
@@ -364,6 +369,7 @@ public:
     inline void Set(int nx, int ny, int nz, int nw) { x = nx; y = ny; z = nz; w = nw; }
     inline float LengthSquared() const {return (float)x*x + y*y + z*z + w*w;}
     inline float Length() const {return sqrtf((float)x*x + y*y + z*z + w*w);}
+    inline float DistanceFrom(const Vector4Int o) const { return sqrtf( ((float)x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) + (z-o.z)*(z-o.z) + (w-o.w)*(w-o.w) ); }
 
     //inline Vector4Int Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector4Int(x,y,z); len = 1.0f/len; return Vector4Int(x*len, y*len, z*len);}
     //inline Vector4Int Cross(const Vector4Int& o) const {return Vector4Int( (y*o.z - z*o.y), (z*o.x - x*o.z), (x*o.y - y*o.x) );}
@@ -418,6 +424,7 @@ public:
     inline void Set(MyType nx, MyType ny) { x = nx; y = ny; }
     inline float LengthSquared() const {return (float)x*x + y*y;}
     inline float Length() const {return sqrtf((float)x*x + y*y);}
+    inline float DistanceFrom(const Vector2T<MyType>& o) const { return sqrtf( ((float)x-o.x)*(x-o.x) + (y-o.y)*(y-o.y) ); }
 
     inline Vector2T<MyType> GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector2T<MyType>(x,y); len = 1.0f/len; return Vector2T<MyType>(x*len, y*len); }
     //inline Vector2T<MyType> Normalize() const {float len = Length(); if( fequal(len,0) ) return Vector2T<MyType>(x,y); len = 1.0f/len; return Vector2T<MyType>(x*len, y*len);}
