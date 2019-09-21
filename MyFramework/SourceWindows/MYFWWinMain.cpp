@@ -1050,6 +1050,8 @@ int MYFWWinMain(GameCore* pGameCore, int width, int height)
         }
     }
 
+    pGameCore->OnPrepareToDie();
+
     KillGLWindow();
 
     WSACleanup();
