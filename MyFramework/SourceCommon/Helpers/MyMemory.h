@@ -16,11 +16,11 @@
 #define SAFE_DELETE_ARRAY(x) { delete[] x; x = nullptr; }
 #define SAFE_RELEASE(x) { if( x ) (x)->Release(); x = nullptr; }
 
-#if !MYFW_WINDOWS
+#if !MYFW_WINDOWS || !MYFW_USE_MEMORY_TRACKER
 
 #define MyNew new
 
-#elif MYFW_WINDOWS
+#else //MYFW_WINDOWS && MYFW_USE_MEMORY_TRACKER
 
 enum NewTypes
 {
@@ -69,6 +69,6 @@ void* operator new[](size_t size);
 void operator delete(void* ptr);
 void operator delete[](void* ptr);
 
-#endif //MYFW_WINDOWS
+#endif //MYFW_WINDOWS && MYFW_USE_MEMORY_TRACKER
 
 #endif //__MyMemory_H__

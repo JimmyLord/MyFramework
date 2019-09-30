@@ -9,7 +9,7 @@
 
 #include "MyFrameworkPCH.h"
 
-#if MYFW_WINDOWS
+#if MYFW_WINDOWS && MYFW_USE_MEMORY_TRACKER
 
 #define MEMORY_ShowDebugInfo    0
 #define CountToAssertOn         UINT_MAX    // Set this to assert when 'new' has been called this many times.
@@ -291,4 +291,4 @@ void operator delete[](void* ptr)
     ActualDelete( NewType_Array, ptr );
 }
 
-#endif //MYFW_WINDOWS
+#endif //MYFW_WINDOWS && MYFW_USE_MEMORY_TRACKER

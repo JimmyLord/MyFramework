@@ -1,9 +1,13 @@
 -- This is not a complete premake5 lua script, it's meant to be included from another script that defines the workspace.
 -- Like this, for example:
---     local rootDir = os.getcwd();
+--     local rootDir = os.getcwd()
 --     os.chdir( "../Engine/" )
 --     include( "premake5inc.lua" )
 --     os.chdir( rootDir )
+
+if PremakeConfig_UseMemoryTracker == nil then
+    PremakeConfig_UseMemoryTracker = true
+end
 
 project "MyFramework"
     configurations      { "Debug", "Release", "EditorDebug", "EditorRelease" }
@@ -90,6 +94,9 @@ project "MyFramework"
     filter "configurations:Debug or EditorDebug"
         defines         "_DEBUG"
         symbols         "on"
+if PremakeConfig_UseMemoryTracker == true then
+        defines         "MYFW_USE_MEMORY_TRACKER"
+end
 
     filter "configurations:Release or EditorRelease"
         defines         "NDEBUG"
@@ -97,6 +104,9 @@ project "MyFramework"
 
     filter "configurations:EditorDebug or EditorRelease"
         defines         { "MYFW_EDITOR", "MYFW_USING_IMGUI" }
+if PremakeConfig_UseMemoryTracker == true then
+        defines         "MYFW_USE_MEMORY_TRACKER"
+end
 
 if MyFrameworkPremakeConfig_ForceIncludeEditorFiles == true then
     filter {}

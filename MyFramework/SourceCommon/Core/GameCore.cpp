@@ -261,7 +261,7 @@ float GameCore::Tick(float deltaTime)
 
     GenerateKeyHeldMessages();
 
-#if MYFW_WINDOWS
+#if MYFW_WINDOWS && MYFW_USE_MEMORY_TRACKER
     size_t numbytesallocated = MyMemory_GetNumberOfBytesAllocated();
 #endif
 
