@@ -172,6 +172,7 @@ public:
     void CreatePlane(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount, Vector2 uvStart, Vector2 uvRange, bool createTriangles = true);
     void CreatePlaneUVsNotShared(Vector3 topLeftPos, Vector2 size, Vector2Int vertCount, Vector2 uvStart, Vector2 uvRange, bool createTriangles = true);
     void CreateIcosphere(float radius, unsigned int recursionLevel);
+    void CreateCone(float radius, unsigned short numSegments, float height);
     void Create2DCircle(float radius, unsigned int numberOfSegments);
     void Create2DArc(Vector3 origin, float startAngle, float endAngle, float startRadius, float endRadius, unsigned int numberOfSegments);
     void CreateGrass(Vector3 topLeftPos, Vector2 size, Vector2Int bladeCount, Vector2 bladeSize);

@@ -1049,6 +1049,38 @@ void MyMesh::CreateIcosphere(float radius, unsigned int recursionLevel)
     //}
 }
 
+void MyMesh::CreateCone(float radius, unsigned short numSegments, float height)
+{
+    int numVerts = 1 + numSegments + 1; // Center + loop + repeat of first to close shape.
+
+    // Reinitialize the submesh properties along with the vertex buffer.
+    RebuildShapeBuffers( numVerts, VertexFormat_XYZ, MyRE::PrimitiveType_TriangleFan, 0, MyRE::IndexType_Undefined, "MyMesh_Cone" );
+
+    Vertex_XYZ* pVerts = (Vertex_XYZ*)m_SubmeshList[0]->m_pVertexBuffer->GetData( true );
+
+    float angleChange = -2.0f * PI / numSegments;
+
+    // Center.
+    pVerts[0].x = 0.0f;
+    pVerts[0].y = 0.0f;
+    pVerts[0].z = 0.0f;
+
+    // Loop.
+    for( int i=0; i<numSegments; i++ )
+    {
+        pVerts[1 + i].x = cosf( i*angleChange ) * radius;
+        pVerts[1 + i].y = -height;
+        pVerts[1 + i].z = sinf( i*angleChange ) * radius;
+    }
+
+    // Repeat vert 1 to close shape.
+    pVerts[numVerts-1] = pVerts[1];
+
+    m_AABounds.Set( Vector3(0, height/2, 0), Vector3(radius, height/2, radius) );
+
+    m_MeshReady = true;
+}
+
 void MyMesh::Create2DCircle(float radius, unsigned int numberOfSegments)
 {
     int numVerts = numberOfSegments;
