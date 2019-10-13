@@ -46,6 +46,7 @@ public:
     uint32 GetStride();
     uint32 GetBytesPerIndex();
     uint32 GetMemoryUsage();
+    Buffer_Base* GetBuffer() { return m_pBuffer; }
 
     // Stubs, clean up.
     // Getters.

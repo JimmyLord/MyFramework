@@ -53,6 +53,7 @@ public:
 
     // Getters.
     virtual MyRE::IndexTypes GetIBOType() override;
+    GLuint GetCurrentVAOHandle() { return m_CurrentVAOHandle; }
 
     // Other.
     virtual void TempBufferData(unsigned int bytesToBuffer, void* pData) override;
