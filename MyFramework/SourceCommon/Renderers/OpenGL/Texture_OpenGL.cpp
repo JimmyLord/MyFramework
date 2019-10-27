@@ -30,6 +30,16 @@ Texture_OpenGL::~Texture_OpenGL()
     Texture_OpenGL::Invalidate( true );
 }
 
+void Texture_OpenGL::SetWidth(uint32 w)
+{
+    m_Width = w;
+}
+
+void Texture_OpenGL::SetHeight(uint32 h)
+{
+    m_Height = h;
+}
+
 bool Texture_OpenGL::IsFullyLoaded()
 {
     // If m_FullyLoaded is set and we don't have a valid texture id, something is wrong.
@@ -45,6 +55,7 @@ GLuint Texture_OpenGL::GetTextureID()
 
 void Texture_OpenGL::GenerateTexture(unsigned char* pImageBuffer, uint32 width, uint32 height)
 {
+    MyAssert( m_TextureID == 0 );
     glGenTextures( 1, &m_TextureID );
     MyAssert( m_TextureID != 0 );
     glActiveTexture( GL_TEXTURE0 );

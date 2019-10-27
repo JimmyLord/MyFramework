@@ -24,6 +24,10 @@ public:
     Texture_OpenGL(GLuint textureID);
     virtual ~Texture_OpenGL();
 
+    // Setters.
+    void SetWidth(uint32 w);
+    void SetHeight(uint32 h);
+
     // Getters.
     virtual bool IsFullyLoaded() override;
     GLuint GetTextureID();
