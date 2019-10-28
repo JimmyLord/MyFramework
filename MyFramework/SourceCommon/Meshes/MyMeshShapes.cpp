@@ -89,7 +89,7 @@ void MyMesh::RebuildShapeBuffers(uint32 numVerts, VertexFormats vertexFormat, My
     }
 }
 
-void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
+void MyMesh::CreateClipSpaceQuad(Vector2 minUV, Vector2 maxUV)
 {
     unsigned short numVerts = 4;
     unsigned int numIndices = 0;
@@ -101,10 +101,10 @@ void MyMesh::CreateClipSpaceQuad(Vector2 maxUV)
 
     if( pVerts )
     {
-        pVerts[0].x = -1; pVerts[0].y =  1;   pVerts[0].u = 0;       pVerts[0].v = maxUV.y; // upper left
+        pVerts[0].x = -1; pVerts[0].y =  1;   pVerts[0].u = minUV.x; pVerts[0].v = maxUV.y; // upper left
         pVerts[1].x =  1; pVerts[1].y =  1;   pVerts[1].u = maxUV.x; pVerts[1].v = maxUV.y; // upper right
-        pVerts[2].x = -1; pVerts[2].y = -1;   pVerts[2].u = 0;       pVerts[2].v = 0;       // lower left
-        pVerts[3].x =  1; pVerts[3].y = -1;   pVerts[3].u = maxUV.x; pVerts[3].v = 0;       // lower right
+        pVerts[2].x = -1; pVerts[2].y = -1;   pVerts[2].u = minUV.x; pVerts[2].v = minUV.y; // lower left
+        pVerts[3].x =  1; pVerts[3].y = -1;   pVerts[3].u = maxUV.x; pVerts[3].v = minUV.y; // lower right
 
         m_AABounds.Set( Vector3( 0, 0, 0 ), Vector3( 0.5f, 0.5f, 0 ) );
     }

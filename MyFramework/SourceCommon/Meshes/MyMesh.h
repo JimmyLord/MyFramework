@@ -163,7 +163,7 @@ public:
     void CreateShapeBuffers(bool createIndexBuffer);
     void RebuildShapeBuffers(uint32 numVerts, VertexFormats vertexFormat, MyRE::PrimitiveTypes primitiveType, uint32 numIndices, MyRE::IndexTypes indexType, const char* category);
 
-    void CreateClipSpaceQuad(Vector2 maxUV);
+    void CreateClipSpaceQuad(Vector2 minUV, Vector2 maxUV);
     void CreateBox(float boxWidth, float boxHeight, float boxDepth, float startU, float endU, float startV, float endV, unsigned char justificationFlags, Vector3 offset);
     void CreateBox_XYZUV_RGBA(float boxWidth, float boxHeight, float boxDepth, float topStartU, float topEndU, float topStartV, float topEndV, float sideStartU, float sideEndU, float sideStartV, float sideEndV, unsigned char justificationFlags);
     void SetBoxVertexColors(ColorByte TL, ColorByte TR, ColorByte BL, ColorByte BR);
