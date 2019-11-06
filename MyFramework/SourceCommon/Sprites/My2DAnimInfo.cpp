@@ -336,14 +336,21 @@ void My2DAnimInfo::SaveAnimationControlFile()
     char* jsonstr = cJSON_Print( jRoot );
     cJSON_Delete( jRoot );
 
-    FILE* pFile;
+    FILE* pFile = nullptr;
 #if MYFW_WINDOWS
     fopen_s( &pFile, filename, "wb" );
 #else
     pFile = fopen( filename, "wb" );
 #endif
-    fprintf( pFile, "%s", jsonstr );
-    fclose( pFile );
+    if( pFile != nullptr )
+    {
+        fprintf( pFile, "%s", jsonstr );
+        fclose( pFile );
+    }
+    else
+    {
+        LOGError( "File failed to open: %s\n", filename );
+    }
 
     cJSONExt_free( jsonstr );
 }

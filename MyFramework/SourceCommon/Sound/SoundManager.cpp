@@ -211,10 +211,14 @@ void SoundCue::SaveSoundCue(const char* relativefolder)
 #else
         pFile = fopen( filename, "wb" );
 #endif
-        if( pFile )
+        if( pFile != nullptr )
         {
             fprintf( pFile, "%s", jsonstr );
             fclose( pFile );
+        }
+        else
+        {
+            LOGError( "File failed to open: %s\n", filename );
         }
 
         cJSONExt_free( jsonstr );

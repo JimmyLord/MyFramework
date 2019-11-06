@@ -94,9 +94,6 @@ project "MyFramework"
     filter "configurations:Debug or EditorDebug"
         defines         "_DEBUG"
         symbols         "on"
-if PremakeConfig_UseMemoryTracker == true then
-        defines         "MYFW_USE_MEMORY_TRACKER"
-end
 
     filter "configurations:Release or EditorRelease"
         defines         "NDEBUG"
@@ -104,9 +101,6 @@ end
 
     filter "configurations:EditorDebug or EditorRelease"
         defines         { "MYFW_EDITOR", "MYFW_USING_IMGUI" }
-if PremakeConfig_UseMemoryTracker == true then
-        defines         "MYFW_USE_MEMORY_TRACKER"
-end
 
 if MyFrameworkPremakeConfig_ForceIncludeEditorFiles == true then
     filter {}
@@ -117,3 +111,8 @@ end
             "MyFramework/SourceEditor/**.cpp",
             "MyFramework/SourceEditor/**.h",
         }
+
+if PremakeConfig_UseMemoryTracker == true then
+    filter "configurations:Debug or EditorDebug or EditorRelease"
+        defines         "MYFW_USE_MEMORY_TRACKER"
+end

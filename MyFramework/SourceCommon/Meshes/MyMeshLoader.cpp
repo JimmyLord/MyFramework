@@ -676,14 +676,21 @@ void MyMesh::SaveAnimationControlFile()
     char* jsonString = cJSON_Print( jRoot );
     cJSON_Delete( jRoot );
 
-    FILE* pFile;
+    FILE* pFile = nullptr;
 #if MYFW_WINDOWS
     fopen_s( &pFile, filename, "wb" );
 #else
     pFile = fopen( filename, "wb" );
 #endif
-    fprintf( pFile, "%s", jsonString );
-    fclose( pFile );
+    if( pFile != nullptr )
+    {
+        fprintf( pFile, "%s", jsonString );
+        fclose( pFile );
+    }
+    else
+    {
+        LOGError( "File failed to open: %s\n", filename );
+    }
 
     cJSONExt_free( jsonString );
 }
