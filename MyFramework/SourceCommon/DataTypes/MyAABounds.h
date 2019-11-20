@@ -85,10 +85,36 @@ public:
                          else { m_Min.y = pos2.y; m_Max.y = pos1.y; }
     }
 
-    bool IsOverlapped(const AABB2D& other)
+    bool IsOverlapped(const AABB2D& other) const
     {
         if( this->m_Min.x > other.m_Max.x || other.m_Min.x > this->m_Max.x ) return false;
         if( this->m_Min.y > other.m_Max.y || other.m_Min.y > this->m_Max.y ) return false;
+
+        return true;
+    }
+
+    // From: https://www.gamedev.net/forums/topic/338987-aabb---line-segment-intersection-test/
+    //       and naively adapted to 2D.
+    bool IntersectsRaySegment(const Vector2& rayStart, const Vector2& rayEnd) const
+    {
+        Vector2 d = (rayEnd - rayStart) * 0.5f;
+        Vector2 e = (m_Max - m_Min) * 0.5f;
+        Vector2 c = rayStart + d - (m_Min + m_Max) * 0.5f;
+        Vector2 ad = d.GetAbsolute();
+
+        if( fabsf(c[0]) > e[0] + ad[0] )
+            return false;
+        if( fabsf(c[1]) > e[1] + ad[1] )
+            return false;
+        //if( fabsf(c[2]) > e[2] + ad[2] )
+        //    return false;
+
+        //if( fabsf(d[1] * c[2] - d[2] * c[1]) > e[1] * ad[2] + e[2] * ad[1] + FEQUALEPSILON )
+        //    return false;
+        //if( fabsf(d[2] * c[0] - d[0] * c[2]) > e[2] * ad[0] + e[0] * ad[2] + FEQUALEPSILON )
+        //    return false;
+        if( fabsf(d[0] * c[1] - d[1] * c[0]) > e[0] * ad[1] + e[1] * ad[0] + FEQUALEPSILON )
+            return false;
 
         return true;
     }
