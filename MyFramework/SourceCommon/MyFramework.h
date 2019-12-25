@@ -36,8 +36,10 @@
 #include "DataTypes/MyQuaternion.h"
 #include "DataTypes/Plane.h"
 
+#if MYFW_USING_BOX2D
 #include "Physics/Box2DContactListener.h"
 #include "Physics/Box2DWorld.h"
+#endif
 
 #include "Events/EventTypeManager.h"
 #include "Events/MyEvent.h"

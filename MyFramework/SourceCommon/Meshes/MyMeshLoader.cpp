@@ -528,7 +528,7 @@ void MyMesh::ExportToFile(const char* filename) const
     fwrite( rawDelimiter, 5, 1, file );
 
     bytesWritten = ftell( file );
-    assert( bytesWritten % 4 == 0 );
+    MyAssert( bytesWritten % 4 == 0 );
 
     //for( unsigned int mati=0; mati<nummaterials; mati++ )
     unsigned int mati=0;

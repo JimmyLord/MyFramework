@@ -10,6 +10,12 @@
 #ifndef __MyFrameworkPCH_H__
 #define __MyFrameworkPCH_H__
 
+#if defined(MYFW_USE_BOX2D) && MYFW_USE_BOX2D == 0
+#define MYFW_USING_BOX2D 0
+#else
+#define MYFW_USING_BOX2D 1
+#endif
+
 #define USE_OPENGL 1
 #define USE_PTHREAD 1
 #if MYFW_WINDOWS
@@ -363,7 +369,9 @@ typedef unsigned long   u_long;
 #include "../../Libraries/OpenSimplexInC/open-simplex-noise.h"
 #include "../../Libraries/cJSON/cJSON.h"
 #include "../../Libraries/mtrand/mtrand.h"
+#if MYFW_USING_BOX2D
 #include "../../Libraries/Box2D/Box2D/Box2D.h"
+#endif
 
 #if MYFW_WINDOWS
 #if WINVER >= 0x0602

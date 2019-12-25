@@ -5,6 +5,11 @@
 --     include( "premake5inc.lua" )
 --     os.chdir( rootDir )
 
+-- To exclude Box2D, set 'PremakeConfig_UseBox2D' to false and add 'defines "MYFW_USE_BOX2D=0"' to your project.
+if PremakeConfig_UseBox2D == nil then
+    PremakeConfig_UseBox2D = true
+end
+
 if PremakeConfig_UseMemoryTracker == nil then
     PremakeConfig_UseMemoryTracker = true
 end
@@ -111,6 +116,16 @@ end
             "MyFramework/SourceEditor/**.cpp",
             "MyFramework/SourceEditor/**.h",
         }
+
+if PremakeConfig_UseBox2D == true then
+    filter {}
+        defines         "MYFW_USE_BOX2D"
+else
+    filter {}
+        defines         "MYFW_USE_BOX2D=0"
+    filter { "files:MyFramework/SourceCommon/Physics/Box2D**" }
+        flags           "ExcludeFromBuild"
+end
 
 if PremakeConfig_UseMemoryTracker == true then
     filter "configurations:Debug or EditorDebug or EditorRelease"
