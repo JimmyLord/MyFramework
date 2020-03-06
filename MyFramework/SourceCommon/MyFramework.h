@@ -171,6 +171,7 @@
 
 #include "Helpers/MyFileObject.h"
 #include "Shaders/MyFileObjectShader.h"
+#include "FileSystem/FileChangeDetector.h"
 #include "Helpers/FileManager.h"
 #include "Helpers/MyTime.h"
 #include "Helpers/ExternalTools.h"
