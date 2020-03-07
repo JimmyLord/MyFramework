@@ -14,7 +14,14 @@ class FileChangeDetector
 {
 protected:
 #if MYFW_WINDOWS
-    HANDLE m_ChangeHandle;
+    unsigned char* m_pBuffer;
+    int m_BufferSize;
+    OVERLAPPED m_Overlapped;
+
+    HANDLE m_DirectoryHandle;
+
+    void WatchForNextFileSystemChange();
+    static void CALLBACK NotificationCompletion(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
 #endif
 
 public:
