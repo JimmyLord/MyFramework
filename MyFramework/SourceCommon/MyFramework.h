@@ -137,6 +137,7 @@
     #include "../SourceWindows/SoundPlayerXAudio.h"
 #endif
 #include "../SourceWindows/SavedData.h"
+#include "../SourceWindows/FileChangeDetectorWindows.h"
 //#include "../SourceWindows/winpthreads/winpthreads.h"
 #include "Networking/WebRequest.h"
 #endif

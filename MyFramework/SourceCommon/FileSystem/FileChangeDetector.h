@@ -13,22 +13,12 @@
 class FileChangeDetector
 {
 protected:
-#if MYFW_WINDOWS
-    unsigned char* m_pBuffer;
-    int m_BufferSize;
-    OVERLAPPED m_Overlapped;
-
-    HANDLE m_DirectoryHandle;
-
-    void WatchForNextFileSystemChange();
-    static void CALLBACK NotificationCompletion(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
-#endif
 
 public:
-    FileChangeDetector(const char* folderToWatch);
-    ~FileChangeDetector();
+    FileChangeDetector(const char* folderToWatch) {}
+    virtual ~FileChangeDetector() = 0 {};
 
-    void CheckForChanges();
+    virtual void CheckForChanges() = 0;
 };
 
 #endif //__FileChangeDetector_H__

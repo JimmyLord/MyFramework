@@ -7,6 +7,28 @@
 // 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-#include "MyFrameworkPCH.h"
+#ifndef __FileChangeDetectorWindows_H__
+#define __FileChangeDetectorWindows_H__
 
-#include "FileChangeDetector.h"
+#include "../SourceCommon/FileSystem/FileChangeDetector.h"
+
+class FileChangeDetectorWindows : public FileChangeDetector
+{
+protected:
+    unsigned char* m_pBuffer;
+    int m_BufferSize;
+    OVERLAPPED m_Overlapped;
+
+    HANDLE m_DirectoryHandle;
+
+    void WatchForNextFileSystemChange();
+    static void CALLBACK NotificationCompletion(DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
+
+public:
+    FileChangeDetectorWindows(const char* folderToWatch);
+    virtual ~FileChangeDetectorWindows() override;
+
+    virtual void CheckForChanges() override;
+};
+
+#endif //__FileChangeDetectorWindows_H__
