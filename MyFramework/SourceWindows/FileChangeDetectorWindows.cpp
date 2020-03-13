@@ -91,7 +91,7 @@ void CALLBACK FileChangeDetectorWindows::NotificationCompletion(DWORD errorCode,
     int len = pFileInfo->FileNameLength/2;
     wcstombs_s( &count, name, MAX_PATH, pFileInfo->FileName, len );
     name[len] = 0;
-    LOGInfo( LOGTag, "NotificationCompletion: File changed: %s\n", name );
+    //LOGInfo( LOGTag, "NotificationCompletion: File changed: %s\n", name );
 
     pThis->WatchForNextFileSystemChange();
 }
@@ -111,7 +111,7 @@ void FileChangeDetectorWindows::CheckForChanges()
         int len = pFileInfo->FileNameLength/2;
         wcstombs_s( &count, name, MAX_PATH, pFileInfo->FileName, len );
         name[len] = 0;
-        LOGInfo( LOGTag, "GetOverlappedResult: File changed: %s\n", name );
+        //LOGInfo( LOGTag, "GetOverlappedResult: File changed: %s\n", name );
 
         WatchForNextFileSystemChange();
     }

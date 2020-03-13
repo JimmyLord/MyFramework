@@ -420,6 +420,8 @@ TextureDefinition* TextureManager::GetErrorTexture()
 
         m_pErrorTexture->GenerateErrorTexture();
 
+        m_pErrorTexture->MemoryPanel_Hide();
+
         m_LoadedTextures.AddTail( m_pErrorTexture );
     }
 
