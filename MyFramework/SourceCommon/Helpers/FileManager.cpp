@@ -501,12 +501,15 @@ void FileManager::RegisterFindAllReferencesCallback(void* pObject, FileManager_E
     m_pFindAllReferencesCallbackFunc = pFunc;
 }
 
-void FileManager::Editor_FindAllReferences(MyFileObject* pFile)
+// Returns number of references
+int FileManager::Editor_FindAllReferences(MyFileObject* pFile)
 {
     if( m_pFindAllReferencesCallbackFunc )
     {
-        m_pFindAllReferencesCallbackFunc( m_pFindAllReferencesCallbackObj, pFile );
+        return m_pFindAllReferencesCallbackFunc( m_pFindAllReferencesCallbackObj, pFile );
     }
+
+    return 0;
 }
 
 signed char FileSortFunc(CPPListNode* a, CPPListNode* b)

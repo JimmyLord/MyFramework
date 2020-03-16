@@ -20,7 +20,7 @@ MySaveFileObject* CreatePlatformSpecificSaveFile();
 
 typedef void FileManager_OnFileUpdated_CallbackFunction(GameCore* pGameCore, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFileUnloaded_CallbackFunction(void* pObject, MyFileObject* pFile);
-typedef void FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);
+typedef int FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);
 
 class FileManager
 {
@@ -98,7 +98,7 @@ public:
     void Editor_UnloadFile(MyFileObject* pFile);
 
     void RegisterFindAllReferencesCallback(void* pObject, FileManager_Editor_OnFindAllReferences_CallbackFunction* pFunc);
-    void Editor_FindAllReferences(MyFileObject* pFile);
+    int Editor_FindAllReferences(MyFileObject* pFile);
 
     void SortFileLists();
 #endif //MYFW_EDITOR
