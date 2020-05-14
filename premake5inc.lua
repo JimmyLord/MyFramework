@@ -27,14 +27,15 @@ project "MyFramework"
     includedirs {
         "MyFramework/SourceCommon",
 		"Libraries/b2Settings",
-		"Libraries/Box2D",
+		"Libraries/Box2D/include",
+		"Libraries/Box2D/src",
 		"Libraries/OpenAL/include",
     }
 
     files {
         "MyFramework/SourceCommon/**.cpp",
         "MyFramework/SourceCommon/**.h",
-        "Libraries/b2Settings/b2Settings.h",
+        "Libraries/b2Settings/box2d/b2Settings.h",
         "Libraries/cJSON/cJSON.c",
         "Libraries/cJSON/cJSON.h",
         "Libraries/expr_eval/expr_eval.h",
@@ -50,6 +51,7 @@ project "MyFramework"
         "Libraries/pthreads-w32/semaphore.h",
         "README.md",
         "premake5inc.lua",
+        "Libraries/premake5inc-box2d.lua",
     }
 
     vpaths {

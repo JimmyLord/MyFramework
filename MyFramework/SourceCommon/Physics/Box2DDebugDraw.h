@@ -11,7 +11,7 @@
 #define __Box2DDebugDraw_H__
 
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
-#include "../../../Libraries/Box2D/Box2D/Common/b2Draw.h"
+#include "../../../Libraries/Box2D/include/box2d/b2_draw.h"
 
 class MaterialDefinition;
 class MyMatrix;
@@ -28,13 +28,13 @@ public:
     ~Box2DDebugDraw();
 
     virtual void Draw(const b2Vec2* vertices, int32 vertexCount, const b2Color& color, unsigned char alpha, MyRE::PrimitiveTypes primitiveType, float pointOrLineSize);
-    virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color); // CCW order.
-    virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color); // CCW order.
-    virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color);
-    virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color);
-    virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
-    virtual void DrawTransform(const b2Transform& xf);
-    virtual void DrawPoint(const b2Vec2 &,float32,const b2Color &);
+    virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override; // CCW order.
+    virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override; // CCW order.
+    virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override;
+    virtual void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) override;
+    virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override;
+    virtual void DrawTransform(const b2Transform& xf) override;
+    virtual void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override;
 };
 
 #endif //__Box2DDebugDraw_H__

@@ -80,7 +80,7 @@ void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount,
     Draw( vertices, vertexCount, color, 255, MyRE::PrimitiveType_LineLoop, 1 );
 }
 
-void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
 {
     static const int vertexCount = 24;
     float anglechange = 2.0f * PI / vertexCount;
@@ -95,7 +95,7 @@ void Box2DDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Co
     Draw( vertices, vertexCount, color, 128, MyRE::PrimitiveType_TriangleFan, 1 );
 }
 
-void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
 {
     static const int vertexCount = 24;
     float anglechange = 2.0f * PI / vertexCount;
@@ -129,7 +129,7 @@ void Box2DDebugDraw::DrawTransform(const b2Transform& xf)
     Draw( vertices, 2, b2Color( 0, 1, 0 ), 255, MyRE::PrimitiveType_Lines, 1 );
 }
 
-void Box2DDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
+void Box2DDebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color)
 {
     Draw( &p, 1, color, 255, MyRE::PrimitiveType_Points, size );
 }

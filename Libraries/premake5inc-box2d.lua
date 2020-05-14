@@ -19,11 +19,12 @@ project "Box2D"
 
     includedirs {
         "b2Settings",
-        "Box2D",
+        "Box2D/include",
+        "Box2D/src",
     }
 
     files {
-        "Box2D/Box2D/**",
+        "Box2D/src/**",
     }
 
     filter "system:windows"

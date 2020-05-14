@@ -370,7 +370,7 @@ typedef unsigned long   u_long;
 #include "../../Libraries/cJSON/cJSON.h"
 #include "../../Libraries/mtrand/mtrand.h"
 #if MYFW_USING_BOX2D
-#include "../../Libraries/Box2D/Box2D/Box2D.h"
+#include "../../Libraries/Box2D/include/box2d/box2d.h"
 #endif
 
 #if MYFW_WINDOWS

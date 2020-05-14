@@ -12,7 +12,7 @@
 #include "Box2DDebugDraw.h"
 #include "Box2DContactListener.h"
 #include "Box2DWorld.h"
-#include "../../../Libraries/Box2D/Box2D/Box2D.h"
+#include "../../../Libraries/Box2D/include/Box2D/Box2D.h"
 
 Box2DWorld::Box2DWorld(MaterialDefinition* debugdrawmaterial, MyMatrix* pMatProj, MyMatrix* pMatView, Box2DContactListener* pContactListener)
 {
