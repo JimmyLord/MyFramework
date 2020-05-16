@@ -52,7 +52,6 @@ ResourceManagers::ResourceManagers()
     // g_pBrokenShaderString                            // 4
 
     // Other globals to look at.
-    // g_pComponentTypeManager
     // g_pVisibilityLayerStrings
     // g_pEngineMainFrame
     // g_pRTQGlobals
