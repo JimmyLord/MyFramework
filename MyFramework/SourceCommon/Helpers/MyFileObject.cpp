@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -13,8 +13,6 @@
 
 #include "FileManager.h"
 #include "MyFileObject.h"
-
-MySimplePool<FileFinishedLoadingCallbackStruct> MyFileObject::m_pMyFileObject_FileFinishedLoadingCallbackPool;
 
 #if MYFW_WINDOWS
 void GetFileData(const char* path, WIN32_FIND_DATAA* data)
@@ -47,7 +45,7 @@ FileTimeStamp GetFileLastModifiedTime(const char* path)
 
 char* PlatformSpecific_LoadFile(const char* relativePath, int* length, const char* file, unsigned long line)
 {
-    FILE* filehandle;
+    FILE* fileHandle;
 
 #if MYFW_ANDROID
     return LoadFile( relativePath, length );
@@ -56,56 +54,56 @@ char* PlatformSpecific_LoadFile(const char* relativePath, int* length, const cha
 #if MYFW_WINDOWS
     const char* fullPath = relativePath;
 
-    errno_t error = fopen_s( &filehandle, fullPath, "rb" );
+    errno_t error = fopen_s( &fileHandle, fullPath, "rb" );
 #elif MYFW_BLACKBERRY
     char fullpath[MAX_PATH];
     sprintf_s( fullpath, MAX_PATH, "app/native/%s", relativePath );
 
-    filehandle = fopen( fullpath, "rb" );
+    fileHandle = fopen( fullpath, "rb" );
 #elif MYFW_OSX
     char currentdir[PATH_MAX];
     getcwd( currentdir, PATH_MAX );
 
     const char* fullPath = relativePath;
 
-    filehandle = fopen( relativePath, "rb" );
+    fileHandle = fopen( relativePath, "rb" );
 #elif MYFW_IOS
     const char* fullPath = relativePath;
     
-    filehandle = IOS_fopen( fullpath );
+    fileHandle = IOS_fopen( fullpath );
 #else
     const char* fullPath = relativePath;
 
-    filehandle = fopen( fullpath, "rb" );
+    fileHandle = fopen( fullpath, "rb" );
 #endif
 
-    char* filecontents = nullptr;
+    char* fileContents = nullptr;
 
-    if( filehandle )
+    if( fileHandle )
     {
-        fseek( filehandle, 0, SEEK_END );
-        long size = ftell( filehandle );
-        rewind( filehandle );
+        fseek( fileHandle, 0, SEEK_END );
+        long size = ftell( fileHandle );
+        rewind( fileHandle );
 
-        filecontents = MyNew char[size+1];
+        fileContents = MyNew char[size+1];
 
         // This allocation must land on 4-byte boundary.
-        MyAssert( ((uintptr_t)filecontents)%4 == 0 );
+        MyAssert( ((uintptr_t)fileContents)%4 == 0 );
 
-        fread( filecontents, size, 1, filehandle );
-        filecontents[size] = '\0';
+        fread( fileContents, size, 1, fileHandle );
+        fileContents[size] = '\0';
 
         if( length )
             *length = (int)size+1;
         
-        fclose( filehandle );
+        fclose( fileHandle );
     }
     else
     {
         LOGError( LOGTag, "File not found: %s\n", fullPath );
     }
 
-    return filecontents;
+    return fileContents;
 }
 
 MyFileObject::MyFileObject(FileManager* pFileManager)
@@ -136,17 +134,15 @@ MyFileObject::MyFileObject(FileManager* pFileManager)
 #if MYFW_EDITOR
     m_ShowInMemoryPanel = true;
 #endif
-
-    MyAssert( m_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() );
 }
 
 MyFileObject::~MyFileObject()
 {
-    // make sure you call ->Release.  don't delete a file object, it's refcounted.
+    // Make sure you call ->Release.  don't delete a file object, it's refcounted.
 #if MYFW_WINDOWS
     MyAssert( Prev );
 #endif
-    if( Prev ) // if it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
+    if( Prev ) // If it's in a list... it isn't on some? platforms ATM, need to update file loaders on each.
         Remove();
 
     MyAssert( m_FileFinishedLoadingCallbackList.GetHead() == nullptr );
@@ -163,30 +159,26 @@ MyFileObject::~MyFileObject()
 
 void MyFileObject::SystemStartup()
 {
-    // Create the pool of callback objects.
-    if( m_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() == false )
-        m_pMyFileObject_FileFinishedLoadingCallbackPool.AllocateObjects( CALLBACK_POOL_SIZE );
 }
 
 void MyFileObject::SystemShutdown()
 {
-    m_pMyFileObject_FileFinishedLoadingCallbackPool.FreeObjects();
 }
 
-void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize)
+void MyFileObject::GenerateNewFullPathFilenameInSameFolder(char* newFilename, char* buffer, int bufferSize)
 {
     MyAssert( buffer != nullptr );
-    sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffolderoffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
-    sprintf_s( &buffer[endoffolderoffset], buffersize - endoffolderoffset, "%s", newfilename );
+    sprintf_s( buffer, bufferSize, "%s", m_FullPath );
+    int endOfFolderOffset = (int)( strlen(m_FullPath) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) );
+    sprintf_s( &buffer[endOfFolderOffset], bufferSize - endOfFolderOffset, "%s", newFilename );
 }
 
-void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize)
+void MyFileObject::GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newExtension, char* buffer, int bufferSize)
 {
     MyAssert( buffer != nullptr );
-    sprintf_s( buffer, buffersize, "%s", m_FullPath );
-    int endoffilenameoffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
-    sprintf_s( &buffer[endoffilenameoffset], buffersize - endoffilenameoffset, "%s", newextension );
+    sprintf_s( buffer, bufferSize, "%s", m_FullPath );
+    int endOfFilenameOffset = (int)( strlen(m_FullPath) - strlen(m_ExtensionWithDot) );
+    sprintf_s( &buffer[endOfFilenameOffset], bufferSize - endOfFilenameOffset, "%s", newExtension );
 }
 
 static char g_FolderName[MAX_PATH];
@@ -198,13 +190,13 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
     if( len <= 0 )
         return "";
 
-    int folderstartlocation = len;
-    int i = folderstartlocation;
+    int folderStartLocation = len;
+    int i = folderStartLocation;
     while( i >= 0 )
     {
         if( m_FullPath[i] == '/' )
         {
-            folderstartlocation = i;
+            folderStartLocation = i;
             i--;
             break;
         }
@@ -217,9 +209,9 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
         {
             if( m_FullPath[i] == '/' )
                 i++;
-            int namelen = folderstartlocation-i;
-            strncpy_s( g_FolderName, MAX_PATH, &m_FullPath[i], namelen );
-            g_FolderName[namelen] = '\0';
+            int nameLen = folderStartLocation-i;
+            strncpy_s( g_FolderName, MAX_PATH, &m_FullPath[i], nameLen );
+            g_FolderName[nameLen] = '\0';
             return g_FolderName;
         }
         i--;
@@ -228,27 +220,27 @@ const char* MyFileObject::GetNameOfDeepestFolderPath()
     return "";
 }
 
-const char* MyFileObject::Rename(const char* newnamewithoutextension)
+const char* MyFileObject::Rename(const char* newNameWithoutExtension)
 {
-    char newfullpath[MAX_PATH];
+    char newFullPath[MAX_PATH];
 
-    int fullpathlen = (int)strlen( m_FullPath );
-    int nameextlen = (int)strlen( m_FilenameWithoutExtension ) + (int)strlen( m_ExtensionWithDot );
-    int pathlen = fullpathlen - nameextlen;
+    int fullPathLen = (int)strlen( m_FullPath );
+    int nameExtLen = (int)strlen( m_FilenameWithoutExtension ) + (int)strlen( m_ExtensionWithDot );
+    int pathLen = fullPathLen - nameExtLen;
 
-    sprintf_s( newfullpath, MAX_PATH, "%s", m_FullPath );
-    sprintf_s( &newfullpath[pathlen], MAX_PATH-pathlen, "%s%s", newnamewithoutextension, m_ExtensionWithDot );
+    sprintf_s( newFullPath, MAX_PATH, "%s", m_FullPath );
+    sprintf_s( &newFullPath[pathLen], MAX_PATH-pathLen, "%s%s", newNameWithoutExtension, m_ExtensionWithDot );
 
-    int result = rename( m_FullPath, newfullpath );
+    int result = rename( m_FullPath, newFullPath );
     if( result == 0 )
     {
-        // successfully renamed
-        ParseName( newfullpath );
+        // Successfully renamed.
+        ParseName( newFullPath );
     }
     else
     {
-        // failed to rename
-        LOGError( LOGTag, "Failed to rename %s to %s", m_FullPath, newnamewithoutextension );
+        // Failed to rename.
+        LOGError( LOGTag, "Failed to rename %s to %s", m_FullPath, newNameWithoutExtension );
     }
 
     return m_FilenameWithoutExtension;
@@ -256,7 +248,7 @@ const char* MyFileObject::Rename(const char* newnamewithoutextension)
 
 bool MyFileObject::IsFinishedLoading()
 {
-    if( m_FileLoadStatus < FileLoadStatus_Success ) // still loading
+    if( m_FileLoadStatus < FileLoadStatus_Success ) // Still loading.
         return false;
 
     return true;
@@ -275,14 +267,14 @@ const char* MyFileObject::GetFilename()
         return &m_FullPath[i+1];
     }
 
-    return 0;
+    return nullptr;
 }
 
 void MyFileObject::RegisterFileFinishedLoadingCallback(void* pObj, FileFinishedLoadingCallbackFunc* pCallback)
 {
     MyAssert( pCallback != nullptr );
 
-    FileFinishedLoadingCallbackStruct* pCallbackStruct = m_pMyFileObject_FileFinishedLoadingCallbackPool.GetObjectFromPool();
+    FileFinishedLoadingCallbackStruct* pCallbackStruct = m_pFileManager->GetFileFinishedLoadingCallbackPool()->GetObjectFromPool();
 
 #if _DEBUG
     // Assert this callback isn't registered multiple times.
@@ -310,7 +302,7 @@ void MyFileObject::UnregisterFileFinishedLoadingCallback(void* pObj)
         if( pCallbackStruct->pObj == pObj )
         {
             pCallbackStruct->Remove();
-            m_pMyFileObject_FileFinishedLoadingCallbackPool.ReturnObjectToPool( pCallbackStruct );
+            m_pFileManager->GetFileFinishedLoadingCallbackPool()->ReturnObjectToPool( pCallbackStruct );
         }
 
         pCallbackStruct = pNextCallbackStruct;
@@ -344,19 +336,19 @@ void MyFileObject::ParseName(const char* filename)
     m_FullPath = MyNew char[len+1];
     strcpy_s( m_FullPath, len+1, filename );
 
-    int extensionstartlocation = len;
+    int extensionStartLocation = len;
     {
-        while( extensionstartlocation > 0 )
+        while( extensionStartLocation > 0 )
         {
-            if( filename[extensionstartlocation] == '.' )
+            if( filename[extensionStartLocation] == '.' )
             {
-                int extensionlen = len-extensionstartlocation;
-                m_ExtensionWithDot = MyNew char[extensionlen+1];
-                strncpy_s( m_ExtensionWithDot, extensionlen+1, &filename[extensionstartlocation], extensionlen );
-                m_ExtensionWithDot[extensionlen] = '\0';
+                int extensionLen = len-extensionStartLocation;
+                m_ExtensionWithDot = MyNew char[extensionLen+1];
+                strncpy_s( m_ExtensionWithDot, extensionLen+1, &filename[extensionStartLocation], extensionLen );
+                m_ExtensionWithDot[extensionLen] = '\0';
                 break;
             }
-            extensionstartlocation--;
+            extensionStartLocation--;
         }
 
         if( m_ExtensionWithDot == nullptr )
@@ -365,22 +357,22 @@ void MyFileObject::ParseName(const char* filename)
             m_ExtensionWithDot[0] = '.';
             m_ExtensionWithDot[1] = '\0';
 
-            extensionstartlocation = len;
+            extensionStartLocation = len;
         }
     }
 
     {
-        int i = extensionstartlocation;
+        int i = extensionStartLocation;
         while( i >= 0 )
         {
             if( i == 0 || filename[i] == '/' || filename[i] == '\\' )
             {
                 if( filename[i] == '/' || filename[i] == '\\' )
                     i++;
-                int namelen = extensionstartlocation-i;
-                m_FilenameWithoutExtension = MyNew char[namelen+1];
-                strncpy_s( m_FilenameWithoutExtension, namelen+1, &filename[i], namelen );
-                m_FilenameWithoutExtension[namelen] = '\0';
+                int nameLen = extensionStartLocation-i;
+                m_FilenameWithoutExtension = MyNew char[nameLen+1];
+                strncpy_s( m_FilenameWithoutExtension, nameLen+1, &filename[i], nameLen );
+                m_FilenameWithoutExtension[nameLen] = '\0';
                 break;
             }
             i--;
@@ -434,7 +426,7 @@ bool MyFileObject::IsNewVersionAvailable()
 
     // If the file load status was an error.
     if( m_FileLoadStatus > FileLoadStatus_Success )
-        m_FileLoadStatus = FileLoadStatus_Loading; // file now exists? allow it to load.
+        m_FileLoadStatus = FileLoadStatus_Loading; // File now exists? allow it to load.
 
     // Read and store the new files timestamp if it changed.
 #if MYFW_WINDOWS
@@ -506,7 +498,7 @@ void MyFileObject::FakeFileLoad(char* buffer, int length)
 }
 
 #if MYFW_EDITOR
-void MyFileObject::OSLaunchFile(bool createfileifdoesntexist)
+void MyFileObject::OSLaunchFile(bool createFileIfDoesntExist)
 {
 #if MYFW_WINDOWS
     char url[MAX_PATH];
@@ -533,14 +525,14 @@ void MyFileObject::OSOpenContainingFolder()
 {
 #if MYFW_WINDOWS
     char params[MAX_PATH];
-    char workingdir[MAX_PATH];
-    _getcwd( workingdir, MAX_PATH * sizeof(char) );
-    sprintf_s( params, MAX_PATH, "\"%s/%s\"", workingdir, m_FullPath );
+    char workingDir[MAX_PATH];
+    _getcwd( workingDir, MAX_PATH * sizeof(char) );
+    sprintf_s( params, MAX_PATH, "\"%s/%s\"", workingDir, m_FullPath );
 
-    int endoffolderoffset = (int)( strlen(params) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) - 1);
-    params[endoffolderoffset] = '"';
-    params[endoffolderoffset+1] = '\0';
-    for( int i=0; i<endoffolderoffset; i++ )
+    int endOfFolderOffset = (int)( strlen(params) - strlen(m_FilenameWithoutExtension) - strlen(m_ExtensionWithDot) - 1);
+    params[endOfFolderOffset] = '"';
+    params[endOfFolderOffset+1] = '\0';
+    for( int i=0; i<endOfFolderOffset; i++ )
     {
         if( params[i] == '/' )
         {

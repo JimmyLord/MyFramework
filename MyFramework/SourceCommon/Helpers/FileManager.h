@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -9,6 +9,8 @@
 
 #ifndef __FileManager_H__
 #define __FileManager_H__
+
+#include "../DataTypes/MyActivePool.h"
 
 class FileManager;
 class GameCore;
@@ -21,6 +23,13 @@ MySaveFileObject* CreatePlatformSpecificSaveFile();
 typedef void FileManager_OnFileUpdated_CallbackFunction(GameCore* pGameCore, MyFileObject* pFile);
 typedef void FileManager_Editor_OnFileUnloaded_CallbackFunction(void* pObject, MyFileObject* pFile);
 typedef int FileManager_Editor_OnFindAllReferences_CallbackFunction(void* pObject, MyFileObject* pFile);
+
+typedef void FileFinishedLoadingCallbackFunc(void* pObjectPtr, MyFileObject* pFile);
+struct FileFinishedLoadingCallbackStruct : public TCPPListNode<FileFinishedLoadingCallbackStruct*>
+{
+    void* pObj;
+    FileFinishedLoadingCallbackFunc* pFunc;
+};
 
 class FileManager
 {
@@ -47,9 +56,12 @@ protected:
 
     char m_WorkingDirectory[MAX_PATH];
 
+    static const int CALLBACK_POOL_SIZE = 1000;
+    MySimplePool<FileFinishedLoadingCallbackStruct> m_pMyFileObject_FileFinishedLoadingCallbackPool;
+
 protected:
 #if USE_PTHREAD
-    FileIOThreadObject m_Threads[1]; // TODO: there should be one of these for each file system in use.
+    FileIOThreadObject m_Threads[1]; // TODO: There should be one of these for each file system in use.
 
     static void* Thread_FileIO(void* obj);
 #endif //USE_PTHREAD
@@ -58,7 +70,9 @@ public:
     FileManager(GameCore* pGameCore);
     virtual ~FileManager();
 
+    // Getters.
     GameCore* GetGameCore() { return m_pGameCore; }
+    MySimplePool<FileFinishedLoadingCallbackStruct>* GetFileFinishedLoadingCallbackPool() { return &m_pMyFileObject_FileFinishedLoadingCallbackPool; }
 
     void PrintListOfOpenFiles();
     void FreeFile(MyFileObject* pFile);
@@ -116,7 +130,7 @@ class MySaveFileObject
 public:
     SaveFileOperation m_SaveFileOp;
     bool m_OpComplete;
-    char* m_pReadStringBuffer; // allocated by this object(or subclasses), so needs to be cleaned up.
+    char* m_pReadStringBuffer; // Allocated by this object(or subclasses), so needs to be cleaned up.
 
 public:
     MySaveFileObject()
@@ -168,7 +182,7 @@ class MySaveFileObject_FILE : public MySaveFileObject
 {
 public:
     FILE* m_pFile;
-    const char* m_pObjectToWriteBuffer; // managed by caller to this function... i.e. will not be deleted when write is complete.
+    const char* m_pObjectToWriteBuffer; // Managed by caller to this function... i.e. will not be deleted when write is complete.
 
 public:
     MySaveFileObject_FILE();

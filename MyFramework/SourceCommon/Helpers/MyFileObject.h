@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2019 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -10,7 +10,7 @@
 #ifndef __MyFileObject_H__
 #define __MyFileObject_H__
 
-#include "../DataTypes/MyActivePool.h"
+#include "FileManager.h"
 
 class MyFileObject;
 
@@ -23,13 +23,6 @@ char* PlatformSpecific_LoadFile(const char* relativePath, int* length = nullptr,
 #endif
 
 typedef void PanelObjectListObjectCallback(void*);
-
-typedef void FileFinishedLoadingCallbackFunc(void* pObjectPtr, MyFileObject* pFile);
-struct FileFinishedLoadingCallbackStruct : public TCPPListNode<FileFinishedLoadingCallbackStruct*>
-{
-    void* pObj;
-    FileFinishedLoadingCallbackFunc* pFunc;
-};
 
 #if MYFW_NACL
 class NaCLFileObject;
@@ -49,17 +42,10 @@ enum FileLoadStatus
 };
 
 class MyFileObject : public TCPPListNode<MyFileObject*>, public RefCount
-#if MYFW_USING_WX
-, public wxEvtHandler
-#endif
 {
 private:
     friend class FileManager;
     friend class NaCLFileObject;
-
-    static const int CALLBACK_POOL_SIZE = 1000;
-
-    static MySimplePool<FileFinishedLoadingCallbackStruct> m_pMyFileObject_FileFinishedLoadingCallbackPool;
 
 protected:
     FileManager* m_pFileManager;
@@ -93,11 +79,11 @@ public:
     static void SystemStartup();
     static void SystemShutdown();
 
-    void GenerateNewFullPathFilenameInSameFolder(char* newfilename, char* buffer, int buffersize);
-    void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newextension, char* buffer, int buffersize);
+    void GenerateNewFullPathFilenameInSameFolder(char* newFilename, char* buffer, int bufferSize);
+    void GenerateNewFullPathExtensionWithSameNameInSameFolder(const char* newExtension, char* buffer, int bufferSize);
     const char* GetNameOfDeepestFolderPath();
 
-    const char* Rename(const char* newnamewithoutextension);
+    const char* Rename(const char* newNameWithoutExtension);
 
     bool IsFinishedLoading();
     const char* GetFullPath() const { return m_FullPath; }
@@ -153,26 +139,10 @@ public:
     void MemoryPanel_Hide() { m_ShowInMemoryPanel = false; }
     bool MemoryPanel_IsVisible() { return m_ShowInMemoryPanel; }
 
-    void OSLaunchFile(bool createfileifdoesntexist);
+    void OSLaunchFile(bool createFileIfDoesntExist);
     void OSOpenContainingFolder();
 
     void OnPopupClick(FileManager* pFileManager, MyFileObject* pFileObject, int id);
-
-#if MYFW_USING_WX
-    static void StaticOnLeftClick(void* pObjectPtr, wxTreeItemId id, unsigned int count) { ((MyFileObject*)pObjectPtr)->OnLeftClick( count ); }
-    void OnLeftClick(unsigned int count);
-
-    static void StaticOnRightClick(void* pObjectPtr, wxTreeItemId id) { ((MyFileObject*)pObjectPtr)->OnRightClick(); }
-    void OnRightClick();
-    void OnPopupClick(wxEvent &evt); // Used as callback for wxEvtHandler, can't be virtual(will crash, haven't looked into it).
-
-    static void StaticOnDrag(void* pObjectPtr) { ((MyFileObject*)pObjectPtr)->OnDrag(); }
-    void OnDrag();
-
-    PanelObjectListObjectCallback* m_CustomLeftClickCallback;
-    void* m_CustomLeftClickObject;
-    void SetCustomLeftClickCallback(PanelObjectListObjectCallback* callback, void* object);
-#endif //MYFW_USING_WX
 #endif //MYFW_EDITOR
 };
 

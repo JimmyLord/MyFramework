@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -22,6 +22,10 @@ FileManager::FileManager(GameCore* pGameCore)
 {
     m_pGameCore = pGameCore;
 
+    // Create the pool of callback objects.
+    if( m_pMyFileObject_FileFinishedLoadingCallbackPool.IsInitialized() == false )
+        m_pMyFileObject_FileFinishedLoadingCallbackPool.AllocateObjects( CALLBACK_POOL_SIZE );
+
 #if MYFW_WINDOWS
     GetCurrentDirectory( MAX_PATH, m_WorkingDirectory );
 #else
@@ -33,42 +37,34 @@ FileManager::FileManager(GameCore* pGameCore)
     {
         FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-        pthread_mutex_init( &pThread->m_Mutex_FileLoading, 0 );
-        pthread_mutex_init( &pThread->m_Mutex_FileLists, 0 );
+        pthread_mutex_init( &pThread->m_Mutex_FileLoading, nullptr );
+        pthread_mutex_init( &pThread->m_Mutex_FileLists, nullptr );
 
-        pthread_create( &pThread->m_FileIOThread, 0, &Thread_FileIO, this );
+        pthread_create( &pThread->m_FileIOThread, nullptr, &Thread_FileIO, this );
 
         pThread->m_KillFileIOThread = false;
     }
 #endif //USE_PTHREAD && !MYFW_NACL
-
-#if MYFW_USING_WX
-    m_pFileUnloadedCallbackObj = 0;
-    m_pFileUnloadedCallbackFunc = 0;
-
-    m_pFindAllReferencesCallbackObj = 0;
-    m_pFindAllReferencesCallbackFunc = 0;    
-#endif
 }
 
 FileManager::~FileManager()
 {
     PrintListOfOpenFiles();
-    MyAssert( m_FilesLoaded.GetHead() == 0 );
-    MyAssert( m_FilesStillLoading.GetHead() == 0 );
+    MyAssert( m_FilesLoaded.GetHead() == nullptr );
+    MyAssert( m_FilesStillLoading.GetHead() == nullptr );
 
 #if USE_PTHREAD && !MYFW_NACL
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
     {
         FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-        // Grab the thread mutex.  There's a chance we have to wait for a file to finish loading.
+        // Grab the thread mutex. There's a chance we have to wait for a file to finish loading.
         pthread_mutex_lock( &pThread->m_Mutex_FileLoading );
 
         // Wait for the thread to end.
         pThread->m_KillFileIOThread = true;
         pthread_mutex_unlock( &pThread->m_Mutex_FileLoading );
-        pthread_join( pThread->m_FileIOThread, 0 );
+        pthread_join( pThread->m_FileIOThread, nullptr );
     }
 
     for( int threadIndex=0; threadIndex<1; threadIndex++ )
@@ -79,6 +75,8 @@ FileManager::~FileManager()
         pthread_mutex_destroy( &pThread->m_Mutex_FileLists );
     }
 #endif //USE_PTHREAD && !MYFW_NACL
+
+    m_pMyFileObject_FileFinishedLoadingCallbackPool.FreeObjects();
 }
 
 #if USE_PTHREAD && !MYFW_NACL
@@ -86,7 +84,7 @@ void* FileManager::Thread_FileIO(void* obj)
 {
     FileManager* pthis = (FileManager*)obj;
 
-    int threadIndex = 0; // TODO: have filemanager pass in a proper threadid.
+    int threadIndex = 0; // TODO: Have filemanager pass in a proper threadid.
     FileIOThreadObject* pThread = &pthis->m_Threads[threadIndex];
 
     while( 1 )
@@ -116,18 +114,18 @@ void* FileManager::Thread_FileIO(void* obj)
             break;
     }
 
-    return 0;
+    return nullptr;
 }
 #endif //USE_PTHREAD && !MYFW_NACL
 
 void FileManager::PrintListOfOpenFiles()
 {
     LOGInfo( LOGTag, "Open Files:\n" );
-    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
         LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
-    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
         LOGInfo( LOGTag, "   %s\n", pFile->GetFullPath() );
     }
@@ -141,19 +139,19 @@ void FileManager::FreeFile(MyFileObject* pFile)
 
 unsigned int FileManager::CalculateTotalMemoryUsedByFiles()
 {
-    unsigned int totalsize = 0;
+    unsigned int totalSize = 0;
 
-    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
-        totalsize += pFile->m_FileLength;
+        totalSize += pFile->m_FileLength;
     }
 
-    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
-        totalsize += pFile->m_FileLength;
+        totalSize += pFile->m_FileLength;
     }
 
-    return totalsize;
+    return totalSize;
 }
 
 MyFileObject* FileManager::CreateFileObject(const char* fullpath)
@@ -170,16 +168,16 @@ MyFileObject* FileManager::CreateFileObject(const char* fullpath)
 // Exposed to Lua, change elsewhere if function signature changes.
 MyFileObject* FileManager::RequestFile(const char* filename)
 {
-    MyAssert( filename != 0 );
-    if( filename == 0 )
-        return 0;
-    MyAssert( filename[0] != 0 );
-    if( filename[0] == 0 )
-        return 0;
+    MyAssert( filename != nullptr );
+    if( filename == nullptr )
+        return nullptr;
+    MyAssert( filename[0] != '\0' );
+    if( filename[0] == '\0' )
+        return nullptr;
 
     MyFileObject* pFile;
 
-    // check if the file has already been requested... might still be loading.
+    // Check if the file has already been requested... might still be loading.
     pFile = FindFileByName( filename );
     if( pFile )
     {
@@ -187,8 +185,8 @@ MyFileObject* FileManager::RequestFile(const char* filename)
         return pFile;
     }
 
-    // if the file wasn't already loaded create a new one and load it up.
-    pFile = 0;
+    // If the file wasn't already loaded create a new one and load it up.
+    pFile = nullptr;
 
     int len = (int)strlen( filename );
     if( len > 5 && strcmp( &filename[len-5], ".glsl" ) == 0 )
@@ -223,30 +221,30 @@ void FileManager::ReloadFile(MyFileObject* pFile)
 
 MyFileObject* FileManager::FindFileByName(const char* filename)
 {
-    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
         if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
 
-    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pFile->GetNext() )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != nullptr; pFile = pFile->GetNext() )
     {
         if( strcmp( filename, pFile->GetFullPath() ) == 0 )
             return pFile;
     }
 
-    return 0;
+    return nullptr;
 }
 
-// Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+// Move file into loaded list, call finished loading callbacks, add file to memory panel in editor.
 void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
 {
     MyAssert( pFile->m_FileLoadStatus == FileLoadStatus_Success );
 
     m_FilesLoaded.MoveTail( pFile );
 
-    // inform all registered objects that the file finished loading.
-    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != 0; )
+    // Inform all registered objects that the file finished loading.
+    for( CPPListNode* pNode = pFile->m_FileFinishedLoadingCallbackList.GetHead(); pNode != nullptr; )
     {
         CPPListNode* pNextNode = pNode->GetNext();
 
@@ -256,13 +254,6 @@ void FileManager::FinishSuccessfullyLoadingFile(MyFileObject* pFile)
 
         pNode = pNextNode;
     }
-
-#if MYFW_USING_WX
-    if( pFile->m_ShowInMemoryPanel )
-    {
-        g_pPanelMemory->AddFile( pFile, pFile->GetExtensionWithDot(), pFile->GetFullPath(), MyFileObject::StaticOnLeftClick, MyFileObject::StaticOnRightClick, MyFileObject::StaticOnDrag );
-    }
-#endif
 }
 
 void FileManager::Tick()
@@ -271,8 +262,8 @@ void FileManager::Tick()
     int threadIndex = 0;
     FileIOThreadObject* pThread = &m_Threads[threadIndex];
 
-    bool someFilesFinishedLoading = pThread->m_FilesFinishedLoading.GetHead() != 0;
-    bool someFilesAreStillLoading = m_FilesStillLoading.GetHead() != 0;
+    bool someFilesFinishedLoading = pThread->m_FilesFinishedLoading.GetHead() != nullptr;
+    bool someFilesAreStillLoading = m_FilesStillLoading.GetHead() != nullptr;
 
     // Kick out early if all files are loaded.
     if( someFilesFinishedLoading == false && someFilesAreStillLoading == false )
@@ -307,9 +298,9 @@ void FileManager::Tick()
     {
         // Continue to tick any files still in the "loading" queue.
         MyFileObject* pNextFile;
-        for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
+        for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != nullptr; pFile = pNextFile )
         {
-			// Get the next file pointer
+			// Get the next file pointer.
             pNextFile = pFile->GetNext();
 
             //LOGInfo( LOGTag, "Loading File: %s\n", pFile->GetFullPath() );
@@ -321,7 +312,7 @@ void FileManager::Tick()
                 continue;
             }
 
-            // Add a ref to this file to prevent it from being deleted while in this loop
+            // Add a ref to this file to prevent it from being deleted while in this loop.
             pFile->AddRef(); // Prevent delete during loop.
 
             // If we're done loading, move the file into the loaded list.
@@ -329,7 +320,7 @@ void FileManager::Tick()
             {
                 //LOGInfo( LOGTag, "Finished loading: %s\n", pFile->GetFullPath() );
 
-                // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+                // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor.
                 FinishSuccessfullyLoadingFile( pFile );
             }
             else
@@ -349,7 +340,7 @@ void FileManager::Tick()
 #endif //USE_PTHREAD && !MYFW_NACL
             }
 
-            // Release the ref added to this file up above
+            // Release the ref added to this file up above.
             pFile->Release(); // Prevent delete during loop.
         }
     }
@@ -361,10 +352,10 @@ void FileManager::Tick()
 
 int FileManager::ReloadAnyUpdatedFiles(GameCore* pGameCore, FileManager_OnFileUpdated_CallbackFunction* pCallbackFunc)
 {
-    int numfilesupdated = 0;
+    int numFilesUpdated = 0;
 
     MyFileObject* pNextFile;
-    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != 0; pFile = pNextFile )
+    for( MyFileObject* pFile = m_FilesStillLoading.GetHead(); pFile != nullptr; pFile = pNextFile )
     {
         pNextFile = pFile->GetNext();
 
@@ -374,15 +365,15 @@ int FileManager::ReloadAnyUpdatedFiles(GameCore* pGameCore, FileManager_OnFileUp
         {
             ReloadFile( pFile );
             pCallbackFunc( pGameCore, pFile );
-            numfilesupdated++;
+            numFilesUpdated++;
         }
     }
 
-    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != 0; pFile = pNextFile )
+    for( MyFileObject* pFile = m_FilesLoaded.GetHead(); pFile != nullptr; pFile = pNextFile )
     {
         pNextFile = pFile->GetNext();
 
-        pFile->AddRef(); // prevent file from being freed below.
+        pFile->AddRef(); // Prevent file from being freed below.
 
         bool updateavailable = pFile->IsNewVersionAvailable();
 
@@ -390,22 +381,22 @@ int FileManager::ReloadAnyUpdatedFiles(GameCore* pGameCore, FileManager_OnFileUp
         {
             ReloadFile( pFile );
             pCallbackFunc( pGameCore, pFile );
-            numfilesupdated++;
+            numFilesUpdated++;
         }
 
-        pFile->Release(); // release ref from above.
+        pFile->Release(); // Release ref from above.
     }
 
-    return numfilesupdated;
+    return numFilesUpdated;
 }
 
 void FileManager::MoveFileToFrontOfFileLoadedList(MyFileObject* pFile)
 {
-    if( pFile == 0 )
+    if( pFile == nullptr )
         return;
 
-    // make sure the file is in the loaded list.
-    for( MyFileObject* pFileLoaded = m_FilesLoaded.GetHead(); pFileLoaded != 0; pFileLoaded = pFileLoaded->GetNext() )
+    // Make sure the file is in the loaded list.
+    for( MyFileObject* pFileLoaded = m_FilesLoaded.GetHead(); pFileLoaded != nullptr; pFileLoaded = pFileLoaded->GetNext() )
     {
         if( pFileLoaded == pFile )
         {
@@ -438,7 +429,7 @@ bool FileManager::DoesFileExist(const char* fullpath) // Static
 MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 {
     if( FileManager::DoesFileExist( fullpath ) == false )
-        return 0;
+        return nullptr;
 
     MyFileObject* pFile = RequestFile( fullpath );
 
@@ -452,7 +443,7 @@ MyFileObject* FileManager::LoadFileNow(const char* fullpath)
 
     if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor.
         FinishSuccessfullyLoadingFile( pFile );
     }
 
@@ -476,7 +467,7 @@ void FileManager::ReloadFileNow(MyFileObject* pFile)
 
     if( pFile->m_FileLoadStatus == FileLoadStatus_Success )
     {
-        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor
+        // Move file into loaded list, call finished loading callbacks, add file to memory panel in editor.
         FinishSuccessfullyLoadingFile( pFile );
     }
 }
@@ -501,7 +492,7 @@ void FileManager::RegisterFindAllReferencesCallback(void* pObject, FileManager_E
     m_pFindAllReferencesCallbackFunc = pFunc;
 }
 
-// Returns number of references
+// Returns number of references.
 int FileManager::Editor_FindAllReferences(MyFileObject* pFile)
 {
     if( m_pFindAllReferencesCallbackFunc )
@@ -534,7 +525,7 @@ void FileManager::SortFileLists()
 
 MySaveFileObject* CreatePlatformSpecificSaveFile()
 {
-    MySaveFileObject* pSaveFile = 0;
+    MySaveFileObject* pSaveFile = nullptr;
 
 #if MYFW_WINDOWS
     pSaveFile = MyNew MySaveFileObject_FILE();
@@ -563,8 +554,8 @@ MySaveFileObject* CreatePlatformSpecificSaveFile()
 
 MySaveFileObject_FILE::MySaveFileObject_FILE()
 {
-    m_pFile = 0;
-    m_pObjectToWriteBuffer = 0;
+    m_pFile = nullptr;
+    m_pObjectToWriteBuffer = nullptr;
 }
 
 MySaveFileObject_FILE::~MySaveFileObject_FILE()
@@ -577,19 +568,19 @@ void MySaveFileObject_FILE::Reset()
 
     if( m_pFile )
         fclose( m_pFile );
-    m_pFile = 0;
+    m_pFile = nullptr;
 
-    m_pObjectToWriteBuffer = 0;
+    m_pObjectToWriteBuffer = nullptr;
 }
 
 void MySaveFileObject_FILE::WriteString(const char* path, const char* filename, const char* string)
 {
-    MyAssert( path != 0 );
-    MyAssert( filename != 0 );
-    MyAssert( string != 0 );
-    MyAssert( m_pFile == 0 );
+    MyAssert( path != nullptr );
+    MyAssert( filename != nullptr );
+    MyAssert( string != nullptr );
+    MyAssert( m_pFile == nullptr );
 
-    if( m_pFile != 0 )
+    if( m_pFile != nullptr )
         return;
 
     m_pFile = OpenSavedDataFile( path, filename, "wb" );
@@ -604,9 +595,9 @@ void MySaveFileObject_FILE::WriteString(const char* path, const char* filename, 
 void MySaveFileObject_FILE::ReadString(const char* path, const char* filename)
 {
     MyAssert( m_SaveFileOp == SFO_None );
-    MyAssert( path != 0 );
-    MyAssert( filename != 0 );
-    MyAssert( m_pFile == 0 );
+    MyAssert( path != nullptr );
+    MyAssert( filename != nullptr );
+    MyAssert( m_pFile == nullptr );
 
     m_pFile = OpenSavedDataFile( path, filename, "rb" );
 
@@ -629,7 +620,7 @@ void MySaveFileObject_FILE::Tick()
     if( m_OpComplete == true )
         return;
 
-    MyAssert( m_pFile != 0 );
+    MyAssert( m_pFile != nullptr );
 
     if( m_SaveFileOp == SFO_Read )
     {
@@ -641,22 +632,22 @@ void MySaveFileObject_FILE::Tick()
             m_pReadStringBuffer = MyNew char[length+1];
 
             fread( m_pReadStringBuffer, length, 1, m_pFile );
-            m_pReadStringBuffer[length] = 0;
+            m_pReadStringBuffer[length] = '\0';
         }
 
         fclose( m_pFile );
-        m_pFile = 0;
+        m_pFile = nullptr;
         m_OpComplete = true;
     }
 
     if( m_SaveFileOp == SFO_Write )
     {
-        MyAssert( m_pObjectToWriteBuffer != 0 );
+        MyAssert( m_pObjectToWriteBuffer != nullptr );
 
         int length = (int)strlen( m_pObjectToWriteBuffer );
         fwrite( m_pObjectToWriteBuffer, length, 1, m_pFile );
         fclose( m_pFile );
-        m_pFile = 0;
+        m_pFile = nullptr;
         m_OpComplete = true;
     }
 }
