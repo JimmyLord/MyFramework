@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,9 +12,13 @@
 
 #include "wglext.h"
 
+void WGL_InitContextCreationExtensions();
 void WGL_InitExtensions();
 
-extern PFNWGLSWAPINTERVALEXTPROC        wglSwapInterval;
-extern PFNWGLGETSWAPINTERVALEXTPROC     wglGetSwapInterval;
+extern PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB;
+extern PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB;
+
+extern PFNWGLSWAPINTERVALEXTPROC            wglSwapInterval;
+extern PFNWGLGETSWAPINTERVALEXTPROC         wglGetSwapInterval;
 
 #endif //__WGLExtensions_H__

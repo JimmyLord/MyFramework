@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2016-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -12,17 +12,20 @@
 #include "WGLExtensions.h"
 
 #pragma warning( push )
-#pragma warning( disable : 4191 ) // unsafe conversion from 'type of expression' to 'type required'
+#pragma warning( disable : 4191 ) // Unsafe conversion from 'type of expression' to 'type required'.
 
-PFNWGLSWAPINTERVALEXTPROC       wglSwapInterval = 0;
-PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapInterval = 0;
+PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB = nullptr;
+PFNWGLCREATECONTEXTATTRIBSARBPROC   wglCreateContextAttribsARB = nullptr;
+
+PFNWGLSWAPINTERVALEXTPROC           wglSwapInterval = nullptr;
+PFNWGLGETSWAPINTERVALEXTPROC        wglGetSwapInterval = nullptr;
 
 bool WGLExtensionSupported(const char* extension_name)
 {
-    // this is pointer to function which returns pointer to string with list of all wgl extensions
+    // This is pointer to function which returns pointer to string with list of all wgl extensions.
     PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
 
-    // determine pointer to wglGetExtensionsStringEXT function
+    // Determine pointer to wglGetExtensionsStringEXT function.
     _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress( "wglGetExtensionsStringEXT" );
 
     if( strstr( _wglGetExtensionsStringEXT(), extension_name ) == NULL )
@@ -35,8 +38,17 @@ bool WGLExtensionSupported(const char* extension_name)
     return true;
 }
 
+void WGL_InitContextCreationExtensions()
+{
+    wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress( "wglChoosePixelFormatARB" );
+    wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress( "wglCreateContextAttribsARB" );
+}
+
 void WGL_InitExtensions()
 {
+    wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress( "wglChoosePixelFormatARB" );
+    wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress( "wglCreateContextAttribsARB" );
+
     if( WGLExtensionSupported( "WGL_EXT_swap_control" ) )
     {
         wglSwapInterval = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
