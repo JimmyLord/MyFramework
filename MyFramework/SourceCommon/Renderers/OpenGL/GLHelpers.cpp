@@ -10,7 +10,7 @@
 #include "MyFrameworkPCH.h"
 
 #include "GLHelpers.h"
-#include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/OpenGL/GLExtensions.h"
 
 void printGLString(const char* name, GLenum s)
 {

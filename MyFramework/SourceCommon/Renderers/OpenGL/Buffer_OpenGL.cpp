@@ -13,7 +13,7 @@
 #include "GLHelpers.h"
 #include "../BaseClasses/Renderer_Base.h"
 #include "../Old/OpenGLWrapper.h"
-#include "../SourceWindows/GLExtensions.h"
+#include "../SourceWindows/OpenGL/GLExtensions.h"
 
 Buffer_OpenGL::Buffer_OpenGL()
 {

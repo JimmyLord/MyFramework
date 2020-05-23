@@ -342,8 +342,8 @@ typedef unsigned long   u_long;
 #include <xaudio2.h>
 #pragma warning( pop )
 #include <GL/gl.h>
-#include "../SourceWindows/GLExtensions.h"
-#include "../SourceWindows/WGLExtensions.h"
+#include "../SourceWindows/OpenGL/GLExtensions.h"
+#include "../SourceWindows/OpenGL/WGLExtensions.h"
 #endif
 
 #if MYFW_WP8

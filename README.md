@@ -4,12 +4,17 @@ A cross-platform C++/OpenGL framework for games.
 
 Currently supports the following platforms:
 - Windows
-- Linux (WIP)
+
+Supported platforms whose code has gone stale:
 - Android 2.2+
+- Emscripten
 - iOS 5+
+- Linux (WIP)
+- OSX
+
+Supported platforms that are now dead but whose code hasn't been removed:
 - BlackBerry 10/Playbook
 - Native Client (NaCl)
-- Emscripten
 - Windows phone 8 (not maintained for years)
 
 3rd party libraries:
@@ -26,7 +31,8 @@ Currently supports the following platforms:
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:
 
 Windows
-- Visual Studio 2010+
+- Visual Studio 2019
+    - Premake5
 
 Linux
 - Debian

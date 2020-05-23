@@ -9,10 +9,9 @@
 
 #include "MyFrameworkPCH.h"
 
-#include "GLExtensions.h"
 #include "MYFWWinMain.h"
 #include "Screenshot.h"
-#include "WGLExtensions.h"
+#include "OpenGL/MyGLContext.h"
 #include "../SourceCommon/Core/GameCore.h"
 #include "../SourceCommon/Helpers/ExternalTools.h"
 #include "../SourceCommon/Helpers/MyTime.h"
@@ -35,6 +34,8 @@ unsigned int g_GLCanvasIDActive = 0;
 #define SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT    0
 
 HWND g_hWnd = 0;
+static HINSTANCE g_hInstance = 0;
+static HDC g_hDeviceContext = 0;
 
 static bool g_EscapeButtonWillQuit;
 static bool g_CloseProgramRequested;
@@ -44,10 +45,6 @@ static int g_RequestedHeight;
 
 static int g_InitialWidth;
 static int g_InitialHeight;
-
-static HGLRC g_hRenderingContext = 0;
-static HDC g_hDeviceContext = 0;
-static HINSTANCE g_hInstance = 0;
 
 static int g_WindowWidth = 0;
 static int g_WindowHeight = 0;
@@ -71,9 +68,8 @@ static bool h_takescreenshot = false;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-void KillGLWindow(bool destroyInstance);
+void KillWindow(bool destroyInstance);
 bool FailAndCleanup(const char* pMessage);
-bool CreateTempGLWindow();
 
 bool MYFW_GetKey(int value)
 {
@@ -81,7 +77,7 @@ bool MYFW_GetKey(int value)
     return g_KeyStates[value];
 }
 
-GLvoid ResizeGLScene(GLsizei width, GLsizei height)
+void ResizeScene(int width, int height)
 {
     if( height <= 0 ) height = 1;
     if( width <= 0 ) width = 1;
@@ -126,7 +122,7 @@ void SetWindowSize(int width, int height)
     
     SetWindowPos( g_hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
     
-    ResizeGLScene( width, height );
+    ResizeScene( width, height );
 }
 
 void GenerateKeyboardEvents(GameCore* pGameCore)
@@ -425,58 +421,7 @@ void GenerateMouseEvents(GameCore* pGameCore)
     g_RawMouseDelta.Set( 0, 0 );
 }
 
-bool CreateTempGLWindow()
-{
-    // Create a temp window to setup GL extensions:
-    
-    // Create the window.
-    g_hWnd = CreateWindow( "OpenGL", "Fake Window",           // Window class, Title.
-                           WS_CLIPSIBLINGS | WS_CLIPCHILDREN, // Style.
-                           0, 0,                              // Position.
-                           1, 1,                              // Size.
-                           nullptr, nullptr,                  // Parent window, Menu.
-                           g_hInstance, nullptr );            // Instance, Param.
-    if( g_hWnd == nullptr )
-        return FailAndCleanup( "Failed to create temp window." );
-
-    // Get the DC.
-    g_hDeviceContext = GetDC( g_hWnd );
-    if( g_hDeviceContext == nullptr )
-        return FailAndCleanup( "Failed to get the temp device context." );
-
-    // Choose a temp PixelFormat.
-    PIXELFORMATDESCRIPTOR pfd;
-    ZeroMemory( &pfd, sizeof(pfd) );
-    pfd.nSize = sizeof( pfd );
-    pfd.nVersion = 1;
-    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-    pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = 32;
-    pfd.cAlphaBits = 8;
-    pfd.cDepthBits = 24;
-
-    GLuint pixelFormat = ChoosePixelFormat( g_hDeviceContext, &pfd );
-    if( pixelFormat == 0 )
-        return FailAndCleanup( "Failed to find a suitable PixelFormat." );
-
-    // Set the pixel format of the device context.
-    bool result = SetPixelFormat( g_hDeviceContext, pixelFormat, &pfd );
-    if( result == 0 )
-        return FailAndCleanup( "Failed to set the PixelFormat." );
-
-    // Create GL rendering context.
-    g_hRenderingContext = wglCreateContext( g_hDeviceContext );
-    if( g_hRenderingContext == nullptr )
-        return FailAndCleanup( "Failed to create a GL rendering context." );
-
-    // Activate.
-    if( wglMakeCurrent( g_hDeviceContext, g_hRenderingContext ) == false )
-        return FailAndCleanup( "Failed to activate the GL rendering context." );
-
-    return true; // Everything worked out.
-}
-
-bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits, unsigned char zBits, unsigned char stencilBits, bool fullScreenFlag)
+bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBits, unsigned char alphaBits, unsigned char zBits, unsigned char stencilBits, unsigned char multisampleSize, bool fullScreenFlag)
 {
     DWORD dwExStyle;
     DWORD dwStyle;
@@ -503,9 +448,9 @@ bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits,
         wc.hInstance = g_hInstance;                     // Set the instance.
         wc.hIcon = LoadIcon( 0, IDI_WINLOGO );          // Load the default icon.
         wc.hCursor = LoadCursor( 0, IDC_ARROW );        // Load the arrow pointer.
-        wc.hbrBackground = 0;                           // No background required for GL.
+        wc.hbrBackground = 0;                           // No background required.
         wc.lpszMenuName = nullptr;                      // We don't want a menu.
-        wc.lpszClassName = "OpenGL";                    // Set the class name.
+        wc.lpszClassName = "MYFWClass";                 // Set the class name.
 
         // Attempt to register the Window Class.
         if( !RegisterClassEx( &wc ) )
@@ -513,19 +458,6 @@ bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits,
             MessageBox( 0, "Failed To Register The Window Class.", "ERROR", MB_OK|MB_ICONEXCLAMATION );
             return false;
         }
-    }
-
-    // Create a temporary GL window and context to allow us to grab
-    //     the WGL extension functions needed to generate proper GL context.
-    {
-        if( CreateTempGLWindow() == false )
-            return false;
-
-        // Initialize Windows OpenGL Extensions, must be done after OpenGL Context is created.
-        WGL_InitContextCreationExtensions();
-
-        // Destroy the temp GL window.
-        KillGLWindow( false );
     }
 
     if( g_FullscreenMode )
@@ -571,7 +503,7 @@ bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits,
     // Create our window.
     {
         g_hWnd = CreateWindowEx( dwExStyle,                            // Extended style for the window.
-                                 "OpenGL",                             // Class name.
+                                 "MYFWClass",                          // Class name.
                                  title,                                // Window title.
                                  WS_CLIPSIBLINGS | WS_CLIPCHILDREN |   // Required window style.
                                    dwStyle,                            // Selected window style.
@@ -593,63 +525,13 @@ bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits,
             return FailAndCleanup( "Failed to get the device context." );
     }
 
-    // Choose a pixel format.
-    {
-        const int pixelAttribs[] =
-        {
-            WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-            WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-            WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
-            WGL_PIXEL_TYPE_ARB,     WGL_TYPE_RGBA_ARB,
-            WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB,
-            WGL_COLOR_BITS_ARB,     colorBits,
-            WGL_ALPHA_BITS_ARB,     0,
-            WGL_DEPTH_BITS_ARB,     zBits,
-            WGL_STENCIL_BITS_ARB,   stencilBits,
-            WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
-            WGL_SAMPLES_ARB,        1,
-            0
-        };
-
-        int pixelFormats[1];
-        unsigned int numFormats;
-        bool status = wglChoosePixelFormatARB( g_hDeviceContext, pixelAttribs, nullptr, 1, pixelFormats, &numFormats );
-        if( status == false || numFormats == 0 )
-            return FailAndCleanup( "Failed to find a suitable PixelFormat." );
-
-        // Set the pixel format of the device context.
-        PIXELFORMATDESCRIPTOR pfd;
-        DescribePixelFormat( g_hDeviceContext, pixelFormats[0], sizeof(pfd), &pfd );
-        bool result = SetPixelFormat( g_hDeviceContext, pixelFormats[0], &pfd );
-        if( result == 0 )
-            return FailAndCleanup( "Failed to set the PixelFormat." );
-    }
-
-    // Create and activate a rendering context.
-    {
-        const int major_min = 4, minor_min = 5;
-        int contextAttribs[] =
-        {
-            WGL_CONTEXT_MAJOR_VERSION_ARB, major_min,
-            WGL_CONTEXT_MINOR_VERSION_ARB, minor_min,
-            //WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-            WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-            0
-        };
-
-        g_hRenderingContext = wglCreateContextAttribsARB( g_hDeviceContext, nullptr, contextAttribs );
-        if( g_hRenderingContext == nullptr )
-            return FailAndCleanup( "Failed to create a GL rendering context." );
-
-        // Activate.
-        if( wglMakeCurrent( g_hDeviceContext, g_hRenderingContext ) == false )
-            return FailAndCleanup( "Failed to activate the GL rendering context." );
-    }
+    if( MyGL_ContextCreate( g_hInstance, g_hDeviceContext, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
+        return FailAndCleanup( "Failed to create WGL context." );
 
     ShowWindow( g_hWnd, SW_SHOW );   // Show the window.
     SetForegroundWindow( g_hWnd );   // Slightly higher priority.
     SetFocus( g_hWnd );              // Sets keyboard focus to the window.
-    ResizeGLScene( width, height );  // Set up our perspective GL screen.
+    ResizeScene( width, height );    // Set up our screen.
 
 #if MYFW_EDITOR
     DragAcceptFiles( g_hWnd, TRUE );
@@ -660,30 +542,17 @@ bool CreateGLWindow(char* title, int width, int height, unsigned char colorBits,
 
 bool FailAndCleanup(const char* pMessage)
 {
-    KillGLWindow( true );
+    KillWindow( true );
     MessageBox( 0, pMessage, "ERROR", MB_OK|MB_ICONEXCLAMATION );
     return false;
 }
 
-void KillGLWindow(bool destroyInstance)
+void KillWindow(bool destroyInstance)
 {
     if( g_FullscreenMode )
     {
         ChangeDisplaySettings( 0, 0 );
         UnlockSystemMouse();
-    }
-
-    if( g_hRenderingContext )
-    {
-        if( !wglMakeCurrent( 0, 0 ) )
-        {
-            MessageBox( 0, "Release of device context and rendering context failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-        }
-
-        if( !wglDeleteContext( g_hRenderingContext ) )
-        {
-            MessageBox( 0, "Release rendering context failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
-        }
     }
 
     if( g_hDeviceContext && !ReleaseDC( g_hWnd, g_hDeviceContext ) )
@@ -698,14 +567,13 @@ void KillGLWindow(bool destroyInstance)
 
     if( destroyInstance )
     {
-        if( g_hInstance && !UnregisterClass( "OpenGL", g_hInstance ) )
+        if( g_hInstance && !UnregisterClass( "MYFWClass", g_hInstance ) )
         {
             MessageBox( 0, "Could not unregister class.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION );
         }
         g_hInstance = 0;
     }
 
-    g_hRenderingContext = 0;
     g_hDeviceContext = 0;
     g_hWnd = 0;
 }
@@ -955,7 +823,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_SIZE:
         {
-            ResizeGLScene( LOWORD(lParam), HIWORD(lParam) );
+            ResizeScene( LOWORD(lParam), HIWORD(lParam) );
         }
         return 0;
 
@@ -1037,15 +905,11 @@ int MYFWWinMain(GameCore* pGameCore, int width, int height)
         return 0;
     }
 
-    // Create Our OpenGL Window.
-    if( !CreateGLWindow( "OpenGL Window", width, height, 32, 24, 8, false ) )
+    // Create our window.
+    if( !MYFWCreateWindow( "MyWindow", width, height, 32, 0, 24, 8, 1, false ) )
     {
         return 0;
     }
-
-    // Initialize OpenGL Extensions, must be done after OpenGL Context is created.
-    OpenGL_InitExtensions();
-    WGL_InitExtensions();
 
     // Create and initialize our Game object.
     pGameCore->OnSurfaceCreated();
@@ -1140,7 +1004,7 @@ int MYFWWinMain(GameCore* pGameCore, int width, int height)
 
     pGameCore->OnPrepareToDie();
 
-    KillGLWindow( true );
+    KillWindow( true );
 
     WSACleanup();
 
