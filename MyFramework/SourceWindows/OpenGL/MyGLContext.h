@@ -10,7 +10,28 @@
 #ifndef __MyGLContext_H__
 #define __MyGLContext_H__
 
-bool MyGL_ContextCreate(HINSTANCE hInstance, HDC hDeviceContext, unsigned char colorBits, unsigned char alphaBits, unsigned char zBits, unsigned char stencilBits, unsigned char multisampleSize);
-void MyGL_ContextDestroy();
+class MyGLContext
+{
+protected:
+    // WGLExtensions need to be acquired once per process, done in AcquireWGLExtensions().
+    // NOTE: This is not threadsafe. TODO: Make threadsafe.
+    static bool m_WGLExtensionsAcquired;
+
+    HDC m_hDeviceContext;
+    HGLRC m_hRenderingContext;
+
+protected:
+    void DestroyRenderingContext(HDC hDeviceContext);
+
+public:
+    MyGLContext();
+    ~MyGLContext();
+
+    bool AcquireWGLExtensions(HINSTANCE hInstance);
+    bool FailAndCleanup(const char* pMessage);
+
+    bool Create(HINSTANCE hInstance, HDC hDeviceContext, int majorVersion, int minorVersion, bool compatibilityMode, unsigned char colorBits, unsigned char alphaBits, unsigned char zBits, unsigned char stencilBits, unsigned char multisampleSize);
+    void Destroy();
+};
 
 #endif //__MyGLContext_H__

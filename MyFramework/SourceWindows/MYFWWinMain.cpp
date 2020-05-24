@@ -30,12 +30,14 @@
 unsigned int g_GLCanvasIDActive = 0;
 #endif
 
-#define SHOW_SYSTEM_MOUSE_DEBUG_LOG             0
-#define SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT    0
+#define SHOW_SYSTEM_MOUSE_DEBUG_LOG             false
+#define SHOW_SYSTEM_MOUSE_DEBUG_LOG_MOVEMENT    false
 
 HWND g_hWnd = 0;
 static HINSTANCE g_hInstance = 0;
 static HDC g_hDeviceContext = 0;
+
+static MyGLContext* g_pMyGLContext = nullptr;
 
 static bool g_EscapeButtonWillQuit;
 static bool g_CloseProgramRequested;
@@ -114,11 +116,11 @@ void SetWindowSize(int width, int height)
     HMENU menu = GetMenu( g_hWnd );
 
     // Calculate the full size of the window needed to match our client area of width/height.
-    RECT WindowRect = { 0, 0, width, height };
-    AdjustWindowRectEx( &WindowRect, dwStyle, menu ? TRUE : FALSE, dwExStyle );
+    RECT windowRect = { 0, 0, width, height };
+    AdjustWindowRectEx( &windowRect, dwStyle, menu ? TRUE : FALSE, dwExStyle );
 
-    int windowwidth = WindowRect.right - WindowRect.left;
-    int windowheight = WindowRect.bottom - WindowRect.top;
+    int windowwidth = windowRect.right - windowRect.left;
+    int windowheight = windowRect.bottom - windowRect.top;
     
     SetWindowPos( g_hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
     
@@ -426,11 +428,11 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
     DWORD dwExStyle;
     DWORD dwStyle;
 
-    RECT WindowRect;
-    WindowRect.left = (long)0;
-    WindowRect.right = (long)width;
-    WindowRect.top = (long)0;
-    WindowRect.bottom = (long)height;
+    RECT windowRect;
+    windowRect.left = (long)0;
+    windowRect.right = (long)width;
+    windowRect.top = (long)0;
+    windowRect.bottom = (long)height;
 
     g_FullscreenMode = fullScreenFlag;
 
@@ -498,7 +500,7 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
         dwStyle = WS_OVERLAPPEDWINDOW;
     }
 
-    AdjustWindowRectEx( &WindowRect, dwStyle, false, dwExStyle );   // Adjust window to true requested size.
+    AdjustWindowRectEx( &windowRect, dwStyle, false, dwExStyle );   // Adjust window to true requested size.
 
     // Create our window.
     {
@@ -508,8 +510,8 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
                                  WS_CLIPSIBLINGS | WS_CLIPCHILDREN |   // Required window style.
                                    dwStyle,                            // Selected window style.
                                  0, 0,                                 // Window position.
-                                 WindowRect.right-WindowRect.left,     // Calculate adjusted window width.
-                                 WindowRect.bottom-WindowRect.top,     // Calculate adjusted window height.
+                                 windowRect.right-windowRect.left,     // Calculate adjusted window width.
+                                 windowRect.bottom-windowRect.top,     // Calculate adjusted window height.
                                  nullptr,                              // No parent window.
                                  nullptr,                              // No menu.
                                  g_hInstance,                          // Instance.
@@ -525,7 +527,9 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
             return FailAndCleanup( "Failed to get the device context." );
     }
 
-    if( MyGL_ContextCreate( g_hInstance, g_hDeviceContext, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
+    // Create an OpenGL rendering context.
+    g_pMyGLContext = MyNew MyGLContext();
+    if( g_pMyGLContext->Create( g_hInstance, g_hDeviceContext, 4, 5, false, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
         return FailAndCleanup( "Failed to create WGL context." );
 
     ShowWindow( g_hWnd, SW_SHOW );   // Show the window.
@@ -1007,6 +1011,8 @@ int MYFWWinMain(GameCore* pGameCore, int width, int height)
     KillWindow( true );
 
     WSACleanup();
+
+    delete g_pMyGLContext;
 
     return (int)windowsMessage.wParam;
 }
