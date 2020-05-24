@@ -529,7 +529,7 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
 
     // Create an OpenGL rendering context.
     g_pMyGLContext = MyNew MyGLContext();
-    if( g_pMyGLContext->Create( g_hInstance, g_hDeviceContext, 4, 5, false, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
+    if( g_pMyGLContext->Create( g_hInstance, g_hDeviceContext, 4, 5, true, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
         return FailAndCleanup( "Failed to create WGL context." );
 
     ShowWindow( g_hWnd, SW_SHOW );   // Show the window.
