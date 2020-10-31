@@ -169,7 +169,7 @@ void GenerateKeyboardEvents(GameCore* pGameCore)
         }
     }
 
-#if !MYFW_EDITOR
+#if !MYFW_EDITOR && _DEBUG
     if( keys[MYKEYCODE_LCTRL] && keys['M'] == 1 && keysOld['M'] == 0 ) // new press
         h_moviemode = !h_moviemode;
     if( keys[MYKEYCODE_LCTRL] && keys['S'] == 1 && keysOld['S'] == 0 ) // new press
