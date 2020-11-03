@@ -125,6 +125,7 @@ public:
 
     int GetLastInputMethodUsed() { return m_LastInputMethodUsed; }
 
+    float GetTimeSinceGameStarted() { return m_TimeSinceGameStarted; }
     float GetTimePassedUnpausedLastFrame() { return m_TimePassedUnpausedLastFrame; }
 
     SoundPlayer* GetSoundPlayer() { return m_pSoundPlayer; }
