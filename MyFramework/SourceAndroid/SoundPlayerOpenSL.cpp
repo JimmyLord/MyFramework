@@ -8,6 +8,9 @@
 // 3. This notice may not be removed or altered from any source distribution.
 
 #include "../SourceCommon/MyFrameworkPCH.h"
+#include "SoundPlayerOpenSL.h"
+#include "Helpers/MyFileObject.h"
+#include "Helpers/MyTime.h"
 
 void CheckForErrors(SLresult result, const char* string)
 {
@@ -273,11 +276,11 @@ void SoundPlayer::ReallyPlaySound(int soundid)
 {
 }
 
-SoundObject* SoundPlayer::LoadSound(const char* fullpath)
-{
-    MyFileObject* pFile = pFileManager->RequestFile( fullpath );
-    return LoadSound( pFile );
-}
+//SoundObject* SoundPlayer::LoadSound(const char* fullpath)
+//{
+//    MyFileObject* pFile = pFileManager->RequestFile( fullpath );
+//    return LoadSound( pFile );
+//}
 
 SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
 {

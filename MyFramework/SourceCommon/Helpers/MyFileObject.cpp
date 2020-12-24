@@ -9,7 +9,14 @@
 
 #include "MyFrameworkPCH.h"
 
+#if MYFW_WINDOWS
 #include <direct.h>
+#endif
+
+#if MYFW_ANDROID
+#include <sys/stat.h>
+#include "../../SourceAndroid/AndroidFileLoader.h"
+#endif
 
 #include "FileManager.h"
 #include "MyFileObject.h"
@@ -38,7 +45,7 @@ FileTimeStamp GetFileLastModifiedTime(const char* path)
     MyAssert( false ); // Test this.
 
     struct stat data;
-    stat( m_FullPath, &data );
+    stat( path, &data );
     return data.st_mtime;
 }
 #endif
@@ -74,7 +81,7 @@ char* PlatformSpecific_LoadFile(const char* relativePath, int* length, const cha
 #else
     const char* fullPath = relativePath;
 
-    fileHandle = fopen( fullpath, "rb" );
+    fileHandle = fopen( fullPath, "rb" );
 #endif
 
     char* fileContents = nullptr;

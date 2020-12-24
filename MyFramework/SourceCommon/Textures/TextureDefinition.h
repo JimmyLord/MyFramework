@@ -10,7 +10,7 @@
 #ifndef __TextureDefinition_H__
 #define __TextureDefinition_H__
 
-#include "Renderers/BaseClasses/Renderer_Enums.h"
+#include "../Renderers/BaseClasses/Renderer_Enums.h"
 
 class FBODefinition;
 class FileManager;

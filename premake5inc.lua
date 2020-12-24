@@ -24,17 +24,17 @@ project "MyFramework"
     uuid                "016089D0-2136-4A3D-B08C-5031542BE1D7"
     kind                "StaticLib"
     language            "C++"
-    targetdir           "$(SolutionDir)Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
-    objdir              "$(SolutionDir)Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    targetdir           "../Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    objdir              "../Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
     pchheader           "MyFrameworkPCH.h"
     pchsource           "MyFramework/SourceCommon/MyFrameworkPCH.cpp"
 
     includedirs {
         "MyFramework/SourceCommon",
-		"Libraries/b2Settings",
-		"Libraries/Box2D/include",
-		"Libraries/Box2D/src",
-		"Libraries/OpenAL/include",
+        "Libraries/b2Settings",
+        "Libraries/Box2D/include",
+        "Libraries/Box2D/src",
+        "Libraries/OpenAL/include",
     }
 
     files {
@@ -51,9 +51,6 @@ project "MyFramework"
         "Libraries/mtrand/mtreadme.txt",
         "Libraries/OpenSimplexInC/open-simplex-noise.c",
         "Libraries/OpenSimplexInC/open-simplex-noise.h",
-        "Libraries/pthreads-w32/pthread.h",
-        "Libraries/pthreads-w32/sched.h",
-        "Libraries/pthreads-w32/semaphore.h",
         "README.md",
         "premake5inc.lua",
         "Libraries/premake5inc-box2d.lua",
@@ -78,14 +75,25 @@ project "MyFramework"
     filter { "files:Libraries/**" }
         flags           "NoPCH"
 
-    filter "system:windows"
+    filter "action:vs*"
         platforms       { "x86", "x64" }
         defines         "MYFW_WINDOWS"
         systemversion   "latest"
         characterset    "MBCS"
         files {
+            "Libraries/pthreads-w32/include/pthread.h",
+            "Libraries/pthreads-w32/include/sched.h",
+            "Libraries/pthreads-w32/include/semaphore.h",
             "MyFramework/SourceWindows/**.cpp",
             "MyFramework/SourceWindows/**.h",
+        }
+
+    filter "action:android-studio"
+        defines         "MYFW_ANDROID"
+        files {
+            "MyFramework/SourceAndroid/**.cpp",
+            "MyFramework/SourceAndroid/**.c",
+            "MyFramework/SourceAndroid/**.h",
         }
 
     filter { "files:MyFramework/SourceCommon/DataTypes/ColorStructs.cpp"

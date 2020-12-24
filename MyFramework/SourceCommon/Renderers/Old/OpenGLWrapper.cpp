@@ -13,8 +13,11 @@
 #include "../BaseClasses/Renderer_Enums.h"
 
 // TODO: Fix GL Includes.
+#if MYFW_WINDOWS
 #include <gl/GL.h>
 #include "../SourceWindows/OpenGL/GLExtensions.h"
+#endif
+
 #include "../OpenGL/GLHelpers.h"
 
 GLStats g_GLStats;

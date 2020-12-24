@@ -14,6 +14,8 @@
 #include <SLES/OpenSLES_Android.h>
 #include "../SourceCommon/Sound/WaveLoader.h"
 
+class MyFileObject;
+
 struct SoundObject : TCPPListNode<SoundObject*>, public RefCount
 {
 public:
@@ -86,7 +88,7 @@ public:
 
     void Tick(float deltaTime);
 
-    SoundObject* LoadSound(const char* fullpath);
+    //SoundObject* LoadSound(const char* fullpath);
     SoundObject* LoadSound(MyFileObject* pFile);
 
     void Shutdown();

@@ -10,6 +10,8 @@
 // Templated version of:
 // CPPList.h - (C)2001 Dave 'Redbeard' Eccleston 
 
+#include "CPPList.h"
+
 template <class MyType> class TCPPListNode : public CPPListNode
 {
 public:

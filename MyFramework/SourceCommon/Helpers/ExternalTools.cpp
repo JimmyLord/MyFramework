@@ -10,7 +10,9 @@
 #include "MyFrameworkPCH.h"
 
 #include <sstream>
+#if MYFW_WINDOWS
 #include <direct.h>
+#endif
 
 #include "ExternalTools.h"
 

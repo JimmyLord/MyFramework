@@ -19,8 +19,8 @@ project "Box2D"
     uuid                "98400D17-43A5-1A40-95BE-C53AC78E7694"
     kind                "StaticLib"
     language            "C++"
-    targetdir           "$(SolutionDir)Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
-    objdir              "$(SolutionDir)Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    targetdir           "../Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    objdir              "../Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
 
     includedirs {
         "b2Settings",
@@ -32,7 +32,7 @@ project "Box2D"
         "Box2D/src/**",
     }
 
-    filter "system:windows"
+    filter "action:vs*"
         platforms       { "x86", "x64" }
         systemversion   "latest"
         characterset    "MBCS"

@@ -18,14 +18,19 @@
 #include <math.h>
 
 #include <GLES2/gl2.h>
+
+#include "../SourceCommon/MyFrameworkPCH.h"
+#include "JavaInterfaceCPP.h"
+#include "Core/GameCore.h"
+#include "Events/EventManager.h"
+#include "Events/EventTypeManager.h"
+
 //#if !ANDROID_NDK
 //#include <GLES2/egl2.h>
 //#endif // !ANDROID_NDK
 
 bool g_Android_ExitOnBackButton = true;
-
-#include "JavaInterfaceCPP.h"
-#include "../SourceCommon/MyFrameworkPCH.h"
+extern double g_UnpausedTime;
 
 struct AndroidTouchEvent
 {
@@ -49,9 +54,9 @@ AndroidTouchEvent g_TouchEventQueue[MAX_TOUCH_EVENTS];
 int currentreadindex = 0;
 int currentwriteindex = 0;
 
-void App_Activity_OnCreate(const char* launchscene)
+void App_Activity_OnCreate(const char* launchScene)
 {
-    AndroidMain_CreateGameCore( launchscene );
+    AndroidMain_CreateGameCore( launchScene );
 
     pthread_mutex_init( &g_TouchInputMutex, 0 );
 }
@@ -253,6 +258,7 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
 void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const char* dataSignature,
                              const char* sku, const char* payload)
 {
+    EventManager* pEventManager = g_pGameCore->GetManagers()->GetEventManager();
     MyEvent* pIAPEvent = pEventManager->CreateNewEvent( Event_IAP );
 
     if( pIAPEvent )
@@ -261,10 +267,10 @@ void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const c
         //const char* sku = (const char*)event->GetPointer( "sku" );
         //const char* payload = (const char*)event->GetPointer( "payload" );
 
-        pIAPEvent->AttachInt(           "responseCode", responseCode        );
+        pIAPEvent->AttachInt(     pEventManager,      "responseCode", responseCode        );
 
-        pIAPEvent->AttachPointer(       "sku",          (void*)sku          );
-        pIAPEvent->AttachPointer(       "payload",      (void*)payload      );
+        pIAPEvent->AttachPointer( pEventManager,      "sku",          (void*)sku          );
+        pIAPEvent->AttachPointer( pEventManager,      "payload",      (void*)payload      );
 
         LOGInfo( LOGTag, "Sending IAPEvent\n" );
         pEventManager->SendEventNow( pIAPEvent );

@@ -10,6 +10,8 @@
 #ifndef __DXWRAPPER_H__
 #define __DXWRAPPER_H__
 
+#if MYFW_WINDOWS
+
 #define GLvoid void
 #define GLboolean bool
 #define GLubyte unsigned char
@@ -201,4 +203,6 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count);
 
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
 
-#endif
+#endif //MYFW_WINDOWS
+
+#endif //__DXWRAPPER_H__

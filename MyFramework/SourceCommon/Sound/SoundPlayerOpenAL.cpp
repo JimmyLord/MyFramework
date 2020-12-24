@@ -11,6 +11,8 @@
 #include "SoundPlayerOpenAL.h"
 #include "WaveLoader.h"
 
+#if !MYFW_ANDROID
+
 //====================================================================================================
 // SoundObject
 //====================================================================================================
@@ -340,3 +342,5 @@ void SoundPlayer::PauseAll()
 void SoundPlayer::ResumeAll()
 {
 }
+
+#endif //!MYFW_ANDROID

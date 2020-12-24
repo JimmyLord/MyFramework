@@ -9,6 +9,8 @@
 
 #include "../SourceCommon/MyFrameworkPCH.h"
 
+#if 0
+
 SoundPlayer::SoundPlayer()
 {
     m_NumQueuedSounds = 0;
@@ -167,3 +169,5 @@ void SoundPlayer::PauseAll()
 void SoundPlayer::ResumeAll()
 {
 }
+
+#endif //0

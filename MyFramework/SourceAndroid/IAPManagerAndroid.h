@@ -12,6 +12,7 @@
 
 class IAPManager;
 extern IAPManager* g_pIAPManager;
+class MyEvent;
 
 class IAPManager
 {

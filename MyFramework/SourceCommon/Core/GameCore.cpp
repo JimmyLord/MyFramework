@@ -35,7 +35,14 @@
 #include "../Textures/MaterialManager.h"
 #include "../Textures/TextureManager.h"
 
+#if MYFW_WINDOWS
 #include "../../SourceWindows/SoundPlayerXAudio.h" // TODO: Fix this dependency.
+#endif
+
+#if MYFW_ANDROID
+#include "../../SourceAndroid/IAPManagerAndroid.h"
+#include "../../SourceAndroid/SoundPlayerOpenSL.h"
+#endif
 
 #if MYFW_EDITOR
 #include "../SourceEditor/CommandStack.h"

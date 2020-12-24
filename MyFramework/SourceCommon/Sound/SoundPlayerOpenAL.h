@@ -10,6 +10,8 @@
 #ifndef __SoundPlayer_H__
 #define __SoundPlayer_H__
 
+#if !MYFW_ANDROID
+
 #include "DataTypes/MyActivePool.h"
 
 #if MYFW_IOS || MYFW_OSX
@@ -88,5 +90,7 @@ public:
     void PauseAll();
     void ResumeAll();
 };
+
+#endif //!MYFW_ANDROID
 
 #endif //__SoundPlayer_H__

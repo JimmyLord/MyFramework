@@ -10,6 +10,8 @@
 #ifndef __RefCount_H__
 #define __RefCount_H__
 
+#include "../Helpers/MyAssert.h"
+
 class RefCount
 {
 protected:

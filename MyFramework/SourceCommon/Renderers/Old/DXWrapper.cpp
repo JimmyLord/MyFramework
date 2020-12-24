@@ -9,6 +9,8 @@
 
 #include "MyFrameworkPCH.h"
 
+#if MYFW_WINDOWS
+
 Microsoft::WRL::ComPtr<ID3D11Device1> g_pD3DDevice;
 Microsoft::WRL::ComPtr<ID3D11DeviceContext1> g_pD3DContext;
 Microsoft::WRL::ComPtr<ID3D11RenderTargetView> g_pD3DRenderTargetView;
@@ -696,3 +698,5 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indic
     g_pD3DContext->DrawIndexed( count, 0, 0 );
     //LOGInfo( LOGTag, "********************************* glDrawElements() not implemented\n" );
 }
+
+#endif //MYFW_WINDOWS

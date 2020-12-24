@@ -45,6 +45,6 @@ extern void App_IAPManager_OnResult(int responseCode, const char* purchaseData, 
 
 // the AndroidMain_CreateGameCore() should be defined in main.cpp and
 //     create a new instance of the game specific subclass of GameCore.
-void AndroidMain_CreateGameCore(const char* launchscene);
+void AndroidMain_CreateGameCore(const char* launchScene);
 
 #endif //__JavaInterfaceCPP_H__

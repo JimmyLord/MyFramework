@@ -15,7 +15,13 @@
 #include "../Helpers/MyFileObject.h"
 #include "../JSON/cJSONHelpers.h"
 
+#if MYFW_WINDOWS
 #include "../../SourceWindows/SoundPlayerXAudio.h" // TODO: Fix this dependency.
+#endif
+
+#if MYFW_ANDROID
+#include "../../SourceAndroid/SoundPlayerOpenSL.h"
+#endif
 
 #if MYFW_EDITOR
 #include "../../SourceEditor/EditorCommands.h"
@@ -337,14 +343,14 @@ SoundCue* SoundManager::CreateCue(const char* name)
     return pCue;
 }
 
-SoundCue* SoundManager::LoadCue(const char* fullpath)
+SoundCue* SoundManager::LoadCue(const char* fullPath)
 {
-    MyAssert( fullpath );
+    MyAssert( fullPath );
 
     SoundCue* pCue;
 
     // Check if this file was already loaded.
-    pCue = FindCueByFilename( fullpath );
+    pCue = FindCueByFilename( fullPath );
     if( pCue )
     {
         pCue->AddRef(); // Automatically add a ref for the calling code.
@@ -355,7 +361,7 @@ SoundCue* SoundManager::LoadCue(const char* fullpath)
     if( pCue )
     {
         pCue->AddRef(); // Automatically add a ref for the calling code.
-        pCue->m_pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fullpath );
+        pCue->m_pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fullPath );
 
         m_CuesStillLoading.AddTail( pCue );
     }
@@ -393,14 +399,17 @@ void SoundManager::UnloadCue(SoundCue* pCue)
     }
 }
 
-void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullpath)
+void SoundManager::AddSoundToCue(SoundCue* pCue, const char* fullPath)
 {
     // TODO: Check if the file was already loaded.
 #if MYFW_NACL
     // TODO: fix
     SoundObject* pSoundObject = nullptr;
+#elif MYFW_ANDROID
+    MyFileObject* pFile = m_pGameCore->GetManagers()->GetFileManager()->RequestFile( fullPath );
+    SoundObject* pSoundObject = m_pGameCore->GetSoundPlayer()->LoadSound( pFile );
 #else
-    SoundObject* pSoundObject = m_pGameCore->GetSoundPlayer()->LoadSound( m_pGameCore->GetManagers()->GetFileManager(), fullpath );
+    SoundObject* pSoundObject = m_pGameCore->GetSoundPlayer()->LoadSound( m_pGameCore->GetManagers()->GetFileManager(), fullPath );
 #endif
 
     if( pSoundObject )
@@ -456,11 +465,11 @@ SoundCue* SoundManager::FindCueByName(const char* name)
     return nullptr;
 }
 
-SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
+SoundCue* SoundManager::FindCueByFilename(const char* fullPath)
 {
     for( SoundCue* pCue = m_CuesStillLoading.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
+        if( strcmp( pCue->m_pFile->GetFullPath(), fullPath ) == 0 )
         {
             return pCue;
         }
@@ -468,7 +477,7 @@ SoundCue* SoundManager::FindCueByFilename(const char* fullpath)
 
     for( SoundCue* pCue = m_Cues.GetHead(); pCue; pCue = pCue->GetNext() )
     {
-        if( strcmp( pCue->m_pFile->GetFullPath(), fullpath ) == 0 )
+        if( strcmp( pCue->m_pFile->GetFullPath(), fullPath ) == 0 )
         {
             return pCue;
         }

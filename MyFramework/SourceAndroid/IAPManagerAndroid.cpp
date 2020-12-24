@@ -11,6 +11,9 @@
 
 #include "IAPManagerAndroid.h"
 #include "Core/GameCore.h"
+#include "Events/EventManager.h"
+#include "Events/EventTypeManager.h"
+#include "JavaInterfaceCPP.h"
 
 IAPManager* g_pIAPManager = 0;
 
@@ -30,7 +33,7 @@ void IAPManager::Initialize()
 {
     m_Initialized = true;
 
-    EventManager* pEventManager = m_pGameCore->GetManagers()->GetEventManager();
+    EventManager* pEventManager = g_pGameCore->GetManagers()->GetEventManager();
     pEventManager->RegisterForEvents( Event_IAP, this, &IAPManager::StaticHandleEvent );
 }
 

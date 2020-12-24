@@ -22,6 +22,47 @@
 #include "../../Particles/ParticleRendererInstanced.h"
 #include "../../../SourceCommon/Textures/TextureManager.h"
 
+#if MYFW_OPENGLES2
+
+#define GL_HALF_FLOAT                       0
+#define GL_DOUBLE                           0
+#define GL_INT_2_10_10_10_REV               0
+#define GL_UNSIGNED_INT_2_10_10_10_REV      0
+#define GL_UNSIGNED_INT_10F_11F_11F_REV     0
+
+#define GL_STENCIL_INDEX    0
+#define GL_DEPTH_STENCIL    0
+#define GL_RED              0
+#define GL_GREEN            0
+#define GL_BLUE             0
+#define GL_BGR              0
+#define GL_BGRA             0
+
+#define GL_UNSIGNED_BYTE_3_3_2              0
+#define GL_UNSIGNED_BYTE_2_3_3_REV          0
+#define GL_UNSIGNED_SHORT_5_6_5             0
+#define GL_UNSIGNED_SHORT_5_6_5_REV         0
+#define GL_UNSIGNED_SHORT_4_4_4_4           0
+#define GL_UNSIGNED_SHORT_4_4_4_4_REV       0
+#define GL_UNSIGNED_SHORT_5_5_5_1           0
+#define GL_UNSIGNED_SHORT_1_5_5_5_REV       0
+#define GL_UNSIGNED_INT_8_8_8_8             0
+#define GL_UNSIGNED_INT_8_8_8_8_REV         0
+#define GL_UNSIGNED_INT_10_10_10_2          0
+#define GL_UNSIGNED_INT_2_10_10_10_REV      0
+#define GL_UNSIGNED_INT_24_8                0
+#define GL_UNSIGNED_INT_10F_11F_11F_REV     0
+#define GL_UNSIGNED_INT_5_9_9_9_REV         0
+#define GL_FLOAT_32_UNSIGNED_INT_24_8_REV   0
+
+#define GL_POINT    0
+#define GL_LINE     0
+#define GL_FILL     0
+
+#define glClearDepth glClearDepthf
+
+#endif //MYFW_OPENGLES2
+
 //====================================================================================================
 // Enum Conversions.
 //====================================================================================================
@@ -365,8 +406,10 @@ void Renderer_OpenGL::SetSwapInterval(int32 interval)
 {
     Renderer_Base::SetSwapInterval( interval );
 
+#if !MYFW_OPENGLES2
     if( wglSwapInterval )
         wglSwapInterval( interval );
+#endif
 
     checkGlError( "SetSwapInterval" );
 }
@@ -405,7 +448,9 @@ void Renderer_OpenGL::SetPointSize(float size)
 {
     Renderer_Base::SetPointSize( size );
 
+#if !MYFW_OPENGLES2
     glPointSize( size );
+#endif
 
     checkGlError( "SetPointSize" );
 }
@@ -616,7 +661,9 @@ void Renderer_OpenGL::ReadPixels(int x, int y, uint32 width, uint32 height, MyRE
 
 void Renderer_OpenGL::SetPolygonMode(MyRE::PolygonDrawModes mode)
 {
+#if !MYFW_OPENGLES2
     glPolygonMode( GL_FRONT_AND_BACK, PolygonDrawModeConversionTable[mode] );
+#endif
 
     checkGlError( "SetPolygonMode" );
 }
@@ -625,13 +672,17 @@ void Renderer_OpenGL::SetPolygonOffset(bool enabled, float factor, float units)
 {
     if( enabled )
     {
+#if !MYFW_OPENGLES2
         glEnable( GL_POLYGON_OFFSET_LINE );
+#endif
         glEnable( GL_POLYGON_OFFSET_FILL ); // Enabling GL_POLYGON_OFFSET_LINE doesn't work on my intel 4000.
     }
     else
     {
         glDisable( GL_POLYGON_OFFSET_FILL );
+#if !MYFW_OPENGLES2
         glDisable( GL_POLYGON_OFFSET_LINE );
+#endif
     }
 
     glPolygonOffset( factor, units );

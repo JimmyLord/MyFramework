@@ -10,6 +10,8 @@
 #ifndef __Utility_H__
 #define __Utility_H__
 
+#include "../DataTypes/MyTypes.h"
+
 const float FEQUALEPSILON = 0.00001f;
 
 void FixSlashesInPath(char* path);

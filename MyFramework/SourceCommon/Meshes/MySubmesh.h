@@ -11,6 +11,7 @@
 #define __MySubmesh_H__
 
 #include "../Renderers/BaseClasses/Renderer_Enums.h"
+#include "MyMesh.h"
 
 class BufferDefinition;
 class MaterialDefinition;

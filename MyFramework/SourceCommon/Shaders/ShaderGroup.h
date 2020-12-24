@@ -10,6 +10,8 @@
 #ifndef __ShaderGroup_H__
 #define __ShaderGroup_H__
 
+#include "../Helpers/RefCount.h"
+
 class BaseShader;
 class GameCore;
 class MyFileObject;
