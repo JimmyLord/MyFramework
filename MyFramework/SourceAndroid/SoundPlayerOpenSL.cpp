@@ -72,28 +72,39 @@ void SoundChannel::PlaySound(SoundObject* pSoundObject)
     SLBufferQueueItf bufferQueueInterface;
     result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_BUFFERQUEUE, &bufferQueueInterface );
     CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_BUFFERQUEUE" );
+    //LOGInfo( LOGTag, "bufferQueueInterface: %d", bufferQueueInterface );
 
     SLPlayItf playInterface;
     result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_PLAY, &playInterface );
     CheckForErrors( result, "(*m_ppAudioPlayer)->GetInterface SL_IID_PLAY" );
+    //LOGInfo( LOGTag, "playInterface: %d", playInterface );
+    if( playInterface == nullptr )
+        return;
 
-    SLVolumeItf volumeInterface;
-    result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_VOLUME, &playInterface );
-    if( result != SL_RESULT_SUCCESS )
-    {
-        CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_VOLUME" );
-        volumeInterface = nullptr;
-    }
+    //SLVolumeItf volumeInterface;
+    //result = (*m_ppAudioPlayer)->GetInterface( m_ppAudioPlayer, SL_IID_VOLUME, &volumeInterface );
+    //if( result != SL_RESULT_SUCCESS )
+    //{
+    //    CheckForErrors( result, "(*ppAudioPlayer)->GetInterface SL_IID_VOLUME" );
+    //    volumeInterface = nullptr;
+    //}
+
+    //LOGInfo( LOGTag, "About to clear buffer: %d, %s", bufferQueueInterface, pSoundObject->GetFullPath() );
 
     // Clear the existing sound from the buffer. TODO: check if this is needed.
     result = (*bufferQueueInterface)->Clear( bufferQueueInterface );
     CheckForErrors( result, "(*bufferQueueInterface)->Clear" );
+
+    //LOGInfo( LOGTag, "About to Enqueue our entire buffer: %d, %s", bufferQueueInterface, pSoundObject->GetFullPath() );
+    //LOGInfo( LOGTag, "data: %d, size: %d", pSoundObject->m_WaveDesc.data, pSoundObject->m_WaveDesc.datasize );
 
     // Enqueue our entire buffer.
     const void* pcmData = pSoundObject->m_WaveDesc.data;
     SLuint32 pcmDataSize = pSoundObject->m_WaveDesc.datasize;
     result = (*bufferQueueInterface)->Enqueue( bufferQueueInterface, pcmData, pcmDataSize );
     CheckForErrors( result, "(*bufferQueueInterface)->Enqueue" );
+
+    //LOGInfo( LOGTag, "About to Start playback: %d, %s", playInterface, pSoundObject->GetFullPath() );
 
     // Start playback.
     result = (*playInterface)->SetPlayState( playInterface, SL_PLAYSTATE_PLAYING );
@@ -104,6 +115,8 @@ void SoundChannel::PlaySound(SoundObject* pSoundObject)
     //CheckForErrors( result, "(*volumeInterface)->SetVolumeLevel" );
 
     m_TimePlaybackStarted = MyTime_GetUnpausedTime();
+
+    //LOGInfo( LOGTag, "All good?: %d, %s", bufferQueueInterface, pSoundObject->GetFullPath() );
 }
 
 void SoundChannel::StopSound()

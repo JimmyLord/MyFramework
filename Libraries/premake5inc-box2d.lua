@@ -19,8 +19,8 @@ project "Box2D"
     uuid                "98400D17-43A5-1A40-95BE-C53AC78E7694"
     kind                "StaticLib"
     language            "C++"
-    targetdir           "../Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
-    objdir              "../Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    targetdir           "%{wks.location}/Output/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
+    objdir              "%{wks.location}/Output/Intermediate/%{cfg.platform}-%{prj.name}-%{cfg.buildcfg}"
 
     includedirs {
         "b2Settings",

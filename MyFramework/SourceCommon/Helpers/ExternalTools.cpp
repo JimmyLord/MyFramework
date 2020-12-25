@@ -50,7 +50,7 @@ char g_TextToShare_Body[1000];
 void SetRenderMode(bool continuous)
 {
 #if MYFW_ANDROID
-    LOGInfo( LOGTag, "[Flow] Setting render mode() %d\n", continuous );
+    //LOGInfo( LOGTag, "[Flow] Setting render mode() %d\n", continuous );
 
     if( g_pMainActivity )
     {
