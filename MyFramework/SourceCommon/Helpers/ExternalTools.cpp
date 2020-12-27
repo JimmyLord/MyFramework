@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2018 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -46,6 +46,23 @@ char g_TextToShare_Body[1000];
 #if MYFW_NACL
 #include "../../../MyFramework/SourceNaCL/MainInstance.h"
 #endif
+
+void CheckForIAPs()
+{
+#if MYFW_ANDROID
+    LOGInfo( LOGTag, "[Flow] Checking for IAPs()\n" );
+
+    if( g_pMainActivity )
+    {
+        jclass jActivity = g_pJavaEnvironment->GetObjectClass( g_pMainActivity );
+        if( jActivity )
+        {
+            jmethodID jCheckForIAPs = g_pJavaEnvironment->GetMethodID( jActivity, "CheckForIAPs", "()V" );
+            g_pJavaEnvironment->CallVoidMethod( g_pMainActivity, jCheckForIAPs );
+        }
+    }
+#endif
+}
 
 void SetRenderMode(bool continuous)
 {

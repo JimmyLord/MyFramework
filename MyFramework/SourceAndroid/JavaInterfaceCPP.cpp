@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -250,7 +250,7 @@ void App_GLRenderer_NativeRender(long currenttimemilliseconds)
     pthread_mutex_unlock( &g_TouchInputMutex );
 
     g_pGameCore->OnDrawFrameStart( 0 );
-    g_UnpausedTime += g_pGameCore->Tick( millspassed / 1000.0f );
+    g_UnpausedTime += g_pGameCore->Tick(millspassed / 1000.0f);
     g_pGameCore->OnDrawFrame( 0 );
     g_pGameCore->OnDrawFrameDone();
 }
@@ -271,6 +271,8 @@ void App_IAPManager_OnResult(int responseCode, const char* purchaseData, const c
 
         pIAPEvent->AttachPointer( pEventManager,      "sku",          (void*)sku          );
         pIAPEvent->AttachPointer( pEventManager,      "payload",      (void*)payload      );
+
+        LOGInfo( LOGTag, "App_IAPManager_OnResult responseCode=%d, sku=%s, payload=%s\n", responseCode, sku, payload );
 
         LOGInfo( LOGTag, "Sending IAPEvent\n" );
         pEventManager->SendEventNow( pIAPEvent );

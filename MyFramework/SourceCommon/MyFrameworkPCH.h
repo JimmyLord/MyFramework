@@ -206,6 +206,7 @@ typedef int socklen_t;
 
 #if MYFW_ANDROID
 #define MYFW_OPENGLES2 1
+#define USE_LOADWAVESFROMFILESYSTEM 1
 #undef USE_PTHREAD
 #define USE_PTHREAD 0
 #include <jni.h>

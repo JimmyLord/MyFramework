@@ -277,6 +277,7 @@ SoundObject* SoundPlayer::LoadSound(MyFileObject* pFile)
     //m_pSounds.AddTail( pSound );
 
     pSound->SetSourcePool( &m_SoundObjectPool );
+    pSound->AddRef();
 
     // store the wave file and wave desc into a soundobject and return the soundobject.
     // file may not be fully loaded, so m_WaveDesc.valid == false

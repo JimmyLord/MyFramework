@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2017 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2012-2020 Jimmy Lord http://www.flatheadgames.com
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -83,6 +83,11 @@ public class MYFWActivity extends Activity
     public BMPFactoryLoader GetBMPFactoryLoader() { return m_BMPFactoryLoader; }
     public SoundPlayer GetSoundPlayer() { return m_SoundPlayer; }
     public IAPManager GetIAPManager() { return m_IAPManager; }
+
+    public void CheckForIAPs() // ()V
+    {
+        m_IAPManager.GetPurchasesAsync();
+    }
 
     public void SetRenderMode(boolean continuous) // (Z)V
     {
@@ -239,7 +244,7 @@ public class MYFWActivity extends Activity
                         launchscene );
 
         m_IAPManager = new IAPManager( this );
-        m_IAPManager.GetPurchasesAsync();
+        //m_IAPManager.GetPurchasesAsync();
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data)
