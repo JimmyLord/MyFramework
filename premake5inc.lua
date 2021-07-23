@@ -5,10 +5,6 @@
 --     include( "premake5inc.lua" )
 --     os.chdir( rootDir )
 
-if PremakeConfig_BuildFolder == nil then
-    PremakeConfig_BuildFolder = "$SolutionDir/"
-end
-
 -- To exclude Box2D, set 'PremakeConfig_UseBox2D' to false and add 'defines "MYFW_USE_BOX2D=0"' to your project.
 if PremakeConfig_UseBox2D == nil then
     PremakeConfig_UseBox2D = true
@@ -19,7 +15,9 @@ if PremakeConfig_UseMemoryTracker == nil then
 end
 
 project "MyFramework"
+if PremakeConfig_BuildFolder ~= nil then
     location            ( PremakeConfig_BuildFolder .. "/Framework" )
+end
     configurations      { "Debug", "Release", "EditorDebug", "EditorRelease" }
     uuid                "016089D0-2136-4A3D-B08C-5031542BE1D7"
     kind                "StaticLib"

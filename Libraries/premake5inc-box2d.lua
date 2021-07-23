@@ -5,12 +5,10 @@
 --     include( "premake5inc.lua" )
 --     os.chdir( rootDir )
 
-if PremakeConfig_BuildFolder == nil then
-    PremakeConfig_BuildFolder = "$SolutionDir/"
-end
-
 project "Box2D"
+if PremakeConfig_BuildFolder ~= nil then
     location            ( PremakeConfig_BuildFolder .. "/Box2D" )
+end
     configurations      { "Debug", "Release" }
     configmap           {
                             ["EditorDebug"] = "Debug",

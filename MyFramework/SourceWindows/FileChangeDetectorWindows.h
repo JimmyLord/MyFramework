@@ -26,7 +26,7 @@ protected:
 
 public:
     FileChangeDetectorWindows(const char* folderToWatch);
-    virtual ~FileChangeDetectorWindows() override;
+    virtual ~FileChangeDetectorWindows();
 
     virtual void CheckForChanges() override;
 };
