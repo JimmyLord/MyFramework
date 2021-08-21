@@ -123,7 +123,7 @@ void SetWindowSize(int width, int height)
     int windowheight = windowRect.bottom - windowRect.top;
     
     SetWindowPos( g_hWnd, 0, 0, 0, windowwidth, windowheight, SWP_NOZORDER | SWP_NOMOVE );
-    
+
     ResizeScene( width, height );
 }
 
@@ -532,7 +532,7 @@ bool MYFWCreateWindow(char* title, int width, int height, unsigned char colorBit
     if( g_pMyGLContext->Create( g_hInstance, g_hDeviceContext, 4, 5, true, colorBits, alphaBits, zBits, stencilBits, multisampleSize ) == false )
         return FailAndCleanup( "Failed to create WGL context." );
 
-    ShowWindow( g_hWnd, SW_SHOW );   // Show the window.
+    //ShowWindow( g_hWnd, SW_SHOW );   // Show the window.
     SetForegroundWindow( g_hWnd );   // Slightly higher priority.
     SetFocus( g_hWnd );              // Sets keyboard focus to the window.
     ResizeScene( width, height );    // Set up our screen.
@@ -919,6 +919,9 @@ int MYFWWinMain(GameCore* pGameCore, int width, int height)
     pGameCore->OnSurfaceCreated();
     pGameCore->OnSurfaceChanged( 0, 0, width, height );
     pGameCore->OneTimeInit();
+
+    // Show the window after prefs are loaded in OneTimeInit().
+    ShowWindow( g_hWnd, SW_SHOW );
 
     double lastTime = MyTime_GetSystemTime();
 
