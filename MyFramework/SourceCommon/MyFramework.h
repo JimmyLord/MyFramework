@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019 Jimmy Lord http://www.flatheadgames.com
+// Copyright (c) 2019-2021 Jimmy Lord
 //
 // This software is provided 'as-is', without any express or implied warranty.  In no event will the authors be held liable for any damages arising from the use of this software.
 // Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
@@ -178,6 +178,7 @@
 #include "Helpers/ExternalTools.h"
 
 #include "Helpers/MyTweener.h"
+#include "Helpers/RandomHelpers.h"
 
 #include "Shaders/VertexFormats.h"
 #include "Shaders/VertexFormatManager.h"
