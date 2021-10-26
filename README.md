@@ -28,6 +28,11 @@ Supported platforms that are now dead but whose code hasn't been removed:
 - pthreads-w32 (www.sourceware.org/pthreads-win32)
 - OpenSimplexNoiseInC (github.com/smcameron/open-simplex-noise-in-c)
 
+Dependencies:
+    The pthreads-w32 library relies on msvcr100.dll, which can be downloaded from here:
+        https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-160
+        under the "Visual Studio 2010 (VC++ 10.0) SP1 (no longer supported)" section.
+
 The following is a list of tools used, which version I last tested with and possibly some setup commands I used:
 
 Windows
