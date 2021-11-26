@@ -285,6 +285,11 @@ inline Vector2Int operator /(int scalar, const Vector2Int& vector) { return Vect
 inline Vector2Int operator +(int scalar, const Vector2Int& vector) { return Vector2Int(scalar + vector.x, scalar + vector.y); }
 inline Vector2Int operator -(int scalar, const Vector2Int& vector) { return Vector2Int(scalar - vector.x, scalar - vector.y); }
 
+inline Vector2 operator *(float scalar, const Vector2Int& vector) { return Vector2(scalar * vector.x, scalar * vector.y); }
+inline Vector2 operator /(float scalar, const Vector2Int& vector) { return Vector2(scalar / vector.x, scalar / vector.y); }
+inline Vector2 operator +(float scalar, const Vector2Int& vector) { return Vector2(scalar + vector.x, scalar + vector.y); }
+inline Vector2 operator -(float scalar, const Vector2Int& vector) { return Vector2(scalar - vector.x, scalar - vector.y); }
+
 class Vector3Int
 {
 public:
