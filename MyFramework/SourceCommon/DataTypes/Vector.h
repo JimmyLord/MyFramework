@@ -34,6 +34,7 @@ public:
 
     inline Vector2 GetNormalized() const { float len = Length(); if( fequal(len,0) ) return Vector2(x,y); len = 1.0f/len; return Vector2(x*len, y*len); }
     inline Vector2 Normalize() { float len = Length(); if( !fequal(len,0) ) { x /= len; y /= len; } return *this; }
+    inline float Cross(const Vector2& o) const { return x*o.y - y*o.x; }
     inline void Absolute() { if( x < 0 ) x *= -1; if( y < 0 ) y *= -1; }
     inline Vector2 GetAbsolute() const { return Vector2( x<0 ? -x : x, y<0 ? -y : y ); }
     inline float Dot(const Vector2 &o) const { return x*o.x + y*o.y; }
