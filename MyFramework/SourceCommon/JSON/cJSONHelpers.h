@@ -52,6 +52,15 @@ void cJSONExt_GetFloat(cJSON* object, const char* name, float* variable);
 void cJSONExt_GetDouble(cJSON* object, const char* name, double* variable);
 void cJSONExt_GetString(cJSON* object, const char* name, char* variable, int buffersize);
 
+void cJSONExt_GetBool(cJSON* object, const char* name, bool& variable);
+void cJSONExt_GetUnsignedChar(cJSON* object, const char* name, unsigned char& variable);
+void cJSONExt_GetChar(cJSON* object, const char* name, char& variable);
+void cJSONExt_GetUnsignedInt(cJSON* object, const char* name, unsigned int& variable);
+void cJSONExt_GetInt(cJSON* object, const char* name, int& variable);
+void cJSONExt_GetFloat(cJSON* object, const char* name, float& variable);
+void cJSONExt_GetDouble(cJSON* object, const char* name, double& variable);
+void cJSONExt_GetString(cJSON* object, const char* name, char& variable, int buffersize);
+
 size_t cJSONExt_GetStringLength(cJSON* object, const char* name);
 
 void cJSONExt_ReplaceStringInJSONObject(cJSON* object, const char* newstring);

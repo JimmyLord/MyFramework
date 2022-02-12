@@ -346,6 +346,55 @@ void cJSONExt_GetString(cJSON* object, const char* name, char* variable, int buf
         strcpy_s( variable, buffersize, obj->valuestring );
 }
 
+void cJSONExt_GetBool(cJSON* object, const char* name, bool& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = obj->valueint > 0 ? true : false;
+}
+
+void cJSONExt_GetUnsignedChar(cJSON* object, const char* name, unsigned char& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = (unsigned char)obj->valueint;
+}
+
+void cJSONExt_GetChar(cJSON* object, const char* name, char& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = (char)obj->valueint;
+}
+
+void cJSONExt_GetUnsignedInt(cJSON* object, const char* name, unsigned int& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = (unsigned int)obj->valuedouble;
+}
+
+void cJSONExt_GetInt(cJSON* object, const char* name, int& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = obj->valueint;
+}
+
+void cJSONExt_GetFloat(cJSON* object, const char* name, float& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = (float)obj->valuedouble;
+}
+
+void cJSONExt_GetDouble(cJSON* object, const char* name, double& variable)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj ) variable = obj->valuedouble;
+}
+
+void cJSONExt_GetString(cJSON* object, const char* name, char& variable, int buffersize)
+{
+    cJSON* obj = cJSON_GetObjectItem( object, name );
+    if( obj )
+        strcpy_s( &variable, buffersize, obj->valuestring );
+}
+
 size_t cJSONExt_GetStringLength(cJSON* object, const char* name)
 {
     cJSON* obj = cJSON_GetObjectItem( object, name );
