@@ -61,6 +61,14 @@ void cJSONExt_GetFloat(cJSON* object, const char* name, float& variable);
 void cJSONExt_GetDouble(cJSON* object, const char* name, double& variable);
 void cJSONExt_GetString(cJSON* object, const char* name, char& variable, int buffersize);
 
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, bool& variable)            { cJSONExt_GetBool(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, unsigned char& variable)   { cJSONExt_GetUnsignedChar(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, char& variable)            { cJSONExt_GetChar(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, unsigned int& variable)    { cJSONExt_GetUnsignedInt(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, int& variable)             { cJSONExt_GetInt(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, float& variable)           { cJSONExt_GetFloat(object, name, variable); }
+inline void cJSONExt_GetNumber(cJSON* object, const char* name, double& variable)          { cJSONExt_GetDouble(object, name, variable); }
+
 size_t cJSONExt_GetStringLength(cJSON* object, const char* name);
 
 void cJSONExt_ReplaceStringInJSONObject(cJSON* object, const char* newstring);
