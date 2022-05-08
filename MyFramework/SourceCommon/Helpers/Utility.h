@@ -40,6 +40,11 @@ inline bool fnotequal(const double a, const double b, const double epsilon = FEQ
     return fabs(a - b) > epsilon;
 }
 
+template <class MyType> inline MyType sign(const MyType a)
+{
+    return a >= 0 ? (MyType)1 : (MyType)-1;
+}
+
 template <class MyType> void MySwap(MyType &v1, MyType &v2)
 {
     MyType temp = v1;
