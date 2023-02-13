@@ -24,7 +24,7 @@ unsigned int g_ActiveAllocatedRamCount = 0;
 
 #if USE_PTHREAD
 pthread_mutex_t g_AllocationMutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
+#endif //USE_PTHREAD
 
 class DummyClassToForceAStaticOperatorNew
 {
@@ -69,7 +69,9 @@ void MyMemory_ValidateAllocations(AllocationList* pList, bool assertOnAnyAllocat
 {
 #if _DEBUG
     // Grab the mutex, for g_pAllocationList and other tracking globals.
+#if USE_PTHREAD
     pthread_mutex_lock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     LOGInfo( LOGTag, "Start dumping unfreed memory allocations.\n" );
     LOGInfo( LOGTag, "\\/\\/\\/\\/\\/\\/ Start of memory leak dump \\/\\/\\/\\/\\/\\/ \n" );
@@ -90,7 +92,9 @@ void MyMemory_ValidateAllocations(AllocationList* pList, bool assertOnAnyAllocat
     if( assertOnAnyAllocation && pList->m_Allocations.GetHead() != nullptr )
         MyAssert( false );
 
+#if USE_PTHREAD
     pthread_mutex_unlock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 #endif //_DEBUG
 }
 
@@ -100,8 +104,10 @@ size_t MyMemory_GetNumberOfBytesAllocated()
         return 0;
 
 #if _DEBUG
+#if USE_PTHREAD
     // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     // Since the list itself isn't in the list, start with it's size.
     size_t count = sizeof( AllocationList );
@@ -119,7 +125,9 @@ size_t MyMemory_GetNumberOfBytesAllocated()
 
     MyAssert( count == g_TotalAllocatedRam );
 
+#if USE_PTHREAD
     pthread_mutex_unlock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     return count;
 #else
@@ -165,15 +173,21 @@ void* ActualNew(NewTypes type, size_t size, const char* file, unsigned long line
     MyAssert( size > 0 );
     MyAssert( file != nullptr );
 
+#if USE_PTHREAD
     // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     if( g_pAllocationList == nullptr )
     {
         g_pAllocationList = (AllocationList*)1;
+#if USE_PTHREAD
         pthread_mutex_unlock( &g_AllocationMutex );
+#endif //USE_PTHREAD
         g_pAllocationList = new AllocationList;
+#if USE_PTHREAD
         pthread_mutex_lock( &g_AllocationMutex );
+#endif //USE_PTHREAD
     }
     if( g_pAllocationList == (AllocationList*)1 )
     {
@@ -206,7 +220,9 @@ void* ActualNew(NewTypes type, size_t size, const char* file, unsigned long line
     g_AllocatedRamCount++;
     g_ActiveAllocatedRamCount++;
 
+#if USE_PTHREAD
     pthread_mutex_unlock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     return ((char*)mo) + sizeof(MemObject);
 }
@@ -216,8 +232,10 @@ void ActualDelete(NewTypes type, void* ptr)
     if( ptr == nullptr )
         return;
 
+#if USE_PTHREAD
     // Grab the mutex, for g_pAllocationList and other tracking globals.
     pthread_mutex_lock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     MemObject* pMemObject = (MemObject*)(((char*)ptr) - sizeof(MemObject));
     size_t size = pMemObject->m_Size;
@@ -240,7 +258,9 @@ void ActualDelete(NewTypes type, void* ptr)
     g_ActiveAllocatedRamCount--;
     free( pMemObject );
 
+#if USE_PTHREAD
     pthread_mutex_unlock( &g_AllocationMutex );
+#endif //USE_PTHREAD
 
     // Will only work if the first allocation is also the last one freed... likely a static allocation.
     if( thisAllocationCount == 1 )

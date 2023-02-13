@@ -35,6 +35,7 @@ class FileManager
 {
     struct FileIOThreadObject
     {
+#if USE_PTHREAD
         // Thread object.
         pthread_t m_FileIOThread;
 
@@ -46,6 +47,7 @@ class FileManager
         pthread_mutex_t m_Mutex_FileLists;
         TCPPListHead<MyFileObject*> m_FilesToLoad;
         TCPPListHead<MyFileObject*> m_FilesFinishedLoading;
+#endif //USE_PTHREAD
     };
 
 protected:

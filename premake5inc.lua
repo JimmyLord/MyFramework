@@ -79,9 +79,9 @@ end
         systemversion   "latest"
         characterset    "MBCS"
         files {
-            "Libraries/pthreads-w32/include/pthread.h",
-            "Libraries/pthreads-w32/include/sched.h",
-            "Libraries/pthreads-w32/include/semaphore.h",
+            --"Libraries/pthreads-w32/include/pthread.h",
+            --"Libraries/pthreads-w32/include/sched.h",
+            --"Libraries/pthreads-w32/include/semaphore.h",
             "MyFramework/SourceWindows/**.cpp",
             "MyFramework/SourceWindows/**.h",
         }

@@ -17,7 +17,7 @@
 #endif
 
 #define USE_OPENGL 1
-#define USE_PTHREAD 1
+#define USE_PTHREAD 0
 #if MYFW_WINDOWS
 #define USE_GEOMETRY_SHADER 1
 #endif
@@ -378,7 +378,9 @@ typedef unsigned long   u_long;
 #if WINVER >= 0x0602
 #define _TIMESPEC_DEFINED
 #endif
+#if USE_PTHREAD
 #include "../../Libraries/pthreads-w32/include/pthread.h"
+#endif //USE_PTHREAD
 #endif
 
 //============================================================================================================
